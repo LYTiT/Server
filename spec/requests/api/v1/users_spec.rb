@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe 'Users API' do
   describe :create do
-    let(:params) { {user: { name: 'name', 
-                            email: 'foo@example.com',
-                            password: 'foobar' } }}
+    let(:params) { { name: 'name',
+                     email: 'foo@example.com',
+                     password: 'foobar'}}
     it 'should be able to create' do
       expect(User.count).to eq(0)
 
