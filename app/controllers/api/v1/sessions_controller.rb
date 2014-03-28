@@ -1,6 +1,6 @@
 class Api::V1::SessionsController < ApplicationController
   def create
-    @user = authenticate(params)
+    @user = User.authenticate(params[:email], params[:password])
     if @user.nil?
       render json: {:message => 'User not found'}, status: :unprocessable_entity
     else
