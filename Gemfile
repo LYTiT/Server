@@ -34,8 +34,10 @@ end
 group :development, :test do
   gem 'dotenv-rails'
   gem 'factory_girl_rails'
-  gem 'pry-rails'
+  gem 'faker'
+  gem 'pry-byebug'
   gem 'rspec-rails', '>= 2.14'
+  gem 'timecop'
 end
 
 group :test do
@@ -44,7 +46,6 @@ group :test do
   gem 'launchy'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
-  gem 'timecop'
   gem 'webmock'
 end
 

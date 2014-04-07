@@ -38,6 +38,9 @@ GEM
       sass (>= 3.2.0)
       thor
     builder (3.1.4)
+    byebug (2.7.0)
+      columnize (~> 0.3)
+      debugger-linecache (~> 1.2)
     capybara (2.1.0)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -59,10 +62,12 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.7.0)
+    columnize (0.3.6)
     crack (0.4.2)
       safe_yaml (~> 1.0.0)
     database_cleaner (1.2.0)
     debug_inspector (0.0.2)
+    debugger-linecache (1.2.0)
     delayed_job (4.0.0)
       activesupport (>= 3.0, < 4.1)
     delayed_job_active_record (4.0.0)
@@ -82,6 +87,8 @@ GEM
     factory_girl_rails (4.4.1)
       factory_girl (~> 4.4.0)
       railties (>= 3.0.0)
+    faker (1.2.0)
+      i18n (~> 0.5)
     flutie (2.0.0)
     font-awesome-rails (4.0.3.1)
       railties (>= 3.2, < 5.0)
@@ -129,8 +136,9 @@ GEM
       coderay (~> 1.0)
       method_source (~> 0.8)
       slop (~> 3.4)
-    pry-rails (0.3.2)
-      pry (>= 0.9.10)
+    pry-byebug (1.3.2)
+      byebug (~> 2.7)
+      pry (~> 0.9.12)
     rack (1.5.2)
     rack-pjax (0.7.0)
       nokogiri (~> 1.5)
@@ -257,6 +265,7 @@ DEPENDENCIES
   dotenv-rails
   email_validator
   factory_girl_rails
+  faker
   flutie
   foreman
   high_voltage
@@ -266,7 +275,7 @@ DEPENDENCIES
   neat
   newrelic_rpm (>= 3.6.7)
   pg
-  pry-rails
+  pry-byebug
   rack-timeout
   rails (>= 4.0.0)
   rails_12factor
