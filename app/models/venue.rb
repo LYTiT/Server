@@ -3,6 +3,8 @@ class Venue < ActiveRecord::Base
   validates :latitude, presence: true
   validates :longitude, presence: true
 
+  has_many :venue_ratings
+
   def self.search(params)
 
     scoped = all
