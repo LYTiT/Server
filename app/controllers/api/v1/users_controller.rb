@@ -1,4 +1,6 @@
-class Api::V1::UsersController < ApplicationController
+class Api::V1::UsersController < ApiBaseController
+  skip_before_filter :set_user
+
   def create
     @user = User.new(user_params)
 

@@ -1,4 +1,6 @@
-class Api::V1::SessionsController < ApplicationController
+class Api::V1::SessionsController < ApiBaseController
+  skip_before_filter :set_user
+
   def create
     @user = User.authenticate(params[:email], params[:password])
     if @user.nil?
