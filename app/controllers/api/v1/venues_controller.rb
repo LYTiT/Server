@@ -4,4 +4,10 @@ class Api::V1::VenuesController < ApplicationController
 
     render json: @venues
   end
+
+  def show
+    @venue = Venue.find(params[:id])
+
+    render json: @venue
+  end
 end
