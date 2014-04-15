@@ -1,6 +1,6 @@
 class Api::V1::VenuesController < ApplicationController
   def index
-    @venues = Venue.all
+    @venues = Venue.search(params)
 
     render json: @venues
   end
