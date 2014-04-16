@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140415195519) do
+ActiveRecord::Schema.define(version: 20140416134623) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 20140415195519) do
 
   create_table "venues", force: true do |t|
     t.string   "name"
-    t.integer  "rating"
+    t.float    "rating"
     t.string   "phone_number"
     t.text     "address"
     t.string   "city"
