@@ -4,4 +4,5 @@ class VenueRating < ActiveRecord::Base
 
   validates :venue, presence: true
   validates :user, presence: true
+  validates :rating, presence: true
 end

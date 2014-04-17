@@ -5,7 +5,9 @@ LytitServer::Application.routes.draw do
     namespace :v1 do
       resources :users, only: :create
       resources :sessions, only: :create
-      resources :venues, only: [:index, :show]
+      resources :venues, only: [:index, :show] do
+        resources :venue_ratings, only: [:create]
+      end
     end
   end
 

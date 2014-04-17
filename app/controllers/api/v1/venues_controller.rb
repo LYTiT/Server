@@ -1,6 +1,4 @@
 class Api::V1::VenuesController < ApiBaseController
-  skip_before_filter :set_user
-
   def index
     @venues = Venue.search(params)
 
