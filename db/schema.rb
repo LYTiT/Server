@@ -46,6 +46,17 @@ ActiveRecord::Schema.define(version: 20140416134623) do
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
 
+  create_table "venue_ratings", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.float    "rating"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "venue_ratings", ["user_id"], name: "index_venue_ratings_on_user_id", using: :btree
+  add_index "venue_ratings", ["venue_id"], name: "index_venue_ratings_on_venue_id", using: :btree
+
   create_table "venues", force: true do |t|
     t.string   "name"
     t.float    "rating"
