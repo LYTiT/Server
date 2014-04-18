@@ -5,6 +5,11 @@ class User < ActiveRecord::Base
 
   before_save :ensure_authentication_token
 
+  # This is to deal with S3.
+  def email_with_id
+    "#{email}-#{id}"
+  end
+
   private
 
   def ensure_authentication_token
