@@ -16,11 +16,11 @@ class S3Detail
   private
 
   def s3_details
-    {
+    ActiveSupport::JSON.encode({
       aws_key: ENV['AWS_KEY'],
       aws_secret_key: ENV['AWS_SECRET'],
       bucket: ENV['AWS_BUCKET_NAME']
-    }.to_s
+    })
   end
 
   def digested_key
