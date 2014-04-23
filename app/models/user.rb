@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   include Clearance::User
 
   has_many :venue_ratings
+  has_many :venue_comments
 
   before_save :ensure_authentication_token
 

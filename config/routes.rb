@@ -8,6 +8,10 @@ LytitServer::Application.routes.draw do
       resources :venues, only: [:index, :show] do
         resources :venue_ratings, only: [:create]
       end
+
+      controller :venues, :defaults => {:format => 'json'} do
+        post '/venues/addComment', :action => 'add_comment'
+      end
     end
   end
 

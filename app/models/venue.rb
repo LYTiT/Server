@@ -4,6 +4,7 @@ class Venue < ActiveRecord::Base
   validates :longitude, presence: true
 
   has_many :venue_ratings
+  has_many :venue_comments
 
   def self.search(params)
 
