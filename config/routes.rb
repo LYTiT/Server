@@ -3,14 +3,17 @@ LytitServer::Application.routes.draw do
 
   namespace :api, :defaults => {:format => 'json'}  do
     namespace :v1 do
-      resources :users, only: :create
+      resources :users, only: :create do
+        get '/posts', :action => :get_comments
+      end
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         resources :venue_ratings, only: [:create]
+        get '/posts', :action => :get_comments
       end
 
       controller :venues, :defaults => {:format => 'json'} do
-        post '/venues/addComment', :action => 'add_comment'
+        post '/venues/addComment', :action => :add_comment
       end
     end
   end
