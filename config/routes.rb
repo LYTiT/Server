@@ -3,7 +3,7 @@ LytitServer::Application.routes.draw do
 
   namespace :api, :defaults => {:format => 'json'}  do
     namespace :v1 do
-      resources :users, only: :create
+      resources :users, only: [:create, :update]
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         resources :venue_ratings, only: [:create]
