@@ -13,6 +13,6 @@ class Api::V1::GroupsController < ApiBaseController
   private
 
   def group_params
-    params.require(:group).permit(:name, :description, :is_public, :password)
+    params.require(:group).permit(:name, :description, :is_public, :password, :user_id)
   end
 end
