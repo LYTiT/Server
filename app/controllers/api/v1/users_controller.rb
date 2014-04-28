@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApiBaseController
-  skip_before_filter :set_user
+  #skip_before_filter :set_user
 
   def create
     @user = User.new(user_params)
@@ -9,6 +9,15 @@ class Api::V1::UsersController < ApiBaseController
       render 'created.json.jbuilder'
     else
       render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
+  def get_comments
+    @user = User.find_by_id(params[:user_id])
+    if @user
+      render json: @user.venue_comments
+    else
+      render json: {:error => "not-found"}.to_json, :status => 404
     end
   end
 
