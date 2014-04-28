@@ -5,11 +5,13 @@ LytitServer::Application.routes.draw do
     namespace :v1 do
       resources :users, only: [:create, :update] do
         get '/posts', :action => :get_comments
+        get '/groups', :action => :get_groups
       end
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         resources :venue_ratings, only: [:create]
         get '/posts', :action => :get_comments
+        get '/groups', :action => :get_groups
       end
       resources :groups, only: :create
 

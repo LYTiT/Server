@@ -21,6 +21,15 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_groups
+    @user = User.find_by_id(params[:user_id])
+    if @user
+      render json: @user.groups
+    else
+      render json: {:error => "not-found"}.to_json, :status => 404
+    end
+  end
+
   def update
     @user = User.find params[:id]
     user_params.delete(:password)

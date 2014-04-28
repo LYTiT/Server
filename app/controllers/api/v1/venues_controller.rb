@@ -32,6 +32,15 @@ class Api::V1::VenuesController < ApiBaseController
     end
   end
 
+  def get_groups
+    @venue = Venue.find_by_id(params[:venue_id])
+    if @venue
+      render json: @venue.groups
+    else
+      render json: {:error => "not-found"}.to_json, :status => 404
+    end
+  end
+
   private
 
   def venue
