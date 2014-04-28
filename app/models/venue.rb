@@ -5,6 +5,7 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings
   has_many :venue_comments
+  has_many :groups
 
   def self.search(params)
 
