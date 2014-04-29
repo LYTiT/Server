@@ -28,7 +28,7 @@ LytitServer::Application.configure do
   config.assets.debug = true
   # Raise an ActionController::UnpermittedParameters exception when
   # a parameter is not explcitly permitted but is passed anyway.
-  config.action_controller.action_on_unpermitted_parameters = :raise
+  #config.action_controller.action_on_unpermitted_parameters = :raise
 
 
   config.action_mailer.default_url_options = { host: 'lytit_server.local' }

@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.0'
+ruby '2.1.1'
 
 gem 'bourbon'
 gem 'clearance'
@@ -17,7 +17,7 @@ gem 'rack-timeout'
 gem 'rails', '>= 4.0.0'
 gem 'rails_admin'
 gem 'recipient_interceptor'
-gem 'sass-rails', '4.0.2'
+gem 'sass-rails'
 gem 'simple_form'
 gem 'title'
 gem 'uglifier'

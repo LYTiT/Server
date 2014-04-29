@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApiBaseController
-  #skip_before_filter :set_user
+  skip_before_filter :set_user, only: [:create, :get_comments, :get_groups]
 
   def create
     @user = User.new(user_params)
@@ -32,9 +32,10 @@ class Api::V1::UsersController < ApiBaseController
 
   def update
     @user = User.find params[:id]
-    user_params.delete(:password)
+    permitted_params = user_params
+    permitted_params.delete(:password)
 
-    if @user.update_attributes(user_params)
+    if @user.update_attributes(permitted_params)
       render 'created.json.jbuilder'
     else
       render json: @user.errors, status: :unprocessable_entity

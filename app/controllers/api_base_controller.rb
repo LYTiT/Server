@@ -3,6 +3,7 @@ class ApiBaseController < ApplicationController
   protect_from_forgery with: :null_session
 
   before_filter :set_user
+  skip_before_filter  :verify_authenticity_token
 
   private
 

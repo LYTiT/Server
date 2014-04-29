@@ -3,7 +3,7 @@ class Group < ActiveRecord::Base
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
   validates :user, presence: true
-  validates :venue, presence: true
+  #validates :venue, presence: true
 
   belongs_to :user # group admin
   belongs_to :venue
@@ -27,7 +27,7 @@ class Group < ActiveRecord::Base
   end
   
   def leave(user_id)
-    GroupsUser.where(group_id: self.id, user_id: user_id).destroy
+    GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).destroy_all
   end
   
 end
