@@ -13,7 +13,10 @@ LytitServer::Application.routes.draw do
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
       end
-      resources :groups, only: :create
+      resources :groups, only: :create do
+        post '/groups/:group_id/join', :action => :join
+        delete '/groups/:group_id/leave', :action => :leave
+      end
 
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment

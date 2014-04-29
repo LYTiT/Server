@@ -9,7 +9,24 @@ class Api::V1::GroupsController < ApiBaseController
       render json: @group.errors, status: :unprocessable_entity
     end
   end
-
+  
+  def join
+    @group = Group.find(params[:group_id])
+    status, message = @group.join(params[:user_id], params[:password])
+    
+    if status
+      render json: { joined: true }, status: :ok
+    else
+      render json: { joined: false, errors: [message] }, status: :unauthorized
+    end
+  end
+  
+  def leave
+    @group = Group.find(params[:group_id])
+    @group.leave(params[:user_id])
+    render json: { left: true }, status: :ok
+  end
+  
   private
 
   def group_params
