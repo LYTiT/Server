@@ -14,7 +14,7 @@ class Api::V1::GroupsController < ApiBaseController
   
   def join
     @group = Group.find(params[:group_id])
-    status, message = @group.join(params[:user_id], params[:password])
+    status, message = @group.join(@user.id, params[:password])
     
     if status
       render json: { joined: true }, status: :ok
@@ -25,7 +25,7 @@ class Api::V1::GroupsController < ApiBaseController
   
   def leave
     @group = Group.find(params[:group_id])
-    @group.leave(params[:user_id])
+    @group.remove(@user.id)
     render json: { left: true }, status: :ok
   end
   
@@ -40,7 +40,17 @@ class Api::V1::GroupsController < ApiBaseController
       @group.toggle_user_admin(params[:user_id], params[:approval])
       render json: { success: true }
     else
-      render json: { errors: ['You are not an admin of this group'] }
+      render json: { errors: ['You dont have admin privileges for this group'] }
+    end
+  end
+  
+  def remove_user
+    @group = Group.find(params[:group_id])
+    if @group.is_user_admin?(@user.id)
+      @group.remove(params[:user_id])
+      render json: { success: true }
+    else
+      render json: { errors: ['You dont have admin privileges for this group'] }
     end
   end
   

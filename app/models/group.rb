@@ -26,7 +26,7 @@ class Group < ActiveRecord::Base
     true
   end
   
-  def leave(user_id)
+  def remove(user_id)
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).destroy_all
   end
   
