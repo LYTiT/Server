@@ -1,5 +1,7 @@
 class Api::V1::GroupsController < ApiBaseController
-
+  
+  skip_before_filter :set_user, only: [:search]
+  
   def create
     @group = Group.new(group_params)
 
@@ -25,6 +27,11 @@ class Api::V1::GroupsController < ApiBaseController
     @group = Group.find(params[:group_id])
     @group.leave(params[:user_id])
     render json: { left: true }, status: :ok
+  end
+  
+  def search
+    @groups = Group.where("LOWER(name) like ?", params[:q].to_s.downcase + '%')
+    render json: @groups
   end
   
   private
