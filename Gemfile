@@ -21,7 +21,7 @@ gem 'sass-rails'
 gem 'simple_form'
 gem 'title'
 gem 'uglifier'
-gem 'unicorn'
+#gem 'unicorn'
 
 group :development do
   gem 'better_errors'
