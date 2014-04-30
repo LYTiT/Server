@@ -5,7 +5,7 @@ class Group < ActiveRecord::Base
   validates :user, presence: true
   #validates :venue, presence: true
 
-  belongs_to :user # group admin
+  has_many :users, through: :groups_users
   belongs_to :venue
   
   after_create :add_creator_as_member
@@ -28,6 +28,15 @@ class Group < ActiveRecord::Base
   
   def leave(user_id)
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).destroy_all
+  end
+  
+  def is_user_admin?(user_id)
+    GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first.try(:is_admin) ? true : false
+  end
+  
+  def toggle_user_admin(user_id, approval)
+    group_user = GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first
+    group_user.update(:is_admin => (approval == 'yes' ? true : false))
   end
   
 end

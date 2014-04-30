@@ -34,6 +34,16 @@ class Api::V1::GroupsController < ApiBaseController
     render json: @groups
   end
   
+  def toggle_admin
+    @group = Group.find(params[:group_id])
+    if @group.is_user_admin?(@user.id)
+      @group.toggle_user_admin(params[:user_id], params[:approval])
+      render json: { success: true }
+    else
+      render json: { errors: ['You are not an admin of this group'] }
+    end
+  end
+  
   private
 
   def group_params
