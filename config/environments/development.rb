@@ -33,3 +33,5 @@ LytitServer::Application.configure do
 
   config.action_mailer.default_url_options = { host: 'lytit_server.local' }
 end
+
+ENV['google_place_api_key'] = "AIzaSyCNjLtAybKVrVCyedWCndKrxPvLIEO9f6c" 

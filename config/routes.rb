@@ -12,6 +12,9 @@ LytitServer::Application.routes.draw do
         resources :venue_ratings, only: [:create]
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
+        collection do
+          get 'search'
+        end
       end
       resources :groups, only: :create do
         post 'join', :action => :join

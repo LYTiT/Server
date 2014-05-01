@@ -19,4 +19,31 @@ class Venue < ActiveRecord::Base
 
     scoped
   end
+  
+  def self.fetch_venues(q, latitude, longitude)
+    list = []
+    client = Venue.google_place_client
+    spots = client.spots(latitude, longitude, :name => q, :radius => 2000) #radius in meters
+    spots.each do |spot|
+      venue = Venue.where("google_place_key = ?", spot.id).first
+      venue ||= Venue.new()
+      venue.name = spot.name
+      venue.google_place_key = spot.id
+      venue.google_place_rating = spot.rating
+      venue.latitude = spot.lat
+      venue.longitude = spot.lng
+      venue.address = [spot.street_number, spot.street].join(' ')
+      venue.city = spot.city
+      venue.save 
+      list << venue if venue.persisted?
+    end
+    list
+  end
+  
+  def self.google_place_client
+    GooglePlaces::Client.new(ENV['google_place_api_key'])
+  end
+  
 end
+
+#@client.spots(-33.8670522, 151.1957362, :radius => 100, :name => 'italian')

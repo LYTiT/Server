@@ -1,4 +1,7 @@
 class Api::V1::VenuesController < ApiBaseController
+  
+  skip_before_filter :set_user, only: [:search]
+  
   def index
     @venues = Venue.search(params)
 
@@ -40,7 +43,12 @@ class Api::V1::VenuesController < ApiBaseController
       render json: {:error => "not-found"}.to_json, :status => 404
     end
   end
-
+  
+  def search
+    venues = Venue.fetch_venues(params[:q], params[:latitude], params[:longitude])
+    render json: venues
+  end
+  
   private
 
   def venue
