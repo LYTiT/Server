@@ -41,7 +41,7 @@ class Venue < ActiveRecord::Base
   end
   
   def self.google_place_client
-    GooglePlaces::Client.new(ENV['google_place_api_key'])
+    GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
   
 end
