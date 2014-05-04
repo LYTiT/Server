@@ -3,6 +3,7 @@ class User < ActiveRecord::Base
 
   has_many :venue_ratings
   has_many :venue_comments
+  has_many :groups_users
   has_many :groups, through: :groups_users
 
   before_save :ensure_authentication_token

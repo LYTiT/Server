@@ -5,6 +5,7 @@ class Group < ActiveRecord::Base
   #validates :user, presence: true
   #validates :venue, presence: true
 
+  has_many :groups_users
   has_many :users, through: :groups_users
   
   after_create :add_creator_as_member
