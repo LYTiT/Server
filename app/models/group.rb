@@ -2,20 +2,12 @@ class Group < ActiveRecord::Base
   validates :name, presence: true  
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
-  #validates :user, presence: true
-  #validates :venue, presence: true
 
   has_many :groups_users
   has_many :users, through: :groups_users
   
-  after_create :add_creator_as_member
-  
   def should_validate_password?
   	not is_public
-  end
-  
-  def add_creator_as_member
-    GroupsUser.create(group_id: self.id, user_id: self.user_id, is_admin: true)
   end
   
   def join(user_id, pwd)
