@@ -11,3 +11,5 @@
 /public/system
 /tags
 /tmp/*
+*.yml
+*.backup

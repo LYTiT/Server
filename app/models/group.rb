@@ -2,11 +2,10 @@ class Group < ActiveRecord::Base
   validates :name, presence: true  
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
-  validates :user, presence: true
+  #validates :user, presence: true
   #validates :venue, presence: true
 
   has_many :users, through: :groups_users
-  belongs_to :venue
   
   after_create :add_creator_as_member
   
