@@ -5,7 +5,10 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings
   has_many :venue_comments
-
+  
+  has_many :groups_venues
+  has_many :groups, through: :groups_venues
+  
   def self.search(params)
 
     scoped = all

@@ -56,6 +56,28 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
   
+  def add_venue
+    @group = Group.find(params[:group_id])
+    @venue = Venue.find(params[:venue_id])
+    status, message = @group.add_venue(@venue.id, @user.id)
+    if status
+      render json: { success: true }
+    else
+      render json: { errors: [message] }
+    end
+  end
+  
+  def remove_venue
+    @group = Group.find(params[:group_id])
+    @venue = Venue.find(params[:venue_id])
+    status, message = @group.remove_venue(@venue.id, @user.id)
+    if status
+      render json: { success: true }
+    else
+      render json: { errors: [message] }
+    end
+  end
+  
   private
 
   def group_params
