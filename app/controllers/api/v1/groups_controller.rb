@@ -35,6 +35,15 @@ class Api::V1::GroupsController < ApiBaseController
     @groups = Group.where("LOWER(name) like ?", params[:q].to_s.downcase + '%')
     render json: @groups
   end
+
+  def users
+    @group = Group.find_by_id(params[:group_id])
+    if @group
+      render json: @group.users
+    else
+      render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+    end
+  end
   
   def toggle_admin
     @group = Group.find(params[:group_id])
