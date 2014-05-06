@@ -10,7 +10,7 @@ class Api::V1::VenuesController < ApiBaseController
 
   def show
     @venue = Venue.find(params[:id])
-
+    @venue.populate_google_address
     render json: @venue
   end
 

@@ -31,14 +31,30 @@ class Venue < ActiveRecord::Base
       venue.name = spot.name
       venue.google_place_key = spot.id
       venue.google_place_rating = spot.rating
+      venue.google_place_reference = spot.reference
       venue.latitude = spot.lat
       venue.longitude = spot.lng
-      venue.address = spot.formatted_address
+      venue.formatted_address = spot.formatted_address
       venue.city = spot.city
       venue.save 
       list << venue if venue.persisted?
     end
     list
+  end
+  
+  def populate_google_address
+    client = Venue.google_place_client
+    spot = client.spot(self.google_place_reference)
+    self.city = spot.city
+    self.region = spot.region
+    self.postal_code = spot.postal_code
+    self.country = spot.country
+    address = []
+    spot.address_components.each do |a|
+      address << a['long_name'] if !a['types'].include?('country') and !a['types'].include?('postal_code')
+    end
+    self.address = address.join(', ')
+    self.save
   end
   
   def self.google_place_client
