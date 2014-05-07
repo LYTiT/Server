@@ -23,6 +23,7 @@ gem 'title'
 gem 'uglifier'
 #gem 'unicorn'
 gem 'google_places'
+gem "paranoia", "~> 2.0"
 
 group :development do
   gem 'better_errors'

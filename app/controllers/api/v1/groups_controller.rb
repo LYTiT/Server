@@ -44,6 +44,16 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
     end
   end
+
+  def delete
+    @group = Group.find_by_id(params[:group_id])
+    if @group
+      @group.destroy
+      render json: { deleted: true }, status: :ok
+    else
+      render json: { deleted: false, errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+    end
+  end
   
   def toggle_admin
     @group = Group.find(params[:group_id])
