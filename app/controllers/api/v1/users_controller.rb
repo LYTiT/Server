@@ -14,9 +14,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_comments
     @user = User.find_by_id(params[:user_id])
-    if @user
-      render json: @user.venue_comments
-    else
+    if not @user
       render json: {:error => "not-found"}.to_json, :status => 404
     end
   end
