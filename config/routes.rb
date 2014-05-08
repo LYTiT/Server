@@ -23,13 +23,14 @@ LytitServer::Application.routes.draw do
         delete 'remove_user'
         get 'users'
         post 'delete'
-        collection do 
+        collection do
           get 'search'
         end
         post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
       end
 
+      resources :events, only: :create
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
       end
