@@ -11,7 +11,7 @@ class Api::V1::EventsController < ApiBaseController
     @event = Event.new(event_params)
     @event.user_id = @user.id
     if @event.save
-      render json: @event
+      render json: @event.to_json(:include => [:groups])
     else
       render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
     end
