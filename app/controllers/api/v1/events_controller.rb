@@ -4,7 +4,7 @@ class Api::V1::EventsController < ApiBaseController
 
   def index
     @events = Event.all
-    render json: @events
+    render json: @events.to_json(:include => [:groups])
   end
 
   def create
