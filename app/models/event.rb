@@ -4,8 +4,6 @@ class Event < ActiveRecord::Base
   validates :description, presence: true
   validates :start_date, presence: true
   validates :end_date, presence: true
-  validates :start_time, presence: true
-  validates :end_time, presence: true
   validates :user_id, presence: true
 
   validate :location_or_venue_present, :atleast_one_group_required
