@@ -22,6 +22,7 @@ LytitServer::Application.routes.draw do
         post 'toggle_admin', :action => :toggle_admin
         delete 'remove_user'
         get 'users'
+        get 'venues'
         post 'delete'
         collection do
           get 'search'

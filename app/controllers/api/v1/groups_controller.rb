@@ -45,6 +45,15 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
 
+  def venues
+    @group = Group.find_by_id(params[:group_id])
+    if @group
+      render json: @group.venues
+    else
+      render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+    end
+  end
+
   def delete
     @group = Group.find_by_id(params[:group_id])
     if @group
