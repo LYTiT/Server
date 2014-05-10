@@ -9,7 +9,7 @@ class Event < ActiveRecord::Base
   validate :location_or_venue_present, :atleast_one_group_required
 
   has_many :events_groups
-  has_many :groups, through: :events_groups
+  has_many :groups, :through => :events_groups
 
   accepts_nested_attributes_for :events_groups
 
