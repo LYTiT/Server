@@ -22,6 +22,11 @@ class Group < ActiveRecord::Base
     if !self.is_public? and self.password != pwd
       return false, 'Verification password failed'
     end
+
+    if self.is_user_member?(user_id)
+      return false, "User #{user_id} is already a member"
+    end
+
     GroupsUser.create(group_id: self.id, user_id: user_id)
     true
   end
