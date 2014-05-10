@@ -23,11 +23,10 @@ class Group < ActiveRecord::Base
       return false, 'Verification password failed'
     end
 
-    if self.is_user_member?(user_id)
-      return false, "User #{user_id} is already a member"
+    if !self.is_user_member?(user_id)
+      # do nothing if user is already a member
+      GroupsUser.create(group_id: self.id, user_id: user_id)
     end
-
-    GroupsUser.create(group_id: self.id, user_id: user_id)
     true
   end
 
