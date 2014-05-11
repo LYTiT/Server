@@ -16,7 +16,7 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
       end
-      resources :groups, only: :create do
+      resources :groups, only: [:create, :update] do
         post 'join', :action => :join
         delete 'leave', :action => :leave
         post 'toggle_admin', :action => :toggle_admin

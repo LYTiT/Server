@@ -13,6 +13,17 @@ class Api::V1::GroupsController < ApiBaseController
       render json: @group.errors, status: :unprocessable_entity
     end
   end
+
+  def update
+    @group = Group.find(params[:id])
+    permitted_params = group_params
+
+    if @group.update_attributes(permitted_params)
+      render json: @group
+    else
+      render json: @group.errors, status: :unprocessable_entity
+    end
+  end
   
   def join
     @group = Group.find(params[:group_id])
