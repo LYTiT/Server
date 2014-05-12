@@ -1,6 +1,6 @@
 class Api::V1::EventsController < ApiBaseController
 
-  skip_before_filter :set_user, only: [:index]
+  skip_before_filter :set_user, only: [:index, :show]
 
   def index
     @events = Event.all
@@ -16,6 +16,12 @@ class Api::V1::EventsController < ApiBaseController
       render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
     end
   end
+
+  def show
+    @event = Event.find(params[:id])
+    render json: @event.to_json(:include => [:groups])
+  end
+
 
   private
 
