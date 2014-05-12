@@ -7,7 +7,7 @@ class Api::V1::GroupsController < ApiBaseController
 
     if @group.save
       # add user creating group as admin
-      GroupsUser.create(group_id: @group.id, user_id: params[:user_id], is_admin: true)
+      GroupsUser.create(group_id: @group.id, user_id: @user.id, is_admin: true)
       render json: @group
     else
       render json: @group.errors, status: :unprocessable_entity
