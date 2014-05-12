@@ -5,10 +5,10 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings
   has_many :venue_comments
-  
+
   has_many :groups_venues
   has_many :groups, through: :groups_venues
-  
+
   def self.search(params)
 
     scoped = all
@@ -21,13 +21,13 @@ class Venue < ActiveRecord::Base
 
     scoped
   end
-  
+
   def self.fetch_venues(q, latitude, longitude)
     list = []
     client = Venue.google_place_client
-  
+
     #radius in meters
-    spots = client.spots_by_query(q, :radius => 2000, :lat => latitude, :lng => longitude) 
+    spots = client.spots_by_query(q, :radius => 2000, :lat => latitude, :lng => longitude)
     spots.each do |spot|
       venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
@@ -39,31 +39,31 @@ class Venue < ActiveRecord::Base
       venue.longitude = spot.lng
       venue.formatted_address = spot.formatted_address
       venue.city = spot.city
-      venue.save 
+      venue.save
       list << venue if venue.persisted?
     end
     list
   end
-  
+
   def populate_google_address
     client = Venue.google_place_client
     spot = client.spot(self.google_place_reference)
     self.city = spot.city
-    self.region = spot.region
+    self.state = spot.region
     self.postal_code = spot.postal_code
     self.country = spot.country
-    address = []
-    spot.address_components.each do |a|
-      address << a['long_name'] if !a['types'].include?('country') and !a['types'].include?('postal_code')
-    end
-    self.address = address.join(', ')
+    self.address = [ spot.street_number, spot.street].join(', ')
+    #spot.address_components.each do |a|
+      #address << a['long_name'] if !a['types'].include?('country') and !a['types'].include?('postal_code')
+      #end
+    #self.address = address.join(', ')
     self.save
   end
-  
+
   def self.google_place_client
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
-  
+
 end
 
 #@client.spots(-33.8670522, 151.1957362, :radius => 100, :name => 'italian')
