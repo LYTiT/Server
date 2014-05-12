@@ -1,7 +1,7 @@
 class Api::V1::GroupsController < ApiBaseController
-  
+
   skip_before_filter :set_user, only: [:search]
-  
+
   def create
     @group = Group.new(group_params)
 
@@ -24,24 +24,24 @@ class Api::V1::GroupsController < ApiBaseController
       render json: @group.errors, status: :unprocessable_entity
     end
   end
-  
+
   def join
     @group = Group.find(params[:group_id])
     status, message = @group.join(@user.id, params[:password])
-    
+
     if status
       render json: { joined: true }, status: :ok
     else
       render json: { joined: false, errors: [message] }, status: :unauthorized
     end
   end
-  
+
   def leave
     @group = Group.find(params[:group_id])
     @group.remove(@user.id)
     render json: { left: true }, status: :ok
   end
-  
+
   def search
     @groups = Group.where("LOWER(name) like ?", params[:q].to_s.downcase + '%')
     render json: @groups
@@ -49,9 +49,8 @@ class Api::V1::GroupsController < ApiBaseController
 
   def users
     @group = Group.find_by_id(params[:group_id])
-    if @group
-      render json: @group.users
-    else
+
+    if not @group
       render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
     end
   end
@@ -74,7 +73,7 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { deleted: false, errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
     end
   end
-  
+
   def toggle_admin
     @group = Group.find(params[:group_id])
     if @group.is_user_admin?(@user.id)
@@ -84,7 +83,7 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { errors: ['You dont have admin privileges for this group'] }
     end
   end
-  
+
   def remove_user
     @group = Group.find(params[:group_id])
     if @group.is_user_admin?(@user.id)
@@ -94,7 +93,7 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { errors: ['You dont have admin privileges for this group'] }
     end
   end
-  
+
   def add_venue
     @group = Group.find(params[:group_id])
     @venue = Venue.find(params[:venue_id])
@@ -105,7 +104,7 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { errors: [message] }
     end
   end
-  
+
   def remove_venue
     @group = Group.find(params[:group_id])
     @venue = Venue.find(params[:venue_id])
@@ -116,7 +115,7 @@ class Api::V1::GroupsController < ApiBaseController
       render json: { errors: [message] }
     end
   end
-  
+
   private
 
   def group_params
