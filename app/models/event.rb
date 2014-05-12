@@ -11,6 +11,8 @@ class Event < ActiveRecord::Base
   has_many :events_groups
   has_many :groups, :through => :events_groups
 
+  belongs_to :venue
+
   accepts_nested_attributes_for :events_groups
 
   def location_or_venue_present

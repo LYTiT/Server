@@ -3,11 +3,13 @@ class Venue < ActiveRecord::Base
   validates :latitude, presence: true
   validates :longitude, presence: true
 
-  has_many :venue_ratings
-  has_many :venue_comments
+  has_many :venue_ratings, :dependent => :destroy
+  has_many :venue_comments, :dependent => :destroy
 
-  has_many :groups_venues
+  has_many :groups_venues, :dependent => :destroy
   has_many :groups, through: :groups_venues
+
+  has_many :events, :dependent => :destroy
 
   def self.search(params)
 
