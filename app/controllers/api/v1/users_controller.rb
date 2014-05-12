@@ -40,6 +40,12 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def register_push_token
+    @user.push_token = params[:push_token]
+    @user.save
+    render json: @user
+  end
+
   private
 
   def user_params

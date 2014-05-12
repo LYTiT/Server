@@ -7,6 +7,9 @@ LytitServer::Application.routes.draw do
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
       end
+
+      post '/register_push_token' => 'users#register_push_token'
+
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         resources :venue_ratings, only: [:create]
