@@ -19,9 +19,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.venue = venue
     @comment.user = @user
 
-    if @comment.save
-      render json: @comment
-    else
+    if not @comment.save
       render json: @comment.errors, status: :unprocessable_entity
     end
   end
