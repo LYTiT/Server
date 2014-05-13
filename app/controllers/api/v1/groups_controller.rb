@@ -58,7 +58,7 @@ class Api::V1::GroupsController < ApiBaseController
   def venues
     @group = Group.find_by_id(params[:group_id])
     if @group
-      render json: @group.venues
+      render json: @group.venues_with_user_who_added
     else
       render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
     end

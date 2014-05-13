@@ -49,7 +49,7 @@ class Group < ActiveRecord::Base
 
   def add_venue(venue_id, user_id)
     if self.is_user_member?(user_id)
-      GroupsVenue.create(group_id: self.id, venue_id: venue_id)
+      GroupsVenue.create(group_id: self.id, venue_id: venue_id, user_id: user_id)
       return true
     else
       return false, 'You are not member of this group'
@@ -63,6 +63,19 @@ class Group < ActiveRecord::Base
     else
       return false, 'You are not member of this group'
     end
+  end
+
+  def venues_with_user_who_added
+    venues = []
+    for venue in self.venues
+      gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue.id).first
+      info = gv.as_json.slice("created_at", "user_id")
+      user = User.find(info["user_id"])
+
+      venues.append(venue.as_json.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name}))
+    end
+
+    venues
   end
 
 end
