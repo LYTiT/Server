@@ -9,6 +9,7 @@ LytitServer::Application.routes.draw do
       end
 
       post '/register_push_token' => 'users#register_push_token'
+      post '/change_password' => 'users#change_password'
 
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do

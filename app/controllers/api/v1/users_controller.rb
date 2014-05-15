@@ -43,7 +43,15 @@ class Api::V1::UsersController < ApiBaseController
   def register_push_token
     @user.push_token = params[:push_token]
     @user.save
-    render json: @user
+    render 'created.json.jbuilder'
+  end
+
+  def change_password
+    if @user.update_password(params[:new_password])
+      render 'created.json.jbuilder'
+    else
+      render json: @user.errors, status: :unprocessable_entity
+    end
   end
 
   private
