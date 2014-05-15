@@ -4,8 +4,8 @@ class Api::V1::VenuesController < ApiBaseController
 
   def index
     @venues = Venue.search(params)
-
-    render json: @venues
+    @google_venues = Venue.google_venues
+    #render json: @venues
   end
 
   def show

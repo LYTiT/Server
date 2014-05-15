@@ -11,6 +11,8 @@ class Venue < ActiveRecord::Base
 
   has_many :events, :dependent => :destroy
 
+  scope :google_venues, -> { where("google_place_reference IS NOT NULL") }
+
   def self.search(params)
 
     scoped = all
