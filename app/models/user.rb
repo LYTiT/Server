@@ -1,6 +1,8 @@
 class User < ActiveRecord::Base
   include Clearance::User
 
+  validates_uniqueness_of :email, :case_sensitive => false
+
   has_many :venue_ratings
   has_many :venue_comments
   has_many :groups_users
