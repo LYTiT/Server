@@ -45,6 +45,19 @@ class Api::V1::VenuesController < ApiBaseController
     render json: venues
   end
 
+  def rate_venue
+    venue = Venue.fetch_spot(params[:google_place_reference])
+    @venue_rating = VenueRating.new(params.permit(:rating))
+    @venue_rating.venue = venue
+    @venue_rating.user = @user
+
+    if @venue_rating.save
+      render json: venue
+    else
+      render json: {:errors => @venue_rating.errors}, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def venue

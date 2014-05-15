@@ -47,6 +47,16 @@ class Venue < ActiveRecord::Base
     list
   end
 
+  def self.fetch_spot(google_reference_key)
+    venue = Venue.where("google_place_reference = ?", google_reference_key).first
+    if venue.blank?
+      venue = Venue.new
+      venue.google_place_reference = google_reference_key
+    end
+    venue.populate_google_address
+    venue
+  end
+
   def populate_google_address
     client = Venue.google_place_client
     spot = client.spot(self.google_place_reference)
@@ -55,10 +65,6 @@ class Venue < ActiveRecord::Base
     self.postal_code = spot.postal_code
     self.country = spot.country
     self.address = [ spot.street_number, spot.street].join(', ')
-    #spot.address_components.each do |a|
-      #address << a['long_name'] if !a['types'].include?('country') and !a['types'].include?('postal_code')
-      #end
-    #self.address = address.join(', ')
     self.save
   end
 

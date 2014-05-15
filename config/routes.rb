@@ -13,13 +13,16 @@ LytitServer::Application.routes.draw do
 
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
-        resources :venue_ratings, only: [:create]
+        #resources :venue_ratings, only: [:create]
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
         collection do
           get 'search'
         end
       end
+
+      post '/venues/rate_venue' => 'venues#rate_venue'
+
       resources :groups, only: [:create, :update] do
         post 'join', :action => :join
         delete 'leave', :action => :leave
