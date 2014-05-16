@@ -1,10 +1,10 @@
 class Api::V1::VenuesController < ApiBaseController
 
-  skip_before_filter :set_user, only: [:search]
+  skip_before_filter :set_user, only: [:search, :index]
 
   def index
     @venues = Venue.search(params)
-    @google_venues = Venue.google_venues
+    @google_venues = Venue.google_venues(params)
     #render json: @venues
   end
 

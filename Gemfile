@@ -25,6 +25,7 @@ gem 'uglifier'
 gem 'google_places'
 gem "paranoia", "~> 2.0"
 gem 'haml-rails'
+gem 'geokit-rails'
 group :development do
   gem 'better_errors'
   gem 'binding_of_caller'

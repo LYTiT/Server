@@ -1,4 +1,11 @@
 class Venue < ActiveRecord::Base
+
+  acts_as_mappable :default_units => :miles,
+                     :default_formula => :sphere,
+                     :distance_field_name => :distance,
+                     :lat_column_name => :latitude,
+                     :lng_column_name => :longitude
+
   validates :name, presence: true
   validates :latitude, presence: true
   validates :longitude, presence: true
@@ -11,16 +18,20 @@ class Venue < ActiveRecord::Base
 
   has_many :events, :dependent => :destroy
 
-  scope :google_venues, -> { where("google_place_reference IS NOT NULL") }
-
   def self.search(params)
-
     scoped = all
+    if params[:lat] && params[:lng]
+      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+    end
+
+    scoped
+  end
+
+  def self.google_venues(params)
+    scoped = where("google_place_reference IS NOT NULL")
 
     if params[:lat] && params[:lng]
-      search = Search.new(params[:lat], params[:lng])
-      scoped.where!("latitude < '#{search.ne_lat}' AND latitude > '#{search.sw_lat}'")
-      scoped.where!("longitude < '#{search.ne_lng}' AND longitude > '#{search.sw_lng}'")
+      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
     end
 
     scoped
@@ -44,9 +55,11 @@ class Venue < ActiveRecord::Base
       venue.formatted_address = spot.formatted_address
       venue.city = spot.city
       venue.save
-      list << venue if venue.persisted?
+      list << venue.id if venue.persisted?
     end
-    list
+
+    # 1.242 miles == 2000 meters
+    Venue.within(1.242, :origin => [latitude, longitude]).order('distance ASC')
   end
 
   def self.fetch_spot(google_reference_key)

@@ -18,6 +18,7 @@ json.set! :venues do
     json.postal_code v.postal_code
     json.formatted_address v.formatted_address
     json.google_place_reference v.google_place_reference
+    json.distance v.distance
   end
 
 end
