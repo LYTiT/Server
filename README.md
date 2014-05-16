@@ -27,5 +27,7 @@ programming in style.
 Deployment Key Points
 ---------------------
 
-* Set up google place api key in heroku config
+* Set up google place api key GOOGLE_PLACE_API_KEY in heroku config
+
+* Set up host HOST_DOMAIN in heroku config 'lytit_server.com'
 
