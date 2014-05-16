@@ -102,6 +102,11 @@ GEM
       httparty
     haml (4.0.5)
       tilt
+    haml-rails (0.5.3)
+      actionpack (>= 4.0.1)
+      activesupport (>= 4.0.1)
+      haml (>= 3.1, < 5.0)
+      railties (>= 4.0.1)
     high_voltage (2.1.0)
     hike (1.2.3)
     httparty (0.13.1)
@@ -276,6 +281,7 @@ DEPENDENCIES
   flutie
   foreman
   google_places
+  haml-rails
   high_voltage
   jbuilder
   jquery-rails

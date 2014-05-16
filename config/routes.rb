@@ -42,8 +42,11 @@ LytitServer::Application.routes.draw do
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
       end
+      post '/venues/report_comment/:comment_id' => 'venues#report_comment'
     end
   end
+
+  get 'reported_comments' => 'venues#reported_comments'
 
   controller :system, :defaults => {:format => 'json'}  do
     get 'system/status', :action => 'status', :as => :system_status
