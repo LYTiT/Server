@@ -78,4 +78,10 @@ class Group < ActiveRecord::Base
     venues
   end
 
+  def send_notification_to_users(message)
+    for user in self.users
+      APNS.send_notification(user.push_token, :alert => message, :sound => 'default')
+    end
+  end
+
 end

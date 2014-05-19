@@ -14,3 +14,7 @@ ActionMailer::Base.smtp_settings = {
   :domain         => 'heroku.com',
   :enable_starttls_auto => true
 }
+
+APNS.host = 'gateway.push.apple.com' 
+APNS.pem  = 'PushProdCertCombined.pem'
+APNS.port = 2195 
