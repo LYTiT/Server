@@ -17,4 +17,5 @@ ActionMailer::Base.smtp_settings = {
 
 APNS.host = 'gateway.push.apple.com' 
 APNS.pem  = 'PushProdCertCombined.pem'
-APNS.port = 2195 
+APNS.port = 2195
+APNS.pass = 'lytit'
