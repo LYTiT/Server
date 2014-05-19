@@ -80,7 +80,10 @@ class Group < ActiveRecord::Base
 
   def send_notification_to_users(event_id)
     for user in self.users
-      APNS.send_notification(user.push_token, :content_available => 1, :other => {:object_id => event_id, :type => 'event_added'})
+      token = user.push_token
+      if token
+        APNS.send_notification(token, :content_available => 1, :other => {:object_id => event_id, :type => 'event_added'})
+      end
     end
   end
 
