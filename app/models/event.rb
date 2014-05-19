@@ -31,7 +31,7 @@ class Event < ActiveRecord::Base
 
   def send_notification_to_group
     for group in self.groups
-      group.send_notification_to_users("Hello World")
+      group.send_notification_to_users(self.id)
     end
   end
 
