@@ -47,10 +47,14 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def change_password
-    if @user.update_password(params[:new_password])
-      render 'created.json.jbuilder'
+    if User.authenticate(@user.email, params[:old_password])
+      if @user.update_password(params[:new_password])
+        render 'created.json.jbuilder'
+      else
+        render json: @user.errors, status: :unprocessable_entity
+      end
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { :errors => ['Old password do not match'] }, status: :unprocessable_entity
     end
   end
 
