@@ -1,5 +1,5 @@
 class Api::V1::UsersController < ApiBaseController
-  skip_before_filter :set_user, only: [:create, :get_comments, :get_groups]
+  skip_before_filter :set_user, only: [:create, :get_comments, :get_groups, :forgot_password]
 
   def create
     @user = User.new(user_params)
@@ -59,6 +59,17 @@ class Api::V1::UsersController < ApiBaseController
   def toggle_group_notification
     @user.toggle_group_notification(params[:group_id], params[:enabled])
     render json: { success: true }
+  end
+
+  def forgot_password
+    user = User.find_by_email(params[:email])
+    if user
+      user.forgot_password!
+      ::ClearanceMailer.change_password(user).deliver
+      render json: { success: true, message: 'Password reset link sent to your email.' }
+    else
+      render json: { :errors => ['Can not find user with this email'] }, status: :unprocessable_entity
+    end
   end
 
   private
