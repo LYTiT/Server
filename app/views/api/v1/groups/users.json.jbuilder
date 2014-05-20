@@ -7,4 +7,5 @@ json.array! @group.users do |user|
   json.notify_location_added_to_groups user.notify_location_added_to_groups
   json.notify_events_added_to_groups user.notify_events_added_to_groups
   json.is_group_admin @group.is_user_admin?(user.id)
+  json.send_notification GroupsUser.send_notification(@group.id, user.id)
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140516071123) do
+ActiveRecord::Schema.define(version: 20140520122711) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -76,9 +76,10 @@ ActiveRecord::Schema.define(version: 20140516071123) do
   create_table "groups_users", force: true do |t|
     t.integer  "user_id"
     t.integer  "group_id"
-    t.boolean  "is_admin",   default: false
+    t.boolean  "is_admin",          default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "notification_flag", default: true
   end
 
   create_table "groups_venues", force: true do |t|

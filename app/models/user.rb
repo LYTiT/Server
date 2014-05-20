@@ -17,6 +17,11 @@ class User < ActiveRecord::Base
     "#{email}-#{id}"
   end
 
+  def toggle_group_notification(group_id, enabled)
+    group_user = GroupsUser.where("group_id = ? and user_id = ?", group_id, self.id).first
+    group_user.update(:notification_flag => (enabled == 'yes' ? true : false))
+  end
+
   private
 
   def ensure_authentication_token

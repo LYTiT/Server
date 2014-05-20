@@ -21,9 +21,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_groups
     @user = User.find_by_id(params[:user_id])
-    if @user
-      render json: @user.groups
-    else
+    if not @user
       render json: {:error => "not-found"}.to_json, :status => 404
     end
   end
@@ -56,6 +54,11 @@ class Api::V1::UsersController < ApiBaseController
     else
       render json: { :errors => ['Old password do not match'] }, status: :unprocessable_entity
     end
+  end
+
+  def toggle_group_notification
+    @user.toggle_group_notification(params[:group_id], params[:enabled])
+    render json: { success: true }
   end
 
   private
