@@ -87,6 +87,24 @@ class Venue < ActiveRecord::Base
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
 
+  def reset_rating_vectors
+    self.v_up_votes = 0
+    self.v_down_votes = 0
+    self.t_minutes_since_last_up_vote = 0
+    self.t_minutes_since_last_down_vote = 0
+    self.r_up_votes_plus_k = 1 + self.get_k
+    self.r_down_votes = 1
+  end
+
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return 20 * (p ** 2)
+    end
+
+    0
+  end
+
 end
 
 #@client.spots(-33.8670522, 151.1957362, :radius => 100, :name => 'italian')
