@@ -18,6 +18,9 @@ class Venue < ActiveRecord::Base
 
   has_many :events, :dependent => :destroy
 
+  has_many :lytit_votes, :dependent => :destroy
+  has_many :votes, :through => :lytit_votes
+
   def self.search(params)
     scoped = all
     if params[:lat] && params[:lng]
@@ -87,22 +90,45 @@ class Venue < ActiveRecord::Base
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
 
-  def reset_rating_vectors
-    self.v_up_votes = 0
-    self.v_down_votes = 0
-    self.t_minutes_since_last_up_vote = 0
-    self.t_minutes_since_last_down_vote = 0
-    self.r_up_votes_plus_k = 1 + self.get_k
-    self.r_down_votes = 1
+  def v_up_votes
+    LytitVote.where("venue_id = ? AND value = ?", self.id, 1).size
+  end
+
+  def v_down_votes
+    LytitVote.where("venue_id = ? AND value = ?", self.id, -1).size
+  end
+
+  def t_minutes_since_last_up_vote
+    minutes_since(1)
+  end
+
+  def t_minutes_since_last_down_vote
+    minutes_since(-1)
   end
 
   def get_k
     if self.google_place_rating
       p = self.google_place_rating / 5
-      return 20 * (p ** 2)
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
     end
 
     0
+  end
+
+  def bayesian_voting_average
+    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes - self.v_down_votes)) / 
+    (LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes + self.v_down_votes))
+  end
+
+  private
+
+  def minutes_since(vote)
+    last_vote = LytitVote.where("venue_id = ? AND value = ?", self.id, vote).last
+
+    last = last_vote.created_at
+    now = Time.now.utc
+
+    (now - last) / 1.minute
   end
 
 end

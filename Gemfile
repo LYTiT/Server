@@ -27,6 +27,7 @@ gem "paranoia", "~> 2.0"
 gem 'haml-rails'
 gem 'geokit-rails'
 gem 'apns'
+gem 'rufus-scheduler'
 
 group :development do
   gem 'better_errors'

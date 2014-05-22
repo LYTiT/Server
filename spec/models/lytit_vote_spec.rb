@@ -1,5 +1,5 @@
 require 'spec_helper'
 
-describe LytitBar do
+describe LytitVote do
   pending "add some examples to (or delete) #{__FILE__}"
 end

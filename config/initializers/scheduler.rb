@@ -1,0 +1,12 @@
+require 'rufus-scheduler'
+
+# Let's use the rufus-scheduler singleton
+#
+s = Rufus::Scheduler.singleton
+
+# Recalculate LytitBar position every 5 minutes
+#
+s.every '5m' do
+  LytitBar.instance.recalculate_bar_position
+  puts 'Bar updated'
+end
