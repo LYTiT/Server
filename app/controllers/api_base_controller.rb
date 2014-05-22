@@ -5,6 +5,15 @@ class ApiBaseController < ApplicationController
   before_filter :set_user
   skip_before_filter  :verify_authenticity_token
 
+  rescue_from Exception, :with => :handle_public_excepton
+
+  protected
+
+  def handle_public_excepton(e)
+    logger.error e.inspect
+    render json: { errors: [e.message] }
+  end
+
   private
 
   def set_user

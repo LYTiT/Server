@@ -62,7 +62,7 @@ class Venue < ActiveRecord::Base
     end
 
     # 1.242 miles == 2000 meters
-    Venue.within(1.242, :origin => [latitude, longitude]).order('distance ASC')
+    Venue.within(1.242, :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
   end
 
   def self.fetch_spot(google_reference_key)
