@@ -5,7 +5,7 @@ class LytitBar
   GOOGLE_PLACE_FACTOR = 20
 
   BAYESIAN_AVERAGE_C = 0.1 # C constant
-  BAYESIAN_AVERAGE_M = 2 # m constant
+  BAYESIAN_AVERAGE_M = 2.0 # m constant
 
   attr_accessor :position
 
