@@ -21,8 +21,8 @@ class Venue < ActiveRecord::Base
   MILE_RADIUS = 2
 
   def self.search(params)
-    if params[:full_query] && params[:q] && params[:lat] && params[:lng]
-      Venue.fetch_venues(params[:q], params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
+    if params[:full_query] && params[:lat] && params[:lng]
+      Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
     else
       scoped = all
       if params[:lat] && params[:lng]
@@ -43,12 +43,20 @@ class Venue < ActiveRecord::Base
     scoped
   end
 
+  def self.fetch_nearby_venues
+
+  end
+
   def self.fetch_venues(q, latitude, longitude, meters = 2000)
     list = []
     client = Venue.google_place_client
 
-    #radius in meters
-    spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
+    if q.blank?
+      spots = client.spots(latitude, longitude, :radius => meters)
+    else
+      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
+    end
+
     spots.each do |spot|
       venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
