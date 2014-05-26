@@ -20,6 +20,9 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
+  has_many :lytit_votes, :dependent => :destroy
+  has_many :votes, :through => :lytit_votes
+
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
@@ -109,6 +112,47 @@ class Venue < ActiveRecord::Base
 
   def self.meters_to_miles(meter)
     meter * 0.000621371
+  end
+
+  def v_up_votes
+    LytitVote.where("venue_id = ? AND value = ?", self.id, 1).size
+  end
+
+  def v_down_votes
+    LytitVote.where("venue_id = ? AND value = ?", self.id, -1).size
+  end
+
+  def t_minutes_since_last_up_vote
+    minutes_since(1)
+  end
+
+  def t_minutes_since_last_down_vote
+    minutes_since(-1)
+  end
+
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+    end
+
+    0
+  end
+
+  def bayesian_voting_average
+    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes - self.v_down_votes)) /
+    (LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes + self.v_down_votes))
+  end
+
+  private
+
+  def minutes_since(vote)
+    last_vote = LytitVote.where("venue_id = ? AND value = ?", self.id, vote).last
+
+    last = last_vote.created_at
+    now = Time.now.utc
+
+    (now - last) / 1.minute
   end
 
 end

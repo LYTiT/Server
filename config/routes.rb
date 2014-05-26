@@ -21,6 +21,11 @@ LytitServer::Application.routes.draw do
         collection do
           get 'search'
         end
+        post 'vote'
+      end
+
+      controller :lytit_bar do
+        get '/bar/position', :action => 'position'
       end
 
       post '/venues/rate_venue' => 'venues#rate_venue'

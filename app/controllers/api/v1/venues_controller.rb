@@ -68,6 +68,17 @@ class Api::V1::VenuesController < ApiBaseController
     end
   end
 
+  def vote
+    vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
+    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id)
+
+    if v.save
+      render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
+    else
+      render json: v.errors, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def venue
