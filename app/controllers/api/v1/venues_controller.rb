@@ -56,7 +56,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def rate_venue
-    venue = Venue.fetch_spot(params[:google_place_reference])
+    venue = Venue.find(params[:venue_id])
     @venue_rating = VenueRating.new(params.permit(:rating))
     @venue_rating.venue = venue
     @venue_rating.user = @user
