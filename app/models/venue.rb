@@ -18,31 +18,37 @@ class Venue < ActiveRecord::Base
 
   has_many :events, :dependent => :destroy
 
-  def self.search(params)
-    scoped = all
-    if params[:lat] && params[:lng]
-      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
-    end
+  MILE_RADIUS = 2
 
-    scoped
+  def self.search(params)
+    if params[:full_query] && params[:q] && params[:lat] && params[:lng]
+      Venue.fetch_venues(params[:q], params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
+    else
+      scoped = all
+      if params[:lat] && params[:lng]
+        scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+      end
+
+      scoped
+    end
   end
 
   def self.google_venues(params)
     scoped = where("google_place_reference IS NOT NULL")
 
     if params[:lat] && params[:lng]
-      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+      scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
     end
 
     scoped
   end
 
-  def self.fetch_venues(q, latitude, longitude)
+  def self.fetch_venues(q, latitude, longitude, meters = 2000)
     list = []
     client = Venue.google_place_client
 
     #radius in meters
-    spots = client.spots_by_query(q, :radius => 2000, :lat => latitude, :lng => longitude)
+    spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
     spots.each do |spot|
       venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
@@ -58,8 +64,7 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
-    # 1.242 miles == 2000 meters
-    Venue.within(1.242, :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
+    Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
   end
 
   def self.fetch_spot(google_reference_key)
@@ -85,6 +90,14 @@ class Venue < ActiveRecord::Base
 
   def self.google_place_client
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
+  end
+
+  def self.miles_to_meters(miles)
+    miles * 1609.34
+  end
+
+  def self.meters_to_miles(meter)
+    meter * 0.000621371
   end
 
 end
