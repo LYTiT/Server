@@ -73,19 +73,22 @@ class Venue < ActiveRecord::Base
       venue = Venue.new
       venue.google_place_reference = google_reference_key
     end
-    venue.populate_google_address
+    venue.populate_google_address(true)
     venue
   end
 
-  def populate_google_address
-    client = Venue.google_place_client
-    spot = client.spot(self.google_place_reference)
-    self.city = spot.city
-    self.state = spot.region
-    self.postal_code = spot.postal_code
-    self.country = spot.country
-    self.address = [ spot.street_number, spot.street].join(', ')
-    self.save
+  def populate_google_address(force = false)
+    if force == true or !self.fetched_at.present? or ((Time.now - self.fetched_at) / 1.day).round > 4
+      client = Venue.google_place_client
+      spot = client.spot(self.google_place_reference)
+      self.city = spot.city
+      self.state = spot.region
+      self.postal_code = spot.postal_code
+      self.country = spot.country
+      self.address = [ spot.street_number, spot.street].join(', ')
+      self.fetched_at = Time.now
+      self.save
+    end
   end
 
   def self.google_place_client
