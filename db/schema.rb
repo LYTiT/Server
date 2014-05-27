@@ -11,6 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
+
 ActiveRecord::Schema.define(version: 20140522213222) do
 
   # These are extensions that must be enabled in order to support this database
@@ -167,6 +168,7 @@ ActiveRecord::Schema.define(version: 20140522213222) do
     t.string   "postal_code"
     t.text     "formatted_address"
     t.text     "google_place_reference"
+    t.datetime "fetched_at"
   end
 
 end

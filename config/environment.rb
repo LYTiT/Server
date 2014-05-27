@@ -15,7 +15,7 @@ ActionMailer::Base.smtp_settings = {
   :enable_starttls_auto => true
 }
 
-APNS.host = 'gateway.push.apple.com' 
-APNS.pem  = 'PushProdCertCombined.pem'
+APNS.host = 'gateway.push.apple.com'
+APNS.pem  = '/pem_certificates/PushProdCertCombined.pem'
 APNS.port = 2195
 APNS.pass = 'lytit'
