@@ -1,3 +1,9 @@
+GIT
+  remote: git@github.com:jpoz/APNS.git
+  revision: 5b6590e4af43a08069c44280440bc1656b48eaa8
+  specs:
+    apns (1.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -28,7 +34,6 @@ GEM
       thread_safe (~> 0.1)
       tzinfo (~> 1.1)
     addressable (2.3.6)
-    apns (1.0.0)
     arel (5.0.1.20140414130214)
     bcrypt (3.1.7)
     better_errors (1.1.0)
@@ -274,7 +279,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  apns
+  apns!
   better_errors
   binding_of_caller
   bourbon
