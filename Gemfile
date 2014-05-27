@@ -26,7 +26,7 @@ gem 'google_places'
 gem "paranoia", "~> 2.0"
 gem 'haml-rails'
 gem 'geokit-rails'
-gem 'apns', git: 'git@github.com:jpoz/APNS.git'
+gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'rufus-scheduler'
 
 group :development do

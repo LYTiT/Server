@@ -1,5 +1,5 @@
 GIT
-  remote: git@github.com:jpoz/APNS.git
+  remote: https://github.com/jpoz/APNS.git
   revision: 5b6590e4af43a08069c44280440bc1656b48eaa8
   specs:
     apns (1.1.0)
