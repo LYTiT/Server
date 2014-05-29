@@ -10,7 +10,7 @@ class ApiBaseController < ApplicationController
   protected
 
   def handle_public_excepton(e)
-    logger.error e.inspect
+    logger.error e.backtrace.join("\n")
     render json: { errors: [e.message] }
   end
 
