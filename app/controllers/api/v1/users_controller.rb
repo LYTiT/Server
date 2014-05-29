@@ -57,8 +57,12 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def toggle_group_notification
-    @user.toggle_group_notification(params[:group_id], params[:enabled])
-    render json: { success: true }
+    status, message = @user.toggle_group_notification(params[:group_id], params[:enabled])
+    if status
+      render json: { success: true }
+    else
+      render json: { errors: [message] }, status: :unprocessable_entity
+    end
   end
 
   def forgot_password
