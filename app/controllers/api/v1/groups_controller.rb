@@ -113,6 +113,12 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
 
+  def group_venue_details
+    @groups_venue = GroupsVenue.find(params[:id])
+    @group = @groups_venue.group
+    @venue = @groups_venue.venue
+  end
+
   private
 
   def group_params

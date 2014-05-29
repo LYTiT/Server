@@ -50,6 +50,7 @@ LytitServer::Application.routes.draw do
         post '/venues/addComment', :action => :add_comment
       end
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
+      get '/group_venue_details/:id' => 'groups#group_venue_details'
     end
   end
 
