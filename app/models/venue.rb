@@ -75,8 +75,11 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
-    #Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
-    Venue.where("id IN (?)", list)
+    if q.blank?
+      Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
+    else
+      Venue.where("id IN (?)", list)
+    end
   end
 
   def self.fetch_spot(google_reference_key)
