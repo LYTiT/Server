@@ -28,6 +28,7 @@ gem 'haml-rails'
 gem 'geokit-rails'
 gem 'apns'
 gem 'rufus-scheduler'
+gem 'rubypython', "0.6.2"
 
 group :development do
   gem 'better_errors'
