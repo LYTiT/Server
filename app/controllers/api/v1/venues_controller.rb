@@ -24,6 +24,11 @@ class Api::V1::VenuesController < ApiBaseController
     end
   end
 
+  def delete_comment
+    VenueComment.where(user_id: @user.id, id: params[:id]).destroy_all
+    render json: { success: true }
+  end
+
   def report_comment
     venue_comment = VenueComment.find(params[:comment_id])
     fc = FlaggedComment.new

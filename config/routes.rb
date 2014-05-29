@@ -48,6 +48,7 @@ LytitServer::Application.routes.draw do
       resources :events, only: [:index, :create, :show]
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
+        delete '/venues/delete_comment', :action => :delete_comment
       end
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
       get '/group_venue_details/:id' => 'groups#group_venue_details'
