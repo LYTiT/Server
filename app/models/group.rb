@@ -50,9 +50,19 @@ class Group < ActiveRecord::Base
   def add_venue(venue_id, user_id)
     if self.is_user_member?(user_id)
       GroupsVenue.create(group_id: self.id, venue_id: venue_id, user_id: user_id)
+      self.send_venue_added_notification(venue_id)
       return true
     else
       return false, 'You are not member of this group'
+    end
+  end
+
+  def send_venue_added_notification(venue_id)
+    for user in self.users
+      token = user.push_token
+      if token
+        a = APNS.send_notification(token, {:alert => '', :content_available => 1, :other => {:object_id => event_id, :type => 'venue_added', :venue_id => venue_id, :group_id => self.id}})
+      end
     end
   end
 
