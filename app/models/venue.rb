@@ -27,7 +27,7 @@ class Venue < ActiveRecord::Base
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
     else
-      scoped = all
+      scoped = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
       if params[:lat] && params[:lng]
         scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
@@ -76,9 +76,10 @@ class Venue < ActiveRecord::Base
     end
 
     if q.blank?
-      Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
+      #Venue.where(" (start_date IS NULL AND id IN (?)) or (start_date >= ? and end_date <= ?)", list, Time.now, Time.now).within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC')
+      Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
     else
-      Venue.where("id IN (?)", list)
+      Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
     end
   end
 
