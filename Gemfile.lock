@@ -120,6 +120,8 @@ GEM
       railties (>= 4.0.1)
     high_voltage (2.1.0)
     hike (1.2.3)
+    honeybadger (1.14.0)
+      json
     httparty (0.13.1)
       json (~> 1.8)
       multi_xml (>= 0.5.2)
@@ -298,6 +300,7 @@ DEPENDENCIES
   google_places
   haml-rails
   high_voltage
+  honeybadger
   jbuilder
   jquery-rails
   launchy

@@ -28,6 +28,7 @@ gem 'haml-rails'
 gem 'geokit-rails'
 gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'rufus-scheduler'
+gem 'honeybadger'
 
 group :development do
   gem 'better_errors'
