@@ -34,7 +34,7 @@ class Event < ActiveRecord::Base
   def add_gps_venue
     return if self.venue_id.present?
     v = Venue.new
-    v.name = 'event_venue'
+    v.name = self.location_name
     v.latitude = self.latitude
     v.longitude = self.longitude
     v.address = self.address
