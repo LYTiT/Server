@@ -61,7 +61,13 @@ LytitServer::Application.routes.draw do
     get 'system/status', :action => 'status', :as => :system_status
   end
 
+  resource :session, controller: 'sessions'
   get 'session' => 'clearance/sessions#new'
+  get 'sign_out' => 'clearance/sessions#destroy', :as => 'logout' 
+
+  resources :venues, only: [:show] do
+    
+  end
 
   root :to => 'clearance/sessions#new'
 

@@ -18,10 +18,15 @@ class Venue < ActiveRecord::Base
 
   has_many :events, :dependent => :destroy
 
+  belongs_to :user
+
   MILE_RADIUS = 2
 
   has_many :lytit_votes, :dependent => :destroy
-  has_many :votes, :through => :lytit_votes
+
+  # TODO: Is this required?
+  # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
+  # has_many :votes, :through => :lytit_votes
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]

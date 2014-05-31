@@ -4,4 +4,8 @@ class VenuesController < ApplicationController
     @flagged_comments = FlaggedComment.order('id DESC')
   end
 
+  def show
+    
+  end
+
 end

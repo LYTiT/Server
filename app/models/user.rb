@@ -8,7 +8,10 @@ class User < ActiveRecord::Base
   has_many :groups_users, :dependent => :destroy
   has_many :groups, through: :groups_users
   has_many :flagged_comments, :dependent => :destroy
+  has_many :venues
   belongs_to :role
+
+  attr_accessor :password_confirmation
 
   before_save :ensure_authentication_token
 
@@ -27,9 +30,17 @@ class User < ActiveRecord::Base
     end
   end
 
+  def is_venue_manager?
+    if self.role.present?
+      return self.role.name == "Venue Manager"
+    end
+    return false  
+  end
+
   private
 
   def ensure_authentication_token
     self.authentication_token ||= SecureRandom.hex
   end
+
 end
