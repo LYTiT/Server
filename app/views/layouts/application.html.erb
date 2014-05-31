@@ -8,8 +8,10 @@
   <%= csrf_meta_tags %>
 </head>
 <body class="<%= body_class %> splash">
-  <%= render 'flashes' -%>
-  <%= yield %>
+  <div class="container">
+    <%= render 'flashes' -%>
+    <%= yield %>
+  </div>
   <%= render 'layouts/footer' %>
   <%= render 'javascript' %>
 </body>

@@ -4,7 +4,7 @@ html {
 }
 
 body.splash {  
-  margin-bottom: 60px;
+  margin-bottom: 150px;
   background-color: #000;
 
   .container-fluid {
@@ -15,26 +15,56 @@ body.splash {
     }
   }
 
+  .login {
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: center;
+    font-size: 16px;
+    input[type=text], input[type=password] {
+      font-size: 16px;
+      height: 40px;
+      padding-bottom: 16px;
+      background-color: transparent;
+      border: none;
+      border-radius: 0px;
+      border-bottom: 1px solid #666666;
+      color: #FFF;
+      text-align: center;
+      margin-top: 25px;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    &.before {
+      .sign_in_button {
+        margin-top: 60px;
+      }
+    }
+    &.after {
+      .sign_in_button {
+        margin-top: 30px;
+      }  
+    }
+    
+  }
+
   #footer {
     position: absolute;
     bottom: 0;
     width: 100%;
-    
+    height: auto;
     .container-fluid { 
       width: auto;
       max-width: 85%;
       padding: 0 15px;
       border-top: 1px solid #666666;
-      
       .sections {
-        margin: 20px 0;
-
+        margin: 20px 0 10px;
         ul {
           list-style: none outside none;
           margin: 0 0 10px;
           overflow: auto;
           padding: 0;
-          
           li {
             float: left;
             margin-left: 10px;
@@ -44,4 +74,5 @@ body.splash {
       }
     }
   }
+
 }
