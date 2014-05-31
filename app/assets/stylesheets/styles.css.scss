@@ -152,7 +152,7 @@ body.venue_manager {
       padding: 10px;
       height: 110px;
       position: relative;
-      background-image: url("/assets/hamburger_menu_sprite.png");
+      background-image: asset-url("hamburger_menu_sprite.png", image);
       background-repeat: no-repeat;
       color: #999999;
       &.active, &:hover {
