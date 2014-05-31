@@ -27,7 +27,7 @@ body.splash {
       background-color: transparent;
       border: none;
       border-radius: 0px;
-      border-bottom: 1px solid #666666;
+      border-bottom: 1px solid #555555;
       color: #FFF;
       text-align: center;
       margin-top: 25px;
@@ -68,7 +68,7 @@ body.splash {
       width: auto;
       max-width: 85%;
       padding: 0 15px;
-      border-top: 1px solid #666666;
+      border-top: 1px solid #555555;
       .sections {
         margin: 20px 0 10px;
         ul {
@@ -86,4 +86,113 @@ body.splash {
     }
   }
 
+}
+
+body.venue_manager {
+  background-color: #EAEAEA;
+  .navbar {
+    border-radius: 0;
+    .container {
+      padding-right: 0;
+    }
+  }
+  .navbar-header {
+    width: 100%;
+    .navbar-brand {
+      padding: 0px;
+      height: auto;
+    }
+    .navbar-toggle.menu-button {
+      border: none;
+      float: none;
+      margin-top: 18px;
+      padding-left: 0px;
+      margin-right: 0px;
+      &.active {
+        color: #00CCFF;
+        .icon-bar {
+          background-color: #00CCFF;
+        }
+      }
+      .icon-bar + .icon-bar {
+        margin-top: 6px;
+      }
+      .icon-bar {
+        height: 3px;
+        width: 30px;
+      }
+      &:focus, &:hover {
+        background-color: transparent;
+      }
+      .hamburger {
+        float: left;
+        margin-top: 6px;
+        display: block;
+      }
+      .text {
+        font-size: 24px; margin-left: 20px;
+        float: right;
+        display: block;
+      }
+    }
+  }  
+}
+
+#jPanelMenu-menu {
+  background-color: #222222;
+  letter-spacing: normal;
+  .list-group-item {
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    border-bottom: 1px solid #333333;
+    padding: 0;
+    a {
+      display: block;
+      padding: 10px;
+      height: 110px;
+      position: relative;
+      background-image: url("/assets/hamburger_menu_sprite.png");
+      background-repeat: no-repeat;
+      color: #999999;
+      &.active, &:hover {
+        color: #00CCFF; 
+      }
+      &.active {
+        background-color: #191919; 
+      }
+      &.my_venue {
+        background-position: 79px 35px;
+        &.active, &:hover {
+          background-position: -71px 35px;
+        }
+      }
+      &.contact_us {
+        background-position: 68px -40px;
+        &.active, &:hover {
+          background-position: -82px -40px;
+        }
+      }
+      &.logout {
+        background-position: 73px -313px;
+        &.active, &:hover {
+          background-position: -81px -313px;
+        }
+      }
+      span {
+        position: relative;
+        top: 65px;
+      }
+    }
+  }
+  .footer {
+    margin-top: 60px;
+    p {
+      color: #999999;
+      text-align: center;
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
 }
