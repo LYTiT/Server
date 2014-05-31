@@ -37,6 +37,10 @@ class User < ActiveRecord::Base
     return false  
   end
 
+  def manages_any_venues?
+    self.venues.size > 0
+  end
+
   private
 
   def ensure_authentication_token

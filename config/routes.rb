@@ -1,4 +1,6 @@
 LytitServer::Application.routes.draw do
+  resources :tests
+
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   namespace :api, :defaults => {:format => 'json'}  do
@@ -62,14 +64,16 @@ LytitServer::Application.routes.draw do
   end
 
   resource :session, controller: 'sessions', only: [:destroy, :new, :create]
-  get 'session', to: redirect('/sign_in')
-  get 'sign_out' => 'clearance/sessions#destroy', :as => 'logout' 
 
+  get 'session', to: redirect('/sign_in')
+  get 'sign_out' => 'sessions#destroy', :as => nil 
+  get 'sign_in' => 'sessions#new', :as => nil 
+  
   resources :venues, only: [:show] do
     
   end
 
-  root :to => 'clearance/sessions#new'
+  root :to => 'sessions#new'
 
 
 end

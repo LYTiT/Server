@@ -28,6 +28,10 @@ class Venue < ActiveRecord::Base
   # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
   # has_many :votes, :through => :lytit_votes
 
+  def to_param
+    [id, name.parameterize].join("-")
+  end
+  
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
