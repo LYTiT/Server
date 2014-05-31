@@ -1,0 +1,47 @@
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+body.splash {  
+  margin-bottom: 60px;
+  background-color: #000;
+
+  .container-fluid {
+    &.splash_login{
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  #footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    
+    .container-fluid { 
+      width: auto;
+      max-width: 85%;
+      padding: 0 15px;
+      border-top: 1px solid #666666;
+      
+      .sections {
+        margin: 20px 0;
+
+        ul {
+          list-style: none outside none;
+          margin: 0 0 10px;
+          overflow: auto;
+          padding: 0;
+
+          li {
+            float: left;
+            margin-left: 10px;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+}

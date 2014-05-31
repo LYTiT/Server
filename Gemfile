@@ -29,6 +29,7 @@ gem 'geokit-rails'
 gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'rufus-scheduler'
 gem 'honeybadger'
+gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
 
 group :development do
   gem 'better_errors'
@@ -39,6 +40,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'therubyracer'
   gem 'dotenv-rails'
   gem 'factory_girl_rails'
   gem 'faker'

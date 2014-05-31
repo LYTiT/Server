@@ -61,6 +61,6 @@ LytitServer::Application.routes.draw do
     get 'system/status', :action => 'status', :as => :system_status
   end
 
-  #TODO will change this later if got any thing to show on home page!
-  root :to => 'system#status'
+  root :to => 'clearance/sessions#new'
+
 end

@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head lang="en">
   <meta charset="utf-8" />
-  <meta name="ROBOTS" content="NOODP" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LYTiT | Venue Manager</title>
   <%= stylesheet_link_tag :application, :media => 'all' %>
   <%= csrf_meta_tags %>
 </head>
-<body class="<%= body_class %>">
+<body class="<%= body_class %> splash">
   <%= render 'flashes' -%>
   <%= yield %>
+  <%= render 'layouts/footer' %>
   <%= render 'javascript' %>
 </body>
 </html>
