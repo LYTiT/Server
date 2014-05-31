@@ -7,7 +7,7 @@ class SessionsController < Clearance::SessionsController
       if status.success? and @user.present? and @user.is_venue_manager? and @user.venues.present?  
         redirect_to venue_path(@user.venues.first)
       else
-        flash.now.notice = status.failure_message
+        flash.now.notice = status.try(:failure_message) || I18n.t('flashes.failure_after_create')
         render template: 'sessions/new', status: :unauthorized
       end
     end
