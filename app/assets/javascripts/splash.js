@@ -5,6 +5,7 @@ $(function() {
     $('.login.before .sign_in_button a').click(function() {
       $(this).parents('.login').hide();
       $('.login.after').removeClass('hide');
+      $('#session_email').focus();
       return false;
     });
 

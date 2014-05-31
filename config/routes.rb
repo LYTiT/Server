@@ -61,6 +61,9 @@ LytitServer::Application.routes.draw do
     get 'system/status', :action => 'status', :as => :system_status
   end
 
+  get 'session' => 'clearance/sessions#new'
+
   root :to => 'clearance/sessions#new'
+
 
 end

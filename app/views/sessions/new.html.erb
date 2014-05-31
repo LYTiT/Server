@@ -4,16 +4,19 @@
     <div class="col-xs-10 col-sm-6 col-lg-6">
       <%= image_tag "splash_logo.png", class: "center-block"  %>
       <div class="center-block">
-        <form role="form" class="hide login after">
-          <input class="form-control" placeholder="Username" type="text" />
-          <input class="form-control" placeholder="Password" type="password" /> 
+        <%= form_for :session, :url => session_path, :html => { :class => "#{flash[:notice].present? ? "" : "hide"} login after" } do |form| %>
+          <% if flash[:notice].present? %>
+            <div class="alert alert-danger"><%= flash[:notice] %></div>
+          <% end %>
+          <%= form.text_field :email, type: "email", class: "form-control", placeholder: "Username"  %>
+          <%= form.password_field :password, class: "form-control", placeholder: "Password"  %>
           <div class="sign_in_button">
-            <a href="#">Sign In</a>
+            <%= form.submit %>
           </div>
-        </form>
-        <div class="login before">
+        <% end %>
+        <div class="login before <%= flash[:notice].present? ? "hide" : "" %>">
           <div class="sign_in_button">
-            <a href="#">Sign In</a>
+            <a href="#"><%= I18n.t('helpers.submit.session.submit')%></a>
           </div>
         </div>
       </div>
