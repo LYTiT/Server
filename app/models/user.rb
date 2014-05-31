@@ -7,8 +7,8 @@ class User < ActiveRecord::Base
   has_many :venue_comments, :dependent => :destroy
   has_many :groups_users, :dependent => :destroy
   has_many :groups, through: :groups_users
-
   has_many :flagged_comments, :dependent => :destroy
+  belongs_to :role
 
   before_save :ensure_authentication_token
 

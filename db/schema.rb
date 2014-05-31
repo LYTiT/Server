@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140529174202) do
+ActiveRecord::Schema.define(version: 20140531124231) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -103,6 +103,10 @@ ActiveRecord::Schema.define(version: 20140529174202) do
   add_index "lytit_votes", ["user_id"], name: "index_lytit_votes_on_user_id", using: :btree
   add_index "lytit_votes", ["venue_id"], name: "index_lytit_votes_on_venue_id", using: :btree
 
+  create_table "roles", force: true do |t|
+    t.string "name"
+  end
+
   create_table "users", force: true do |t|
     t.datetime "created_at",                                                 null: false
     t.datetime "updated_at",                                                 null: false
@@ -116,10 +120,12 @@ ActiveRecord::Schema.define(version: 20140529174202) do
     t.boolean  "notify_events_added_to_groups",               default: true
     t.text     "push_token"
     t.boolean  "notify_venue_added_to_groups",                default: true
+    t.integer  "role_id"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
+  add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
 
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
