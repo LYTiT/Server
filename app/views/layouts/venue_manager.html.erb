@@ -8,7 +8,11 @@
   <%= csrf_meta_tags %>
 </head>
 <body class="<%= body_class %> venue_manager">
-  <%= yield %>
+  <%= render 'layouts/header' %>
+  <div class="container main-content">
+    <%= yield %>
+  </div>
+  <%= render 'layouts/hamburger_menu' %>
   <%= render 'javascript' %>
 </body>
 </html>
