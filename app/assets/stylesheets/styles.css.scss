@@ -91,6 +91,9 @@ body.splash {
 body.venue_manager {
   letter-spacing: normal;
   background-color: #EAEAEA;
+  .container {
+    max-width: 970px;
+  }
   .navbar {
     border-radius: 0;
     .container {
@@ -99,13 +102,21 @@ body.venue_manager {
   }
   .main-content {
     margin-top: 50px;  
-    margin-bottom: 50px;
+    margin-bottom: 20px;
     h1.venue-selector {
       color: #00CCFF;  
       font-weight: 300;
       font-size: 26px;
       max-width: 450px;
       letter-spacing: 1px;
+      margin-top: 0;
+      a {
+        background-image: url("/assets/icons_sprite.png");
+        background-position: 64px -125px;
+        background-repeat: no-repeat;
+        color: #00CCFF;
+        padding-right: 38px;
+      }
       small {
         letter-spacing: normal;
         color: #000;
@@ -125,6 +136,34 @@ body.venue_manager {
       font-weight: 300;
       padding: 12px 12px 12px 48px;
       letter-spacing: 1px;
+    }
+    .venue_messages {
+      margin-bottom: 30px;
+      .venue_messages_list {
+        max-width: 600px;
+        margin-top: 20px;
+        margin-bottom: 0;
+        text-transform: uppercase; 
+        &.add_to_list {
+          margin-bottom: 40px;
+          margin-top: 0;
+          .list-group-item {
+            border-top: none;
+            text-transform: none;
+            font-style: italic;
+            background-image: asset-url("icons_sprite.png");
+            background-position: 11px -53px;
+            background-repeat: no-repeat;
+            padding-left: 40px;
+            cursor: pointer;
+          }
+        }
+        .list-group-item {
+          background-color: #D6D6D6;
+          border: 1px solid #EAEAEA;
+          color: #000;
+        }
+      }
     }  
   }
   .navbar-header {

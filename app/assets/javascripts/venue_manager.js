@@ -14,5 +14,8 @@ $(function(){
   $('#hamburger-menu-button').click(function(){
     jPM.on();  
     $("#hamburger-menu-button").unbind('click');
-  })
+  });
+  $('.venue-selector a').click(function(){
+    return false;
+  });
 })
