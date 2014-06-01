@@ -113,12 +113,14 @@ body.venue_manager {
       }
     }
     .btn-save {
-      background: #00B4FF asset-url("/assets/icons_sprite.png") no-repeat 11px -85px;
+      background-color: #00B4FF;
+      background-image: asset-url("/assets/icons_sprite.png");
+      background-position: 11px -85px;
+      background-repeat: no-repeat;
       border-color: #00B4FF;
       font-size: 18px;
       font-weight: 300;
       padding: 12px 12px 12px 48px;
-      letter-spacing: 1px;
     }  
   }
   .navbar-header {
