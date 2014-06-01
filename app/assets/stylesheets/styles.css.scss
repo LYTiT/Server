@@ -111,7 +111,7 @@ body.venue_manager {
       letter-spacing: 1px;
       margin-top: 0;
       a {
-        background-image: url("/assets/icons_sprite.png");
+        background-image: asset-url("icons_sprite.png");
         background-position: 64px -125px;
         background-repeat: no-repeat;
         color: #00CCFF;
