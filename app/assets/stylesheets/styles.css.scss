@@ -89,6 +89,7 @@ body.splash {
 }
 
 body.venue_manager {
+  letter-spacing: normal;
   background-color: #EAEAEA;
   .navbar {
     border-radius: 0;
@@ -104,7 +105,9 @@ body.venue_manager {
       font-weight: 300;
       font-size: 26px;
       max-width: 500px;
+      letter-spacing: 1px;
       small {
+        letter-spacing: normal;
         color: #000;
         display: block;
         font-size: 16px;
@@ -121,6 +124,7 @@ body.venue_manager {
       font-size: 18px;
       font-weight: 300;
       padding: 12px 12px 12px 48px;
+      letter-spacing: 1px;
     }  
   }
   .navbar-header {
