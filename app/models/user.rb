@@ -1,7 +1,9 @@
 class User < ActiveRecord::Base
   include Clearance::User
 
-  validates_uniqueness_of :email, :case_sensitive => false
+  validates_uniqueness_of :name, :case_sensitive => false
+  validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
+  validates_length_of :password, :minimum => 8
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
@@ -34,7 +36,7 @@ class User < ActiveRecord::Base
     if self.role.present?
       return self.role.name == "Venue Manager"
     end
-    return false  
+    return false
   end
 
   def manages_any_venues?
