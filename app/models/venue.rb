@@ -22,6 +22,8 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
+  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university)
+
   has_many :lytit_votes, :dependent => :destroy
 
   # TODO: Is this required?
@@ -31,7 +33,7 @@ class Venue < ActiveRecord::Base
   def to_param
     [id, name.parameterize].join("-")
   end
-  
+
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
@@ -64,9 +66,9 @@ class Venue < ActiveRecord::Base
     client = Venue.google_place_client
 
     if q.blank?
-      spots = client.spots(latitude, longitude, :radius => meters)
+      spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
     else
-      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
+      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
     end
 
     spots.each do |spot|
