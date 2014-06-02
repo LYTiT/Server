@@ -1,10 +1,21 @@
 <div class="container">
   <div class="row">
     <div class="col-md-8 col-sm-7 venue_messages">
-      <h1 class="venue-selector">
-        <a href="#"><%= @venue.name %></a>
-        <small>Please type in upto four promotions/messages that will be displayed on your venue page.</small>
-      </h1>
+      <div class="venue-selector-container">
+        <h1 class="venue-selector <%= current_user.venues.size > 1 ? 'active' : nil %>">
+          <a href="#"><%= @venue.name %></a>
+          <small>Please type in upto four promotions/messages that will be displayed on your venue page.</small>
+        </h1>      
+        <% if current_user.venues.size > 1 %>
+          <ul class="list-group">
+            <% current_user.venues.order(:name).each do |venue| %>
+              <li class="list-group-item">
+                <%= link_to venue.name, venue %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
       <ul class="list-group venue_messages_list">
         <li class="list-group-item">Cras justo odio</li>
         <li class="list-group-item">Dapibus ac facilisis in</li>
