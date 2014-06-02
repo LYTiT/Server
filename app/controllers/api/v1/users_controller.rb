@@ -8,21 +8,21 @@ class Api::V1::UsersController < ApiBaseController
       sign_in @user
       render 'created.json.jbuilder'
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
   def get_comments
     @user = User.find_by_id(params[:user_id])
     if not @user
-      render json: {:error => "not-found"}.to_json, :status => 404
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
     end
   end
 
   def get_groups
     @user = User.find_by_id(params[:user_id])
     if not @user
-      render json: {:error => "not-found"}.to_json, :status => 404
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
     end
   end
 
@@ -34,7 +34,7 @@ class Api::V1::UsersController < ApiBaseController
     if @user.update_attributes(permitted_params)
       render 'created.json.jbuilder'
     else
-      render json: @user.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
@@ -49,10 +49,10 @@ class Api::V1::UsersController < ApiBaseController
       if @user.update_password(params[:new_password])
         render 'created.json.jbuilder'
       else
-        render json: @user.errors, status: :unprocessable_entity
+        render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
       end
     else
-      render json: { :errors => ['Old password do not match'] }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Old password do not match']}  }, status: :unprocessable_entity
     end
   end
 
@@ -61,7 +61,7 @@ class Api::V1::UsersController < ApiBaseController
     if status
       render json: { success: true }
     else
-      render json: { errors: [message] }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
     end
   end
 
@@ -72,7 +72,7 @@ class Api::V1::UsersController < ApiBaseController
       ::ClearanceMailer.change_password(user).deliver
       render json: { success: true, message: 'Password reset link sent to your email.' }
     else
-      render json: { :errors => ['Can not find user with this email'] }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Can not find user with this email'] } }, status: :unprocessable_entity
     end
   end
 

@@ -13,7 +13,7 @@ class Api::V1::EventsController < ApiBaseController
     if @event.save
       render json: @event.to_json(:include => [:groups])
     else
-      render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @event.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 

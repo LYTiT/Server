@@ -20,7 +20,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
 
     if not @comment.save
-      render json: @comment.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
@@ -42,7 +42,7 @@ class Api::V1::VenuesController < ApiBaseController
   def get_comments
     @venue = Venue.find_by_id(params[:venue_id])
     if not @venue
-      render json: {:error => "not-found"}.to_json, :status => 404
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
     end
   end
 
@@ -51,7 +51,7 @@ class Api::V1::VenuesController < ApiBaseController
     if @venue
       render json: @venue.groups
     else
-      render json: {:error => "not-found"}.to_json, :status => 404
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
     end
   end
 
@@ -69,7 +69,7 @@ class Api::V1::VenuesController < ApiBaseController
     if @venue_rating.save
       render json: venue
     else
-      render json: {:errors => @venue_rating.errors}, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @venue_rating.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
@@ -80,7 +80,7 @@ class Api::V1::VenuesController < ApiBaseController
     if v.save
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
     else
-      render json: v.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 

@@ -11,7 +11,7 @@ class ApiBaseController < ApplicationController
 
   def handle_public_excepton(e)
     logger.error e.backtrace.join("\n")
-    render json: { errors: [e.message] }
+    render json: { error: { code: ERROR_INTERNAL ,messages: [e.message]} }
   end
 
   private
@@ -19,7 +19,7 @@ class ApiBaseController < ApplicationController
   def set_user
     @user = User.find_by_authentication_token(params[:auth_token])
     unless @user
-      render json: {:errors => ['User is invalid']}, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE,  messages: ['User is invalid'] } }, status: :unprocessable_entity
     end
   end
 end
