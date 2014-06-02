@@ -8,7 +8,7 @@ class Api::V1::GroupsController < ApiBaseController
       GroupsUser.create(group_id: @group.id, user_id: @user.id, is_admin: true)
       render json: @group
     else
-      render json: error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
