@@ -198,6 +198,28 @@ body.venue_manager {
         }
       }
     }  
+    .iphone_mockup_container {
+      position: relative;
+      .venue_name {
+        color: #00CCFF;
+        font-size: 12px;
+        height: 18px;
+        left: 45px;
+        max-width: 165px;
+        overflow: hidden;
+        position: absolute;
+        top: 97px;
+      }
+      .venue_message {
+        color: #00CCFF;
+        font-size: 10px;
+        left: 120px;
+        max-width: 120px;
+        overflow: hidden;
+        position: absolute;
+        top: 132px;
+      }
+    }
   }
   .navbar-header {
     width: 100%;

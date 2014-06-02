@@ -17,10 +17,9 @@
         <% end %>
       </div>
       <ul class="list-group venue_messages_list">
-        <li class="list-group-item">Cras justo odio</li>
-        <li class="list-group-item">Dapibus ac facilisis in</li>
-        <li class="list-group-item">Morbi leo risus</li>
-        <li class="list-group-item">Porta ac consectetur ac</li>
+        <li class="list-group-item">THUR - LOCAL BREW NIGHT $4 BEERS BREWED IN NY</li>
+        <li class="list-group-item">FRI - $4 SAM ADAMS PINTS</li>
+        <li class="list-group-item">SAT - HAPPY HOUR ALL DAY!! $5 BLOODY MARY AND MIMOSA</li>
       </ul>
       <ul class="list-group venue_messages_list add_to_list">
         <li class="list-group-item">Type in your promotion/message.</li>
@@ -28,7 +27,11 @@
       <input type="submit" value="Save/Publish" class="btn btn-primary btn-save"> 
     </div>
     <div class="col-md-4 col-sm-5 venue_messages">
-      <%= image_tag "iphone_mockup.png" %>
+      <div class="iphone_mockup_container">
+        <%= image_tag "iphone_mockup.png" %>
+        <span class="venue_name"><%= @venue.name %></span>
+        <marquee behavior="scroll" direction="left" class="venue_message" scrollamount="3">THUR - LOCAL BREW NIGHT $4 BEERS BREWED IN NY</marquee>
+      </div>
     </div>
   </div>
 </div>
