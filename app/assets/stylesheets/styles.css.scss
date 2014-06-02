@@ -136,6 +136,9 @@ body.venue_manager {
         a {
           color: #00CCFF;
           cursor: default;
+          &:hover, &:active, &:focus {
+            text-decoration: none;
+          }
         }
         &.active {
           a {
@@ -256,7 +259,11 @@ body.venue_manager {
       background-repeat: no-repeat;
       color: #999999;
       &.active, &:hover {
-        color: #00CCFF; 
+        color: #00CCFF;
+        text-decoration: none;
+      }
+      &:active, &:focus {
+        text-decoration: none; 
       }
       &.active {
         background-color: #191919; 

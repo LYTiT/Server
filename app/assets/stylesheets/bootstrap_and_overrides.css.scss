@@ -25,7 +25,7 @@ a {
 .text-muted a {
   color: #999999;
 
-  &:hover {
+  &:hover, &:active, &:focus {
     color: #00CCFF;
     text-decoration: none;
   }
