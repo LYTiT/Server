@@ -177,6 +177,38 @@ body.venue_manager {
         margin-top: 20px;
         margin-bottom: 0;
         text-transform: uppercase; 
+        .list-group-item {
+          overflow: auto;
+          position: relative;
+          .character_limit {
+            color: #444444;
+            font-style: italic;
+            font-size: 11px;
+            bottom: 10px;
+            position: absolute;
+          }
+          .message_items {
+            width: 85%;
+            padding-bottom: 18px;
+          }
+          a {
+            background-image: asset-url("icons_sprite.png");
+            background-repeat: no-repeat;
+            &.move_handle {
+              background-position: 3px 2px;
+              border-bottom: 1px solid #808080;
+              display: block;
+              height: 35px;
+              width: 25px;
+            }
+            &.delete_button {
+              background-position: 3px -19px;
+              display: block;
+              height: 35px;
+              width: 25px;
+            }
+          }
+        }
         &.add_to_list {
           margin-bottom: 40px;
           margin-top: 0;
