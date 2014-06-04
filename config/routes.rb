@@ -69,9 +69,7 @@ LytitServer::Application.routes.draw do
   get 'sign_out' => 'sessions#destroy', :as => nil 
   get 'sign_in' => 'sessions#new', :as => nil 
   
-  resources :venues, only: [:show] do
-    
-  end
+  resources :venues, only: [:show, :update]
 
   root :to => 'sessions#new'
 

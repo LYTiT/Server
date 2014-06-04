@@ -30,6 +30,7 @@ gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'rufus-scheduler'
 gem 'honeybadger'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
+gem 'jquery-ui-rails'
 
 group :development do
   gem 'better_errors'

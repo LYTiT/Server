@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140531180340) do
+ActiveRecord::Schema.define(version: 20140604165036) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -139,6 +139,16 @@ ActiveRecord::Schema.define(version: 20140531180340) do
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
   add_index "venue_comments", ["venue_id"], name: "index_venue_comments_on_venue_id", using: :btree
+
+  create_table "venue_messages", force: true do |t|
+    t.string   "message"
+    t.integer  "venue_id"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "venue_messages", ["venue_id"], name: "index_venue_messages_on_venue_id", using: :btree
 
   create_table "venue_ratings", force: true do |t|
     t.integer  "user_id"

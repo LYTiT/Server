@@ -16,48 +16,23 @@
           </ul>
         <% end %>
       </div>
-      <ul class="list-group venue_messages_list">
-        <li class="list-group-item">
-          <div class="pull-left message_items">
-            <div class="message">THUR - LOCAL BREW NIGHT $4 BEERS BREWED IN NY</div>
-            <div class="character_limit" data-max-length="60">40/60</div>
-          </div>
-          <div class="pull-right action_items">
-            <a href="#" class="move_handle">&nbsp;</a>
-            <a href="#" class="delete_button">&nbsp;</a>
-          </div>  
-        </li>
-        <li class="list-group-item">
-          <div class="pull-left message_items">
-            <div class="message">FRI - $4 SAM ADAMS PINTS</div>
-            <div class="character_limit" data-max-length="60">40/60</div>
-          </div>
-          <div class="pull-right action_items">
-            <a href="#" class="move_handle">&nbsp;</a>
-            <a href="#" class="delete_button">&nbsp;</a>
-          </div>  
-        </li>
-        <li class="list-group-item">
-          <div class="pull-left message_items">
-            <div class="message">SAT - HAPPY HOUR ALL DAY!! $5 BLOODY MARY AND MIMOSA</div>
-            <div class="character_limit" data-max-length="60">40/60</div>
-          </div>
-          <div class="pull-right action_items">
-            <a href="#" class="move_handle">&nbsp;</a>
-            <a href="#" class="delete_button">&nbsp;</a>
-          </div>  
-        </li>
-      </ul>
-      <ul class="list-group venue_messages_list add_to_list">
-        <li class="list-group-item">Type in your promotion/message.</li>
-      </ul>
-      <input type="submit" value="Save/Publish" class="btn btn-primary btn-save"> 
+      <%= form_for @venue, method: :put, html: {onsubmit: "venue_messages.assign_positions();"}  do |f| %>
+        <ul class="list-group venue_messages_list messages_list" id="messages_list">
+          <%= f.fields_for :venue_messages do |builder| %>
+            <% render "venue_message_fields", :f => builder %>
+          <% end %>
+        </ul>
+        <ul class="list-group venue_messages_list add_to_list <%= @venue.messages.size == 4 ? "hide" : "" %>">
+          <li class="list-group-item" onclick="<%= function_to_add_fields "Type in your promotion/message.", f, :venue_messages, ".venue_messages_list.messages_list" %>">Type in your promotion/message.</li>
+        </ul>
+        <input type="submit" value="Save/Publish" class="btn btn-primary btn-save"> 
+      <% end %>
     </div>
     <div class="col-md-4 col-sm-5 venue_messages">
       <div class="iphone_mockup_container">
         <%= image_tag "iphone_mockup.png" %>
         <span class="venue_name"><%= @venue.name %></span>
-        <marquee behavior="scroll" direction="left" class="venue_message" scrollamount="3">THUR - LOCAL BREW NIGHT $4 BEERS BREWED IN NY</marquee>
+        <marquee behavior="scroll" direction="left" class="venue_message" scrollamount="3"><%= @venue.messages.first.try(:message) %></marquee>
       </div>
     </div>
   </div>
