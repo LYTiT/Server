@@ -1,0 +1,17 @@
+<li class="list-group-item fields">
+  <div class="pull-left message_items">
+    <div class="message">
+      <span class="has-tooltip view <%= f.object.message.present? ? "" : "hide" %>" data-placement="right" title="Click to edit"><%= f.object.message %></span>
+      <div class="edit <%= f.object.message.present? ? "hide" : "" %>">
+        <%= f.text_field :message, maxlength: 60 %>
+      </div>
+      <%= f.hidden_field :position, class: "position" %>
+    </div>
+    <div class="character_limit"><span><%= f.object.message.length rescue 0 %></span>/60</div>
+  </div>
+  <div class="pull-right action_items">  
+    <%= f.hidden_field :_destroy %>
+    <a href="#" class="move_handle">&nbsp;</a>
+    <a href="#" class="delete_button">&nbsp;</a>
+  </div>  
+</li>

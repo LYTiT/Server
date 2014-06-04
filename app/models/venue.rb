@@ -12,6 +12,7 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
+  has_many :venue_messages, :dependent => :destroy
 
   has_many :groups_venues, :dependent => :destroy
   has_many :groups, through: :groups_venues
@@ -19,6 +20,8 @@ class Venue < ActiveRecord::Base
   has_many :events, :dependent => :destroy
 
   belongs_to :user
+
+  accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
 
   MILE_RADIUS = 2
 
@@ -32,6 +35,10 @@ class Venue < ActiveRecord::Base
 
   def to_param
     [id, name.parameterize].join("-")
+  end
+
+  def messages
+    venue_messages
   end
 
   def self.search(params)

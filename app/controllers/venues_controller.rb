@@ -3,7 +3,7 @@ class VenuesController < ApplicationController
   layout 'venue_manager'
 
   before_filter :authorize
-  before_filter :authorized_manager?, only: [:show]
+  before_filter :authorized_manager?, only: [:show, :update]
 
   def reported_comments
     @flagged_comments = FlaggedComment.order('id DESC')
@@ -15,6 +15,13 @@ class VenuesController < ApplicationController
     end
   end
 
+  def update
+    if @venue.update_attributes(venue_params)
+    else
+    end
+    redirect_to venue_path(@venue)
+  end
+
   private
 
   def authorized_manager?
@@ -23,6 +30,10 @@ class VenuesController < ApplicationController
       #TODO: Something better could be done! This will currently display a 404 page.
       raise ActionController::RoutingError.new("Not authorized to access this page")
     end
+  end
+
+  def venue_params
+    params.fetch(:venue,{}).permit(venue_messages_attributes: [:message, :id, :_destroy, :position])
   end
 
 end
