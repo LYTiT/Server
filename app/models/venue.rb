@@ -79,7 +79,7 @@ class Venue < ActiveRecord::Base
     end
 
     spots.each do |spot|
-      venue = Venue.where("google_place_reference = ?", spot.reference).first
+      venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
       venue.name = spot.name
       venue.google_place_key = spot.id
