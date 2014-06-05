@@ -8,7 +8,9 @@ class SessionsController < Clearance::SessionsController
       if status.success?
         if @user.present? and @user.is_venue_manager? and @user.venues.present?  
           if session[:return_to].present?
-            redirect_to session[:return_to]
+            return_to = session[:return_to]
+            session[:return_to] = nil
+            redirect_to return_to
           else
             redirect_to venue_path(@user.venues.first)
           end

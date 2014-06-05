@@ -100,6 +100,18 @@ body.venue_manager {
       padding-right: 0;
     }
   }
+  #delete_message_modal {
+    color: #000;
+    .modal-footer {
+      padding: 8px;
+    }
+    .modal-body {
+      padding: 10px 20px 0;
+    }
+    .modal-dialog {
+      max-width: 350px;
+    }
+  }
   .main-content {
     margin-top: 50px;  
     margin-bottom: 20px;
