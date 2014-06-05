@@ -1,5 +1,7 @@
 class SessionsController < Clearance::SessionsController
 
+  force_ssl only: [:new, :create], if: :ssl_configured?
+
   def create
     @user = authenticate(params)
 
