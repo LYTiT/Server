@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   include Clearance::User
 
   validates_uniqueness_of :name, :case_sensitive => false
+  validates :name, presence: true
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
   validates_length_of :password, :minimum => 8, unless: :skip_password_validation?
 
