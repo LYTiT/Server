@@ -4,7 +4,6 @@ class SessionsController < Clearance::SessionsController
 
   def create
     @user = authenticate(params)
-
     sign_in(@user) do |status|
       if status.success?
         if @user.present? and @user.is_venue_manager? and @user.venues.present?  
