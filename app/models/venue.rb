@@ -119,7 +119,7 @@ class Venue < ActiveRecord::Base
       self.state = spot.region
       self.postal_code = spot.postal_code
       self.country = spot.country
-      self.address = [ spot.street_number, spot.street].join(', ')
+      self.address = [ spot.street_number, spot.street].compact.join(', ')
       self.fetched_at = Time.now
       self.save
     end

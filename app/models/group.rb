@@ -78,11 +78,11 @@ class Group < ActiveRecord::Base
     venues
   end
 
-  def send_notification_to_users(event_id)
-    for user in self.users
-      token = user.push_token
+  def send_notification_to_users(user_ids, event_id)
+    for user_id in user_ids
+      token = User.find(user_id).push_token
       if token
-        a = APNS.send_notification(token, {:alert => '', :content_available => 1, :other => {:object_id => event_id, :type => 'event_added', :user_id => user.id}})
+        a = APNS.send_notification(token, {:alert => '', :content_available => 1, :other => {:object_id => event_id, :type => 'event_added', :user_id => user_id}})
       end
     end
   end
