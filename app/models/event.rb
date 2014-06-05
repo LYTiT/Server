@@ -50,6 +50,7 @@ class Event < ActiveRecord::Base
 
   def send_notification_to_group
     for group in self.groups
+      puts "_____!!!!!!!"
       group.send_notification_to_users(self.id)
     end
   end
