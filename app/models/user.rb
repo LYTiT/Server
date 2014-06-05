@@ -34,7 +34,14 @@ class User < ActiveRecord::Base
 
   def is_venue_manager?
     if self.role.present?
-      return self.role.name == "Venue Manager"
+      return (self.role.name == "Venue Manager" or self.role.name == "Admin")
+    end
+    return false
+  end
+
+  def is_admin?
+    if self.role.present?
+      return self.role.name == "Admin"
     end
     return false
   end

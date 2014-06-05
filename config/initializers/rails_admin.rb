@@ -1,7 +1,26 @@
 RailsAdmin.config do |config|
-  config.authorize_with do
-    authenticate_or_request_with_http_basic('Site Message') do |username, password|
-      username == 'lytit' && password == 'happyfun'
+  config.authenticate_with do
+    if current_user.present? and not current_user.is_admin?
+      unathorized
+    elsif not current_user.present?
+      session[:return_to] = '/admin'
+      flash.notice = I18n.t('flashes.unauthenticated')
+      redirect_to '/sign_in'
+    end
+  end
+
+  config.model 'User' do
+    edit do
+      field :password do
+        help 'Required. Length of 8-128. <br />(leave blank if you don\'t want to change it)'.html_safe
+      end
+      field :password_confirmation do
+        hide
+      end
+      include_all_fields
+      field :venues do
+        label 'Manage Venue(s)'
+      end
     end
   end
 
