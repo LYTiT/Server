@@ -49,9 +49,13 @@ class Event < ActiveRecord::Base
   end
 
   def send_notification_to_group
+    users_ids = []
     for group in self.groups
-      group.send_notification_to_users(self.id)
+      for user in group.users
+        users_ids.push(user.id)
+      end
     end
+    group.send_notification_to_users(users_ids.uniq, self.id)
   end
 
 end
