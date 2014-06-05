@@ -169,6 +169,7 @@ body.venue_manager {
       font-weight: 300;
       padding: 12px 12px 12px 48px;
       letter-spacing: 1px;
+      margin-top: 40px;
     }
     .venue_messages {
       margin-bottom: 30px;
@@ -189,7 +190,28 @@ body.venue_manager {
           }
           .message_items {
             width: 85%;
+            .edit {
+              input[type=text] {
+                background-color: transparent;
+                width: 100%;
+                border: none;
+                border-bottom: 1px solid #555555;
+              }
+            }
             padding-bottom: 18px;
+            .message {
+              span {
+                cursor: pointer;
+              }
+              .tooltip.right .tooltip-arrow {
+                border-right-color: #808080;
+              }
+              .tooltip-inner {
+                background-color: #808080;
+                text-transform: none;
+                font-size: 12px;
+              }
+            }
           }
           a {
             background-image: asset-url("icons_sprite.png");
@@ -210,10 +232,9 @@ body.venue_manager {
           }
         }
         &.add_to_list {
-          margin-bottom: 40px;
           margin-top: 0;
           .list-group-item {
-            border-top: none;
+            /*border-top: none;*/
             text-transform: none;
             font-style: italic;
             background-image: asset-url("icons_sprite.png");
@@ -251,6 +272,7 @@ body.venue_manager {
         position: absolute;
         top: 132px;
         height: 15px;
+        text-transform: uppercase;
       }
     }
   }
