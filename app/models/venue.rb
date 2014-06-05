@@ -79,7 +79,7 @@ class Venue < ActiveRecord::Base
     end
 
     spots.each do |spot|
-      venue = Venue.where("google_place_reference = ?", spot.reference).first
+      venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
       venue.name = spot.name
       venue.google_place_key = spot.id
@@ -119,7 +119,7 @@ class Venue < ActiveRecord::Base
       self.state = spot.region
       self.postal_code = spot.postal_code
       self.country = spot.country
-      self.address = [ spot.street_number, spot.street].join(', ')
+      self.address = [ spot.street_number, spot.street].compact.join(', ')
       self.fetched_at = Time.now
       self.save
     end
