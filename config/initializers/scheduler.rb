@@ -8,12 +8,14 @@ s = Rufus::Scheduler.singleton
 #
 s.every '5m' do
   LytitBar.instance.recalculate_bar_position
-  puts 'Bar updated'
+  puts 'Bar updated.'
 end
 
 # Recalculate venues ratings every 5 minutes
-s.every '2m' do
+s.every '5m' do
+	puts 'Recalculating ratings'
 	Venue.all.each do |venue|
 		venue.recalculate_rating
 	end
+	puts 'Ratings refreshed.'
 end
