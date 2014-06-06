@@ -12,8 +12,8 @@ s.every '5m' do
 end
 
 # Recalculate venues ratings every 5 minutes
-s.every '5m' do
-	Venue.all.each do |venue|
-		venue.recalculate_rating
-	end
-end
+#s.every '5m' do
+#	Venue.all.each do |venue|
+#		venue.recalculate_rating
+#	end
+#end
