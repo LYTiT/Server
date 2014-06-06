@@ -134,7 +134,7 @@ class Venue < ActiveRecord::Base
 
   def v_down_votes
     LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
-  end  
+  end
 
   def t_minutes_since_last_up_vote
     minutes_since(1)
@@ -148,7 +148,7 @@ class Venue < ActiveRecord::Base
     up_votes_count = self.v_up_votes.size
     down_votes_count = self.v_down_votes.size
 
-    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count - down_votes_count)) / 
+    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count - down_votes_count)) /
     (LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count + down_votes_count))
   end
 
@@ -171,7 +171,7 @@ class Venue < ActiveRecord::Base
     puts "A = #{a}, B = #{b}, Y = #{y}"
 
     x = LytitBar::inv_inc_beta(a, b, y)
-    
+
     puts "X = #{x}"
 
     self.rating = eval(x.to_s)
@@ -187,6 +187,8 @@ class Venue < ActiveRecord::Base
     now = Time.now.utc
 
     (now - last) / 1.minute
+  end
+
   def account_up_vote
     self.r_up_votes = get_sum_of_past_votes(self.v_up_votes) + 1 + get_k
     save
