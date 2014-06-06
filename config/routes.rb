@@ -54,6 +54,7 @@ LytitServer::Application.routes.draw do
       end
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
       get '/group_venue_details/:id' => 'groups#group_venue_details'
+      post '/report_event/:event_id' => 'events#report'
     end
   end
 
@@ -66,9 +67,9 @@ LytitServer::Application.routes.draw do
   resource :session, controller: 'sessions', only: [:destroy, :new, :create]
 
   get 'session', to: redirect('/sign_in')
-  get 'sign_out' => 'sessions#destroy', :as => nil 
-  get 'sign_in' => 'sessions#new', :as => nil 
-  
+  get 'sign_out' => 'sessions#destroy', :as => nil
+  get 'sign_in' => 'sessions#new', :as => nil
+
   resources :venues, only: [:show, :update]
 
   root :to => 'sessions#new'

@@ -22,6 +22,15 @@ class Api::V1::EventsController < ApiBaseController
     render json: @event.to_json(:include => [:groups, :venue])
   end
 
+  def report
+    event = Event.find(params[:event_id])
+    fe = FlaggedEvent.new
+    fe.user_id = @user.id
+    fe.message = params[:message]
+    fe.event_id = event.id
+    fe.save
+    render json: fe
+  end
 
   private
 
