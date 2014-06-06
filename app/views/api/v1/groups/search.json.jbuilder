@@ -6,5 +6,6 @@ json.array! @groups do |group|
   json.created_at group.created_at
   json.updated_at group.updated_at
   json.is_group_admin group.is_user_admin?(@user.id)
+  json.group_password group.return_password_if_admin(@user.id)
   json.send_notification GroupsUser.send_notification(group.id, @user.id)
 end
