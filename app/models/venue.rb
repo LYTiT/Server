@@ -20,32 +20,46 @@ class Venue < ActiveRecord::Base
 
   has_many :lytit_votes, :dependent => :destroy
   has_many :votes, :through => :lytit_votes
+  
+  MILE_RADIUS = 2
 
   def self.search(params)
-    scoped = all
-    if params[:lat] && params[:lng]
-      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
-    end
+    if params[:full_query] && params[:lat] && params[:lng]
+      Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
+    else
+      scoped = all
+      if params[:lat] && params[:lng]
+        scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+      end
 
-    scoped
+      scoped
+    end
   end
 
   def self.google_venues(params)
     scoped = where("google_place_reference IS NOT NULL")
 
     if params[:lat] && params[:lng]
-      scoped = scoped.within(2, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+      scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
     end
 
     scoped
   end
 
-  def self.fetch_venues(q, latitude, longitude)
+  def self.fetch_nearby_venues
+
+  end
+
+  def self.fetch_venues(q, latitude, longitude, meters = 2000)
     list = []
     client = Venue.google_place_client
 
-    #radius in meters
-    spots = client.spots_by_query(q, :radius => 2000, :lat => latitude, :lng => longitude)
+    if q.blank?
+      spots = client.spots(latitude, longitude, :radius => meters)
+    else
+      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
+    end
+
     spots.each do |spot|
       venue = Venue.where("google_place_key = ?", spot.id).first
       venue ||= Venue.new()
@@ -61,8 +75,7 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
-    # 1.242 miles == 2000 meters
-    Venue.within(1.242, :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
+    Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
   end
 
   def self.fetch_spot(google_reference_key)
@@ -71,32 +84,43 @@ class Venue < ActiveRecord::Base
       venue = Venue.new
       venue.google_place_reference = google_reference_key
     end
-    venue.populate_google_address
+    venue.populate_google_address(true)
     venue
   end
 
-  def populate_google_address
-    client = Venue.google_place_client
-    spot = client.spot(self.google_place_reference)
-    self.city = spot.city
-    self.state = spot.region
-    self.postal_code = spot.postal_code
-    self.country = spot.country
-    self.address = [ spot.street_number, spot.street].join(', ')
-    self.save
+  def populate_google_address(force = false)
+    if force == true or !self.fetched_at.present? or ((Time.now - self.fetched_at) / 1.day).round > 4
+      client = Venue.google_place_client
+      spot = client.spot(self.google_place_reference)
+      self.city = spot.city
+      self.state = spot.region
+      self.postal_code = spot.postal_code
+      self.country = spot.country
+      self.address = [ spot.street_number, spot.street].join(', ')
+      self.fetched_at = Time.now
+      self.save
+    end
   end
 
   def self.google_place_client
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
 
+  def self.miles_to_meters(miles)
+    miles * 1609.34
+  end
+
+  def self.meters_to_miles(meter)
+    meter * 0.000621371
+  end
+  
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ?", self.id, 1)
   end
 
   def v_down_votes
     LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
-  end
+  end  
 
   def t_minutes_since_last_up_vote
     minutes_since(1)
