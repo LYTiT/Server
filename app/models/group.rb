@@ -42,6 +42,10 @@ class Group < ActiveRecord::Base
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first ? true : false
   end
 
+  def return_password_if_admin(user_id)
+    self.is_user_admin?(user_id) ? self.password : nil
+  end
+
   def toggle_user_admin(user_id, approval)
     group_user = GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first
     group_user.update(:is_admin => (approval == 'yes' ? true : false))
