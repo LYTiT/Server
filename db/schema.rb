@@ -169,6 +169,7 @@ ActiveRecord::Schema.define(version: 20140529044512) do
     t.text     "google_place_reference"
     t.float    "r_up_votes"
     t.float    "r_down_votes"
+    t.datetime "fetched_at"
   end
 
 end
