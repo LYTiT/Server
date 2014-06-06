@@ -43,39 +43,30 @@ class Venue < ActiveRecord::Base
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
-      Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
+      Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
     else
       scoped = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      radius = params[:radius] ? Venue.meters_to_miles(params[:radius].to_i) : MILE_RADIUS
       if params[:lat] && params[:lng]
-        scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+        scoped = scoped.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
 
       scoped
     end
   end
 
-  def self.google_venues(params)
-    scoped = where("google_place_reference IS NOT NULL")
-
-    if params[:lat] && params[:lng]
-      scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
-    end
-
-    scoped
-  end
-
-  def self.fetch_nearby_venues
-
-  end
-
-  def self.fetch_venues(q, latitude, longitude, meters = 2000)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = 2000)
     list = []
     client = Venue.google_place_client
 
-    if q.blank?
+    if fetch_type == 'rankby'
       spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
     else
-      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+      if q.blank?
+        spots = client.spots(latitude, longitude, :types => GOOGLE_PLACE_TYPES)
+      else
+        spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+      end
     end
 
     spots.each do |spot|
@@ -93,8 +84,7 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
-    if q.blank?
-      #Venue.where(" (start_date IS NULL AND id IN (?)) or (start_date >= ? and end_date <= ?)", list, Time.now, Time.now).within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC')
+    if fetch_type == 'rankby'
       Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
     else
       Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)

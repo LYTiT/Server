@@ -4,8 +4,6 @@ class Api::V1::VenuesController < ApiBaseController
 
   def index
     @venues = Venue.search(params)
-    #@google_venues = Venue.google_venues(params)
-    #render json: @venues
   end
 
   def show
@@ -56,7 +54,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def search
-    venues = Venue.fetch_venues(params[:q], params[:latitude], params[:longitude])
+    venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius])
     render json: venues
   end
 
