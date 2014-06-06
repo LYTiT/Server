@@ -39,8 +39,7 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def register_push_token
-    @user.push_token = params[:push_token]
-    @user.save
+    @user.update(push_token: params[:push_token])
     render 'created.json.jbuilder'
   end
 
