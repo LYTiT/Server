@@ -64,7 +64,7 @@ class Venue < ActiveRecord::Base
       spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
     else
       if q.blank?
-        spots = client.spots(latitude, longitude, :types => GOOGLE_PLACE_TYPES)
+        spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
       else
         spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
       end
