@@ -56,6 +56,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = 2000)
+    meters ||= 2000
     list = []
     client = Venue.google_place_client
 
