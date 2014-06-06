@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head lang="en" data-placeholder-focus="false">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LYTiT</title>
+  <%= stylesheet_link_tag :application, :media => 'all' %>
+  <%= csrf_meta_tags %>
+</head>
+<body class="<%= body_class %> venue_manager">
+  <%= render 'layouts/header' %>
+  <div class="container main-content">
+    <%= yield %>
+  </div>
+  <%= render 'layouts/hamburger_menu' %>
+  <div class="modal-backdrop fade hide"></div>
+  <%= render 'javascript' %>
+</body>
+</html>

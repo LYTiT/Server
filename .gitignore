@@ -11,5 +11,7 @@
 /public/system
 /tags
 /tmp/*
-*.yml
 *.backup
+*.sublime-project
+*.sublime-workspace
+database.yml

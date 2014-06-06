@@ -1,0 +1,26 @@
+<div class="container-fluid splash_login">
+  <div class="row">
+    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
+    <div class="col-xs-10 col-sm-6 col-lg-6">
+      <%= image_tag "splash_logo.png", class: "center-block"  %>
+      <div class="center-block">
+        <%= form_for :session, :url => session_path, :html => { :class => "#{flash[:notice].present? ? "" : "hide"} login after" } do |form| %>
+          <% if flash[:notice].present? %>
+            <div class="alert alert-danger"><%= flash[:notice] %></div>
+          <% end %>
+          <%= form.text_field :email, type: "email", class: "form-control", placeholder: "Username"  %>
+          <%= form.password_field :password, class: "form-control", placeholder: "Password"  %>
+          <div class="sign_in_button">
+            <%= form.submit %>
+          </div>
+        <% end %>
+        <div class="login before <%= flash[:notice].present? ? "hide" : "" %>">
+          <div class="sign_in_button">
+            <a href="#"><%= I18n.t('helpers.submit.session.submit')%></a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
+  </div>
+</div>

@@ -7,7 +7,7 @@ class Api::V1::VenueRatingsController < ApiBaseController
     if @venue_rating.save
       render json: @venue_rating
     else
-      render json: {:errors => @venue_rating.errors}, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @venue_rating.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 

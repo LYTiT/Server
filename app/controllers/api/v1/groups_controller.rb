@@ -8,7 +8,7 @@ class Api::V1::GroupsController < ApiBaseController
       GroupsUser.create(group_id: @group.id, user_id: @user.id, is_admin: true)
       render json: @group
     else
-      render json: @group.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
@@ -19,7 +19,7 @@ class Api::V1::GroupsController < ApiBaseController
     if @group.update_attributes(permitted_params)
       render json: @group
     else
-      render json: @group.errors, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } } , status: :unprocessable_entity
     end
   end
 
@@ -30,7 +30,7 @@ class Api::V1::GroupsController < ApiBaseController
     if status
       render json: { joined: true }, status: :ok
     else
-      render json: { joined: false, errors: [message] }, status: :unauthorized
+      render json: { joined: false, error: { code: ERROR_UNAUTHORIZED, messages: [message] }  }, status: :unauthorized
     end
   end
 
@@ -48,7 +48,7 @@ class Api::V1::GroupsController < ApiBaseController
     @group = Group.find_by_id(params[:group_id])
 
     if not @group
-      render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
     end
   end
 
@@ -57,7 +57,7 @@ class Api::V1::GroupsController < ApiBaseController
     if @group
       render json: @group.venues_with_user_who_added
     else
-      render json: { errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
     end
   end
 
@@ -67,7 +67,7 @@ class Api::V1::GroupsController < ApiBaseController
       @group.destroy
       render json: { deleted: true }, status: :ok
     else
-      render json: { deleted: false, errors: ["Group with id #{params[:group_id]} not found"] }, status: :not_found
+      render json: { deleted: false, error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"]} }, status: :not_found
     end
   end
 
@@ -77,7 +77,7 @@ class Api::V1::GroupsController < ApiBaseController
       @group.toggle_user_admin(params[:user_id], params[:approval])
       render json: { success: true }
     else
-      render json: { errors: ['You dont have admin privileges for this group'] }
+      render json: { error: { code: ERROR_UNAUTHORIZED, messages: ['You dont have admin privileges for this group'] } }, status: :unauthorized
     end
   end
 
@@ -87,7 +87,7 @@ class Api::V1::GroupsController < ApiBaseController
       @group.remove(params[:user_id])
       render json: { success: true }
     else
-      render json: { errors: ['You dont have admin privileges for this group'] }
+      render json: { error: { code: ERROR_UNAUTHORIZED, messages: ['You dont have admin privileges for this group'] } }, status: :unauthorized
     end
   end
 
@@ -98,7 +98,7 @@ class Api::V1::GroupsController < ApiBaseController
     if status
       render json: { success: true }
     else
-      render json: { errors: [message] }
+      render json: { error: { code: ERROR_UNAUTHORIZED, messages: [message] } }, status: :unauthorized
     end
   end
 
@@ -109,8 +109,14 @@ class Api::V1::GroupsController < ApiBaseController
     if status
       render json: { success: true }
     else
-      render json: { errors: [message] }
+      render json: { error: { code: ERROR_UNAUTHORIZED, messages: [message] } }, status: :unauthorized
     end
+  end
+
+  def group_venue_details
+    @groups_venue = GroupsVenue.find(params[:id])
+    @group = @groups_venue.group
+    @venue = @groups_venue.venue
   end
 
   private

@@ -1,4 +1,6 @@
 LytitServer::Application.routes.draw do
+  resources :tests
+
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
 
   namespace :api, :defaults => {:format => 'json'}  do
@@ -48,8 +50,10 @@ LytitServer::Application.routes.draw do
       resources :events, only: [:index, :create, :show]
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
+        delete '/venues/delete_comment', :action => :delete_comment
       end
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
+      get '/group_venue_details/:id' => 'groups#group_venue_details'
     end
   end
 
@@ -59,6 +63,15 @@ LytitServer::Application.routes.draw do
     get 'system/status', :action => 'status', :as => :system_status
   end
 
-  #TODO will change this later if got any thing to show on home page!
-  root :to => 'system#status'
+  resource :session, controller: 'sessions', only: [:destroy, :new, :create]
+
+  get 'session', to: redirect('/sign_in')
+  get 'sign_out' => 'sessions#destroy', :as => nil 
+  get 'sign_in' => 'sessions#new', :as => nil 
+  
+  resources :venues, only: [:show, :update]
+
+  root :to => 'sessions#new'
+
+
 end

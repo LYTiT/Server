@@ -13,7 +13,7 @@ class Api::V1::EventsController < ApiBaseController
     if @event.save
       render json: @event.to_json(:include => [:groups])
     else
-      render json: { errors: @event.errors.full_messages }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @event.errors.full_messages } }, status: :unprocessable_entity
     end
   end
 
@@ -26,7 +26,7 @@ class Api::V1::EventsController < ApiBaseController
   private
 
   def event_params
-    params.require(:event).permit(:name, :description, :is_public, :start_date, :end_date, :location_name, :latitude, :longitude, :venue_id, :events_groups_attributes => [:group_id])
+    params.require(:event).permit(:name, :description, :is_public, :start_date, :end_date, :location_name, :latitude, :longitude, :venue_id, :address, :city, :state, :postal_code, :formatted_address, :events_groups_attributes => [:group_id])
   end
 
 end

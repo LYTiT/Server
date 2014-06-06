@@ -26,9 +26,12 @@ gem 'google_places'
 gem "paranoia", "~> 2.0"
 gem 'haml-rails'
 gem 'geokit-rails'
-gem 'apns'
+gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'rufus-scheduler'
 gem 'rubypython', "0.6.2"
+gem 'honeybadger'
+gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
+gem 'jquery-ui-rails'
 
 group :development do
   gem 'better_errors'
@@ -39,6 +42,7 @@ group :development do
 end
 
 group :development, :test do
+  gem 'therubyracer'
   gem 'dotenv-rails'
   gem 'factory_girl_rails'
   gem 'faker'

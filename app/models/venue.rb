@@ -12,22 +12,41 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
+  has_many :venue_messages, :dependent => :destroy
 
   has_many :groups_venues, :dependent => :destroy
   has_many :groups, through: :groups_venues
 
   has_many :events, :dependent => :destroy
 
-  has_many :lytit_votes, :dependent => :destroy
-  has_many :votes, :through => :lytit_votes
-  
+  belongs_to :user
+
+  accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
+
   MILE_RADIUS = 2
+
+  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university)
+
+  has_many :lytit_votes, :dependent => :destroy
+
+  # TODO: Is this required? A: Yes
+  # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
+  # A: yes, there is a migration for that - lytit_votes
+  has_many :votes, :through => :lytit_votes
+
+  def to_param
+    [id, name.parameterize].join("-")
+  end
+
+  def messages
+    venue_messages
+  end
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('', params[:lat], params[:lng], self.miles_to_meters(MILE_RADIUS))
     else
-      scoped = all
+      scoped = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
       if params[:lat] && params[:lng]
         scoped = scoped.within(MILE_RADIUS, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
@@ -55,9 +74,9 @@ class Venue < ActiveRecord::Base
     client = Venue.google_place_client
 
     if q.blank?
-      spots = client.spots(latitude, longitude, :radius => meters)
+      spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
     else
-      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude)
+      spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
     end
 
     spots.each do |spot|
@@ -75,7 +94,12 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
-    Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
+    if q.blank?
+      #Venue.where(" (start_date IS NULL AND id IN (?)) or (start_date >= ? and end_date <= ?)", list, Time.now, Time.now).within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC')
+      Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
+    else
+      Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
+    end
   end
 
   def self.fetch_spot(google_reference_key)
@@ -96,7 +120,7 @@ class Venue < ActiveRecord::Base
       self.state = spot.region
       self.postal_code = spot.postal_code
       self.country = spot.country
-      self.address = [ spot.street_number, spot.street].join(', ')
+      self.address = [ spot.street_number, spot.street].compact.join(', ')
       self.fetched_at = Time.now
       self.save
     end
@@ -113,7 +137,7 @@ class Venue < ActiveRecord::Base
   def self.meters_to_miles(meter)
     meter * 0.000621371
   end
-  
+
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ?", self.id, 1)
   end
@@ -173,8 +197,6 @@ class Venue < ActiveRecord::Base
     now = Time.now.utc
 
     (now - last) / 1.minute
-  end
-
   def account_up_vote
     self.r_up_votes = get_sum_of_past_votes(self.v_up_votes) + 1 + get_k
     save

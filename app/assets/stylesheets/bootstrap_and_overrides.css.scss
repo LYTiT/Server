@@ -1,0 +1,31 @@
+/*
+  =require twitter-bootstrap-static/bootstrap
+  Use Font Awesome icons (default)
+  To use Glyphicons sprites instead of Font Awesome, replace with "require twitter-bootstrap-static/sprites"
+  =require twitter-bootstrap-static/fontawesome
+*/
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: #FFF;
+  letter-spacing: 1px;
+}
+
+a {
+  color: #FFF;
+  outline: none !important;
+  &:hover {
+    color: #00CCFF;
+    text-decoration: none;
+  }
+}
+
+.text-muted a {
+  color: #999999;
+  &:hover, &:active, &:focus {
+    color: #00CCFF;
+    text-decoration: none;
+  }
+}

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
+<head lang="en" data-placeholder-focus="false">
   <meta charset="utf-8" />
-  <meta name="ROBOTS" content="NOODP" />
-  <title><%= title %></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LYTiT</title>
   <%= stylesheet_link_tag :application, :media => 'all' %>
   <%= csrf_meta_tags %>
 </head>
-<body class="<%= body_class %>">
-  <%= render 'flashes' -%>
-  <%= yield %>
+<body class="<%= body_class %> splash">
+  <div class="container">
+    <%= yield %>
+  </div>
+  <%= render 'layouts/footer' %>
   <%= render 'javascript' %>
 </body>
 </html>

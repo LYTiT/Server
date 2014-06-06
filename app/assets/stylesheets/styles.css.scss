@@ -1,0 +1,394 @@
+html {
+  min-height: 100%;
+  position: relative;
+}
+
+body.splash {  
+  margin-bottom: 150px;
+  background-color: #000;
+
+  .container-fluid {
+    &.splash_login{
+      img {
+        width: 100%;
+      }
+    }
+  }
+
+  .login {
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: center;
+    font-size: 16px;
+    input[type=text], input[type=password], input[type=email]  {
+      font-size: 16px;
+      height: 40px;
+      padding-bottom: 16px;
+      background-color: transparent;
+      border: none;
+      border-radius: 0px;
+      border-bottom: 1px solid #555555;
+      color: #FFF;
+      text-align: center;
+      margin-top: 25px;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    &.before {
+      .sign_in_button {
+        margin-top: 60px;
+      }
+    }
+    &.after {
+      .sign_in_button {
+        margin-top: 30px;
+        input{
+          background-color: transparent;
+          border: none;  
+        }
+        input:hover {
+          color: #00CCFF;
+        }
+      }  
+    }
+    .alert-danger {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+      color: #A94442;
+    }
+  }
+
+  #footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: auto;
+    .container-fluid { 
+      width: auto;
+      max-width: 85%;
+      padding: 0 15px;
+      border-top: 1px solid #555555;
+      .sections {
+        margin: 20px 0 10px;
+        ul {
+          list-style: none outside none;
+          margin: 0 0 10px;
+          overflow: auto;
+          padding: 0;
+          li {
+            float: left;
+            margin-left: 10px;
+            margin-right: 10px;
+          }
+        }
+      }
+    }
+  }
+
+}
+
+body.venue_manager {
+  letter-spacing: normal;
+  background-color: #EAEAEA;
+  .container {
+    max-width: 970px;
+  }
+  .navbar {
+    border-radius: 0;
+    .container {
+      padding-right: 0;
+    }
+  }
+  #delete_message_modal {
+    color: #000;
+    .modal-footer {
+      padding: 8px;
+    }
+    .modal-body {
+      padding: 10px 20px 0;
+    }
+    .modal-dialog {
+      max-width: 350px;
+    }
+  }
+  .main-content {
+    margin-top: 50px;  
+    margin-bottom: 20px;
+    div.venue-selector-container {
+      overflow: visible;
+      position: relative;
+      ul.list-group {
+        position: absolute;
+        top: 35px;
+        z-index: 1041;
+        min-width: 200px;
+        max-width: 300px;
+        display: none;
+        li.list-group-item {
+          cursor: pointer;
+          padding: 0;
+          &:hover {
+            background-color: #C4EBFB;
+          }
+          a {
+            color: #000;
+            padding: 5px 10px;
+            display: block;
+          }
+        }
+      }
+      h1.venue-selector {
+        color: #00CCFF;  
+        font-weight: 300;
+        font-size: 26px;
+        max-width: 450px;
+        letter-spacing: 1px;
+        margin-top: 0;
+        a {
+          color: #00CCFF;
+          cursor: default;
+          &:hover, &:active, &:focus {
+            text-decoration: none;
+          }
+        }
+        &.active {
+          a {
+            padding-right: 40px;
+            background-image: asset-url("icons_sprite.png");
+            background-position: right -124px;
+            background-repeat: no-repeat;
+            cursor: pointer;
+          }
+        }
+        small {
+          letter-spacing: normal;
+          color: #000;
+          display: block;
+          font-size: 16px;
+          font-weight: 300;
+          margin-top: 15px;
+        }
+      }
+    }
+    .btn-save {
+      background-color: #00B4FF;
+      background-image: asset-url("icons_sprite.png");
+      background-position: 11px -85px;
+      background-repeat: no-repeat;
+      border-color: #00B4FF;
+      font-size: 18px;
+      font-weight: 300;
+      padding: 12px 12px 12px 48px;
+      letter-spacing: 1px;
+      margin-top: 40px;
+    }
+    .venue_messages {
+      margin-bottom: 30px;
+      .venue_messages_list {
+        max-width: 600px;
+        margin-top: 20px;
+        margin-bottom: 0;
+        text-transform: uppercase; 
+        .list-group-item {
+          overflow: auto;
+          position: relative;
+          .character_limit {
+            color: #444444;
+            font-style: italic;
+            font-size: 11px;
+            bottom: 10px;
+            position: absolute;
+          }
+          .message_items {
+            width: 85%;
+            .edit {
+              input[type=text] {
+                background-color: transparent;
+                width: 100%;
+                border: none;
+                border-bottom: 1px solid #555555;
+              }
+            }
+            padding-bottom: 18px;
+            .message {
+              span {
+                cursor: pointer;
+              }
+              .tooltip.right .tooltip-arrow {
+                border-right-color: #808080;
+              }
+              .tooltip-inner {
+                background-color: #808080;
+                text-transform: none;
+                font-size: 12px;
+              }
+            }
+          }
+          a {
+            background-image: asset-url("icons_sprite.png");
+            background-repeat: no-repeat;
+            &.move_handle {
+              background-position: 3px 2px;
+              border-bottom: 1px solid #808080;
+              display: block;
+              height: 35px;
+              width: 25px;
+            }
+            &.delete_button {
+              background-position: 3px -19px;
+              display: block;
+              height: 35px;
+              width: 25px;
+            }
+          }
+        }
+        &.add_to_list {
+          margin-top: 0;
+          .list-group-item {
+            /*border-top: none;*/
+            text-transform: none;
+            font-style: italic;
+            background-image: asset-url("icons_sprite.png");
+            background-position: 11px -53px;
+            background-repeat: no-repeat;
+            padding-left: 40px;
+            cursor: pointer;
+          }
+        }
+        .list-group-item {
+          background-color: #D6D6D6;
+          border: 1px solid #EAEAEA;
+          color: #000;
+        }
+      }
+    }  
+    .iphone_mockup_container {
+      position: relative;
+      .venue_name {
+        color: #00CCFF;
+        font-size: 12px;
+        height: 18px;
+        left: 45px;
+        max-width: 165px;
+        overflow: hidden;
+        position: absolute;
+        top: 97px;
+      }
+      .venue_message {
+        color: #00CCFF;
+        font-size: 10px;
+        left: 120px;
+        max-width: 120px;
+        overflow: hidden;
+        position: absolute;
+        top: 132px;
+        height: 15px;
+        text-transform: uppercase;
+      }
+    }
+  }
+  .navbar-header {
+    width: 100%;
+    .navbar-brand {
+      padding: 0px;
+      height: auto;
+      margin: 0px;
+    }
+    .navbar-toggle.menu-button {
+      border: none;
+      float: none;
+      margin-top: 18px;
+      margin-right: 0px;
+      &.active {
+        color: #00CCFF;
+        .icon-bar {
+          background-color: #00CCFF;
+        }
+      }
+      .icon-bar + .icon-bar {
+        margin-top: 6px;
+      }
+      .icon-bar {
+        height: 3px;
+        width: 30px;
+      }
+      &:focus, &:hover {
+        background-color: transparent;
+      }
+      .hamburger {
+        float: left;
+        margin-top: 6px;
+        display: block;
+      }
+      .text {
+        font-size: 24px; margin-left: 20px;
+        float: right;
+        display: block;
+      }
+    }
+  }  
+}
+
+#jPanelMenu-menu {
+  background-color: #222222;
+  letter-spacing: normal;
+  .list-group-item {
+    background-color: transparent;
+    border: none;
+    text-align: center;
+    border-bottom: 1px solid #333333;
+    padding: 0;
+    a {
+      display: block;
+      padding: 10px;
+      height: 110px;
+      position: relative;
+      background-image: asset-url("hamburger_menu_sprite.png", image);
+      background-repeat: no-repeat;
+      color: #999999;
+      &.active, &:hover {
+        color: #00CCFF;
+        text-decoration: none;
+      }
+      &:active, &:focus {
+        text-decoration: none; 
+      }
+      &.active {
+        background-color: #191919; 
+      }
+      &.my_venue {
+        background-position: 79px 35px;
+        &.active, &:hover {
+          background-position: -71px 35px;
+        }
+      }
+      &.contact_us {
+        background-position: 68px -40px;
+        &.active, &:hover {
+          background-position: -82px -40px;
+        }
+      }
+      &.logout {
+        background-position: 73px -313px;
+        &.active, &:hover {
+          background-position: -81px -313px;
+        }
+      }
+      span {
+        position: relative;
+        top: 65px;
+      }
+    }
+  }
+  .footer {
+    margin-top: 60px;
+    p {
+      color: #999999;
+      text-align: center;
+      a {
+        text-decoration: underline;
+      }
+    }
+  }
+}
