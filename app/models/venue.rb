@@ -121,18 +121,19 @@ class Venue < ActiveRecord::Base
       account_down_vote
     end
 
-    recalculate_rating
+    #recalculate_rating
   end
 
   def recalculate_rating
     y = 1.0 / (1 + LytitBar::RATING_LOSS_L)
 
-    a = self.r_up_votes || 1.0
+    a = self.r_up_votes || (1.0 + get_k)
     b = self.r_down_votes || 1.0
 
     puts "A = #{a}, B = #{b}, Y = #{y}"
 
     x = LytitBar::inv_inc_beta(a, b, y)
+    
     puts "X = #{x}"
 
     self.rating = eval(x.to_s)
