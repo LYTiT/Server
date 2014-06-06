@@ -160,7 +160,7 @@ class Venue < ActiveRecord::Base
       account_down_vote
     end
 
-    #recalculate_rating
+    recalculate_rating
   end
 
   def recalculate_rating
@@ -171,12 +171,18 @@ class Venue < ActiveRecord::Base
 
     puts "A = #{a}, B = #{b}, Y = #{y}"
 
-    x = LytitBar::inv_inc_beta(a, b, y)
+    #x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
 
-    puts "X = #{x}"
+    if $?.to_i == 0
+      puts "X = #{x}"
 
-    self.rating = eval(x.to_s)
-    save
+      self.rating = eval(x)
+      save
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
+    end
   end
 
   private
