@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140604165036) do
+ActiveRecord::Schema.define(version: 20140606190129) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,14 @@ ActiveRecord::Schema.define(version: 20140604165036) do
 
   create_table "flagged_comments", force: true do |t|
     t.integer  "venue_comment_id"
+    t.integer  "user_id"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "flagged_events", force: true do |t|
+    t.integer  "event_id"
     t.integer  "user_id"
     t.text     "message"
     t.datetime "created_at"
@@ -178,12 +186,13 @@ ActiveRecord::Schema.define(version: 20140604165036) do
     t.string   "postal_code"
     t.text     "formatted_address"
     t.text     "google_place_reference"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.datetime "fetched_at"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
+    t.string   "menu_link"
   end
 
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
