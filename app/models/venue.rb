@@ -30,11 +30,6 @@ class Venue < ActiveRecord::Base
 
   has_many :lytit_votes, :dependent => :destroy
 
-  # TODO: Is this required? A: Yes
-  # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
-  # A: yes, there is a migration for that - lytit_votes
-  has_many :votes, :through => :lytit_votes
-
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
