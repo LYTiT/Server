@@ -17,8 +17,9 @@ var venue_messages = {
       var new_id = new Date().getTime();
       var regexp = new RegExp('new_' + association, 'g')
       $(selector).append(content.replace(regexp, new_id)); 
-      $("a[rel~=tooltip], .has-tooltip").tooltip();
+      // $("a[rel~=tooltip], .has-tooltip").tooltip();
     }
+    $('.delete_button').confirmation()
     venue_messages.update_section();
   },
   update_section: function() {
@@ -34,6 +35,11 @@ var venue_messages = {
       $(this).find('.position').val(index);
     })
     return false;
+  },
+  delete_message: function(element) {
+    $(element).parent().find('input[type=hidden]').val('1');
+    $(element).closest('.fields').hide();
+    venue_messages.update_section();
   }
 }
 
@@ -43,7 +49,14 @@ $(function(){
       $(this).prev().append($(this));
     });
     $('#messages_list').sortable({
-      handle: ".move_handle"
+      handle: ".move_handle",
+      update: function(event, ui) {
+        if($(".list-group-item:visible .edit input[type=text]").length > 0) {
+            $(".venue_message").html($(".list-group-item:visible .edit input[type=text]")[0].value);
+        } else {
+            $(".venue_message").html("");
+        }
+      }
     });
     // $('#messages_list').disableSelection();
     $('#hamburger-menu-button').click(function(){
@@ -60,9 +73,12 @@ $(function(){
       $('.venue-selector-container ul.list-group').hide();
     });
     $('.messages_list').on('click', '.delete_button', function() {
-      $(this).parent().find('input[type=hidden]').val('1');
-      $(this).closest('.fields').hide();
-      venue_messages.update_section();
+      $('#delete_message_modal').modal('show');
+      element = this
+      $('#delete_message_modal .btn-danger').unbind().click(function(){
+        venue_messages.delete_message(element);
+        $('#delete_message_modal').modal('hide');
+      })
       return false;
     });
     $('.messages_list').on('click', '.message_items .view', function() {

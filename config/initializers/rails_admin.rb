@@ -1,14 +1,18 @@
 RailsAdmin.config do |config|
-  config.authorize_with do
-    authenticate_or_request_with_http_basic('Site Message') do |username, password|
-      username == 'lytit' && password == 'happyfun'
+  config.authenticate_with do
+    if current_user.present? and not current_user.is_admin?
+      unathorized
+    elsif not current_user.present?
+      session[:return_to] = '/admin'
+      flash.notice = I18n.t('flashes.unauthenticated')
+      redirect_to '/sign_in'
     end
   end
 
   config.model 'User' do
     edit do
       field :password do
-        help 'Required. Minimum 8 characters. (leave blank if you don\'t want to change it)'
+        help 'Required. Length of 8-128. <br />(leave blank if you don\'t want to change it)'.html_safe
       end
       field :password_confirmation do
         hide
@@ -19,6 +23,6 @@ RailsAdmin.config do |config|
       end
     end
   end
-
+  
   config.main_app_name { ['My App', 'Admin'] }
 end

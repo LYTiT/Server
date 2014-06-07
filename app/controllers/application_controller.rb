@@ -9,4 +9,16 @@ class ApplicationController < ActionController::Base
   def ssl_configured?
     !Rails.env.development?
   end
+
+  def authorize
+    unless signed_in?
+      deny_access(I18n.t('flashes.unauthenticated'))
+    end
+  end
+
+  def unathorized
+    render :file => "public/401.html", :status => :unauthorized, :layout => false
+    return
+  end
+
 end

@@ -2,6 +2,7 @@ class User < ActiveRecord::Base
   include Clearance::User
 
   validates_uniqueness_of :name, :case_sensitive => false
+  validates :name, presence: true
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
   validates_length_of :password, :minimum => 8, unless: :skip_password_validation?
 
@@ -34,7 +35,14 @@ class User < ActiveRecord::Base
 
   def is_venue_manager?
     if self.role.present?
-      return self.role.name == "Venue Manager"
+      return (self.role.name == "Venue Manager" or self.role.name == "Admin")
+    end
+    return false
+  end
+
+  def is_admin?
+    if self.role.present?
+      return self.role.name == "Admin"
     end
     return false
   end
