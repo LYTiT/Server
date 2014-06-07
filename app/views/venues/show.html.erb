@@ -2,6 +2,16 @@
   <div class="row">
     <div class="col-md-8 col-sm-7 venue_messages">
       <div class="venue-selector-container">
+        <% if @venue.errors.full_messages.present? %>
+          <div class="alert alert-danger">
+            <strong>Oops! Please fix the following and try again.</strong>
+            <ul>
+              <% @venue.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
         <h1 class="venue-selector <%= current_user.venues.size > 1 ? 'active' : nil %>">
           <a href="#"><%= @venue.name %></a>
           <small>Please type in upto four promotions/messages that will be displayed on your venue page.</small>

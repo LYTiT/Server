@@ -16,12 +16,8 @@ class VenuesController < ApplicationController
   end
 
   def update
-    if @venue.update_attributes(venue_params)
-    
-    else
-    
-    end
-    redirect_to venue_path(@venue)
+    @venue.update_attributes(venue_params)
+    render :show
   end
 
   private

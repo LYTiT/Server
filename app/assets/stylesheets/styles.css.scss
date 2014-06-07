@@ -91,6 +91,13 @@ body.splash {
 body.venue_manager {
   letter-spacing: normal;
   background-color: #EAEAEA;
+  .alert {
+    ul {
+      list-style: circle outside none;
+      margin-top: 5px;
+      padding-left: 24px;
+    }
+  }
   .container {
     max-width: 970px;
   }
