@@ -12,10 +12,10 @@ s.every '5m' do
 end
 
 # Recalculate venues ratings every 5 minutes
-s.every '5m' do
-	puts 'Recalculating ratings'
-	Venue.all.each do |venue|
-		venue.recalculate_rating
-	end
-	puts 'Ratings refreshed.'
-end
+#s.every '5m' do
+#	puts 'Recalculating ratings'
+#	Venue.all.each do |venue|
+#		venue.recalculate_rating
+#	end
+#	puts 'Ratings refreshed.'
+#end

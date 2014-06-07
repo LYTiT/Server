@@ -32,7 +32,7 @@ class LytitBar
   end
 
   def self.inv_inc_beta(a, b, y)
-    RubyPython.start(:python_exe => "python")
+    RubyPython.start(:python_exe => '/usr/local/bin/python2.7')
     scipy = RubyPython.import('scipy.special')
     scipy.betaincinv(a, b, y)
   end
