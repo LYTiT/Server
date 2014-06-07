@@ -25,6 +25,17 @@
         <ul class="list-group venue_messages_list add_to_list <%= @venue.messages.size == 4 ? "hide" : "" %>">
           <li class="list-group-item" onclick="<%= function_to_add_fields "Type in your promotion/message.", f, :venue_messages, ".venue_messages_list.messages_list" %>">Type in your promotion/message.</li>
         </ul>
+        <div class="input-group display_menu <%= @venue.menu_link.present? ? "link" : "no_link" %>">
+          <span class="input-group-addon">
+            <input id="display_menu_opt" type="checkbox" <%= @venue.menu_link.present? ? "checked" : nil %>>
+          </span>
+          <%= f.text_field :menu_link, class: "form-control" %>
+          <div class="default">Display Menu</div>
+          <div class="value">
+            <%= link_to @venue.menu_link, @venue.menu_link, target: "_blank" %>
+            <a href="#" class="btn btn-xs btn-primary btn-edit">Edit</a>
+          </div>
+        </div>
         <input type="submit" value="Save/Publish" class="btn btn-primary btn-save"> 
       <% end %>
     </div>

@@ -45,6 +45,18 @@ var venue_messages = {
 
 $(function(){
   if($('body').hasClass('venue_manager')) {  
+    $('#display_menu_opt').change(function(event) {
+      if($(this).is(':checked')) {
+        $('.display_menu').removeClass('no_link').removeClass('link').addClass('add_link');
+      } else {
+        $('#venue_menu_link').val('');
+        $('.display_menu').removeClass('add_link').removeClass('link').addClass('no_link');
+      }
+    });
+    $('.display_menu .btn-edit').click(function(){
+      $('.display_menu').removeClass('no_link').removeClass('link').addClass('add_link');
+      return false;
+    })
     $('.venue_messages_list.messages_list input[type="hidden"]').each(function(){
       $(this).prev().append($(this));
     });

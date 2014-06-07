@@ -32,7 +32,7 @@ class VenuesController < ApplicationController
   end
 
   def venue_params
-    params.fetch(:venue,{}).permit(venue_messages_attributes: [:message, :id, :_destroy, :position])
+    params.fetch(:venue,{}).permit(:menu_link, venue_messages_attributes: [:message, :id, :_destroy, :position])
   end
 
 end
