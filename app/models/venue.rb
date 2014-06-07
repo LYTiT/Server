@@ -9,6 +9,7 @@ class Venue < ActiveRecord::Base
   validates :name, presence: true
   validates :latitude, presence: true
   validates :longitude, presence: true
+  validate :validate_menu_link
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
@@ -33,6 +34,17 @@ class Venue < ActiveRecord::Base
   # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
   # A: yes, there is a migration for that - lytit_votes
   has_many :votes, :through => :lytit_votes
+
+  def menu_link=(val)
+    if val.present?
+      unless (val.start_with?("http://") or val.start_with?("https://"))
+        val = "http://#{val}" 
+      end
+    else
+      val = nil
+    end
+    write_attribute(:menu_link, val)
+  end
 
   def to_param
     [id, name.parameterize].join("-")
@@ -186,6 +198,20 @@ class Venue < ActiveRecord::Base
   end
 
   private
+
+  def validate_menu_link
+    if menu_link.present?
+      begin
+        uri = URI.parse(menu_link)
+        raise URI::InvalidURIError unless uri.kind_of?(URI::HTTP)
+        response = Net::HTTP.get_response(uri)
+      rescue URI::InvalidURIError
+        errors.add(:menu_link, "is not a valid URL.") 
+      rescue
+        errors.add(:menu_link, "is not reachable. Please check the URL and try again.") 
+      end
+    end
+  end
 
   def minutes_since(vote)
     last_vote = LytitVote.where("venue_id = ? AND value = ?", self.id, vote).last
