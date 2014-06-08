@@ -7,6 +7,7 @@ var jPM = $.jPanelMenu({
   },
   afterClose: function() {
     $('#hamburger-menu-button').removeClass('active');
+    jPM.off();
   }
 });
 
@@ -43,6 +44,12 @@ var venue_messages = {
   }
 }
 
+function open_contact_us() {
+  jPM.off();
+  $('#contact_us_modal').modal('show');
+  return false;
+}
+
 $(function(){
   if($('body').hasClass('venue_manager')) {  
     $('#display_menu_opt').change(function(event) {
@@ -73,7 +80,6 @@ $(function(){
     // $('#messages_list').disableSelection();
     $('#hamburger-menu-button').click(function(){
       jPM.on();  
-      $('#hamburger-menu-button').unbind('click');
     });
     $('.venue-selector a').click(function(){
       $('.modal-backdrop').removeClass('hide').addClass('in');

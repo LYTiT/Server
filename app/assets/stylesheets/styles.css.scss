@@ -469,3 +469,23 @@ body.venue_manager {
     }
   }
 }
+
+#contact_us_modal {
+  color: #000;
+  .modal-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  .modal-body {
+    padding: 10px 20px 12px;
+    a {
+      color: #000;
+      &:hover {
+        color: #00CCFF;
+      }
+    }
+  }
+  .modal-dialog {
+    max-width: 350px;
+  }
+}
