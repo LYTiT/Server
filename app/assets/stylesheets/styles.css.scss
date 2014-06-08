@@ -6,7 +6,6 @@ html {
 body.splash {  
   margin-bottom: 150px;
   background-color: #000;
-
   .container-fluid {
     &.splash_login{
       img {
@@ -14,7 +13,6 @@ body.splash {
       }
     }
   }
-
   .tnc {
     text-align: center;
     margin-bottom: 30px;
@@ -101,6 +99,17 @@ body.splash {
 body.venue_manager {
   letter-spacing: normal;
   background-color: #EAEAEA;
+  .static_pages {
+    color: #000;
+    h1 {
+      margin-top: 30px;
+      color: #00CCFF;
+      border-bottom: 1px solid #D6D6D6;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
+  }
   .alert {
     max-width: 600px;
     ul {

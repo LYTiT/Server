@@ -77,6 +77,9 @@ LytitServer::Application.routes.draw do
     put 'confirm_account/:token' => 'users#confirm_account', as: 'venue_manager_confirm_account'
   end
 
+  get 'about-us' => 'pages#about_us'
+  get 'terms-and-conditions' => 'pages#tnc'
+  
   root :to => 'sessions#new'
 
 
