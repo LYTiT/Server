@@ -72,6 +72,11 @@ LytitServer::Application.routes.draw do
 
   resources :venues, only: [:show, :update]
 
+  resources :users, only: [] do 
+    get 'confirm_account/:token' => 'users#set_password', as: 'venue_manager_set_password'
+    put 'confirm_account/:token' => 'users#confirm_account', as: 'venue_manager_confirm_account'
+  end
+
   root :to => 'sessions#new'
 
 

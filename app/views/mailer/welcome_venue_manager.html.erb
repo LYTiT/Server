@@ -1,0 +1,16 @@
+<p>Hi <%= @user.name %>,</p>
+<p>LYTiT has added you as a Venue Manager for the following locations:</p>
+<p>
+  <ul>
+    <% @user.venues.each do |venue| %>
+      <li><%= venue.name %></li>
+    <% end %>
+  </ul>
+</p>
+<p></p>
+<p>Click on the link below to confirm ownership of the above locations and take control of your account</p>
+<% url = user_venue_manager_set_password_url([@user.id, @user.email.parameterize].join("-"), @user.confirmation_token.html_safe) %>
+<p><%= link_to url, url %></p>
+<p></p>
+<p>Thanks,<p>
+<p>Team LYTiT</p>
