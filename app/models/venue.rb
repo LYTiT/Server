@@ -29,9 +29,10 @@ class Venue < ActiveRecord::Base
 
   has_many :lytit_votes, :dependent => :destroy
 
-  # TODO: Is this required?
+  # TODO: Is this required? A: Yes
   # This breaks the admin panel. There is no model/table for votes. Nor does lytit_votes reference to votes
-  # has_many :votes, :through => :lytit_votes
+  # A: yes, there is a migration for that - lytit_votes
+  has_many :votes, :through => :lytit_votes
 
   def to_param
     [id, name.parameterize].join("-")
@@ -129,11 +130,11 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, 1).size
+    LytitVote.where("venue_id = ? AND value = ?", self.id, 1)
   end
 
   def v_down_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, -1).size
+    LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
   end
 
   def t_minutes_since_last_up_vote
@@ -144,18 +145,44 @@ class Venue < ActiveRecord::Base
     minutes_since(-1)
   end
 
-  def get_k
-    if self.google_place_rating
-      p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
-    end
+  def bayesian_voting_average
+    up_votes_count = self.v_up_votes.size
+    down_votes_count = self.v_down_votes.size
 
-    0
+    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count - down_votes_count)) /
+    (LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count + down_votes_count))
   end
 
-  def bayesian_voting_average
-    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes - self.v_down_votes)) /
-    (LytitBar::BAYESIAN_AVERAGE_M + (self.v_up_votes + self.v_down_votes))
+  def account_new_vote(vote_value)
+    if vote_value > 0
+      account_up_vote
+    else
+      account_down_vote
+    end
+
+    recalculate_rating
+  end
+
+  def recalculate_rating
+    y = 1.0 / (1 + LytitBar::RATING_LOSS_L)
+
+    a = self.r_up_votes || (1.0 + get_k)
+    b = self.r_down_votes || 1.0
+
+    puts "A = #{a}, B = #{b}, Y = #{y}"
+
+    #x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+
+    if $?.to_i == 0
+      puts "X = #{x}"
+
+      self.rating = eval(x)
+      save
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
+    end
   end
 
   private
@@ -167,6 +194,38 @@ class Venue < ActiveRecord::Base
     now = Time.now.utc
 
     (now - last) / 1.minute
+  end
+
+  def account_up_vote
+    self.r_up_votes = get_sum_of_past_votes(self.v_up_votes) + 1 + get_k
+    save
+  end
+
+  def account_down_vote
+    self.r_down_votes = get_sum_of_past_votes(self.v_down_votes) + 1
+    save
+  end
+
+  def get_sum_of_past_votes(votes)
+    now = Time.now.utc
+
+    old_votes_sum = 0
+    for vote in votes
+      minutes_passed_since_vote = (now - vote.created_at) / 1.minute
+
+      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitBar::VOTE_HALF_LIFE_H)
+    end
+
+    old_votes_sum
+  end
+
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+    end
+
+    0
   end
 
 end

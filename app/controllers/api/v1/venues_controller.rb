@@ -9,7 +9,7 @@ class Api::V1::VenuesController < ApiBaseController
   def show
     @venue = Venue.find(params[:id])
     @venue.populate_google_address
-    render json: @venue
+    render json: @venue.as_json(include: :venue_messages)
   end
 
   def add_comment
@@ -74,6 +74,9 @@ class Api::V1::VenuesController < ApiBaseController
   def vote
     vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id)
+
+    venue = Venue.find(params[:venue_id])
+    venue.account_new_vote(vote_value)
 
     if v.save
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok

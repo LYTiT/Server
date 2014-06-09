@@ -17,7 +17,9 @@ class VenuesController < ApplicationController
 
   def update
     if @venue.update_attributes(venue_params)
+    
     else
+    
     end
     redirect_to venue_path(@venue)
   end
@@ -26,10 +28,7 @@ class VenuesController < ApplicationController
 
   def authorized_manager?
     @venue = Venue.find(params[:id])
-    unless @venue.user == current_user
-      #TODO: Something better could be done! This will currently display a 404 page.
-      raise ActionController::RoutingError.new("Not authorized to access this page")
-    end
+    unathorized unless @venue.user == current_user
   end
 
   def venue_params
