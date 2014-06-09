@@ -9,7 +9,7 @@ class GroupsVenue < ActiveRecord::Base
     for user in self.group.users
       token = user.push_token
       if token
-        a = APNS.delay.send_notification(token, { :alert => '', :content_available => 1, :other => { :object_id => self.id, :type => 'venue_added', :venue_id => self.venue.id, :group_id => self.group.id, :user_id => self.user_id }})
+        a = APNS.delay.send_notification(token, { :alert => '', :content_available => 1, :other => { :object_id => self.id, :type => 'venue_added', :venue_id => self.venue.id, :group_id => self.group.id, :user_id => user.id }})
       end
     end
   end
