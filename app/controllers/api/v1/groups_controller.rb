@@ -1,5 +1,7 @@
 class Api::V1::GroupsController < ApiBaseController
 
+  skip_before_filter :set_user, only: [:group_venue_details]
+
   def create
     @group = Group.new(group_params)
 
