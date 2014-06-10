@@ -407,9 +407,10 @@ body.venue_manager {
   }  
 }
 
-#jPanelMenu-menu {
+.jsc-sidebar {
   background-color: #222222;
   letter-spacing: normal;
+  width: 170px;
   .list-group-item {
     background-color: transparent;
     border: none;
