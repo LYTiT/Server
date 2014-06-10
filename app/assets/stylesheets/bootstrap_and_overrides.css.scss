@@ -29,3 +29,12 @@ a {
     text-decoration: none;
   }
 }
+
+.tooltip.right .tooltip-arrow {
+  border-right-color: #808080;
+}
+.tooltip-inner {
+  background-color: #808080;
+  text-transform: none;
+  font-size: 12px;
+}
