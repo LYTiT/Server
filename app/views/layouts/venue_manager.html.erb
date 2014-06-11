@@ -8,12 +8,15 @@
   <%= csrf_meta_tags %>
 </head>
 <body class="<%= body_class %> venue_manager">
+  <div class="wrapper jsc-sidebar-content jsc-sidebar-pulled">  
   <%= render 'layouts/header' %>
   <div class="container main-content">
     <%= yield %>
   </div>
+  </div>
   <%= render 'layouts/hamburger_menu' %>
-  <div class="modal-backdrop fade hide"></div>
+  <%= render 'layouts/contact_us' %>
+  <%= render 'layouts/delete_message_popup' %>
   <%= render 'javascript' %>
 </body>
 </html>

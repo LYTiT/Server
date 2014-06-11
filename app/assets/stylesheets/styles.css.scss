@@ -6,7 +6,6 @@ html {
 body.splash {  
   margin-bottom: 150px;
   background-color: #000;
-
   .container-fluid {
     &.splash_login{
       img {
@@ -14,7 +13,16 @@ body.splash {
       }
     }
   }
-
+  .tnc {
+    text-align: center;
+    margin-bottom: 30px;
+    ul {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      list-style: none;
+      padding: 0;
+    }
+  }
   .login {
     padding-left: 20%;
     padding-right: 20%;
@@ -91,6 +99,25 @@ body.splash {
 body.venue_manager {
   letter-spacing: normal;
   background-color: #EAEAEA;
+  .static_pages {
+    color: #000;
+    h1 {
+      margin-top: 30px;
+      color: #00CCFF;
+      border-bottom: 1px solid #D6D6D6;
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
+  }
+  .alert {
+    max-width: 600px;
+    ul {
+      list-style: circle outside none;
+      margin-top: 5px;
+      padding-left: 24px;
+    }
+  }
   .container {
     max-width: 970px;
   }
@@ -114,7 +141,6 @@ body.venue_manager {
   }
   .main-content {
     margin-top: 50px;  
-    margin-bottom: 20px;
     div.venue-selector-container {
       overflow: visible;
       position: relative;
@@ -185,6 +211,56 @@ body.venue_manager {
     }
     .venue_messages {
       margin-bottom: 30px;
+      .display_menu {
+        max-width: 600px;
+        margin-top: 10px;
+        &.no_link {
+          .input-group-addon {
+            border-radius: 4px;
+            border: 1px solid #CCCCCC;
+          }
+          .default {
+            display: block;
+          }
+        }
+        &.add_link {
+          .form-control {
+            display: block;
+          }
+        }
+        &.link {
+          .input-group-addon {
+            border-radius: 4px;
+            border: 1px solid #CCCCCC;
+          }
+          .value {
+            display: block;
+          }
+        }
+        .form-control {
+          display: none;
+        }
+        .default {
+          color: #000;
+          padding: 7px 4px 7px 12px; 
+          display: none;
+        }
+        .value {
+          color: #000;
+          padding: 7px 4px 5px 12px;
+          display: none;
+          a {
+            color: #000;
+          }
+        }
+        .btn-edit {
+          background-color: rgba(0, 0, 0, 0);
+          border-color: #D6D6D6;
+          color: #000000;
+          font-size: 11px;
+          margin-left: 5px;
+        }
+      }
       .venue_messages_list {
         max-width: 600px;
         margin-top: 20px;
@@ -214,14 +290,6 @@ body.venue_manager {
             .message {
               span {
                 cursor: pointer;
-              }
-              .tooltip.right .tooltip-arrow {
-                border-right-color: #808080;
-              }
-              .tooltip-inner {
-                background-color: #808080;
-                text-transform: none;
-                font-size: 12px;
               }
             }
           }
@@ -330,9 +398,10 @@ body.venue_manager {
   }  
 }
 
-#jPanelMenu-menu {
+.jsc-sidebar {
   background-color: #222222;
   letter-spacing: normal;
+  width: 170px;
   .list-group-item {
     background-color: transparent;
     border: none;
@@ -390,5 +459,25 @@ body.venue_manager {
         text-decoration: underline;
       }
     }
+  }
+}
+
+#contact_us_modal {
+  color: #000;
+  .modal-header {
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+  .modal-body {
+    padding: 10px 20px 12px;
+    a {
+      color: #000;
+      &:hover {
+        color: #00CCFF;
+      }
+    }
+  }
+  .modal-dialog {
+    max-width: 350px;
   }
 }

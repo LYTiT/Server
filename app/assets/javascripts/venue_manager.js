@@ -1,12 +1,15 @@
-var jPM = $.jPanelMenu({
-  menu: '#custom-menu-selector',
-  trigger: '#hamburger-menu-button',
-  openPosition: '170px',
-  afterOpen: function() {
-    $('#hamburger-menu-button').addClass('active');
+$('#jsi-nav').sidebar({
+  trigger: '.jsc-sidebar-trigger',
+  scrollbarDisplay: true,
+  pullCb: function () { 
+    if(!$('.jsc-sidebar-content').hasClass('jsc-sidebar-pushed')) {
+      $('#hamburger-menu-button').removeClass('active');  
+    }
   },
-  afterClose: function() {
-    $('#hamburger-menu-button').removeClass('active');
+  pushCb: function () {
+    if($('.jsc-sidebar-content').hasClass('jsc-sidebar-pushed')) {
+      $('#hamburger-menu-button').addClass('active');  
+    }
   }
 });
 
@@ -43,8 +46,25 @@ var venue_messages = {
   }
 }
 
+function open_contact_us() {
+  $('#contact_us_modal').modal('show');
+  return false;
+}
+
 $(function(){
   if($('body').hasClass('venue_manager')) {  
+    $('#display_menu_opt').change(function(event) {
+      if($(this).is(':checked')) {
+        $('.display_menu').removeClass('no_link').removeClass('link').addClass('add_link');
+      } else {
+        $('#venue_menu_link').val('');
+        $('.display_menu').removeClass('add_link').removeClass('link').addClass('no_link');
+      }
+    });
+    $('.display_menu .btn-edit').click(function(){
+      $('.display_menu').removeClass('no_link').removeClass('link').addClass('add_link');
+      return false;
+    })
     $('.venue_messages_list.messages_list input[type="hidden"]').each(function(){
       $(this).prev().append($(this));
     });
@@ -58,19 +78,15 @@ $(function(){
         }
       }
     });
-    // $('#messages_list').disableSelection();
-    $('#hamburger-menu-button').click(function(){
-      jPM.on();  
-      $('#hamburger-menu-button').unbind('click');
-    });
     $('.venue-selector a').click(function(){
-      $('.modal-backdrop').removeClass('hide').addClass('in');
+      $('.modal-backdrop').show().delay(800).addClass('in');
       $('.venue-selector-container ul.list-group').show();
       return false;
     });
-    $('.venue-selector-container ul.list-group li a, .modal-backdrop').click(function(){
-      $('.modal-backdrop').addClass('hide').removeClass('in');
+    $('.venue-selector-container ul.list-group li a, .modal-backdrop').click(function(e){
+      $('.modal-backdrop').removeClass('in').delay(800);
       $('.venue-selector-container ul.list-group').hide();
+      setTimeout(function(){ $('.modal-backdrop').css('display','none'); }, 800);
     });
     $('.messages_list').on('click', '.delete_button', function() {
       $('#delete_message_modal').modal('show');

@@ -1,8 +1,12 @@
 class User < ActiveRecord::Base
   include Clearance::User
 
+  attr_accessor :password_confirmation
+
   validates_uniqueness_of :name, :case_sensitive => false
   validates :name, presence: true
+  validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
+  validates :venues, absence: true, if: Proc.new {|user| user.role.try(:name) != "Venue Manager"}
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
   validates_length_of :password, :minimum => 8, unless: :skip_password_validation?
 
@@ -14,10 +18,10 @@ class User < ActiveRecord::Base
   has_many :venues
   belongs_to :role
 
-  attr_accessor :password_confirmation
-
   before_save :ensure_authentication_token
-
+  before_save :generate_confirmation_token
+  after_save :notify_venue_managers
+  
   # This is to deal with S3.
   def email_with_id
     "#{email}-#{id}"
@@ -34,27 +38,41 @@ class User < ActiveRecord::Base
   end
 
   def is_venue_manager?
-    if self.role.present?
-      return (self.role.name == "Venue Manager" or self.role.name == "Admin")
-    end
-    return false
+    role.try(:name) == "Venue Manager"
   end
 
   def is_admin?
-    if self.role.present?
-      return self.role.name == "Admin"
-    end
-    return false
+    role.try(:name) == "Admin"
   end
 
   def manages_any_venues?
-    self.venues.size > 0
+    venues.size > 0
   end
 
   private
 
+  def generate_confirmation_token
+    if role_id_changed?
+      if role.try(:name) == "Venue Manager"
+        self.confirmation_token = SecureRandom.hex
+      end    
+    end
+  end
+
+  def notify_venue_managers
+    if role_id_changed?
+      if role.try(:name) == "Venue Manager"
+        Mailer.welcome_venue_manager(self).deliver
+      end    
+    end
+  end
+
   def ensure_authentication_token
-    self.authentication_token ||= SecureRandom.hex
+    unless self.authentication_token.present?
+      begin
+        self.authentication_token = SecureRandom.hex
+      end while self.class.exists?(authentication_token: authentication_token)
+    end
   end
 
 end
