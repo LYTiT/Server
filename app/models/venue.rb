@@ -33,7 +33,7 @@ class Venue < ActiveRecord::Base
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
-        val = "http://#{val}" 
+        val = "http://#{val}"
       end
     else
       val = nil
@@ -232,9 +232,9 @@ class Venue < ActiveRecord::Base
         raise URI::InvalidURIError unless uri.kind_of?(URI::HTTP)
         response = Net::HTTP.get_response(uri)
       rescue URI::InvalidURIError
-        errors.add(:menu_link, "is not a valid URL.") 
+        errors.add(:menu_link, "is not a valid URL.")
       rescue
-        errors.add(:menu_link, "is not reachable. Please check the URL and try again.") 
+        errors.add(:menu_link, "is not reachable. Please check the URL and try again.")
       end
     end
   end
