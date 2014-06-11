@@ -3,8 +3,7 @@ class Api::V1::VenuesController < ApiBaseController
   skip_before_filter :set_user, only: [:search, :index]
 
   def index
-    @venues = Venue.with_color_ratings
-    render json: @venues
+    @venues = Venue.search(params)
   end
 
   def show
