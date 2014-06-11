@@ -9,6 +9,8 @@ class LytitBar
 
   VOTE_HALF_LIFE_H = 30
   RATING_LOSS_L = 10
+
+  THRESHOLD_TO_BE_SHOWN_ON_MAP = 210 # 3.5 hours
   #-------------------------------------
 
   attr_accessor :position
