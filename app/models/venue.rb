@@ -26,14 +26,14 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
-  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university)
+  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address)
 
   has_many :lytit_votes, :dependent => :destroy
 
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
-        val = "http://#{val}" 
+        val = "http://#{val}"
       end
     else
       val = nil
@@ -94,9 +94,13 @@ class Venue < ActiveRecord::Base
     end
 
     if fetch_type == 'rankby'
-      Venue.within(Venue.meters_to_miles(meters), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
+      Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
     else
-      Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
+      if q.blank?
+        rated_venue_ids = Venue.joins(:venue_ratings).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        list = list + rated_venue_ids
+      end
+      Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now)
     end
   end
 
@@ -144,14 +148,6 @@ class Venue < ActiveRecord::Base
     LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
   end
 
-  def t_minutes_since_last_up_vote
-    minutes_since(1)
-  end
-
-  def t_minutes_since_last_down_vote
-    minutes_since(-1)
-  end
-
   def bayesian_voting_average
     up_votes_count = self.v_up_votes.size
     down_votes_count = self.v_down_votes.size
@@ -167,7 +163,9 @@ class Venue < ActiveRecord::Base
       account_down_vote
     end
 
-    recalculate_rating
+    #Thread.new do
+      recalculate_rating
+    #end
   end
 
   def recalculate_rating
@@ -192,6 +190,39 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def is_visible?
+    if not self.rating
+      return false
+    end
+
+    if minutes_since_last_vote >= LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+      return false
+    end
+
+    true
+  end
+
+  def self.with_color_ratings
+    ret = []
+
+    venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
+
+    count_groups = 0
+    last = venues.first.rating.round(2) if not venues.empty?
+
+    for venue in venues
+      rating = venue.rating.round(2)
+      if not rating == last
+        last = rating
+        count_groups += 1
+      end
+
+      ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? last : -1}))
+    end
+
+    ret
+  end
+
   private
 
   def validate_menu_link
@@ -201,20 +232,24 @@ class Venue < ActiveRecord::Base
         raise URI::InvalidURIError unless uri.kind_of?(URI::HTTP)
         response = Net::HTTP.get_response(uri)
       rescue URI::InvalidURIError
-        errors.add(:menu_link, "is not a valid URL.") 
+        errors.add(:menu_link, "is not a valid URL.")
       rescue
-        errors.add(:menu_link, "is not reachable. Please check the URL and try again.") 
+        errors.add(:menu_link, "is not reachable. Please check the URL and try again.")
       end
     end
   end
 
-  def minutes_since(vote)
-    last_vote = LytitVote.where("venue_id = ? AND value = ?", self.id, vote).last
+  def minutes_since_last_vote
+    last_vote = LytitVote.where("venue_id = ?", self.id).last
 
-    last = last_vote.created_at
-    now = Time.now.utc
+    if last_vote
+      last = last_vote.created_at
+      now = Time.now.utc
 
-    (now - last) / 1.minute
+      (now - last) / 1.minute
+    else
+      LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+    end
   end
 
   def account_up_vote
