@@ -186,12 +186,12 @@ ActiveRecord::Schema.define(version: 20140606190129) do
     t.string   "postal_code"
     t.text     "formatted_address"
     t.text     "google_place_reference"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "fetched_at"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.string   "menu_link"
   end
 
