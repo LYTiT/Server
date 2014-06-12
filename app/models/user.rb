@@ -49,6 +49,14 @@ class User < ActiveRecord::Base
     venues.size > 0
   end
 
+  def send_location_added_to_group_notification?(group)
+    self.notify_location_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
+  end
+
+  def send_event_added_to_group_notification?(group)
+    self.notify_events_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
+  end
+
   private
 
   def generate_confirmation_token
