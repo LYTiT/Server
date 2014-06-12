@@ -210,7 +210,7 @@ class Venue < ActiveRecord::Base
     ret = []
     #venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
     #count_groups = 0
-    seed = venues.first.rating || 0.0 # maybe would be good to set rating to be NON-NULL
+    seed = venues.first.try(:rating) || 0.0 # maybe would be good to set rating to be NON-NULL
     last = seed.round(2) if not venues.empty?
 
     for venue in venues
