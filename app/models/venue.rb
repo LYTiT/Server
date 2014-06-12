@@ -95,13 +95,13 @@ class Venue < ActiveRecord::Base
 
     venues = []
     if fetch_type == 'rankby'
-      Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
+      Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list)
     else
       if q.blank?
         rated_venue_ids = Venue.joins(:venue_ratings).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
       end
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now).order('rating DESC')
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list.uniq).order('rating DESC')
       Venue.with_color_ratings(venues.to_a)
     end
   end
