@@ -101,7 +101,7 @@ class Venue < ActiveRecord::Base
         rated_venue_ids = Venue.joins(:venue_ratings).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
       end
-      venues = Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now).order('rating DESC')
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now).order('rating DESC')
       Venue.with_color_ratings(venues)
     end
   end
