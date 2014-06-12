@@ -52,6 +52,7 @@ class Event < ActiveRecord::Base
     users_ids = []
     for group in self.groups
       for user in group.users
+        next if user.id == self.user_id or !user.send_event_added_to_group_notification?(group)
         users_ids.push(user.id)
       end
     end
