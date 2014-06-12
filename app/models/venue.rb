@@ -102,7 +102,7 @@ class Venue < ActiveRecord::Base
         list = list + rated_venue_ids
       end
       venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now).order('rating DESC')
-      Venue.with_color_ratings(venues)
+      Venue.with_color_ratings(venues.to_a)
     end
   end
 
@@ -210,13 +210,13 @@ class Venue < ActiveRecord::Base
     ret = []
     #venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
     #count_groups = 0
-
     seed = venues.first.rating || 0.0 # maybe would be good to set rating to be NON-NULL
     last = seed.round(2) if not venues.empty?
 
     for venue in venues
       rating = venue.rating || 0.0
       current = rating.round(2)
+
       if not current == last
         last = current
         #count_groups += 1
