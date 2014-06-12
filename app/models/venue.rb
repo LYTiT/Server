@@ -93,6 +93,7 @@ class Venue < ActiveRecord::Base
       list << venue.id if venue.persisted?
     end
 
+    venues = []
     if fetch_type == 'rankby'
       Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?) or (start_date <= ? and end_date >= ?)", list, Time.now, Time.now)
     else
@@ -100,7 +101,8 @@ class Venue < ActiveRecord::Base
         rated_venue_ids = Venue.joins(:venue_ratings).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
       end
-      Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now)
+      venues = Venue.where("id IN (?) or (start_date <= ? and end_date >= ?)", list.uniq, Time.now, Time.now).order('rating DESC')
+      Venue.with_color_ratings(venues)
     end
   end
 
@@ -202,19 +204,22 @@ class Venue < ActiveRecord::Base
     true
   end
 
-  def self.with_color_ratings
+  private
+
+  def self.with_color_ratings(venues)
     ret = []
+    #venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
+    #count_groups = 0
 
-    venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
-
-    count_groups = 0
-    last = venues.first.rating.round(2) if not venues.empty?
+    seed = venues.first.rating || 0.0 # maybe would be good to set rating to be NON-NULL
+    last = seed.round(2) if not venues.empty?
 
     for venue in venues
-      rating = venue.rating.round(2)
-      if not rating == last
-        last = rating
-        count_groups += 1
+      rating = venue.rating || 0.0
+      current = rating.round(2)
+      if not current == last
+        last = current
+        #count_groups += 1
       end
 
       ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? last : -1}))
@@ -222,8 +227,6 @@ class Venue < ActiveRecord::Base
 
     ret
   end
-
-  private
 
   def validate_menu_link
     if menu_link.present?
