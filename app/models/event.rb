@@ -3,7 +3,6 @@ class Event < ActiveRecord::Base
   attr_accessor :address, :city, :state, :postal_code, :formatted_address
 
   validates :name, presence: true
-  validates :description, presence: true
   validates :start_date, presence: true
   validates :end_date, presence: true
   validates :user_id, presence: true
