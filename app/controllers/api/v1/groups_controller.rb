@@ -119,6 +119,16 @@ class Api::V1::GroupsController < ApiBaseController
     @venue = @groups_venue.venue
   end
 
+  def report
+    group = Group.find(params[:group_id])
+    flagged_group = FlaggedGroup.new
+    flagged_group.user = @user
+    flagged_group.message = params[:message]
+    flagged_group.group = group
+    flagged_group.save
+    render json: flagged_group
+  end
+
   private
 
   def group_params
