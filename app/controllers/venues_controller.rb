@@ -16,7 +16,9 @@ class VenuesController < ApplicationController
   end
 
   def update
-    @venue.update_attributes(venue_params)
+    if @venue.update_attributes(venue_params)
+      flash.now.notice = "Messages for #{@venue.name} have been successfully published."  
+    end
     render :show
   end
 
