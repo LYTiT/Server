@@ -12,6 +12,12 @@
             </ul>
           </div>
         <% end %>
+        <% if flash[:notice].present? %>
+          <div class="alert alert-success">
+            <strong>Well done!</strong>
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
         <h1 class="venue-selector <%= current_user.venues.size > 1 ? 'active' : nil %>">
           <a href="#"><%= @venue.name %></a>
           <small>Please type in upto four promotions/messages that will be displayed on your venue page.</small>
