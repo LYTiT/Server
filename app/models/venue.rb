@@ -26,14 +26,14 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
-  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address)
+  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
 
   has_many :lytit_votes, :dependent => :destroy
 
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
-        val = "http://#{val}" 
+        val = "http://#{val}"
       end
     else
       val = nil
@@ -201,9 +201,9 @@ class Venue < ActiveRecord::Base
         raise URI::InvalidURIError unless uri.kind_of?(URI::HTTP)
         response = Net::HTTP.get_response(uri)
       rescue URI::InvalidURIError
-        errors.add(:menu_link, "is not a valid URL.") 
+        errors.add(:menu_link, "is not a valid URL.")
       rescue
-        errors.add(:menu_link, "is not reachable. Please check the URL and try again.") 
+        errors.add(:menu_link, "is not reachable. Please check the URL and try again.")
       end
     end
   end
