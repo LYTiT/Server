@@ -20,6 +20,7 @@ LytitServer::Application.routes.draw do
         #resources :venue_ratings, only: [:create]
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
+        post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
         collection do
           get 'search'
         end

@@ -13,4 +13,13 @@ class VenueComment < ActiveRecord::Base
       errors.add(:comment, 'or image is required')
     end
   end
+
+  def is_viewed?(user)
+    CommentView.find_by_user_id_and_venue_comment_id(user.id, self.id).present?
+  end
+
+  def total_views
+    CommentView.where(venue_comment_id: self.id).count
+  end
+
 end
