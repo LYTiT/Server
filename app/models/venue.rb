@@ -103,7 +103,7 @@ class Venue < ActiveRecord::Base
         list = list + rated_venue_ids
       end
       venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list.uniq).order('rating DESC')
-      Venue.with_color_ratings(venues.to_a)
+      Venue.with_color_ratings(venues.to_a).collect{|a| a if a["color_rating"] != -1}.compact
     end
   end
 
