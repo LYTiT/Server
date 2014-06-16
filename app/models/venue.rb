@@ -204,6 +204,12 @@ class Venue < ActiveRecord::Base
     true
   end
 
+  def reset_r_vector
+    self.r_up_votes = 1 + get_k
+    self.r_down_votes = 1
+    save
+  end
+
   private
 
   def self.with_color_ratings(venues)
