@@ -14,12 +14,18 @@ class Api::V1::GroupsController < ApiBaseController
 
   def update
     @group = Group.find(params[:id])
-    permitted_params = group_params
-
-    if @group.update_attributes(permitted_params)
-      render json: @group
+    if @group.is_user_admin?(@user)
+      permitted_params = group_params
+      if @group.update_attributes(permitted_params)
+        group = @group.as_json
+        group.delete("password")
+        group["group_password"] = @group.password
+        render json: group
+      else
+        render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } } , status: :unprocessable_entity
+      end
     else
-      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } } , status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNAUTHORIZED, messages: ['You dont have admin privileges for this group'] } }, status: :unauthorized
     end
   end
 
@@ -117,6 +123,16 @@ class Api::V1::GroupsController < ApiBaseController
     @groups_venue = GroupsVenue.find(params[:id])
     @group = @groups_venue.group
     @venue = @groups_venue.venue
+  end
+
+  def report
+    group = Group.find(params[:group_id])
+    flagged_group = FlaggedGroup.new
+    flagged_group.user = @user
+    flagged_group.message = params[:message]
+    flagged_group.group = group
+    flagged_group.save
+    render json: flagged_group
   end
 
   private

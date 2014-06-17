@@ -11,10 +11,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140606190129) do
+ActiveRecord::Schema.define(version: 20140615040422) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "comment_views", force: true do |t|
+    t.integer  "venue_comment_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "comment_views", ["user_id"], name: "index_comment_views_on_user_id", using: :btree
+  add_index "comment_views", ["venue_comment_id", "user_id"], name: "index_comment_views_on_venue_comment_id_and_user_id", unique: true, using: :btree
+  add_index "comment_views", ["venue_comment_id"], name: "index_comment_views_on_venue_comment_id", using: :btree
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -68,6 +79,17 @@ ActiveRecord::Schema.define(version: 20140606190129) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "flagged_groups", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "group_id"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "flagged_groups", ["group_id"], name: "index_flagged_groups_on_group_id", using: :btree
+  add_index "flagged_groups", ["user_id"], name: "index_flagged_groups_on_user_id", using: :btree
 
   create_table "groups", force: true do |t|
     t.string   "name"
