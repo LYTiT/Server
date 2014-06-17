@@ -42,4 +42,4 @@ if __name__ == "__main__":
 		vote(sys.argv[1], sys.argv[2], int(sys.argv[3]))
 	except KeyboardInterrupt:
 		print '\n\nBye :)'
-		exit(0)
+		sys.exit(0)
