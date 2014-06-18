@@ -78,7 +78,7 @@ class Api::V1::UsersController < ApiBaseController
   private
 
   def user_params
-    params.permit(:name, :email, :password, :notify_location_added_to_groups, :notify_events_added_to_groups, :notify_venue_added_to_groups)
+    params.permit(:name, :email, :password, :notify_location_added_to_groups, :notify_events_added_to_groups, :notify_venue_added_to_groups, :username_private)
   end
 end
 
