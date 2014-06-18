@@ -75,10 +75,8 @@ class Group < ActiveRecord::Base
       gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue["id"]).first
       info = gv.as_json.slice("created_at", "user_id")
       user = User.find(info["user_id"])
-
-      venues.append(venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name}))
+      venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name})
     end
-
     venues
   end
 
