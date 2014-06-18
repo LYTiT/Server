@@ -70,15 +70,13 @@ class Group < ActiveRecord::Base
   end
 
   def venues_with_user_who_added
-    venues = []
-    for venue in self.venues
-      gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue.id).first
+    venues = Venue.with_color_ratings(self.venues)
+    for venue in venues
+      gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue["id"]).first
       info = gv.as_json.slice("created_at", "user_id")
       user = User.find(info["user_id"])
-
-      venues.append(venue.as_json.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name}))
+      venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name})
     end
-
     venues
   end
 
