@@ -30,6 +30,8 @@ class Venue < ActiveRecord::Base
 
   has_many :lytit_votes, :dependent => :destroy
 
+  scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - 210.minutes) }
+
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
@@ -101,11 +103,12 @@ class Venue < ActiveRecord::Base
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
       end
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list.uniq).order('rating DESC')
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+
       if q.blank?
-        Venue.with_color_ratings(venues.to_a).collect{|a| a if a["color_rating"] != -1}.compact
+        Venue.with_color_ratings(venues).collect{|a| a if a["color_rating"] != -1}.compact
       else
-        Venue.with_color_ratings(venues.to_a)
+        Venue.with_color_ratings(venues)
       end
     end
   end
@@ -218,21 +221,22 @@ class Venue < ActiveRecord::Base
 
   def self.with_color_ratings(venues)
     ret = []
-    #venues = Venue.where('rating IS NOT NULL').order('rating DESC').to_a
-    #count_groups = 0
-    seed = venues.first.try(:rating) || 0.0 # maybe would be good to set rating to be NON-NULL
-    last = seed.round(2) if not venues.empty?
+
+    vis = venues.visible
+
+    max = vis.maximum(:rating)
+    min = vis.minimum(:rating)
 
     for venue in venues
       rating = venue.rating || 0.0
-      current = rating.round(2)
 
-      if not current == last
-        last = current
-        #count_groups += 1
+      if rating == max
+        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? 1.0 : -1}))
+      elsif rating == min
+        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? 0.0 : -1}))
+      else
+        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? (max > 0 ? (rating / max) : 0) : -1}))
       end
-
-      ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? last : -1}))
     end
 
     ret
