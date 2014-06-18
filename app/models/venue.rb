@@ -224,15 +224,17 @@ class Venue < ActiveRecord::Base
 
     diff_ratings = Set.new
     for venue in venues
-      rating = venue.rating ? venue.rating.round(2) : 0.0
-      diff_ratings.add(rating)
+      if venue.rating
+        rat = venue.rating.round(2)
+        diff_ratings.add(rat)
+      end
     end
 
     diff_ratings = diff_ratings.to_a.sort
 
     step = 1.0 / (diff_ratings.size - 1)
 
-    colors_map = {}
+    colors_map = {0.0 => 0.0} # null ratings will be out of the distribution range, just zero
     color = -step
     for rating in diff_ratings
       color += step
