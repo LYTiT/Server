@@ -222,26 +222,21 @@ class Venue < ActiveRecord::Base
   def self.with_color_ratings(venues)
     ret = []
 
-    vis = venues.visible
-
-    diff_ratings = []
-    last = -1
+    diff_ratings = Set.new
     for venue in venues
       rating = venue.rating ? venue.rating.round(2) : 0.0
-      if rating != last
-        diff_ratings.append(rating)
-        last = rating
-      end
+      diff_ratings.add(rating)
     end
 
-    diff_ratings.sort!
-    step = 1 / (diff_ratings.size - 1)
+    diff_ratings = diff_ratings.to_a.sort
+
+    step = 1.0 / (diff_ratings.size - 1)
 
     colors_map = {}
     color = -step
     for rating in diff_ratings
       color += step
-      colors_map[rating] = color
+      colors_map[rating] = color.round(2)
     end
 
     for venue in venues
