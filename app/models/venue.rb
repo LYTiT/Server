@@ -224,19 +224,29 @@ class Venue < ActiveRecord::Base
 
     vis = venues.visible
 
-    max = vis.maximum(:rating)
-    min = vis.minimum(:rating)
+    diff_ratings = []
+    last = -1
+    for venue in venues
+      rating = venue.rating ? venue.rating.round(2) : 0.0
+      if rating != last
+        diff_ratings.append(rating)
+        last = rating
+      end
+    end
+
+    diff_ratings.sort!
+    step = 1 / (diff_ratings.size - 1)
+
+    colors_map = {}
+    color = -step
+    for rating in diff_ratings
+      color += step
+      colors_map[rating] = color
+    end
 
     for venue in venues
-      rating = venue.rating || 0.0
-
-      if rating == max
-        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? 1.0 : -1}))
-      elsif rating == min
-        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? 0.0 : -1}))
-      else
-        ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? (max > 0 ? (rating / max) : 0) : -1}))
-      end
+      rating = venue.rating ? venue.rating.round(2) : 0.0
+      ret.append(venue.as_json.merge({'color_rating' => venue.is_visible? ? colors_map[rating] : -1}))
     end
 
     ret
