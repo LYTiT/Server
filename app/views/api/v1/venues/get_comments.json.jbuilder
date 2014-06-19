@@ -1,4 +1,4 @@
-json.array! @venue.venue_comments do |comment|
+json.array! @venue.visible_venue_comments do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
