@@ -51,6 +51,10 @@ class Venue < ActiveRecord::Base
     venue_messages
   end
 
+  def visible_venue_comments
+    venue_comments.select{|comment| comment.flagged_comments.count < 2}
+  end
+
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
       Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
