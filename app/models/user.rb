@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
   def notify_venue_managers
     if role_id_changed?
       if role.try(:name) == "Venue Manager"
-        Mailer.welcome_venue_manager(self).deliver
+        Mailer.delay.welcome_venue_manager(self)
       end    
     end
   end
