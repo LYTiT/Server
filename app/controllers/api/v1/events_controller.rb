@@ -19,7 +19,9 @@ class Api::V1::EventsController < ApiBaseController
 
   def show
     @event = Event.find(params[:id])
-    render json: @event.to_json(:include => [:groups, :venue])
+    event = @event.as_json(:include => [:venue])
+    event[:groups] = @event.user_groups(@user)
+    render json: event
   end
 
   def report

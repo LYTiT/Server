@@ -58,4 +58,8 @@ class Event < ActiveRecord::Base
     group.send_notification_to_users(users_ids.uniq, self.id)
   end
 
+  def user_groups(user)
+    groups.joins(:groups_users).where(:groups_users => {:user_id => user.id})
+  end
+
 end
