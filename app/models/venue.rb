@@ -64,7 +64,6 @@ class Venue < ActiveRecord::Base
       if params[:lat] && params[:lng]
         scoped = scoped.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
-
       scoped
     end
   end
@@ -74,29 +73,40 @@ class Venue < ActiveRecord::Base
     list = []
     client = Venue.google_place_client
 
-    if fetch_type == 'rankby'
-      spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
-    else
-      if q.blank?
-        spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
+    begin
+      if fetch_type == 'rankby'
+        spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
       else
-        spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+        if q.blank?
+          spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
+        else
+          spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+        end
       end
-    end
-
-    spots.each do |spot|
-      venue = Venue.where("google_place_key = ?", spot.id).first
-      venue ||= Venue.new()
-      venue.name = spot.name
-      venue.google_place_key = spot.id
-      venue.google_place_rating = spot.rating
-      venue.google_place_reference = spot.reference
-      venue.latitude = spot.lat
-      venue.longitude = spot.lng
-      venue.formatted_address = spot.formatted_address
-      venue.city = spot.city
-      venue.save
-      list << venue.id if venue.persisted?
+      spots.each do |spot|
+        venue = Venue.where("google_place_key = ?", spot.id).first
+        venue ||= Venue.new()
+        venue.name = spot.name
+        venue.google_place_key = spot.id
+        venue.google_place_rating = spot.rating
+        venue.google_place_reference = spot.reference
+        venue.latitude = spot.lat
+        venue.longitude = spot.lng
+        venue.formatted_address = spot.formatted_address
+        venue.city = spot.city
+        venue.save
+        list << venue.id if venue.persisted?
+      end
+    rescue HTTParty::ResponseError => e
+      if fetch_type == 'rankby'
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+      else
+        if q.blank?
+          list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        else
+          list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id)
+        end
+      end
     end
 
     venues = []
@@ -130,15 +140,18 @@ class Venue < ActiveRecord::Base
 
   def populate_google_address(force = false)
     if force == true or !self.fetched_at.present? or ((Time.now - self.fetched_at) / 1.day).round > 4
-      client = Venue.google_place_client
-      spot = client.spot(self.google_place_reference)
-      self.city = spot.city
-      self.state = spot.region
-      self.postal_code = spot.postal_code
-      self.country = spot.country
-      self.address = [ spot.street_number, spot.street].compact.join(', ')
-      self.fetched_at = Time.now
-      self.save
+      begin
+        client = Venue.google_place_client
+        spot = client.spot(self.google_place_reference)
+        self.city = spot.city
+        self.state = spot.region
+        self.postal_code = spot.postal_code
+        self.country = spot.country
+        self.address = [ spot.street_number, spot.street].compact.join(', ')
+        self.fetched_at = Time.now
+        self.save
+      rescue HTTParty::ResponseError => e
+      end
     end
   end
 
