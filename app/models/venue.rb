@@ -70,10 +70,10 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil)
-    meters ||= 2000
     list = []
     client = Venue.google_place_client
-
+    meters ||= 2000
+    
     if fetch_type == 'rankby'
       spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
     else
