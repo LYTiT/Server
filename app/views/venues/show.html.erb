@@ -20,7 +20,7 @@
         <% end %>
         <h1 class="venue-selector <%= current_user.venues.size > 1 ? 'active' : nil %>">
           <a href="#"><%= @venue.name %></a>
-          <small>Please type in upto four promotions/messages that will be displayed on your venue page.</small>
+          <small>Please type in up to four promotions/messages that will be displayed on your venue page.</small>
         </h1>      
         <% if current_user.venues.size > 1 %>
           <ul class="list-group">
