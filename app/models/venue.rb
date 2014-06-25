@@ -238,6 +238,15 @@ class Venue < ActiveRecord::Base
     save
   end
 
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+    end
+
+    0
+  end
+
   private
 
   def self.with_color_ratings(venues)
@@ -318,15 +327,6 @@ class Venue < ActiveRecord::Base
     end
 
     old_votes_sum
-  end
-
-  def get_k
-    if self.google_place_rating
-      p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
-    end
-
-    0
   end
 
 end

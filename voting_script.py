@@ -16,7 +16,7 @@ def vote(server='localhost', user=USER_TOKEN, interval=10):
 	print "Pointing to %s\n" % server_url
 
 	while True:
-		venue_id = random.randint(1, 1015)
+		venue_id = random.randint(1, 3825)
 		vote = random.random() * flag
 		flag = flag * -1
 
@@ -28,7 +28,7 @@ def vote(server='localhost', user=USER_TOKEN, interval=10):
 		if req.status_code == 200:
 			print req.json()
 		else:
-			print "could not vote, error: " + str(req.status_code) + "detail: " + req.json()
+			print "could not vote, error: " + str(req.status_code) + "detail: " + str(req.json())
 
 		time.sleep(interval)
 
