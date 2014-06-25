@@ -18,9 +18,15 @@ class Api::V1::EventsController < ApiBaseController
   end
 
   def show
+    @user = User.find_by_authentication_token(params[:auth_token])
     @event = Event.find(params[:id])
-    event = @event.as_json(:include => [:venue])
-    event[:groups] = @event.user_groups(@user)
+    event = nil
+    if @user.present?
+      event = @event.as_json(:include => [:venue])
+      event[:groups] = @event.user_groups(@user)
+    else
+      event = @event.to_json(:include => [:groups, :venue])
+    end  
     render json: event
   end
 
