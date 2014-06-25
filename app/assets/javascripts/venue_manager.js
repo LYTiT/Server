@@ -53,6 +53,7 @@ function open_contact_us() {
 
 $(function(){
   if($('body').hasClass('venue_manager')) {  
+    $('.marquee').marquee();
     $('#display_menu_opt').change(function(event) {
       if($(this).is(':checked')) {
         $('.display_menu').removeClass('no_link').removeClass('link').addClass('add_link');
