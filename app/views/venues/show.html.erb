@@ -59,7 +59,7 @@
       <div class="iphone_mockup_container">
         <%= image_tag "iphone_mockup.png" %>
         <span class="venue_name"><%= @venue.name %></span>
-        <marquee behavior="scroll" direction="left" class="venue_message" scrollamount="3"><%= @venue.messages.first.try(:message) %></marquee>
+        <div class="marquee venue_message"><%= @venue.messages.first.try(:message) %></div>s
       </div>
     </div>
   </div>
