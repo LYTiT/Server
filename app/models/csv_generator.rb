@@ -3,7 +3,7 @@ class CsvGenerator
   def self.by_vote
     votes = LytitVote.where('created_at >= ?', Time.now.at_beginning_of_day + 6.hours)
 
-    by_vote = CSV.open("voting_report_by_venue.csv", "wb") do |csv|
+    by_vote = CSV.open("public/voting_report_by_vote.csv", "wb") do |csv|
       data = ["ID", "Vote Type (up or down)", "Venue at which vote was placed", "Time at which vote was placed", 
       	      "LYTiT Rating at Venue at time of placed vote", "Priming Value of Venue where vote was placed"]
 
@@ -20,7 +20,7 @@ class CsvGenerator
   def self.by_venue
     venues = Venue.all.order(:id)
 
-    by_venue = CSV.open("voting_report_by_venue.csv", "wb") do |csv|
+    by_venue = CSV.open("public/voting_report_by_venue.csv", "wb") do |csv|
       data = ["ID", "LYTiT Rating", "Number of up votes", "Number of down votes", "Time Since Last Placed Up Vote (minutes)",
               "Time Since Last Placed Down Vote (minutes)", "Venue Primer Value", "Venue Google Places Rating",
               "Average Interval between placed Up Votes (minutes)", "Average Interval between placed Down Votes (minutes)"]
