@@ -45,11 +45,11 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def mark_comment_as_viewed
-    venue_comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
-    if venue_comment.present?
+    @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
+    if @comment.present?
         comment_view = CommentView.new
         comment_view.user = @user
-        comment_view.venue_comment = venue_comment
+        comment_view.venue_comment = @comment
     else
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
       return
