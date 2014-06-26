@@ -4,4 +4,4 @@ development:
   database: lytit
 
 production:
-  uri: "<%= "#{ENV['MONGOHQ_URL']}" %>"
+  uri: <%= ENV['MONGOHQ_URL'] %>
