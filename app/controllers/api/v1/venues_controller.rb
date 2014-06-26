@@ -48,20 +48,12 @@ class Api::V1::VenuesController < ApiBaseController
   def mark_comment_as_viewed
     venue_comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
     if venue_comment.present?
-      unless venue_comment.user == @user
         comment_view = CommentView.new
         comment_view.user = @user
         comment_view.venue_comment = venue_comment
-        if comment_view.save
-          render json: comment_view
-        else
-          render json: { error: { code: ERROR_UNPROCESSABLE, messages: comment_view.errors.full_messages } }, status: :unprocessable_entity
-        end
-      else
-        render json: { error: { code: ERROR_UNPROCESSABLE, messages: ["Viewing User is the owner of this Post"] } }, status: :unprocessable_entity
-      end
     else
-      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue or Post not found"] } }, :status => :not_found
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
+      return
     end
   end
 
