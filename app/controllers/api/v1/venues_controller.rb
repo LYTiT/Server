@@ -16,6 +16,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment = VenueComment.new(venue_comment_params)
     @comment.venue = venue
     @comment.user = @user
+    @comment.username_private = @user.username_private
 
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
