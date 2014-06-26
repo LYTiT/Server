@@ -32,6 +32,8 @@ gem 'rubypython', "0.6.3"
 gem 'honeybadger'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
 gem 'jquery-ui-rails'
+gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
+gem 'bson_ext'
 
 group :development do
   gem 'better_errors'
