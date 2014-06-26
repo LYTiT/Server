@@ -70,7 +70,7 @@ class Venue < ActiveRecord::Base
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil)
     if not meters.present? and q.present?
-      meters = 6380000 
+      meters = 50000 
     end
     meters ||= 2000
     list = []
