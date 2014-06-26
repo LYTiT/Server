@@ -359,7 +359,7 @@ DEPENDENCIES
   rspec-rails (>= 2.14)
   rubypython (= 0.6.3)
   rufus-scheduler
-  sass-rails
+  sass-rails (~> 4.0.0)
   shoulda-matchers
   simple_form
   simplecov
