@@ -1,7 +1,5 @@
 development:
-  host: 127.0.0.1
-  port: 27017
-  database: lytit
+  uri: <%= ENV['MONGOHQ_URL'] %>
 
 production:
   uri: <%= ENV['MONGOHQ_URL'] %>
