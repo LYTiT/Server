@@ -51,6 +51,7 @@ class Api::V1::VenuesController < ApiBaseController
         comment_view = CommentView.new
         comment_view.user = @user
         comment_view.venue_comment = @comment
+        comment_view.save
     else
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
       return
