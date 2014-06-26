@@ -17,7 +17,7 @@ gem 'rack-timeout'
 gem 'rails', '>= 4.0.0'
 gem 'rails_admin'
 gem 'recipient_interceptor'
-gem 'sass-rails'
+gem 'sass-rails', "~> 4.0.0"
 gem 'simple_form'
 gem 'title'
 gem 'uglifier'
@@ -35,6 +35,8 @@ gem 'jquery-ui-rails'
 gem 'acts_as_singleton'
 gem "paperclip", "~> 4.1"
 gem 'aws-sdk', '~> 1.5.7'
+gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
+gem 'bson_ext'
 
 group :development do
   gem 'better_errors'
