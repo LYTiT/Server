@@ -6,7 +6,7 @@ defaults: &defaults
   #   pool_size: 1
   #   slave_ok: false
   #   ssl: false
-  uri: <%= ENV['MONGODB_URI'] %>
+  uri: <%= ENV['MONGOHQ_URL'] %>
 
 development:
   <<: *defaults
@@ -22,4 +22,4 @@ production:
   # database: lytit_server
   # username: <%= ENV['MONGO_USERNAME'] %>
   # password: <%= ENV['MONGO_PASSWORD'] %>
-  uri: <%= ENV['MONGODB_URI'] %>
+  uri: <%= ENV['MONGOHQ_URL'] %>
