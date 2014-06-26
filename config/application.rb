@@ -25,6 +25,8 @@ module LytitServer
       generate.view_specs false
     end
 
+    config.assets.initialize_on_precompile = false
+
     config.action_mailer.default_options = {
       from: "LYTiT <noreply@lytit.com>"
     }
