@@ -9,6 +9,10 @@ RailsAdmin.config do |config|
     end
   end
 
+  config.excluded_models << "ExportedDataCsv"
+  config.excluded_models << "VenuesCsv"
+  config.excluded_models << "VotesCsv"
+
   config.model 'User' do
     edit do
       field :password do

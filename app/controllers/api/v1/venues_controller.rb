@@ -46,22 +46,15 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def mark_comment_as_viewed
-    venue_comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
-    if venue_comment.present?
-      unless venue_comment.user == @user
+    @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
+    if @comment.present?
         comment_view = CommentView.new
         comment_view.user = @user
-        comment_view.venue_comment = venue_comment
-        if comment_view.save
-          render json: comment_view
-        else
-          render json: { error: { code: ERROR_UNPROCESSABLE, messages: comment_view.errors.full_messages } }, status: :unprocessable_entity
-        end
-      else
-        render json: { error: { code: ERROR_UNPROCESSABLE, messages: ["Viewing User is the owner of this Post"] } }, status: :unprocessable_entity
-      end
+        comment_view.venue_comment = @comment
+        comment_view.save
     else
-      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue or Post not found"] } }, :status => :not_found
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
+      return
     end
   end
 
@@ -94,9 +87,11 @@ class Api::V1::VenuesController < ApiBaseController
 
   def vote
     vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
-    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id)
 
     venue = Venue.find(params[:venue_id])
+    rating = venue.rating
+    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
+                      :prime => venue.get_k, :raw_value => params[:rating])
     venue.account_new_vote(vote_value)
 
     if v.save
