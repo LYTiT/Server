@@ -119,14 +119,10 @@ class Venue < ActiveRecord::Base
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
+        Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-      end
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
-      if q.blank?
-        Venue.with_color_ratings(venues).collect{|a| a if a["color_rating"] != -1}.compact
-      else
-        Venue.with_color_ratings(venues)
+        Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       end
     end
   end
@@ -171,11 +167,11 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, 1)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.at_beginning_of_day + 6.hours)
   end
 
   def v_down_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, Time.now.at_beginning_of_day + 6.hours)
   end
 
   def bayesian_voting_average
@@ -236,6 +232,15 @@ class Venue < ActiveRecord::Base
     self.r_up_votes = 1 + get_k
     self.r_down_votes = 1
     save
+  end
+
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+    end
+
+    0
   end
 
   private
@@ -318,15 +323,6 @@ class Venue < ActiveRecord::Base
     end
 
     old_votes_sum
-  end
-
-  def get_k
-    if self.google_place_rating
-      p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
-    end
-
-    0
   end
 
 end
