@@ -90,7 +90,8 @@ class Api::V1::VenuesController < ApiBaseController
 
     venue = Venue.find(params[:venue_id])
     rating = venue.rating
-    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, :prime => venue.get_k)
+    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
+                      :prime => venue.get_k, :raw_value => params[:rating])
     venue.account_new_vote(vote_value)
 
     if v.save
