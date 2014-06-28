@@ -150,8 +150,8 @@ class Venue < ActiveRecord::Base
     end while current_slot <= timewalk_end_time 
 
     slots.each do |time_slot|
-      start_time = time_slot - (7.minutes + 5.seconds)).utc.to_time
-      end_time = time_slot + (7.minutes + 5.seconds)).utc.to_time
+      start_time = time_slot - (7.minutes + 5.seconds).utc.to_time
+      end_time = time_slot + (7.minutes + 5.seconds).utc.to_time
       color_ratings = VenueColorRating.where(:venue_id => venues.collect(&:id), :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
       venue_color_ratings = {}
       color_ratings.each do |color_rating|
