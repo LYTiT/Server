@@ -57,22 +57,22 @@ class Venue < ActiveRecord::Base
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
-      Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, params[:timewalk_timestamp])
+      Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, params[:timewalk_start_time], params[:timewalk_end_time])
     else
       venues = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
       radius = params[:radius] ? Venue.meters_to_miles(params[:radius].to_i) : MILE_RADIUS
       if params[:lat] && params[:lng]
         venues = venues.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
-      if params[:timewalk_timestamp].present?
-        return Venue.timewalk_ratings(venues, params[:timewalk_timestamp])
+      if params[:timewalk_start_time].present? and params[:timewalk_end_time].present?
+        return Venue.timewalk_ratings(venues, params[:timewalk_start_time], params[:timewalk_end_time])
       else
         return venues
       end
     end
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_timestamp = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -130,28 +130,41 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    if timewalk_timestamp.present?
-      return Venue.timewalk_ratings(venues, timewalk_timestamp)
+    if timewalk_start_time.present? and timewalk_end_time.present?
+      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
     else
       return venues
     end
 
   end
 
-  def self.timewalk_ratings(venues, timewalk_timestamp)
-    start_time = (DateTime.parse(timewalk_timestamp) - (7.minutes + 5.seconds)).utc.to_time
-    end_time = (DateTime.parse(timewalk_timestamp) + (7.minutes + 5.seconds)).utc.to_time
-    color_ratings = VenueColorRating.where(:venue_id => venues.collect(&:id), :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
-    venue_color_ratings = {}
-    color_ratings.each do |color_rating|
-      unless venue_color_ratings[color_rating["venue_id"]].present?
-        venue_color_ratings[color_rating["venue_id"]] = color_rating["color_rating"]
+  def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+    venue_ids = venues.collect(&:id)
+    venues = venues.as_json
+    timewalk_start_time = DateTime.parse(timewalk_start_time)
+    timewalk_end_time = DateTime.parse(timewalk_end_time)
+    slots = []
+    current_slot = timewalk_start_time
+    begin
+      slots << current_slot
+      current_slot = current_slot + 15.minutes
+    end while current_slot <= timewalk_end_time 
+    slots.each do |time_slot|
+      start_time = (time_slot - (7.minutes + 5.seconds)).utc.to_time
+      end_time = (time_slot + (7.minutes + 5.seconds)).utc.to_time
+      color_ratings = VenueColorRating.where(:venue_id => venue_ids, :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
+      venue_color_ratings = {}
+      color_ratings.each do |color_rating|
+        unless venue_color_ratings[color_rating["venue_id"]].present?
+          venue_color_ratings[color_rating["venue_id"]] = color_rating["color_rating"]
+        end
+      end
+      venues.each do |venue|
+        venue["timewalk_color_ratings"] ||= {}
+        venue["timewalk_color_ratings"][time_slot] = venue_color_ratings[venue["id"]] || -1
       end
     end
-    venues.collect do |venue|
-      venue.color_rating = venue_color_ratings[venue.id] || -1
-      venue
-    end
+    venues
   end
 
   def self.fetch_spot(google_reference_key)
