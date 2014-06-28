@@ -143,13 +143,13 @@ class Venue < ActiveRecord::Base
     end_time = (DateTime.parse(timewalk_timestamp) + (7.minutes + 5.seconds)).utc.to_time
     color_ratings = VenueColorRating.where(:venue_id => venues.collect(&:id), :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
     venue_color_ratings = {}
-    color_ratings.each do |colors_rating|
-      unless venue_color_ratings[colors_rating["venue_id"]].present?
-        venue_color_ratings[colors_rating["venue_id"]] = colors_rating["color_rating"]
+    color_ratings.each do |color_rating|
+      unless venue_color_ratings[color_rating["venue_id"]].present?
+        venue_color_ratings[color_rating["venue_id"]] = color_rating["color_rating"]
       end
     end
     venues.collect do |venue|
-      venue.colors_rating = venue_color_ratings[venue.id] || -1
+      venue.color_rating = venue_color_ratings[venue.id] || -1
     end
   end
 
