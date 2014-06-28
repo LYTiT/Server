@@ -150,6 +150,7 @@ class Venue < ActiveRecord::Base
     end
     venues.collect do |venue|
       venue.color_rating = venue_color_ratings[venue.id] || -1
+      venue
     end
   end
 
