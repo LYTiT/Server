@@ -57,18 +57,22 @@ class Venue < ActiveRecord::Base
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
-      Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
+      Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, params[:timewalk_timestamp])
     else
-      scoped = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
       radius = params[:radius] ? Venue.meters_to_miles(params[:radius].to_i) : MILE_RADIUS
       if params[:lat] && params[:lng]
-        scoped = scoped.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+        venues = venues.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
-      scoped
+      if params[:timewalk_timestamp].present?
+        return Venue.timewalk_ratings(venues, params[:timewalk_timestamp])
+      else
+        return venues
+      end
     end
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_timestamp = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -112,18 +116,40 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    venues = []
+    venues = nil
     if fetch_type == 'rankby'
-      Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
     else
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
-        Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+        venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-        Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       end
+    end
+
+    if timewalk_timestamp.present?
+      return Venue.timewalk_ratings(venues, timewalk_timestamp)
+    else
+      return venues
+    end
+
+  end
+
+  def self.timewalk_ratings(venues, timewalk_timestamp)
+    start_time = (DateTime.parse(timewalk_timestamp) - (7.minutes + 5.seconds)).utc.to_time
+    end_time = (DateTime.parse(timewalk_timestamp) + (7.minutes + 5.seconds)).utc.to_time
+    color_ratings = VenueColorRating.where(:venue_id => venues.collect(&:id), :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
+    venue_color_ratings = {}
+    color_ratings.each do |colors_rating|
+      unless venue_color_ratings[colors_rating["venue_id"]].present?
+        venue_color_ratings[colors_rating["venue_id"]] = colors_rating["color_rating"]
+      end
+    end
+    venues.collect do |venue|
+      venues.colors_rating = venue_color_ratings[venue.id] || -1
     end
   end
 
