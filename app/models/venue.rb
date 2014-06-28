@@ -161,7 +161,7 @@ class Venue < ActiveRecord::Base
       end
       venues.each do |venue|
         venue["timewalk_color_ratings"] ||= {}
-        venue["timewalk_color_ratings"][time_slot] = venue_color_ratings[venue.id] || -1
+        venue["timewalk_color_ratings"][time_slot] = venue_color_ratings[venue["id"]] || -1
       end
     end
     venues
