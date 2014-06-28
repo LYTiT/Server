@@ -139,6 +139,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+    venue_ids = venues.collect(&:id)
     venues = venues.as_json
     timewalk_start_time = DateTime.parse(timewalk_start_time)
     timewalk_end_time = DateTime.parse(timewalk_end_time)
@@ -148,11 +149,10 @@ class Venue < ActiveRecord::Base
       slots << current_slot
       current_slot = current_slot + 15.minutes
     end while current_slot <= timewalk_end_time 
-
     slots.each do |time_slot|
       start_time = (time_slot - (7.minutes + 5.seconds)).utc.to_time
       end_time = (time_slot + (7.minutes + 5.seconds)).utc.to_time
-      color_ratings = VenueColorRating.where(:venue_id => venues.collect(&:id), :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
+      color_ratings = VenueColorRating.where(:venue_id => venue_ids, :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
       venue_color_ratings = {}
       color_ratings.each do |color_rating|
         unless venue_color_ratings[color_rating["venue_id"]].present?
