@@ -14,16 +14,17 @@ class Venue < ActiveRecord::Base
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
-
   has_many :groups_venues, :dependent => :destroy
   has_many :groups, through: :groups_venues
+  has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
+  has_many :menu_section_items, :through => :menu_sections
 
   has_many :events, :dependent => :destroy
 
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
-
+  
   MILE_RADIUS = 2
 
   GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)

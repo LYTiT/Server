@@ -23,6 +23,29 @@ RailsAdmin.config do |config|
       end
     end
   end
-  
+
+  config.model 'Venue' do
+    edit do
+      field :menu_section_items do
+        hide
+      end 
+      include_all_fields
+    end
+  end
+
+  config.model 'MenuSection' do
+    nested do
+      configure :menu_section_items do
+        field :menu_section_id do
+          hide
+        end
+      end
+    end
+  end
+
+  config.model 'MenuSectionItem' do
+    visible false
+  end
+
   config.main_app_name { ['My App', 'Admin'] }
 end

@@ -7,9 +7,18 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def show
-    @venue = Venue.find(params[:id])
+    @venue = Venue.find(21)
     @venue.populate_google_address
-    render json: @venue.as_json(include: :venue_messages)
+    venue = @venue.as_json(include: :venue_messages)
+    venue[:menu] = @venue.menu_sections.as_json(
+      only: [:id, :name], 
+      include: {
+        :menu_section_items => {
+          only: [:id, :name, :price, :description]
+        }
+      }
+    )
+    render json: venue
   end
 
   def add_comment

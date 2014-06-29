@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140626030420) do
+ActiveRecord::Schema.define(version: 20140629063150) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -62,6 +62,17 @@ ActiveRecord::Schema.define(version: 20140626030420) do
     t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "exported_data_csvs", force: true do |t|
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "csv_file_file_name"
+    t.string   "csv_file_content_type"
+    t.integer  "csv_file_file_size"
+    t.datetime "csv_file_updated_at"
+    t.string   "type"
+    t.integer  "job_id"
   end
 
   create_table "flagged_comments", force: true do |t|
@@ -122,16 +133,43 @@ ActiveRecord::Schema.define(version: 20140626030420) do
 
   add_index "groups_venues", ["user_id"], name: "index_groups_venues_on_user_id", using: :btree
 
+  create_table "lytit_bars", force: true do |t|
+    t.float "position"
+  end
+
   create_table "lytit_votes", force: true do |t|
     t.integer  "value"
     t.integer  "venue_id"
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.float    "venue_rating"
+    t.float    "prime"
+    t.float    "raw_value"
   end
 
   add_index "lytit_votes", ["user_id"], name: "index_lytit_votes_on_user_id", using: :btree
   add_index "lytit_votes", ["venue_id"], name: "index_lytit_votes_on_venue_id", using: :btree
+
+  create_table "menu_section_items", force: true do |t|
+    t.string   "name"
+    t.float    "price"
+    t.integer  "menu_section_id"
+    t.text     "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "menu_section_items", ["menu_section_id"], name: "index_menu_section_items_on_menu_section_id", using: :btree
+
+  create_table "menu_sections", force: true do |t|
+    t.string   "name"
+    t.integer  "venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "menu_sections", ["venue_id"], name: "index_menu_sections_on_venue_id", using: :btree
 
   create_table "roles", force: true do |t|
     t.string "name"
@@ -217,6 +255,7 @@ ActiveRecord::Schema.define(version: 20140626030420) do
     t.datetime "end_date"
     t.integer  "user_id"
     t.string   "menu_link"
+    t.float    "color_rating",           default: -1.0
   end
 
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
