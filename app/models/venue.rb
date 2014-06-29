@@ -142,8 +142,8 @@ class Venue < ActiveRecord::Base
   def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
     venue_ids = venues.collect(&:id)
     venues = venues.as_json
-    timewalk_start_time = DateTime.parse(timewalk_start_time)
-    timewalk_end_time = DateTime.parse(timewalk_end_time)
+    timewalk_start_time = Time.parse(timewalk_start_time)
+    timewalk_end_time = Time.parse(timewalk_end_time)
     slots = []
     current_slot = timewalk_start_time
     begin
