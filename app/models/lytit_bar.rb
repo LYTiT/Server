@@ -25,6 +25,8 @@ class LytitBar < ActiveRecord::Base
 	  else
       self.position = 0
     end
+
+    save
   end
 
   def self.inv_inc_beta(a, b, y)
