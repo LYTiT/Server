@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140629063150) do
+ActiveRecord::Schema.define(version: 20140703155952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -258,6 +258,7 @@ ActiveRecord::Schema.define(version: 20140629063150) do
     t.float    "color_rating",           default: -1.0
   end
 
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end
