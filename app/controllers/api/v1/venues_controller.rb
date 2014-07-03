@@ -68,7 +68,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def search
-    venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius])
+    venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time])
     render json: venues
   end
 

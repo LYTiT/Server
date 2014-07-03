@@ -1,5 +1,5 @@
-class LytitBar
-  include Singleton
+class LytitBar < ActiveRecord::Base
+  acts_as_singleton
 
   # refer LYTiT algorithm documentation
   GOOGLE_PLACE_FACTOR = 20
@@ -13,12 +13,6 @@ class LytitBar
   THRESHOLD_TO_BE_SHOWN_ON_MAP = 210 # 3.5 hours
   #-------------------------------------
 
-  attr_accessor :position
-
-  def initialize
-    @position = 0
-  end
-
   def recalculate_bar_position
     sum = 0
     venues = Venue.all
@@ -27,9 +21,9 @@ class LytitBar
     end
 
     if not venues.empty?
-      @position = sum / venues.size
-	else
-      @position = 0
+      self.position = sum / venues.size
+	  else
+      self.position = 0
     end
   end
 

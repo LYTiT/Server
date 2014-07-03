@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140627124300) do
+ActiveRecord::Schema.define(version: 20140628160040) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -134,9 +134,7 @@ ActiveRecord::Schema.define(version: 20140627124300) do
   add_index "groups_venues", ["user_id"], name: "index_groups_venues_on_user_id", using: :btree
 
   create_table "lytit_bars", force: true do |t|
-    t.float    "position"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.float "position"
   end
 
   create_table "lytit_votes", force: true do |t|
@@ -231,13 +229,13 @@ ActiveRecord::Schema.define(version: 20140627124300) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.string   "menu_link"
-    t.float    "color_rating"
+    t.float    "color_rating",           default: -1.0
   end
 
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
