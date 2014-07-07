@@ -16,3 +16,4 @@
 *.sublime-workspace
 database.yml
 .rvmrc
+*.csv

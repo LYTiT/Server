@@ -1,11 +1,6 @@
 require File.expand_path('../boot', __FILE__)
 
-# Pick the frameworks you want:
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "sprockets/railtie"
-# require "rails/test_unit/railtie"
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -24,6 +19,8 @@ module LytitServer
       generate.test_framework :rspec
       generate.view_specs false
     end
+
+    config.assets.initialize_on_precompile = false
 
     config.action_mailer.default_options = {
       from: "LYTiT <noreply@lytit.com>"

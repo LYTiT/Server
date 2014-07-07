@@ -58,69 +58,114 @@ class Venue < ActiveRecord::Base
 
   def self.search(params)
     if params[:full_query] && params[:lat] && params[:lng]
-      Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
+      Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, params[:timewalk_start_time], params[:timewalk_end_time])
     else
-      scoped = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
       radius = params[:radius] ? Venue.meters_to_miles(params[:radius].to_i) : MILE_RADIUS
       if params[:lat] && params[:lng]
-        scoped = scoped.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
+        venues = venues.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
       end
-
-      scoped
+      if params[:timewalk_start_time].present? and params[:timewalk_end_time].present?
+        return Venue.timewalk_ratings(venues, params[:timewalk_start_time], params[:timewalk_end_time])
+      else
+        return venues
+      end
     end
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
     meters ||= 2000
     list = []
     client = Venue.google_place_client
-    meters ||= 2000
     
-    if fetch_type == 'rankby'
-      spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
-    else
-      if q.blank?
-        spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
+    begin
+      if fetch_type == 'rankby'
+        spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
       else
-        spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+        if q.blank?
+          spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
+        else
+          spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+        end
+      end
+      spots.each do |spot|
+        venue = Venue.where("google_place_key = ?", spot.id).first
+        venue ||= Venue.new()
+        venue.name = spot.name
+        venue.google_place_key = spot.id
+        venue.google_place_rating = spot.rating
+        venue.google_place_reference = spot.reference
+        venue.latitude = spot.lat
+        venue.longitude = spot.lng
+        venue.formatted_address = spot.formatted_address
+        venue.city = spot.city
+        venue.save
+        list << venue.id if venue.persisted?
+      end
+    rescue HTTParty::ResponseError => e
+      if fetch_type == 'rankby'
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+      else
+        if q.blank?
+          list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        else
+          list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id)
+        end
       end
     end
 
-    spots.each do |spot|
-      venue = Venue.where("google_place_key = ?", spot.id).first
-      venue ||= Venue.new()
-      venue.name = spot.name
-      venue.google_place_key = spot.id
-      venue.google_place_rating = spot.rating
-      venue.google_place_reference = spot.reference
-      venue.latitude = spot.lat
-      venue.longitude = spot.lng
-      venue.formatted_address = spot.formatted_address
-      venue.city = spot.city
-      venue.save
-      list << venue.id if venue.persisted?
-    end
-
-    venues = []
+    venues = nil
     if fetch_type == 'rankby'
-      Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
     else
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
+        venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-      end
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
-      if q.blank?
-        Venue.with_color_ratings(venues).collect{|a| a if a["color_rating"] != -1}.compact
-      else
-        Venue.with_color_ratings(venues)
+        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
       end
     end
+
+    if timewalk_start_time.present? and timewalk_end_time.present?
+      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+    else
+      return venues
+    end
+
+  end
+
+  def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+    venue_ids = venues.collect(&:id)
+    venues = venues.as_json
+    timewalk_start_time = Time.parse(timewalk_start_time)
+    timewalk_end_time = Time.parse(timewalk_end_time)
+    slots = []
+    current_slot = timewalk_start_time
+    begin
+      slots << current_slot
+      current_slot = current_slot + 15.minutes
+    end while current_slot <= timewalk_end_time 
+    slots.each do |time_slot|
+      start_time = (time_slot - (7.minutes + 5.seconds)).utc.to_time
+      end_time = (time_slot + (7.minutes + 5.seconds)).utc.to_time
+      color_ratings = VenueColorRating.where(:venue_id => venue_ids, :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
+      venue_color_ratings = {}
+      color_ratings.each do |color_rating|
+        unless venue_color_ratings[color_rating["venue_id"]].present?
+          venue_color_ratings[color_rating["venue_id"]] = color_rating["color_rating"]
+        end
+      end
+      venues.each do |venue|
+        venue["timewalk_color_ratings"] ||= {}
+        venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]] || -1
+      end
+    end
+    venues
   end
 
   def self.fetch_spot(google_reference_key)
@@ -135,15 +180,18 @@ class Venue < ActiveRecord::Base
 
   def populate_google_address(force = false)
     if force == true or !self.fetched_at.present? or ((Time.now - self.fetched_at) / 1.day).round > 4
-      client = Venue.google_place_client
-      spot = client.spot(self.google_place_reference)
-      self.city = spot.city
-      self.state = spot.region
-      self.postal_code = spot.postal_code
-      self.country = spot.country
-      self.address = [ spot.street_number, spot.street].compact.join(', ')
-      self.fetched_at = Time.now
-      self.save
+      begin
+        client = Venue.google_place_client
+        spot = client.spot(self.google_place_reference)
+        self.city = spot.city
+        self.state = spot.region
+        self.postal_code = spot.postal_code
+        self.country = spot.country
+        self.address = [ spot.street_number, spot.street].compact.join(', ')
+        self.fetched_at = Time.now
+        self.save
+      rescue HTTParty::ResponseError => e
+      end
     end
   end
 
@@ -160,11 +208,11 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, 1)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.at_beginning_of_day + 6.hours)
   end
 
   def v_down_votes
-    LytitVote.where("venue_id = ? AND value = ?", self.id, -1)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, Time.now.at_beginning_of_day + 6.hours)
   end
 
   def bayesian_voting_average
@@ -225,6 +273,15 @@ class Venue < ActiveRecord::Base
     self.r_up_votes = 1 + get_k
     self.r_down_votes = 1
     save
+  end
+
+  def get_k
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+    end
+
+    0
   end
 
   private
@@ -307,15 +364,6 @@ class Venue < ActiveRecord::Base
     end
 
     old_votes_sum
-  end
-
-  def get_k
-    if self.google_place_rating
-      p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
-    end
-
-    0
   end
 
 end
