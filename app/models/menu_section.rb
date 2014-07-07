@@ -7,5 +7,8 @@ class MenuSection < ActiveRecord::Base
 
   validates :name, presence: true
   validates :venue, presence: true
+  validates :position, numericality: { only_integer: true }, allow_nil: true
+
+  default_scope { order('position ASC, id ASC') }
   
 end
