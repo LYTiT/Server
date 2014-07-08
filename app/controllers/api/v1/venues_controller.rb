@@ -92,7 +92,7 @@ class Api::V1::VenuesController < ApiBaseController
     rating = venue.rating
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
                       :prime => venue.get_k, :raw_value => params[:rating])
-    venue.account_new_vote(vote_value)
+    venue.delay.account_new_vote(vote_value)
 
     if v.save
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
