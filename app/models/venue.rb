@@ -104,9 +104,8 @@ class Venue < ActiveRecord::Base
           venue.latitude = spot.lat
           venue.longitude = spot.lng
           venue.formatted_address = spot.formatted_address
-          venue.formatted_address = spot.formatted_address
           venue.city = spot.city
-          venue.phone_number = spot.international_phone_number
+          venue.phone_number = spot.formatted_phone_number
           if venue.save
             # Temp - Database cleanup for duplicates - Switchin over to Place ID.
             Venue.where("google_place_key = ?", spot.id).delete_all
@@ -210,7 +209,7 @@ class Venue < ActiveRecord::Base
         self.postal_code = spot.postal_code
         self.country = spot.country
         self.address = [ spot.street_number, spot.street].compact.join(', ')
-        self.phone_number = spot.international_phone_number
+        self.phone_number = spot.formatted_phone_number
         self.fetched_at = Time.now
         self.save
       rescue HTTParty::ResponseError => e
