@@ -102,7 +102,9 @@ class Venue < ActiveRecord::Base
         venue.latitude = spot.lat
         venue.longitude = spot.lng
         venue.formatted_address = spot.formatted_address
+        venue.formatted_address = spot.formatted_address
         venue.city = spot.city
+        venue.phone_number = spot.international_phone_number
         if venue.save
           # Temp - Database cleanup for duplicates - Switchin over to Place ID.
           Venue.where("google_place_key = ?", spot.id).delete_all
