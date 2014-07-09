@@ -9,7 +9,6 @@ s = Rufus::Scheduler.singleton
 s.every '5m' do
   bar = LytitBar.instance
   bar.recalculate_bar_position
-  bar.save
   puts 'Bar updated.'
 end
 

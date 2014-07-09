@@ -1,4 +1,11 @@
 GIT
+  remote: git://github.com/RaviAsnani/google_places.git
+  revision: d0e9cf48be6eb0cb2fd02984ce2dab8ffb3d1c31
+  specs:
+    google_places (0.21.0)
+      httparty
+
+GIT
   remote: git://github.com/mongomapper/mongomapper.git
   revision: 9b87dee507802a8cb96f2d316802c9fd241448c8
   tag: v0.13.0.beta2
@@ -147,8 +154,6 @@ GEM
     geokit-rails (2.0.1)
       geokit (~> 1.5)
       rails (>= 3.0)
-    google_places (0.20.0)
-      httparty
     haml (4.0.5)
       tilt
     haml-rails (0.5.3)
@@ -356,7 +361,7 @@ DEPENDENCIES
   flutie
   foreman
   geokit-rails
-  google_places
+  google_places!
   haml-rails
   high_voltage
   honeybadger
