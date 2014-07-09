@@ -80,31 +80,8 @@ class Venue < ActiveRecord::Base
     list = []
     client = Venue.google_place_client
     
-    begin
-      if fetch_type == 'rankby'
-        spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
-      else
-        if q.blank?
-          spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
-        else
-          spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
-        end
-      end
-      spots.each do |spot|
-        venue = Venue.where("google_place_key = ?", spot.id).first
-        venue ||= Venue.new()
-        venue.name = spot.name
-        venue.google_place_key = spot.id
-        venue.google_place_rating = spot.rating
-        venue.google_place_reference = spot.reference
-        venue.latitude = spot.lat
-        venue.longitude = spot.lng
-        venue.formatted_address = spot.formatted_address
-        venue.city = spot.city
-        venue.save
-        list << venue.id if venue.persisted?
-      end
-    rescue HTTParty::ResponseError => e
+    if timewalk_start_time.present? and timewalk_end_time.present?
+      # No Google Places API Call
       if fetch_type == 'rankby'
         list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
       else
@@ -114,8 +91,44 @@ class Venue < ActiveRecord::Base
           list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id)
         end
       end
+    else
+      begin
+        if fetch_type == 'rankby'
+          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
+        else
+          if q.blank?
+            spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
+          else
+            spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+          end
+        end
+        spots.each do |spot|
+          venue = Venue.where("google_place_key = ?", spot.id).first
+          venue ||= Venue.new()
+          venue.name = spot.name
+          venue.google_place_key = spot.id
+          venue.google_place_rating = spot.rating
+          venue.google_place_reference = spot.reference
+          venue.latitude = spot.lat
+          venue.longitude = spot.lng
+          venue.formatted_address = spot.formatted_address
+          venue.city = spot.city
+          venue.save
+          list << venue.id if venue.persisted?
+        end
+      rescue HTTParty::ResponseError => e
+        if fetch_type == 'rankby'
+          list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        else
+          if q.blank?
+            list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+          else
+            list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id)
+          end
+        end
+      end
     end
-
+    
     venues = nil
     if fetch_type == 'rankby'
       venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
@@ -124,6 +137,9 @@ class Venue < ActiveRecord::Base
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
+          start_time = Time.parse(timewalk_start_time).utc.to_time
+          end_time = Time.parse(timewalk_end_time).utc.to_time
+          list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
           venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
         else
           venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
