@@ -1,5 +1,7 @@
 class Mailer < ActionMailer::Base
   
+  layout 'mailer'
+
   def welcome_venue_manager(user)
     @user = user
     mail(
