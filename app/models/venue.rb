@@ -105,7 +105,7 @@ class Venue < ActiveRecord::Base
         venue.city = spot.city
         if venue.save
           # Temp - Database cleanup for duplicates - Switchin over to Place ID.
-          venue = Venue.where("google_place_key = ?", spot.id).delete_all
+          Venue.where("google_place_key = ?", spot.id).delete_all
         end
         list << venue.id if venue.persisted?
       end
