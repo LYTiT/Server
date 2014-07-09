@@ -198,6 +198,7 @@ class Venue < ActiveRecord::Base
         self.postal_code = spot.postal_code
         self.country = spot.country
         self.address = [ spot.street_number, spot.street].compact.join(', ')
+        self.phone_number = spot.international_phone_number
         self.fetched_at = Time.now
         self.save
       rescue HTTParty::ResponseError => e
