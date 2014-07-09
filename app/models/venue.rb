@@ -100,7 +100,9 @@ class Venue < ActiveRecord::Base
         venue.latitude = spot.lat
         venue.longitude = spot.lng
         venue.formatted_address = spot.formatted_address
+        venue.formatted_address = spot.formatted_address
         venue.city = spot.city
+        venue.phone_number = spot.international_phone_number
         venue.save
         list << venue.id if venue.persisted?
       end
