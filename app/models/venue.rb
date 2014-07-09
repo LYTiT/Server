@@ -182,7 +182,9 @@ class Venue < ActiveRecord::Base
       end
       venues.each do |venue|
         venue["timewalk_color_ratings"] ||= {}
-        venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]] || -1
+        if venue_color_ratings[venue["id"]]
+          venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]]
+        end
       end
     end
     venues
