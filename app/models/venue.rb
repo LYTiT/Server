@@ -92,7 +92,8 @@ class Venue < ActiveRecord::Base
         end
       end
       spots.each do |spot|
-        venue = Venue.where("google_place_key = ? OR google_place_key = ?", spot.id, spot.place_id).first
+        venue = Venue.where("google_place_key = ?", spot.place_id).first
+        venue = Venue.where("google_place_key = ?", spot.id).first unless venue.present?
         venue ||= Venue.new()
         venue.name = spot.name
         venue.google_place_key = spot.place_id
@@ -102,7 +103,10 @@ class Venue < ActiveRecord::Base
         venue.longitude = spot.lng
         venue.formatted_address = spot.formatted_address
         venue.city = spot.city
-        venue.save
+        if venue.save
+          # Temp - Database cleanup for duplicates - Switchin over to Place ID.
+          venue = Venue.where("google_place_key = ?", spot.id).delete_all
+        end
         list << venue.id if venue.persisted?
       end
     rescue HTTParty::ResponseError => e
