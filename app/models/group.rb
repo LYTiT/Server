@@ -61,11 +61,11 @@ class Group < ActiveRecord::Base
   end
 
   def remove_venue(venue_id, user_id)
-    if self.is_user_member?(user_id)
+    if self.is_user_admin?(user_id)
       GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all
       return true
     else
-      return false, 'You are not member of this group'
+      return false, 'You are not an admin of this group'
     end
   end
 
