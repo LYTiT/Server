@@ -8,6 +8,8 @@ json.array! @user.venue_comments do |comment|
   json.username_private comment.username_private
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
+  json.viewed comment.is_viewed?(@user)
+  json.total_views comment.total_views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
 end
