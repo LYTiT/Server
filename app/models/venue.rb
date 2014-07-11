@@ -56,28 +56,11 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.search(params)
-    if params[:full_query] && params[:lat] && params[:lng]
-      Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, params[:timewalk_start_time], params[:timewalk_end_time])
-    else
-      venues = where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
-      radius = params[:radius] ? Venue.meters_to_miles(params[:radius].to_i) : MILE_RADIUS
-      if params[:lat] && params[:lng]
-        venues = venues.within(radius, :origin => [params[:lat], params[:lng]]).order('distance ASC')
-      end
-      if params[:timewalk_start_time].present? and params[:timewalk_end_time].present?
-        return Venue.timewalk_ratings(venues, params[:timewalk_start_time], params[:timewalk_end_time])
-      else
-        return venues
-      end
-    end
-  end
-
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
-    meters ||= 2000
+    meters ||= 50000
     list = []
     client = Venue.google_place_client
     if timewalk_start_time.present? and timewalk_end_time.present?
@@ -118,7 +101,7 @@ class Venue < ActiveRecord::Base
     
     venues = nil
     if fetch_type == 'rankby'
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now).limit(20)
     else
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
