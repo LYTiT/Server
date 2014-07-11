@@ -3,5 +3,15 @@ development:
   port: 27017
   database: lytit
 
+<% unless ENV['MONGOHQ_URL'] %>
 production:
   uri: <%= ENV['MONGOHQ_URL'] %>
+<% else %>
+production:
+  database: <%= ENV['MONGOHQ_DB'] %>
+  hosts:
+    - <%= ENV['MONGOHQ_URL_1'] %>
+    - <%= ENV['MONGOHQ_URL_2'] %>
+  username: <%= ENV['MONGOHQ_USERNAME'] %>
+  password: <%= ENV['MONGOHQ_PASSWORD'] %>
+<% end %>
