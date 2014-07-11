@@ -3,7 +3,7 @@ class Api::V1::VenuesController < ApiBaseController
   skip_before_filter :set_user, only: [:search, :index]
 
   def index
-    @venues = Venue.search(params)
+    @venues = Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
   end
 
   def show
