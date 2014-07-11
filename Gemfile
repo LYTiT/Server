@@ -21,7 +21,7 @@ gem 'sass-rails', "~> 4.0.0"
 gem 'simple_form'
 gem 'title'
 gem 'uglifier'
-#gem 'unicorn'
+gem 'unicorn'
 gem 'google_places', :git => "git://github.com/RaviAsnani/google_places.git"
 gem "paranoia", "~> 2.0"
 gem 'haml-rails'
