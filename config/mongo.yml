@@ -3,7 +3,7 @@ development:
   port: 27017
   database: lytit
 
-<% unless ENV['MONGOHQ_URL'] %>
+<% if ENV['MONGOHQ_URL'] %>
 production:
   uri: <%= ENV['MONGOHQ_URL'] %>
 <% else %>
