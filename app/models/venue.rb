@@ -121,7 +121,7 @@ class Venue < ActiveRecord::Base
     end
 
     if timewalk_start_time.present? and timewalk_end_time.present?
-      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?)
     else
       return venues
     end
@@ -142,7 +142,7 @@ class Venue < ActiveRecord::Base
     list
   end
 
-  def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time)
+  def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, allow_blank)
     venue_ids = venues.collect(&:id)
     venues = venues.as_json
     timewalk_start_time = Time.parse(timewalk_start_time)
@@ -165,7 +165,12 @@ class Venue < ActiveRecord::Base
       end
       venues.each do |venue|
         venue["timewalk_color_ratings"] ||= {}
-        venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]] || -1
+        if venue_color_ratings[venue["id"]].present?
+          venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]]
+        end
+        if allow_blank and not venue["timewalk_color_ratings"][time_slot.as_json].present?
+          venue["timewalk_color_ratings"][time_slot.as_json] = -1
+        end
       end
     end
     venues
