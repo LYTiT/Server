@@ -4,6 +4,8 @@ namespace :lytit do
   task :refresh_colors => :environment do
     puts "Recalculating venue colors..."
 
+    Venue.update_all(color_rating: -1.0)
+
     # visible venues are those which had been voted in the last 3.5 hours
     venues = Venue.visible
 
