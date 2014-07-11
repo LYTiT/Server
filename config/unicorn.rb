@@ -24,5 +24,5 @@ after_fork do |server, worker|
     ActiveRecord::Base.establish_connection(config)
   end
 
-  MongoMapper.connection.connect_to_master
+  MongoMapper.connection.connect
 end
