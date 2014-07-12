@@ -99,6 +99,12 @@ class Venue < ActiveRecord::Base
       end
     end
     
+    if timewalk_start_time.present? and timewalk_end_time.present?
+      start_time = Time.parse(timewalk_start_time).utc.to_time
+      end_time = Time.parse(timewalk_end_time).utc.to_time
+      list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
+    end
+
     venues = nil
     if fetch_type == 'rankby'
       venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now).limit(20)
@@ -107,9 +113,6 @@ class Venue < ActiveRecord::Base
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
-          start_time = Time.parse(timewalk_start_time).utc.to_time
-          end_time = Time.parse(timewalk_end_time).utc.to_time
-          list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
           venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
         else
           venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
@@ -173,7 +176,7 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    venues
+    venues.collect{|a| a if a["timewalk_color_ratings"].present? }.compact
   end
 
   def self.fetch_spot(google_reference_key)
