@@ -1,6 +1,10 @@
+# This is a replacement for Rufus Scheduler on Dev & Prod. 
+# To save a worker, we just run a one off dyno every 10 mins
+# NOTE: DO NOT SCHEDULE THIS ON PRODUCTION
+
 namespace :lytit do
 
-  desc "Called by Heroku scheduler in order to recalculate color values every 15m"
+  desc "Called by Heroku Scheduler in order to recalculate color values every 10m"
   task :refresh_colors => :environment do
     
     puts "Scheduler run at #{Time.now}"
@@ -46,7 +50,7 @@ namespace :lytit do
     end_time = Time.now
 
     puts "Done. Time Taken: #{end_time - start_time}s"
-    
+
   end
 
 end
