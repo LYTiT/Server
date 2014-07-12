@@ -2,6 +2,7 @@ class Group < ActiveRecord::Base
   acts_as_paranoid
 
   validates :name, presence: true
+  validates_uniqueness_of :name, case_sensitive: false
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
 
