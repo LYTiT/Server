@@ -6,10 +6,6 @@ namespace :lytit do
   task :scheduler => :environment do
     $scheduler = Rufus::Scheduler.singleton
     
-    $scheduler.every '1s' do
-      puts "1s being called"
-    end
-
     $scheduler.every '5m' do
 
       puts "Scheduler run at #{Time.now}"
