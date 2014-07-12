@@ -4,9 +4,13 @@ namespace :lytit do
 
   desc "Scheduled Task for LYTiT"
   task :scheduler => :environment do
-    s = Rufus::Scheduler.singleton
+    $scheduler = Rufus::Scheduler.singleton
     
-    s.every '5m' do
+    $scheduler.every '1s' do
+      puts "1s being called"
+    end
+
+    $scheduler.every '5m' do
 
       puts "Scheduler run at #{Time.now}"
 
@@ -54,7 +58,13 @@ namespace :lytit do
 
     end
 
-    s.join
+    $scheduler.join
   end
+
+  trap "TERM" do                             
+    puts "SIGTERM Received. Shutting down scheduler."                
+    $scheduler.shutdown(:wait)
+    exit
+  end   
 
 end
