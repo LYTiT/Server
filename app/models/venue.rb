@@ -134,9 +134,9 @@ class Venue < ActiveRecord::Base
       list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id).limit(20)
     else
       if q.blank?
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id).limit(20)
       else
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").collect(&:id).limit(20)
       end
     end
     list
