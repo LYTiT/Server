@@ -8,9 +8,13 @@ namespace :lytit do
     
     s.every '5m' do
 
+      puts "Scheduler run at #{Time.now}"
+
+      start_time = Time.now
+      
       bar = LytitBar.instance
       bar.recalculate_bar_position
-      puts 'Bar updated.'
+      puts 'Bar updated'
 
       puts "Recalculating venue colors"
 
@@ -43,7 +47,10 @@ namespace :lytit do
           :color_rating => colors_map[rating]
         })
       end
-      puts "Done"
+
+      end_time = Time.now
+
+      puts "Done. Time Taken: #{end_time - start_time}s"
 
     end
 
