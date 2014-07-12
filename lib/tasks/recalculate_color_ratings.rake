@@ -1,12 +1,23 @@
+# This is a replacement for Rufus Scheduler on Dev & Prod. 
+# To save a worker, we just run a one off dyno every 10 mins
+# NOTE: DO NOT SCHEDULE THIS ON PRODUCTION
+
 namespace :lytit do
 
-  desc "called by Heroku scheduler in order to recalculate color values every 15m"
+  desc "Called by Heroku Scheduler in order to recalculate color values every 10m"
   task :refresh_colors => :environment do
-    puts "Recalculating venue colors..."
+    
+    puts "Scheduler run at #{Time.now}"
+
+    start_time = Time.now
+    
+    bar = LytitBar.instance
+    bar.recalculate_bar_position
+    puts 'Bar updated'
+
+    puts "Recalculating venue colors"
 
     Venue.update_all(color_rating: -1.0)
-
-    # visible venues are those which had been voted in the last 3.5 hours
     venues = Venue.visible
 
     diff_ratings = Set.new
@@ -18,11 +29,10 @@ namespace :lytit do
     end
 
     diff_ratings = diff_ratings.to_a.sort
-
     step = 1.0 / (diff_ratings.size - 1)
-
-    colors_map = {0.0 => 0.0} # null ratings will be out of the distribution range, just zero
+    colors_map = {0.0 => 0.0}
     color = -step
+
     for rating in diff_ratings
       color += step
       colors_map[rating] = color.round(2)
@@ -36,8 +46,11 @@ namespace :lytit do
         :color_rating => colors_map[rating]
       })
     end
-    
-    puts "done."
+
+    end_time = Time.now
+
+    puts "Done. Time Taken: #{end_time - start_time}s"
+
   end
 
 end
