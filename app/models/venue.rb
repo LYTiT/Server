@@ -124,7 +124,7 @@ class Venue < ActiveRecord::Base
     end
 
     if timewalk_start_time.present? and timewalk_end_time.present?
-      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?)
+      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, false)
     else
       return venues
     end
