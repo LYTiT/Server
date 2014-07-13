@@ -4,6 +4,7 @@ FactoryGirl.define do
   factory :group do
     name "MyString"
     description "MyString"
+    can_link_event false #can link event
     is_public false
     password "MyString"
   end
