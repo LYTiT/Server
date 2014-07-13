@@ -38,11 +38,6 @@ class Group < ActiveRecord::Base
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first.try(:is_admin) ? true : false
   end
 
-  #can link event try out
-  def can_link_event?(user_id)
-    GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first.try(:can_link_event) ? true : false
-  end
-
   def is_user_member?(user_id)
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first ? true : false
   end
