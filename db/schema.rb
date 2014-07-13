@@ -105,6 +105,7 @@ ActiveRecord::Schema.define(version: 20140707182705) do
   create_table "groups", force: true do |t|
     t.string   "name"
     t.string   "description"
+    t.boolean "can_link_event" #can link event
     t.boolean  "is_public"
     t.string   "password"
     t.datetime "created_at"
