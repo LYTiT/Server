@@ -176,7 +176,15 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    venues.collect{|a| a if a["timewalk_color_ratings"].present? }.compact
+    venues.collect{|a| 
+      if a["timewalk_color_ratings"].present? 
+        color_values = a["timewalk_color_ratings"].values.uniq.compact
+        if color_values.size == 1 and color_values.first == -1
+        else
+          a
+        end
+      end
+    }.compact
   end
 
   def self.fetch_spot(google_reference_key)
