@@ -121,7 +121,11 @@ class Venue < ActiveRecord::Base
     end
 
     if timewalk_start_time.present? and timewalk_end_time.present?
-      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?)
+      data = {
+        :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
+        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time)
+      }
+      return data 
     else
       return venues
     end
@@ -140,6 +144,22 @@ class Venue < ActiveRecord::Base
       end
     end
     list
+  end
+
+  def self.checkins(timewalk_start_time, timewalk_end_time)
+    timeslot = {}
+    timewalk_start_time = Time.parse(timewalk_start_time)
+    timewalk_end_time = Time.parse(timewalk_end_time)
+    slots = []
+    current_slot = timewalk_start_time
+    begin
+      slots << current_slot
+      current_slot = current_slot + 15.minutes
+    end while current_slot <= timewalk_end_time 
+    slots.each do |time_slot|
+      timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("created_at BETWEEN ? AND ?", (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+    end
+    timeslot
   end
 
   def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, allow_blank)
