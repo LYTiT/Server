@@ -15,7 +15,7 @@ class Api::V1::GroupsController < ApiBaseController
     @group = Group.find(params[:id])
     if @group.is_user_admin?(@user)
       permitted_params = group_params
-      permitted_params.delete(:name)
+      # permitted_params.delete(:name)
       if @group.update_attributes(permitted_params)
         group = @group.as_json
         group.delete("password")
