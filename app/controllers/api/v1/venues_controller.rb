@@ -3,7 +3,7 @@ class Api::V1::VenuesController < ApiBaseController
   skip_before_filter :set_user, only: [:search, :index]
 
   def index
-    @venues = Venue.fetch_venues('rankby', '', params[:lat], params[:lng])
+    @venues = Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, nil, nil, params[:group_id])
   end
 
   def show
@@ -77,7 +77,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def search
-    venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time])
+    venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id])
     render json: venues
   end
 
