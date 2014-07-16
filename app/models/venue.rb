@@ -58,7 +58,7 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -109,19 +109,24 @@ class Venue < ActiveRecord::Base
 
     venues = nil
     if fetch_type == 'rankby'
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now).limit(20)
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+      venues = venues.limit(20)
     else
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
           venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         else
           venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
+          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         end
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
         venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
       end
     end
 
