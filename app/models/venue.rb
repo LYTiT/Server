@@ -29,6 +29,8 @@ class Venue < ActiveRecord::Base
 
   GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
 
+  GOOGLE_PLACE_VOTING_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
+
   has_many :lytit_votes, :dependent => :destroy
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - 210.minutes) }
@@ -68,7 +70,7 @@ class Venue < ActiveRecord::Base
     else
       begin
         if fetch_type == 'rankby'
-          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
+          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_VOTING_TYPES)
         else
           if q.blank?
             spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
