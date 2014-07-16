@@ -228,14 +228,17 @@ class Venue < ActiveRecord::Base
     up_votes_count = self.v_up_votes.size
     down_votes_count = self.v_down_votes.size
 
-    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count - down_votes_count)) /
-    (LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count + down_votes_count))
+    (LytitConstants.bayesian_average_c * LytitConstants.bayesian_average_m + (up_votes_count - down_votes_count)) /
+    (LytitConstants.bayesian_average_m + (up_votes_count + down_votes_count))
   end
 
   def account_new_vote(vote_value)
+    puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
+      puts "up vote, accounting"
       account_up_vote
     else
+      puts "down vote, accounting"
       account_down_vote
     end
 
@@ -245,7 +248,7 @@ class Venue < ActiveRecord::Base
   end
 
   def recalculate_rating
-    y = 1.0 / (1 + LytitBar::RATING_LOSS_L)
+    y = 1.0 / (1 + LytitConstants.rating_loss_l)
 
     a = self.r_up_votes || (1.0 + get_k)
     b = self.r_down_votes || 1.0
@@ -257,7 +260,8 @@ class Venue < ActiveRecord::Base
     x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
 
     if $?.to_i == 0
-      puts "X = #{x}"
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
 
       self.rating = eval(x)
       save
@@ -271,7 +275,7 @@ class Venue < ActiveRecord::Base
       return false
     end
 
-    if minutes_since_last_vote >= LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+    if minutes_since_last_vote >= LytitConstants.threshold_to_venue_be_shown_on_map
       return false
     end
 
@@ -287,7 +291,7 @@ class Venue < ActiveRecord::Base
   def get_k
     if self.google_place_rating
       p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+      return LytitConstants.google_place_factor * (p ** 2)
     end
 
     0
@@ -348,7 +352,7 @@ class Venue < ActiveRecord::Base
 
       (now - last) / 1.minute
     else
-      LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+      LytitConstants.threshold_to_venue_be_shown_on_map
     end
   end
 
@@ -369,7 +373,7 @@ class Venue < ActiveRecord::Base
     for vote in votes
       minutes_passed_since_vote = (now - vote.created_at) / 1.minute
 
-      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitBar::VOTE_HALF_LIFE_H)
+      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
     end
 
     old_votes_sum
