@@ -11,10 +11,11 @@ class  Api::V1::AccessCodeController < ApiBaseController
 
   def get_accesscode_from_table
 
-    @code = AccessCode.new(params[:access_code])
+    @code = AccessCode.new
     @code.accesscode = params[:access_code] #select the stuff that is passed from LTServer.m#
     @code.kvalue = @code.find(@code.accesscode).kvalue  #select the stuff that is passed from LTServer.m#
-    #we can do this because .find() returns an object, the object for this table is an accesscode, so .find() returns an access code#
+    
+#we can do this because .find() returns an object, the object for this table is an accesscode, so .find() returns an access code#
 
     if @code.save
       render json: @code.kvalue
