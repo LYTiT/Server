@@ -16,20 +16,6 @@ ActiveRecord::Schema.define(version: 20140717989898) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "AccessCodes", force: true do |t|
-    t.string   "accesscode"
-    t.integer  "kvalue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "access_codes", force: true do |t|
-    t.string   "accesscode"
-    t.integer  "kvalue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
     t.integer  "user_id"
