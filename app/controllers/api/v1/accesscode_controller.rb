@@ -1,6 +1,6 @@
 #The reason this is in the api/v1/ folder is because it is a controller used for the actual app 
 #Controllers in the "controllers/" file are controllers used for the administrative tool (or so we think),
-# a fucking comment would have been nice.
+#a fucking comment would have been nice.
 
 #Defines a class called AccessCodeController with one method
 #That method checks the kvalue of the accesscode passed to it
@@ -17,7 +17,7 @@ class  Api::V1::AccessCodeController < ApiBaseController
     #we can do this because .find() returns an object, the object for this table is an accesscode, so .find() returns an access code#
 
     if @code.save
-      render json: @code
+      render json: @code.kvalue
 
     else
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["AccessCode #{params[:access_code]} not found"] } }, status: :not_found
