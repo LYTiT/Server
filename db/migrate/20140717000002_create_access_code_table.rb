@@ -9,4 +9,3 @@ class CreateAccessCodeTable < ActiveRecord::Migration
     end
   end
 end
-~   
