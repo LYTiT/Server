@@ -37,6 +37,7 @@ gem "paperclip", "~> 4.1"
 gem 'aws-sdk', '~> 1.5.7'
 gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
 gem 'bson_ext'
+gem 'mongo'
 
 group :development do
   gem 'better_errors'

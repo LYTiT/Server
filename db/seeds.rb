@@ -1,4 +1,4 @@
-# This file should contain all the record creation needed to seed the database with its default values.
+#This file should contain all the record creation needed to seed the database with its default values.
 # The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
 #
 # Examples:
@@ -1214,3 +1214,7 @@ AccessCode.create(accesscode:058K1, kvalue: 2)
 AccessCode.create(accesscode:058R3, kvalue: 2)
 AccessCode.create(accesscode:058E1, kvalue: 2)
 AccessCode.create(accesscode:058R1, kvalue: 2)
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d933502779b1e74a28fff5b552726f725d2120c

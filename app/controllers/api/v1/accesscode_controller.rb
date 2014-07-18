@@ -1,4 +1,3 @@
-
 #The reason this is in the api/v1/ folder is because it is a controller used for the actual app 
 #Controllers in the "controllers/" file are controllers used for the administrative tool (or so we think),
 # a fucking comment would have been nice.
@@ -25,3 +24,7 @@ class  Api::V1::AccessCodeController < ApiBaseController
   end
 
 end
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d933502779b1e74a28fff5b552726f725d2120c
