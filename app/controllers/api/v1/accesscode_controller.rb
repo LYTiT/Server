@@ -24,7 +24,4 @@ class  Api::V1::AccessCodeController < ApiBaseController
   end
 
 end
-<<<<<<< HEAD
-=======
 
->>>>>>> 9d933502779b1e74a28fff5b552726f725d2120c
