@@ -4,7 +4,7 @@ class CreateAccessCodeTable < ActiveRecord::Migration
   def change
     create_table :AccessCodes do |t|
       t.string :accesscode
-      t.int :kvalue
+      t.integer :kvalue
       t.timestamps
     end
   end
