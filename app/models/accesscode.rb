@@ -1,5 +1,4 @@
 class AccessCode < ActiveRecord::Base
-  act_as_paranoid
 
 #Check id the passed code existes and is not too long
 
