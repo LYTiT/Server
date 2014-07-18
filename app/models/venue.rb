@@ -65,6 +65,8 @@ class Venue < ActiveRecord::Base
     client = Venue.google_place_client
     if timewalk_start_time.present? and timewalk_end_time.present?
       list = default_venues(fetch_type, meters, latitude, longitude, q)
+    elsif group_id.present?
+      list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
     else
       begin
         if fetch_type == 'rankby'
@@ -133,15 +135,21 @@ class Venue < ActiveRecord::Base
 
   end
 
-  def self.default_venues(fetch_type, meters, latitude, longitude, q)
+  def self.default_venues(fetch_type, meters, latitude, longitude, q, group_id = nil)
     list = []
     if fetch_type == 'rankby'
-      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude])
+      list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+      list = list.limit(20).collect(&:id)
     else
       if q.blank?
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude])
+        list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        list = list.limit(20).collect(&:id)
       else
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%")
+        list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        list = list.limit(20).collect(&:id)
       end
     end
     list
