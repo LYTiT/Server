@@ -137,7 +137,7 @@ class Venue < ActiveRecord::Base
       }
       return data 
     else
-      return venues
+      return venues.uniq
     end
 
   end
