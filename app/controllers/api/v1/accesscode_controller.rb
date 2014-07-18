@@ -7,7 +7,7 @@
 #it returns this kvalue, all processing to determine the validity
 #of the kvalue is cone on the client side, lightens burden on serverside
 
-class  Api::V1::AccessCodeController < ApplicationController
+class  Api::V1::AccessCodeController < ApiBaseController
 
   def get_accesscode_from_table
 
