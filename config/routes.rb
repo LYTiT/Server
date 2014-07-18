@@ -1,4 +1,8 @@
+#what is the difference between resource resources and controller?
+#do they all do the same thing?
+
 LytitServer::Application.routes.draw do
+
   resources :tests
 
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
@@ -10,6 +14,7 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
       end
 
+      #why are these not undera resources tag?
       post '/register_push_token' => 'users#register_push_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
@@ -31,6 +36,8 @@ LytitServer::Application.routes.draw do
         get '/bar/position', :action => 'position'
       end
 
+      #why does this route appear in the middle of nowhere?
+      #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
 
       resources :groups, only: [:create, :update] do
@@ -49,14 +56,37 @@ LytitServer::Application.routes.draw do
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
       end
 
+      #we don't need to put an end here because there is no "do" we 
+      #put end on "do"
       resources :events, only: [:index, :create, :show]
+
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
         delete '/venues/delete_comment', :action => :delete_comment
       end
+
+      #are the next three post get post under the "resources :events"
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
       get '/group_venue_details/:id' => 'groups#group_venue_details'
       post '/report_event/:event_id' => 'events#report'
+
+
+      #post/delete/get are all determined in the methods defined in LTServer.m
+      #for example postJson would translate to post request.
+      #delete in LTServer translates to delete
+      #getJsonArray LT Server translates to get request
+
+      #as an aside I don't think you're supposed to use resources 
+      #to do routing for things that are NOT actually resources
+      #NOT a resource: events, groups,
+      #DEFINIETELY a resource: photos
+
+      #user resource or contoller?
+      resources :accesscodes, only:[] do
+       get '/accesscode/:access_code/kvalue', to: 'accesscode#get_accesscode_from_table'
+      end
+
+
     end
   end
 
