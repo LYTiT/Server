@@ -1,8 +1,8 @@
-#This just declares the accesscode object as a model
-#the model has two fields, accesscode and kvalue
 class AccessCode < ActiveRecord::Base
+  act_as_paranoid
+#Check id the passed code existes and is not too long
 
-  validates :accesscode, :kvalue
+  validates_length_of :accesscode, :within => 1..5
 
 end
 
