@@ -21,7 +21,7 @@ class  Api::V1::AccessCodeController < ApiBaseController
 
     else
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["AccessCode #{params[:access_code]} not found"] } }, status: :not_found
-  end
-
+		end  
+	end
 end
 
