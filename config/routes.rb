@@ -1,4 +1,4 @@
-t is the difference between resource/ resources/ and controller?
+#What is the difference between resource/ resources/ and controller?
 #do they all do the same thing?
 
 LytitServer::Application.routes.draw do
