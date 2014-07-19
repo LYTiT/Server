@@ -3,6 +3,7 @@
 #the model has two fields, accesscode and kvalue
 class AccessCode < ActiveRecord::Base
 
-  validates :accesscode, :kvalue
-
+  validates :accesscode, presence: true
+  validates :kvalue, presence: true
+  validates_length_of :accesscode, :within => 1..5
 end

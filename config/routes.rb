@@ -83,14 +83,11 @@ LytitServer::Application.routes.draw do
       #as an aside I don't think you're supposed to use resources 
       #to do routing for things that are NOT actually resources
       #NOT a resource: events, groups,
-      #DEFINIETELY a resource: photos
-
+      #DEFINIETELY a resource: photos      
       #user resource or contoller?
       resources :accesscodes, only:[] do
        get '/accesscode/:access_code/kvalue', to: 'accesscode#get_accesscode_from_table'
       end
-
-
     end
   end
 
