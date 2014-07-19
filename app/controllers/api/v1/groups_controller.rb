@@ -4,7 +4,6 @@ class Api::V1::GroupsController < ApiBaseController
     @group = Group.new(group_params)
 
     if @group.save
-      # add user creating group as admin
       GroupsUser.create(group_id: @group.id, user_id: @user.id, is_admin: true)
       render json: @group
     else
@@ -16,6 +15,7 @@ class Api::V1::GroupsController < ApiBaseController
     @group = Group.find(params[:id])
     if @group.is_user_admin?(@user)
       permitted_params = group_params
+      # permitted_params.delete(:name)
       if @group.update_attributes(permitted_params)
         group = @group.as_json
         group.delete("password")

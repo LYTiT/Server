@@ -112,6 +112,7 @@ LytitServer::Application.routes.draw do
 
   get 'about-us' => 'pages#about_us'
   get 'terms-and-conditions' => 'pages#tnc'
+  get 'privacy' => 'pages#privacy'
   
   root :to => 'sessions#new'
 
