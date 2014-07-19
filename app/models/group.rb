@@ -1,7 +1,12 @@
 class Group < ActiveRecord::Base
   acts_as_paranoid
+#Checks if the Group name is not too long or already taken
+  validates_length_of :name, :within => 1..30
+  validates_uniqueness_of :name, :message => "Name already exists"
 
-  validates :name, presence: true
+  #simply sees if the can link event button functions
+  #validates_inlusion_of :can_link_event, in [true, false]
+  
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
 
@@ -17,6 +22,10 @@ class Group < ActiveRecord::Base
   def should_validate_password?
   	not is_public
   end
+  
+  # def can_link_event?
+  #   can_link_event
+  #end
 
   def join(user_id, pwd)
     if !self.is_public? and self.password != pwd

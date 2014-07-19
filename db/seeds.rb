@@ -12,7 +12,7 @@
 #Replace With: AccessCode.create(accesscode:$1$2$3$4$5, kvalue: 2)
 
 # The next roghly 1.5K lines of code will put our accesscodes into the Accesscode table
-#when we migrate or compile the app.
+# when we migrate or compile the app.
 
 AccessCode.create(accesscode:'000Y3', kvalue: 2)
 AccessCode.create(accesscode:'000E7', kvalue: 2)
