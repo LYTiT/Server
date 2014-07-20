@@ -12,7 +12,7 @@ LytitServer::Application.routes.draw do
     get 'accesscodes/new'
     end
   end
-
+  
   get 'accesscodes/new'
 
   resources :tests
