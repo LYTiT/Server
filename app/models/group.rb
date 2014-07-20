@@ -4,15 +4,11 @@ class Group < ActiveRecord::Base
   validates_length_of :name, :within => 1..30
   validates_uniqueness_of :name, :message => "Name already exists"
 
-<<<<<<< HEAD
+  #simply sees if the can link event button functions
+  #validates_inlusion_of :can_link_event, in [true, false]
 
   #simply sees if the can link event button functions
   #validates_inlusion_of :can_link_event, in [true, false]
-  
-=======
-  #simply sees if the can link event button functions
-  #validates_inlusion_of :can_link_event, in [true, false]
->>>>>>> 55f21f7fa112828848b3af589bda64ce1a49a37a
 
   validates :name, presence: true
   validates_uniqueness_of :name, case_sensitive: false
