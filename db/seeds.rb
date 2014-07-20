@@ -1,7 +1,7 @@
 #new data here
 # Find What: (\d)(\d)(\d)(\w)(\d)
 # Replace With: {code: "$1$2$3$4$5", kvalue: 0},
-# Accesscode.delete_all
+Accesscode.delete_all
 
 Accesscode.create!([
 {code: "000Y3", kvalue: 0},
