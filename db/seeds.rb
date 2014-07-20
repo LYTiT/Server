@@ -4,7 +4,7 @@
 Accesscode.delete_all
 
 Accesscode.create!([
-{id: 1, code: "000E7", kvalue: 0},
-{id: 2, code: "000R1", kvalue: 0},
-{id: 3, code: "000O7", kvalue: 0},
+{id: 1, code: "000Y3", kvalue: 0},
+{id: 2, code: "000E7", kvalue: 0},
+{id: 3, code: "000R1", kvalue: 0}
 ])
