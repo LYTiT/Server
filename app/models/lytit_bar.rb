@@ -1,18 +1,6 @@
 class LytitBar < ActiveRecord::Base
   acts_as_singleton
 
-  # refer LYTiT algorithm documentation
-  GOOGLE_PLACE_FACTOR = 20
-
-  BAYESIAN_AVERAGE_C = 0.1 # C constant
-  BAYESIAN_AVERAGE_M = 2.0 # m constant
-
-  VOTE_HALF_LIFE_H = 30
-  RATING_LOSS_L = 10
-
-  THRESHOLD_TO_BE_SHOWN_ON_MAP = 210 # 3.5 hours
-  #-------------------------------------
-
   def recalculate_bar_position
     sum = 0
     venues = Venue.all

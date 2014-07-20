@@ -6,7 +6,10 @@ class Group < ActiveRecord::Base
 
   #simply sees if the can link event button functions
   #validates_inlusion_of :can_link_event, in [true, false]
-  
+
+  validates :name, presence: true
+  validates_uniqueness_of :name, case_sensitive: false
+
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
 
@@ -79,7 +82,7 @@ class Group < ActiveRecord::Base
   end
 
   def venues_with_user_who_added
-    venues = self.venues.as_json
+    venues = self.venues.order("venues.name ASC").as_json
     for venue in venues
       gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue["id"]).first
       info = gv.as_json.slice("created_at", "user_id")

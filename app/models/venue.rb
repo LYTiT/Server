@@ -29,6 +29,8 @@ class Venue < ActiveRecord::Base
 
   GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
 
+  GOOGLE_PLACE_VOTING_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
+
   has_many :lytit_votes, :dependent => :destroy
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - 210.minutes) }
@@ -56,7 +58,7 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -68,7 +70,7 @@ class Venue < ActiveRecord::Base
     else
       begin
         if fetch_type == 'rankby'
-          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_TYPES)
+          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_VOTING_TYPES)
         else
           if q.blank?
             spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
@@ -99,31 +101,43 @@ class Venue < ActiveRecord::Base
       end
     end
     
+    if timewalk_start_time.present? and timewalk_end_time.present?
+      start_time = Time.parse(timewalk_start_time).utc.to_time
+      end_time = Time.parse(timewalk_end_time).utc.to_time
+      list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
+    end
+
     venues = nil
     if fetch_type == 'rankby'
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now).limit(20)
+      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
+      venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+      venues = venues.limit(20)
     else
       if q.blank?
         rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
         list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
-          start_time = Time.parse(timewalk_start_time).utc.to_time
-          end_time = Time.parse(timewalk_end_time).utc.to_time
-          list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
           venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         else
           venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
+          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         end
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
         venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
       end
     end
 
     if timewalk_start_time.present? and timewalk_end_time.present?
-      return Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?)
+      data = {
+        :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
+        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time)
+      }
+      return data 
     else
-      return venues
+      return venues.uniq
     end
 
   end
@@ -140,6 +154,22 @@ class Venue < ActiveRecord::Base
       end
     end
     list
+  end
+
+  def self.checkins(timewalk_start_time, timewalk_end_time)
+    timeslot = {}
+    timewalk_start_time = Time.parse(timewalk_start_time)
+    timewalk_end_time = Time.parse(timewalk_end_time)
+    slots = []
+    current_slot = timewalk_start_time
+    begin
+      slots << current_slot
+      current_slot = current_slot + 15.minutes
+    end while current_slot <= timewalk_end_time 
+    slots.each do |time_slot|
+      timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("created_at BETWEEN ? AND ?", (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+    end
+    timeslot
   end
 
   def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, allow_blank)
@@ -173,7 +203,15 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    venues
+    venues.collect{|a| 
+      if a["timewalk_color_ratings"].present? 
+        color_values = a["timewalk_color_ratings"].values.uniq.compact
+        if color_values.size == 1 and color_values.first == -1
+        else
+          a
+        end
+      end
+    }.compact
   end
 
   def self.fetch_spot(google_reference_key)
@@ -228,14 +266,17 @@ class Venue < ActiveRecord::Base
     up_votes_count = self.v_up_votes.size
     down_votes_count = self.v_down_votes.size
 
-    (LytitBar::BAYESIAN_AVERAGE_C * LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count - down_votes_count)) /
-    (LytitBar::BAYESIAN_AVERAGE_M + (up_votes_count + down_votes_count))
+    (LytitConstants.bayesian_average_c * LytitConstants.bayesian_average_m + (up_votes_count - down_votes_count)) /
+    (LytitConstants.bayesian_average_m + (up_votes_count + down_votes_count))
   end
 
   def account_new_vote(vote_value)
+    puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
+      puts "up vote, accounting"
       account_up_vote
     else
+      puts "down vote, accounting"
       account_down_vote
     end
 
@@ -245,7 +286,7 @@ class Venue < ActiveRecord::Base
   end
 
   def recalculate_rating
-    y = 1.0 / (1 + LytitBar::RATING_LOSS_L)
+    y = 1.0 / (1 + LytitConstants.rating_loss_l)
 
     a = self.r_up_votes || (1.0 + get_k)
     b = self.r_down_votes || 1.0
@@ -257,7 +298,8 @@ class Venue < ActiveRecord::Base
     x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
 
     if $?.to_i == 0
-      puts "X = #{x}"
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
 
       self.rating = eval(x)
       save
@@ -271,7 +313,7 @@ class Venue < ActiveRecord::Base
       return false
     end
 
-    if minutes_since_last_vote >= LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+    if minutes_since_last_vote >= LytitConstants.threshold_to_venue_be_shown_on_map
       return false
     end
 
@@ -287,7 +329,7 @@ class Venue < ActiveRecord::Base
   def get_k
     if self.google_place_rating
       p = self.google_place_rating / 5
-      return LytitBar::GOOGLE_PLACE_FACTOR * (p ** 2)
+      return LytitConstants.google_place_factor * (p ** 2)
     end
 
     0
@@ -348,7 +390,7 @@ class Venue < ActiveRecord::Base
 
       (now - last) / 1.minute
     else
-      LytitBar::THRESHOLD_TO_BE_SHOWN_ON_MAP
+      LytitConstants.threshold_to_venue_be_shown_on_map
     end
   end
 
@@ -369,7 +411,7 @@ class Venue < ActiveRecord::Base
     for vote in votes
       minutes_passed_since_vote = (now - vote.created_at) / 1.minute
 
-      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitBar::VOTE_HALF_LIFE_H)
+      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
     end
 
     old_votes_sum

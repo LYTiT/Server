@@ -13,8 +13,12 @@
 
 ActiveRecord::Schema.define(version: 20140717989898) do
 
+ActiveRecord::Schema.define(version: 20140716143157) do
+
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -135,6 +139,13 @@ ActiveRecord::Schema.define(version: 20140717989898) do
 
   create_table "lytit_bars", force: true do |t|
     t.float "position"
+  end
+
+  create_table "lytit_constants", force: true do |t|
+    t.string   "constant_name"
+    t.float    "constant_value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "lytit_votes", force: true do |t|
