@@ -7,6 +7,14 @@
 
 LytitServer::Application.routes.draw do
 
+  namespace :api do
+  namespace :v1 do
+    get 'accesscodes/new'
+    end
+  end
+
+  get 'accesscodes/new'
+
   resources :tests
 
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
