@@ -1222,10 +1222,3 @@ Accesscode.create!([
 {id: 1200,	code: "058R1", kvalue: 0}
 ])
 
-
-=======
-{id: 1, code: "000Y3", kvalue: 0},
-{id: 2, code: "000E7", kvalue: 0},
-{id: 3, code: "000R1", kvalue: 0}
-])
->>>>>>> 49eeb2dab609a555bdeb9875ac72e0f676922d03
