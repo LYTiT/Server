@@ -1206,4 +1206,3 @@ Accesscode.create!([
 {code: "058R1", kvalue: 0}
 ])
 
-
