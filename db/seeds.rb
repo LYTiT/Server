@@ -1,10 +1,16 @@
 #new data here
 # Find What: (\d)(\d)(\d)(\w)(\d)
+
 # Replace With: {{id: 1,code: $1$2$3$4$5, kvalue: 0},
 # Accesscode.delete_all
 
+# Replace With: {code: "$1$2$3$4$5", kvalue: 0},
+Accesscode.delete_all
+
+
 =begin
 Accesscode.create!([
+<<<<<<< HEAD
 
 {	code: "000R1", kvalue: 0},
 {	code: "000O7", kvalue: 0},
@@ -1217,3 +1223,9 @@ Accesscode.create!([
 ])
 
 
+=======
+{id: 1, code: "000Y3", kvalue: 0},
+{id: 2, code: "000E7", kvalue: 0},
+{id: 3, code: "000R1", kvalue: 0}
+])
+>>>>>>> 49eeb2dab609a555bdeb9875ac72e0f676922d03
