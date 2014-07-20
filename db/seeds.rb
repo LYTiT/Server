@@ -1,5 +1,4 @@
 #new data here
-<<<<<<< HEAD
 # Find What: (\d)(\d)(\d)(\w)(\d)
 # Replace With: {code: "$1$2$3$4$5", kvalue: 0},
 Accesscode.delete_all
@@ -1206,8 +1205,3 @@ Accesscode.create!([
 {code: "058E1", kvalue: 0},
 {code: "058R1", kvalue: 0}
 ])
-=======
-Accesscode.delete_all
-
-Accesscode.create!([{code: "000Y3", kvalue:0}])
->>>>>>> 3fd803117d136332c0af1791097dddf863e9afef
