@@ -11,12 +11,13 @@ class VotesCsv < ExportedDataCsv
 
     by_vote = CSV.generate do |csv|
       data = ["ID", "Vote Type (up or down)", "Venue at which vote was placed", "Time at which vote was placed", 
-      	      "LYTiT Rating at Venue at time of placed vote", "Priming Value of Venue where vote was placed"]
+              "LYTiT Rating at Venue at time of placed vote (BEFORE)", "LYTiT Rating at Venue at time of placed vote (BEFORE)",
+              "Priming Value of Venue where vote was placed"]
 
       csv << data
 
       votes.each do |v|
-      	data = [v.id, v.value > 0 ? "up" : "down", v.venue_id, v.created_at, v.venue_rating, v.prime]
+        data = [v.id, v.value > 0 ? "up" : "down", v.venue_id, v.created_at, v.venue_rating, v.rating_after, v.prime]
 
       	csv << data
       end
