@@ -7,13 +7,18 @@
 
 LytitServer::Application.routes.draw do
 
-  namespace :api do
+  namespace :api, :defaults =>{:format =>'json'} do
   namespace :v1 do
-    get 'accesscodes/new'
+
+      resources :accesscodes do
+
+        get 'accesscodes/:code', :action => :val_accesscode
+        get 'accesscodes/new'
+      end 
     end
   end
-  
-  get 'accesscodes/new'
+
+
 
   resources :tests
 
@@ -81,21 +86,6 @@ LytitServer::Application.routes.draw do
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
       get '/group_venue_details/:id' => 'groups#group_venue_details'
       post '/report_event/:event_id' => 'events#report'
-
-
-      #post/delete/get are all determined in the methods defined in LTServer.m
-      #for example postJson would translate to post request.
-      #delete in LTServer translates to delete
-      #getJsonArray LT Server translates to get request
-
-      #as an aside I don't think you're supposed to use resources 
-      #to do routing for things that are NOT actually resources
-      #NOT a resource: events, groups,
-      #DEFINIETELY a resource: photos      
-      #user resource or contoller?
-      resources :accesscodes, only:[] do
-       get '/accesscode/:access_code/kvalue', to: 'accesscode#get_accesscode_from_table'
-      end
     end
   end
 
