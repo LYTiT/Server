@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140716143157) do
+ActiveRecord::Schema.define(version: 20140721035100) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -154,6 +154,7 @@ ActiveRecord::Schema.define(version: 20140716143157) do
     t.float    "venue_rating"
     t.float    "prime"
     t.float    "raw_value"
+    t.float    "rating_after"
   end
 
   add_index "lytit_votes", ["user_id"], name: "index_lytit_votes_on_user_id", using: :btree

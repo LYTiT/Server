@@ -270,7 +270,7 @@ class Venue < ActiveRecord::Base
     (LytitConstants.bayesian_average_m + (up_votes_count + down_votes_count))
   end
 
-  def account_new_vote(vote_value)
+  def account_new_vote(vote_value, vote_id)
     puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
       puts "up vote, accounting"
@@ -280,12 +280,10 @@ class Venue < ActiveRecord::Base
       account_down_vote
     end
 
-    #Thread.new do
-      recalculate_rating
-    #end
+    recalculate_rating(vote_id)
   end
 
-  def recalculate_rating
+  def recalculate_rating(vote_id)
     y = 1.0 / (1 + LytitConstants.rating_loss_l)
 
     a = self.r_up_votes || (1.0 + get_k)
@@ -301,7 +299,12 @@ class Venue < ActiveRecord::Base
       puts "rating before = #{self.rating}"
       puts "rating after = #{x}"
 
-      self.rating = eval(x)
+      new_rating = eval(x)
+
+      self.rating = new_rating
+
+      vote = LytitVote.find(vote_id)
+      vote.update_columns(rating_after: new_rating)
       save
     else
       puts "Could not calculate rating. Status: #{$?.to_i}"
