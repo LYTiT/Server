@@ -12,9 +12,9 @@ LytitServer::Application.routes.draw do
   namespace :api, :defaults =>{:format =>'json'} do
   namespace :v1 do
 
-      resources :accesscodes do
+      resources :accesscodes, only:[:show] do
 
-        get 'accesscodes/:code', :action => :val_accesscode
+        #get 'accesscodes/check/:code', :action => :val_accesscode
         get 'accesscodes/new'
       end 
     end

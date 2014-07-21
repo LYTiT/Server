@@ -4,11 +4,15 @@ class Api::V1::AccesscodesController < ApplicationController
 
   end
 
-  def val_accesscode
-  	@accesscode = Accesscode.find_by_code(params[:code])
+  def show
 
+  	#@accesscode = Accesscode.new(accesscodes_params)
+  	accesscode = Accesscode.where(code: params[:id]).take
+  	accesscode.kvalue = accesscode.kvalue + 1
+  	accesscode.save
+ 	render json: {code: accesscode }
   end
-  
+
   def update
 
   end
@@ -17,9 +21,14 @@ class Api::V1::AccesscodesController < ApplicationController
   	@accesscode = Accesscode.new(accesscodes_params)
   end
 
+  def val_accesscode
+
+  	@accesscode = Accesscode.find_by_code(params[:code])
+  end
+  
   private 
 
   def accesscodes_params
-  		params.require(:accesscode).permit(:code, :kvalue)
+  	params.require(:accesscode).permit(:code, :kvalue)
   end
 end
