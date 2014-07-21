@@ -5,7 +5,7 @@ class Api::V1::AccesscodesController < ApplicationController
   end
 
   def val_accesscode
-  	@accesscode = Accesscode.find_by(:code, params[:code])
+  	@accesscode = Accesscode.find_by_code(params[:code])
 
   end
   
