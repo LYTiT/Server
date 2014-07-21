@@ -255,11 +255,11 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.at_beginning_of_day + 6.hours)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, valid_votes_timestamp)
   end
 
   def v_down_votes
-    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, Time.now.at_beginning_of_day + 6.hours)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, valid_votes_timestamp)
   end
 
   def bayesian_voting_average
@@ -339,6 +339,11 @@ class Venue < ActiveRecord::Base
   end
 
   private
+
+  def valid_votes_timestamp
+    now = Time.now
+    now.hour >= 6 ? now.at_beginning_of_day + 6.hours : now.yesterday.at_beginning_of_day + 6.hours
+  end
 
   def self.with_color_ratings(venues)
     ret = []
