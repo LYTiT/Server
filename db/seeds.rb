@@ -5,7 +5,7 @@
 # Accesscode.delete_all
 
 # Replace With: {code: "$1$2$3$4$5", kvalue: 0},
-# Accesscode.delete_all
+Accesscode.delete_all
 
 
 =begin
@@ -17,7 +17,7 @@ Accesscode.create!([
 {	code: "000R3", kvalue: 0}
 
 ])
-
+=end
 
 Accesscode.create!([
 {id: 1,	code: "000Y3", kvalue: 0},
@@ -1221,4 +1221,4 @@ Accesscode.create!([
 {id: 1199,	code: "058E1", kvalue: 0},
 {id: 1200,	code: "058R1", kvalue: 0}
 ])
-=end
+
