@@ -58,7 +58,7 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -133,7 +133,7 @@ class Venue < ActiveRecord::Base
     if timewalk_start_time.present? and timewalk_end_time.present?
       data = {
         :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
-        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time)
+        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time, user)
       }
       return data 
     else
@@ -156,18 +156,20 @@ class Venue < ActiveRecord::Base
     list
   end
 
-  def self.checkins(timewalk_start_time, timewalk_end_time)
+  def self.checkins(timewalk_start_time, timewalk_end_time, user)
     timeslot = {}
-    timewalk_start_time = Time.parse(timewalk_start_time)
-    timewalk_end_time = Time.parse(timewalk_end_time)
-    slots = []
-    current_slot = timewalk_start_time
-    begin
-      slots << current_slot
-      current_slot = current_slot + 15.minutes
-    end while current_slot <= timewalk_end_time 
-    slots.each do |time_slot|
-      timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("created_at BETWEEN ? AND ?", (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+    if user.present?
+      timewalk_start_time = Time.parse(timewalk_start_time)
+      timewalk_end_time = Time.parse(timewalk_end_time)
+      slots = []
+      current_slot = timewalk_start_time
+      begin
+        slots << current_slot
+        current_slot = current_slot + 15.minutes
+      end while current_slot <= timewalk_end_time 
+      slots.each do |time_slot|
+        timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("user_id = ? AND created_at BETWEEN ? AND ?", user.id, (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+      end
     end
     timeslot
   end
