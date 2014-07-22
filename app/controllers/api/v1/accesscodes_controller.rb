@@ -3,14 +3,18 @@ class Api::V1::AccesscodesController < ApplicationController
   def new 
 
   end
-
+  
+  #Checks if the entered accesscode is used less than 5 times.
   def show
-
-  	#@accesscode = Accesscode.new(accesscodes_params)
   	accesscode = Accesscode.where(code: params[:id]).take
   	accesscode.kvalue = accesscode.kvalue + 1
   	accesscode.save
- 	render json: {code: accesscode }
+  	if (accesscode.kvalue < 5 )
+  	  render json: {code: accesscode}
+  	else 
+  	  render 
+  	  render json: { error: { code: ERROR_UNAUTHORIZED, messages: ["code used too often"] } }, status: :unauthorized 
+  	end
   end
 
   def update
