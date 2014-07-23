@@ -159,8 +159,8 @@ class Venue < ActiveRecord::Base
   def self.checkins(timewalk_start_time, timewalk_end_time, user)
     timeslot = {}
     if user.present?
-      timewalk_start_time = Time.parse(timewalk_start_time)
-      timewalk_end_time = Time.parse(timewalk_end_time)
+      timewalk_start_time = DateTime.parse(timewalk_start_time)
+      timewalk_end_time = DateTime.parse(timewalk_end_time)
       slots = []
       current_slot = timewalk_start_time
       begin
