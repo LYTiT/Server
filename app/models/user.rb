@@ -19,7 +19,7 @@ class User < ActiveRecord::Base
   belongs_to :role
 
   before_save :ensure_authentication_token
-  before_save :generate_confirmation_token
+  before_save :generate_confirmation_token_for_venue_manager
   after_save :notify_venue_managers
   
   # This is to deal with S3.
@@ -59,7 +59,7 @@ class User < ActiveRecord::Base
 
   private
 
-  def generate_confirmation_token
+  def generate_confirmation_token_for_venue_manager
     if role_id_changed?
       if role.try(:name) == "Venue Manager"
         self.confirmation_token = SecureRandom.hex
