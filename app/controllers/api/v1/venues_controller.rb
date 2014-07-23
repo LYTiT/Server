@@ -77,6 +77,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def search
+    @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?
       @group = Group.find_by_id(params[:group_id])
       if @group
