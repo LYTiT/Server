@@ -83,7 +83,7 @@ LytitServer::Application.routes.draw do
   get 'terms-and-conditions' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
   
-  root :to => 'sessions#new'
+  root :to => 'pages#home'
 
 
 end
