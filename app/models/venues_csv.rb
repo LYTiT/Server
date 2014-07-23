@@ -59,7 +59,7 @@ class VenuesCsv < ExportedDataCsv
   end
 
   def minutes_since_last_vote(venue_id, vote)
-    last_vote = LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", venue_id, vote, Time.now.at_beginning_of_day + 6.hours).last
+    last_vote = LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", venue_id, vote, valid_votes_timestamp).last
 
     if last_vote
       last = last_vote.created_at
