@@ -69,7 +69,7 @@ class Api::V1::UsersController < ApiBaseController
     user = User.find_by_email(params[:email])
     if user
       user.forgot_password!
-      puts ::ClearanceMailer.change_password(user)
+      ::ClearanceMailer.change_password(user).deliver
       render json: { success: true, message: 'Password reset link sent to your email.' }
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Can not find user with this email'] } }, status: :unprocessable_entity
