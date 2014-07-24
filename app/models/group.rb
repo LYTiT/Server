@@ -11,6 +11,7 @@ class Group < ActiveRecord::Base
   validates :password, presence: true, :if => :should_validate_password?
 
   validates_inclusion_of :can_link_events, in: [true, false]
+  
   validates_inclusion_of :can_link_venues, in: [true, false]
 
   has_many :groups_users
