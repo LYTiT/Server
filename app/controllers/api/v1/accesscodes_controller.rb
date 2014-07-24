@@ -10,8 +10,6 @@ class Api::V1::AccesscodesController < ApplicationController
   	accesscode.save
   	if (accesscode.kvalue < 5 )
   	  render json: {code: accesscode}
-  	else 
-  	  render json: { error: { code: ERROR_UNAUTHORIZED, messages: ["code used too often"] } }, status: :unauthorized 
   	end
   end
 
