@@ -4,20 +4,14 @@ class Group < ActiveRecord::Base
   validates_length_of :name, :within => 1..30
   validates_uniqueness_of :name, :message => "Name already exists"
 
-  #validates_inlusion_of :can_link_event, in [true, false]
-
-  #simply sees if the can link event button functions
-  #validates_inlusion_of :can_link_event, in [true, false]
-  
-
-  #simply sees if the can link event button functions
-  #validates_inlusion_of :can_link_event, in [true, false]
-
   validates :name, presence: true
   validates_uniqueness_of :name, case_sensitive: false
 
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
+  
+  validates_inclusion_of :can_link_events, in:[true, false]
+  validates_inclusion_of :can_link_venues, in:[true, false]
 
   has_many :groups_users
   has_many :users, through: :groups_users
