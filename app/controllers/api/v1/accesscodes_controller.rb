@@ -12,7 +12,6 @@ class Api::V1::AccesscodesController < ApplicationController
   	if (accesscode.kvalue < 5 )
   	  render json: {code: accesscode}
   	else 
-  	  render 
   	  render json: { error: { code: ERROR_UNAUTHORIZED, messages: ["code used too often"] } }, status: :unauthorized 
   	end
   end
@@ -25,13 +24,7 @@ class Api::V1::AccesscodesController < ApplicationController
   	@accesscode = Accesscode.new(accesscodes_params)
   end
 
-  def val_accesscode
-
-  	@accesscode = Accesscode.find_by_code(params[:code])
-  end
-  
   private 
-
   def accesscodes_params
   	params.require(:accesscode).permit(:code, :kvalue)
   end
