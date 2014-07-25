@@ -23,7 +23,7 @@ class GroupsVenue < ActiveRecord::Base
       end
 
       if user.gcm_token
-        request = HiGCM::Sender.new(Settings[:gcm][:api_key])
+        request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
         request.delay.send([user.gcm_token], payload)
       end
 
