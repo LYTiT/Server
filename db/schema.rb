@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140721035100) do
+ActiveRecord::Schema.define(version: 20140725014735) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -201,6 +200,7 @@ ActiveRecord::Schema.define(version: 20140721035100) do
     t.boolean  "notify_venue_added_to_groups",                default: true
     t.integer  "role_id"
     t.boolean  "username_private",                            default: false
+    t.string   "gcm_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -269,7 +269,7 @@ ActiveRecord::Schema.define(version: 20140721035100) do
     t.float    "color_rating",           default: -1.0
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end
