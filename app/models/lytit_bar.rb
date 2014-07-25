@@ -9,12 +9,10 @@ class LytitBar < ActiveRecord::Base
     end
 
     if not venues.empty?
-      self.position = sum / venues.size
+      update_columns(position: (sum / venues.size).round(4))
 	  else
-      self.position = 0
+      update_columns(position: 0)
     end
-
-    save
   end
 
   def self.inv_inc_beta(a, b, y)
