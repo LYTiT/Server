@@ -9,15 +9,12 @@ LytitServer::Application.routes.draw do
 
   #get 'accesscodes/:code', :action => :val_accesscode
 
-  namespace :api, :defaults =>{:format =>'json'} do
-  namespace :v1 do
-      resources :accesscodes, only: [:show] do
-
-        #get 'accesscodes/check/:code', :action => :val_accesscode
-        get 'accesscodes/new'
-      end 
-    end
-  end
+  #namespace :api, :defaults =>{:format =>'json'} do
+  #namespace :v1 do
+    #  resources :accesscodes, only: [:show] do
+    #  end 
+   # end
+  #end
 
   #get '/admin/', :action => :val_accesscode
   #get 'api/v1/accesscodes/:code', :action => :val_accesscode
@@ -39,6 +36,9 @@ LytitServer::Application.routes.draw do
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
       post '/forgot_password' => 'users#forgot_password'
+
+      resources :accesscodes, only: [:show] do #accesscodes call to show made here
+      end
 
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
