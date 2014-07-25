@@ -27,6 +27,7 @@ gem "paranoia", "~> 2.0"
 gem 'haml-rails'
 gem 'geokit-rails'
 gem 'apns', git: 'https://github.com/jpoz/APNS.git'
+gem 'higcm'
 gem 'rufus-scheduler'
 gem 'rubypython', "0.6.3"
 gem 'honeybadger'

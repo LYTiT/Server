@@ -11,6 +11,7 @@ LytitServer::Application.routes.draw do
       end
 
       post '/register_push_token' => 'users#register_push_token'
+      post '/register_gcm_token' => 'users#register_gcm_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
       post '/forgot_password' => 'users#forgot_password'
