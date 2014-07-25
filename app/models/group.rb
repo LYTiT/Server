@@ -83,10 +83,23 @@ class Group < ActiveRecord::Base
 
   def send_notification_to_users(user_ids, event_id)
     for user_id in user_ids
-      token = User.find(user_id).push_token
-      if token
-        a = APNS.delay.send_notification(token, {:alert => '', :content_available => 1, :other => {:object_id => event_id, :type => 'event_added', :user_id => user_id}})
+      user = User.find(user_id)
+
+      payload = {
+        :object_id => event_id, 
+        :type => 'event_added', 
+        :user_id => user_id
+      }
+
+      if user.push_token
+        a = APNS.delay.send_notification(token, {:alert => '', :content_available => 1, :other => payload})
       end
+
+      if user.gcm_token
+        request = HiGCM::Sender.new(Settings[:gcm][:api_key])
+        request.delay.send([user.gcm_token], payload)
+      end
+      
     end
   end
 

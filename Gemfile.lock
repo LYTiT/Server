@@ -161,6 +161,8 @@ GEM
       activesupport (>= 4.0.1)
       haml (>= 3.1, < 5.0)
       railties (>= 4.0.1)
+    higcm (0.0.5)
+      typhoeus (~> 0.3.3)
     high_voltage (2.1.0)
     hike (1.2.3)
     honeybadger (1.14.0)
@@ -328,6 +330,8 @@ GEM
     treetop (1.4.15)
       polyglot
       polyglot (>= 0.3.1)
+    typhoeus (0.3.3)
+      mime-types
     tzinfo (1.1.0)
       thread_safe (~> 0.1)
     uglifier (2.5.0)
@@ -369,6 +373,7 @@ DEPENDENCIES
   geokit-rails
   google_places!
   haml-rails
+  higcm
   high_voltage
   honeybadger
   jbuilder
