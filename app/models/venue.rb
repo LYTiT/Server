@@ -286,7 +286,7 @@ class Venue < ActiveRecord::Base
   end
 
   def recalculate_rating(vote_id)
-    y = 1.0 / (1 + LytitConstants.rating_loss_l)
+    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
     a = self.r_up_votes || (1.0 + get_k)
     b = self.r_down_votes || 1.0
@@ -301,7 +301,7 @@ class Venue < ActiveRecord::Base
       puts "rating before = #{self.rating}"
       puts "rating after = #{x}"
 
-      new_rating = eval(x)
+      new_rating = eval(x).round(4)
 
       self.rating = new_rating
 
@@ -334,7 +334,7 @@ class Venue < ActiveRecord::Base
   def get_k
     if self.google_place_rating
       p = self.google_place_rating / 5
-      return LytitConstants.google_place_factor * (p ** 2)
+      return (LytitConstants.google_place_factor * (p ** 2)).round(4)
     end
 
     0
@@ -405,21 +405,34 @@ class Venue < ActiveRecord::Base
   end
 
   def account_up_vote
-    self.r_up_votes = get_sum_of_past_votes(self.v_up_votes) + 1 + get_k
+    up_votes = self.v_up_votes.order('id ASC').to_a
+    last = up_votes.pop # last vote should not be considered for the sum of the past
+    self.r_up_votes = (get_sum_of_past_votes(up_votes, last.try(:created_at)) + 1 + get_k).round(4)
     save
   end
 
   def account_down_vote
-    self.r_down_votes = get_sum_of_past_votes(self.v_down_votes) + 1
+    down_votes = self.v_down_votes.order('id ASC').to_a
+    last = down_votes.pop # last vote should not be considered for the sum of the past
+    self.r_down_votes = (get_sum_of_past_votes(down_votes, last.try(:created_at)) + 1).round(4)
     save
   end
 
-  def get_sum_of_past_votes(votes)
-    now = Time.now.utc
+  # we need the timestamp of the last vote, since the accounting of votes
+  # is executed in parallel (new thread) and probably NOT right after the
+  # push of the current vote through the API
+  #
+  # Time.now could be used if we have guaranteed that the accounting of
+  # the vote will be done right away, which is not the case with the use of
+  # delayed jobs
+  def get_sum_of_past_votes(votes, timestamp_last_vote)
+    if not timestamp_last_vote
+      timestamp_last_vote = Time.now.utc
+    end
 
     old_votes_sum = 0
     for vote in votes
-      minutes_passed_since_vote = (now - vote.created_at) / 1.minute
+      minutes_passed_since_vote = (timestamp_last_vote - vote.created_at) / 1.minute
 
       old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
     end
