@@ -112,13 +112,13 @@ class Venue < ActiveRecord::Base
       venues = venues.limit(20)
     else
       if q.blank?
-        rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
-        list = list + rated_venue_ids
+        # rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        # list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
-          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC')
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         else
-          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
+          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL")
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         end
       else
@@ -146,7 +146,7 @@ class Venue < ActiveRecord::Base
       list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
     else
       if q.blank?
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+        # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
       else
         list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
       end
