@@ -67,6 +67,7 @@ LytitServer::Application.routes.draw do
   end
 
   resource :session, controller: 'sessions', only: [:destroy, :new, :create]
+  resources :passwords, controller: 'passwords', only: [:create, :new, :update]
 
   get 'session', to: redirect('/sign_in')
   get 'sign_out' => 'sessions#destroy', :as => nil
@@ -77,6 +78,7 @@ LytitServer::Application.routes.draw do
   resources :users, only: [] do 
     get 'confirm_account/:token' => 'users#set_password', as: 'venue_manager_set_password'
     put 'confirm_account/:token' => 'users#confirm_account', as: 'venue_manager_confirm_account'
+    resource :password, controller: 'passwords', only: [:create, :edit, :update]
   end
 
   get 'about-us' => 'pages#about_us'
