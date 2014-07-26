@@ -6,7 +6,7 @@
       <div class="center-block">
         <div class="tnc">
           <p><b><%= t '.title' %></b></p>
-          <p><%= t '.description' %></p>
+          <p>Please enter your new password below</p>
         </div>
         <%= form_for :password_reset, :url => user_password_path(@user, :token => @user.confirmation_token), :html => { :method => :put, :class => "login after" } do |form| %>
           <% if flash[:notice].present? %>
