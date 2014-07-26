@@ -78,9 +78,10 @@ class Venue < ActiveRecord::Base
             spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
           end
         end
+        keys = spots.collect(&:place_id)
+        venues = Venue.where(google_place_key: keys)
         spots.each do |spot|
-          venue = Venue.where("google_place_key = ?", spot.place_id).first
-          venue = Venue.where("google_place_key = ?", spot.id).first unless venue.present?
+          venue = venues.select{|venue| venue.google_place_key == spot.place_id}.first
           venue ||= Venue.new()
           venue.name = spot.name
           venue.google_place_key = spot.place_id
@@ -90,10 +91,7 @@ class Venue < ActiveRecord::Base
           venue.longitude = spot.lng
           venue.formatted_address = spot.formatted_address
           venue.city = spot.city
-          if venue.save
-            # Temp - Database cleanup for duplicates - Switchin over to Place ID.
-            Venue.where("google_place_key = ?", spot.id).delete_all
-          end
+          venue.save
           list << venue.id if venue.persisted?
         end
       rescue HTTParty::ResponseError => e
