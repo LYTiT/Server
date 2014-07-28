@@ -6,6 +6,10 @@ class Group < ActiveRecord::Base
   validates_inclusion_of :is_public, in: [true, false]
   validates :password, presence: true, :if => :should_validate_password?
 
+  validates_inclusion_of :can_link_events, in: [true, false]
+  
+  validates_inclusion_of :can_link_venues, in: [true, false]
+
   has_many :groups_users
   has_many :users, through: :groups_users
 

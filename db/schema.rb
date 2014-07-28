@@ -11,11 +11,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140721035100) do
+ActiveRecord::Schema.define(version: 20140728162742) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -111,6 +110,8 @@ ActiveRecord::Schema.define(version: 20140721035100) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
+    t.boolean  "can_link_events", default: true
+    t.boolean  "can_link_venues", default: true
   end
 
   add_index "groups", ["deleted_at"], name: "index_groups_on_deleted_at", using: :btree
@@ -201,6 +202,7 @@ ActiveRecord::Schema.define(version: 20140721035100) do
     t.boolean  "notify_venue_added_to_groups",                default: true
     t.integer  "role_id"
     t.boolean  "username_private",                            default: false
+    t.string   "gcm_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -260,11 +262,11 @@ ActiveRecord::Schema.define(version: 20140721035100) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.string   "menu_link"
     t.float    "color_rating",           default: -1.0
   end
