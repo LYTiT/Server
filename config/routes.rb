@@ -10,6 +10,9 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
       end
 
+      resources :accesscodes, only: [:show] do #accesscodes call to show made here
+      end
+
       post '/register_push_token' => 'users#register_push_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
