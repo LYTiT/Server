@@ -97,7 +97,7 @@ class Group < ActiveRecord::Base
 
       if user.gcm_token
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-        request.delay.send([user.gcm_token], payload)
+        request.send([user.gcm_token], payload)
       end
       
     end
