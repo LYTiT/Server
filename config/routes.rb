@@ -1,4 +1,25 @@
+
+#what is the difference between resource resources and controller?
+
+#What is the difference between resource/ resources/ and controller?
+
+#do they all do the same thing?
+
 LytitServer::Application.routes.draw do
+
+  #get 'accesscodes/:code', :action => :val_accesscode
+
+  #namespace :api, :defaults =>{:format =>'json'} do
+  #namespace :v1 do
+    #  resources :accesscodes, only: [:show] do
+    #  end 
+   # end
+  #end
+
+  #get '/admin/', :action => :val_accesscode
+  #get 'api/v1/accesscodes/:code', :action => :val_accesscode
+  #get 'accesscodes/new'
+
   resources :tests
 
   mount RailsAdmin::Engine => '/admin', :as => 'rails_admin'
@@ -10,13 +31,20 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
       end
 
+<<<<<<< HEAD
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
 
+=======
+      #why are these not undera resources tag?
+>>>>>>> 571a7eceed89450725313f0fe6ff7987dbd9bb6c
       post '/register_push_token' => 'users#register_push_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
       post '/forgot_password' => 'users#forgot_password'
+
+      resources :accesscodes, only: [:show] do #accesscodes call to show made here
+      end
 
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
@@ -34,6 +62,8 @@ LytitServer::Application.routes.draw do
         get '/bar/position', :action => 'position'
       end
 
+      #why does this route appear in the middle of nowhere?
+      #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
 
       resources :groups, only: [:create, :update] do
@@ -52,11 +82,16 @@ LytitServer::Application.routes.draw do
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
       end
 
+      #we don't need to put an end here because there is no "do" we 
+      #put end on "do"
       resources :events, only: [:index, :create, :show]
+
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
         delete '/venues/delete_comment', :action => :delete_comment
       end
+
+      #are the next three post get post under the "resources :events"
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
       get '/group_venue_details/:id' => 'groups#group_venue_details'
       post '/report_event/:event_id' => 'events#report'

@@ -1,5 +1,9 @@
 class Api::V1::AccesscodesController < ApplicationController
+<<<<<<< HEAD
 	respond_to :json	
+=======
+  respond_to :json
+>>>>>>> 571a7eceed89450725313f0fe6ff7987dbd9bb6c
 
   def new 
   end
@@ -18,6 +22,11 @@ class Api::V1::AccesscodesController < ApplicationController
     @accesscode = Accesscode.where(code: params[:id]).take
     @accesscode.kvalue = @accesscode.kvalue+1
     @accesscode.save
+<<<<<<< HEAD
+=======
+    #@accesscode = Accesscode.where(code: params[:id]).take
+    #accesscode = @accesscode.as_json
+>>>>>>> 571a7eceed89450725313f0fe6ff7987dbd9bb6c
     render json: @accesscode.as_json
   end
 
