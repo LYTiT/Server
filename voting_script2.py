@@ -20,12 +20,12 @@ def vote(server='localhost', user=USER_TOKEN, interval=10):
 		bar = r.json()['bar_position']
 		print "bar position: %f" % bar
 
-		venue_id = random.randint(13851, 14850)
+		venue_id = random.randint(1, 999)
 		probs = []
 
-		if venue_id >= 13851 and venue_id < 14184:
+		if venue_id >= 1 and venue_id < 333:
 			probs = [0.2, 0.8]
-		elif venue_id >= 14184 and venue_id < 14517:
+		elif venue_id >= 333 and venue_id < 666:
 			probs = [0.5, 0.5]
 		else:
 			probs = [0.8, 0.2]

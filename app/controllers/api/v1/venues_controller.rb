@@ -86,8 +86,12 @@ class Api::V1::VenuesController < ApiBaseController
         render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
       end
     else
-      venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
-      render json: venues
+      @venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
+      if params[:timewalk_start_time].present? and params[:timewalk_end_time].present?
+        render 'timewalk.json.jbuilder'
+      else
+        render 'search.json.jbuilder'
+      end
     end
   end
 
