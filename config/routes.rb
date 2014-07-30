@@ -31,13 +31,8 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
       end
 
-<<<<<<< HEAD
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
-
-=======
-      #why are these not undera resources tag?
->>>>>>> 571a7eceed89450725313f0fe6ff7987dbd9bb6c
       post '/register_push_token' => 'users#register_push_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
