@@ -1,5 +1,5 @@
 class Api::V1::AccesscodesController < ApplicationController
-	respond_to :json
+	respond_to :json	
 
   def new 
   end
