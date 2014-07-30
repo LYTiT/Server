@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "accesscodes", force: true do |t|
     t.string   "code"
@@ -209,7 +210,6 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.boolean  "notify_venue_added_to_groups",                default: true
     t.integer  "role_id"
     t.boolean  "username_private",                            default: false
-    t.string   "gcm_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -269,11 +269,11 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.string   "menu_link"
     t.float    "color_rating",           default: -1.0
   end
