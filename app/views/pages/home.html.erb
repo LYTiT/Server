@@ -8,7 +8,9 @@
           <div class="alert alert-danger"><%= flash[:notice] %></div>
         <% end %>
         <% if flash[:message].present? %>
-          <div class="alert alert-success"><%= flash[:message] %></div>
+        <div class="tnc">
+          <p><%= flash[:message] %></p>
+        </div>
         <% end %>
         <!-- <div class="row downloads">
           <div class="col-sm-6">
