@@ -15,13 +15,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "accesscodes", force: true do |t|
-    t.string   "code"
-    t.integer  "kvalue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+  enable_extension "pg_stat_statements"
 
   create_table "accesscodes", force: true do |t|
     t.string   "code"
@@ -124,13 +118,8 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.datetime "deleted_at"
-<<<<<<< HEAD
     t.boolean  "can_link_events", default: true
     t.boolean  "can_link_venues", default: true
-=======
-    t.boolean  "can_link_venues"
-    t.boolean  "can_link_events"
->>>>>>> 571a7eceed89450725313f0fe6ff7987dbd9bb6c
   end
 
   add_index "groups", ["deleted_at"], name: "index_groups_on_deleted_at", using: :btree
@@ -281,16 +270,16 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
-    t.float    "r_up_votes"
-    t.float    "r_down_votes"
     t.string   "menu_link"
     t.float    "color_rating",           default: -1.0
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", using: :btree
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end
