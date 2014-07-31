@@ -96,8 +96,11 @@ class Group < ActiveRecord::Base
       end
 
       if user.gcm_token
+        options = {
+          :data => payload
+        }
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-        request.send([user.gcm_token], payload)
+        request.send([user.gcm_token], options)
       end
       
     end
