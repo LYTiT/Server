@@ -44,6 +44,11 @@ class Api::V1::UsersController < ApiBaseController
     render 'created.json.jbuilder'
   end
 
+  def register_gcm_token
+    @user.update(gcm_token: params[:gcm_token])
+    render 'created.json.jbuilder'
+  end
+
   def change_password
     if User.authenticate(@user.email, params[:old_password])
       if @user.update_password(params[:new_password])

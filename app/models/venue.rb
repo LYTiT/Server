@@ -58,7 +58,7 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -78,9 +78,10 @@ class Venue < ActiveRecord::Base
             spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
           end
         end
+        keys = spots.collect(&:place_id)
+        venues = Venue.where(google_place_key: keys)
         spots.each do |spot|
-          venue = Venue.where("google_place_key = ?", spot.place_id).first
-          venue = Venue.where("google_place_key = ?", spot.id).first unless venue.present?
+          venue = venues.select{|venue| venue.google_place_key == spot.place_id}.first
           venue ||= Venue.new()
           venue.name = spot.name
           venue.google_place_key = spot.place_id
@@ -90,10 +91,7 @@ class Venue < ActiveRecord::Base
           venue.longitude = spot.lng
           venue.formatted_address = spot.formatted_address
           venue.city = spot.city
-          if venue.save
-            # Temp - Database cleanup for duplicates - Switchin over to Place ID.
-            Venue.where("google_place_key = ?", spot.id).delete_all
-          end
+          venue.save
           list << venue.id if venue.persisted?
         end
       rescue HTTParty::ResponseError => e
@@ -114,13 +112,13 @@ class Venue < ActiveRecord::Base
       venues = venues.limit(20)
     else
       if q.blank?
-        rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
-        list = list + rated_venue_ids
+        # rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        # list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
-          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC')
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         else
-          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
+          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL")
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         end
       else
@@ -133,7 +131,7 @@ class Venue < ActiveRecord::Base
     if timewalk_start_time.present? and timewalk_end_time.present?
       data = {
         :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
-        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time)
+        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time, user)
       }
       return data 
     else
@@ -148,7 +146,7 @@ class Venue < ActiveRecord::Base
       list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
     else
       if q.blank?
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+        # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
       else
         list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
       end
@@ -156,18 +154,20 @@ class Venue < ActiveRecord::Base
     list
   end
 
-  def self.checkins(timewalk_start_time, timewalk_end_time)
+  def self.checkins(timewalk_start_time, timewalk_end_time, user)
     timeslot = {}
-    timewalk_start_time = Time.parse(timewalk_start_time)
-    timewalk_end_time = Time.parse(timewalk_end_time)
-    slots = []
-    current_slot = timewalk_start_time
-    begin
-      slots << current_slot
-      current_slot = current_slot + 15.minutes
-    end while current_slot <= timewalk_end_time 
-    slots.each do |time_slot|
-      timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("created_at BETWEEN ? AND ?", (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+    if user.present?
+      timewalk_start_time = DateTime.parse(timewalk_start_time)
+      timewalk_end_time = DateTime.parse(timewalk_end_time)
+      slots = []
+      current_slot = timewalk_start_time
+      begin
+        slots << current_slot
+        current_slot = current_slot + 15.minutes
+      end while current_slot <= timewalk_end_time 
+      slots.each do |time_slot|
+        timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("user_id = ? AND created_at BETWEEN ? AND ?", user.id, (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+      end
     end
     timeslot
   end

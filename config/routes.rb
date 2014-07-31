@@ -34,6 +34,7 @@ LytitServer::Application.routes.draw do
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
       post '/register_push_token' => 'users#register_push_token'
+      post '/register_gcm_token' => 'users#register_gcm_token'
       post '/change_password' => 'users#change_password'
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
       post '/forgot_password' => 'users#forgot_password'
@@ -100,6 +101,7 @@ LytitServer::Application.routes.draw do
   end
 
   resource :session, controller: 'sessions', only: [:destroy, :new, :create]
+  resources :passwords, controller: 'passwords', only: [:create, :new, :update]
 
   get 'session', to: redirect('/sign_in')
   get 'sign_out' => 'sessions#destroy', :as => nil
@@ -110,6 +112,7 @@ LytitServer::Application.routes.draw do
   resources :users, only: [] do 
     get 'confirm_account/:token' => 'users#set_password', as: 'venue_manager_set_password'
     put 'confirm_account/:token' => 'users#confirm_account', as: 'venue_manager_confirm_account'
+    resource :password, controller: 'passwords', only: [:create, :edit, :update]
   end
 
   get 'about-us' => 'pages#about_us'

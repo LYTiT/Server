@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.boolean  "notify_venue_added_to_groups",                default: true
     t.integer  "role_id"
     t.boolean  "username_private",                            default: false
+    t.string   "gcm_token"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -289,7 +290,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.float    "color_rating",           default: -1.0
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end

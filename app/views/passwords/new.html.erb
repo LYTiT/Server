@@ -1,0 +1,24 @@
+<div class="container-fluid splash_login">
+  <div class="row">
+    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
+    <div class="col-xs-10 col-sm-6 col-lg-6">
+      <%= image_tag "splash_logo.png", class: "center-block"  %>
+      <div class="center-block">
+        <div class="tnc">
+          <p><b><%= t '.title' %></b></p>
+          <p><%= t '.description' %></p>
+        </div>
+        <%= form_for :password, :url => passwords_path, :html => { :class => "login after" } do |form| %>
+          <% if flash[:notice].present? %>
+            <div class="alert alert-danger"><%= flash[:notice] %></div>
+          <% end %>
+          <%= form.text_field :email, type: 'email', class: "form-control", placeholder: "Email Address", autocomplete: "off" %>
+          <div class="sign_in_button">
+            <%= form.submit value: "Reset Password" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
+  </div>
+</div>
