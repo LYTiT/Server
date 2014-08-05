@@ -58,7 +58,7 @@ class Venue < ActiveRecord::Base
     venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil)
+  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
       meters = 50000 
     end
@@ -78,9 +78,10 @@ class Venue < ActiveRecord::Base
             spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
           end
         end
+        keys = spots.collect(&:place_id)
+        venues = Venue.where(google_place_key: keys)
         spots.each do |spot|
-          venue = Venue.where("google_place_key = ?", spot.place_id).first
-          venue = Venue.where("google_place_key = ?", spot.id).first unless venue.present?
+          venue = venues.select{|venue| venue.google_place_key == spot.place_id}.first
           venue ||= Venue.new()
           venue.name = spot.name
           venue.google_place_key = spot.place_id
@@ -90,10 +91,7 @@ class Venue < ActiveRecord::Base
           venue.longitude = spot.lng
           venue.formatted_address = spot.formatted_address
           venue.city = spot.city
-          if venue.save
-            # Temp - Database cleanup for duplicates - Switchin over to Place ID.
-            Venue.where("google_place_key = ?", spot.id).delete_all
-          end
+          venue.save
           list << venue.id if venue.persisted?
         end
       rescue HTTParty::ResponseError => e
@@ -114,13 +112,13 @@ class Venue < ActiveRecord::Base
       venues = venues.limit(20)
     else
       if q.blank?
-        rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
-        list = list + rated_venue_ids
+        # rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
+        # list = list + rated_venue_ids
         if timewalk_start_time.present? and timewalk_end_time.present?
-          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
+          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC')
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         else
-          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?) and venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL", list.uniq)
+          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL")
           venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
         end
       else
@@ -133,7 +131,7 @@ class Venue < ActiveRecord::Base
     if timewalk_start_time.present? and timewalk_end_time.present?
       data = {
         :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
-        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time)
+        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time, user)
       }
       return data 
     else
@@ -148,7 +146,7 @@ class Venue < ActiveRecord::Base
       list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
     else
       if q.blank?
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+        # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
       else
         list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
       end
@@ -156,18 +154,20 @@ class Venue < ActiveRecord::Base
     list
   end
 
-  def self.checkins(timewalk_start_time, timewalk_end_time)
+  def self.checkins(timewalk_start_time, timewalk_end_time, user)
     timeslot = {}
-    timewalk_start_time = Time.parse(timewalk_start_time)
-    timewalk_end_time = Time.parse(timewalk_end_time)
-    slots = []
-    current_slot = timewalk_start_time
-    begin
-      slots << current_slot
-      current_slot = current_slot + 15.minutes
-    end while current_slot <= timewalk_end_time 
-    slots.each do |time_slot|
-      timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("created_at BETWEEN ? AND ?", (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+    if user.present?
+      timewalk_start_time = DateTime.parse(timewalk_start_time)
+      timewalk_end_time = DateTime.parse(timewalk_end_time)
+      slots = []
+      current_slot = timewalk_start_time
+      begin
+        slots << current_slot
+        current_slot = current_slot + 15.minutes
+      end while current_slot <= timewalk_end_time 
+      slots.each do |time_slot|
+        timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("user_id = ? AND created_at BETWEEN ? AND ?", user.id, (time_slot - 45.minutes), time_slot).last.try(:venue_id)
+      end
     end
     timeslot
   end
@@ -255,11 +255,11 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.at_beginning_of_day + 6.hours)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, valid_votes_timestamp)
   end
 
   def v_down_votes
-    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, Time.now.at_beginning_of_day + 6.hours)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, -1, valid_votes_timestamp)
   end
 
   def bayesian_voting_average
@@ -270,7 +270,7 @@ class Venue < ActiveRecord::Base
     (LytitConstants.bayesian_average_m + (up_votes_count + down_votes_count))
   end
 
-  def account_new_vote(vote_value)
+  def account_new_vote(vote_value, vote_id)
     puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
       puts "up vote, accounting"
@@ -280,13 +280,11 @@ class Venue < ActiveRecord::Base
       account_down_vote
     end
 
-    #Thread.new do
-      recalculate_rating
-    #end
+    recalculate_rating(vote_id)
   end
 
-  def recalculate_rating
-    y = 1.0 / (1 + LytitConstants.rating_loss_l)
+  def recalculate_rating(vote_id)
+    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
     a = self.r_up_votes || (1.0 + get_k)
     b = self.r_down_votes || 1.0
@@ -301,7 +299,12 @@ class Venue < ActiveRecord::Base
       puts "rating before = #{self.rating}"
       puts "rating after = #{x}"
 
-      self.rating = eval(x)
+      new_rating = eval(x).round(4)
+
+      self.rating = new_rating
+
+      vote = LytitVote.find(vote_id)
+      vote.update_columns(rating_after: new_rating)
       save
     else
       puts "Could not calculate rating. Status: #{$?.to_i}"
@@ -329,13 +332,18 @@ class Venue < ActiveRecord::Base
   def get_k
     if self.google_place_rating
       p = self.google_place_rating / 5
-      return LytitConstants.google_place_factor * (p ** 2)
+      return (LytitConstants.google_place_factor * (p ** 2)).round(4)
     end
 
     0
   end
 
   private
+
+  def valid_votes_timestamp
+    now = Time.now
+    now.hour >= 6 ? now.at_beginning_of_day + 6.hours : now.yesterday.at_beginning_of_day + 6.hours
+  end
 
   def self.with_color_ratings(venues)
     ret = []
@@ -395,21 +403,34 @@ class Venue < ActiveRecord::Base
   end
 
   def account_up_vote
-    self.r_up_votes = get_sum_of_past_votes(self.v_up_votes) + 1 + get_k
+    up_votes = self.v_up_votes.order('id ASC').to_a
+    last = up_votes.pop # last vote should not be considered for the sum of the past
+    self.r_up_votes = (get_sum_of_past_votes(up_votes, last.try(:created_at)) + 1 + get_k).round(4)
     save
   end
 
   def account_down_vote
-    self.r_down_votes = get_sum_of_past_votes(self.v_down_votes) + 1
+    down_votes = self.v_down_votes.order('id ASC').to_a
+    last = down_votes.pop # last vote should not be considered for the sum of the past
+    self.r_down_votes = (get_sum_of_past_votes(down_votes, last.try(:created_at)) + 1).round(4)
     save
   end
 
-  def get_sum_of_past_votes(votes)
-    now = Time.now.utc
+  # we need the timestamp of the last vote, since the accounting of votes
+  # is executed in parallel (new thread) and probably NOT right after the
+  # push of the current vote through the API
+  #
+  # Time.now could be used if we have guaranteed that the accounting of
+  # the vote will be done right away, which is not the case with the use of
+  # delayed jobs
+  def get_sum_of_past_votes(votes, timestamp_last_vote)
+    if not timestamp_last_vote
+      timestamp_last_vote = Time.now.utc
+    end
 
     old_votes_sum = 0
     for vote in votes
-      minutes_passed_since_vote = (now - vote.created_at) / 1.minute
+      minutes_passed_since_vote = (timestamp_last_vote - vote.created_at) / 1.minute
 
       old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
     end

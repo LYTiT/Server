@@ -22,8 +22,8 @@ class VenuesCsv < ExportedDataCsv
         time_since_last_up = minutes_since_last_vote(venue_id, 1)
 	    time_since_last_down = minutes_since_last_vote(venue_id, -1)
 
-	    up_votes = LytitVote.where('venue_id = ? AND value = ? AND created_at >= ?', venue_id, 1, Time.now.at_beginning_of_day + 6.hours)
-	    down_votes = LytitVote.where('venue_id = ? AND value = ? AND created_at >= ?', venue_id, -1, Time.now.at_beginning_of_day + 6.hours)
+	    up_votes = LytitVote.where('venue_id = ? AND value = ? AND created_at >= ?', venue_id, 1, valid_votes_timestamp)
+	    down_votes = LytitVote.where('venue_id = ? AND value = ? AND created_at >= ?', venue_id, -1, valid_votes_timestamp)
 
 	    average_up = average_time_between(up_votes)
 	    average_down = average_time_between(down_votes)
@@ -59,7 +59,7 @@ class VenuesCsv < ExportedDataCsv
   end
 
   def minutes_since_last_vote(venue_id, vote)
-    last_vote = LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", venue_id, vote, Time.now.at_beginning_of_day + 6.hours).last
+    last_vote = LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", venue_id, vote, valid_votes_timestamp).last
 
     if last_vote
       last = last_vote.created_at
@@ -69,5 +69,10 @@ class VenuesCsv < ExportedDataCsv
     else
       -1 # there are no votes
     end
+  end
+
+  def valid_votes_timestamp
+    now = Time.now
+    now.hour >= 6 ? now.at_beginning_of_day + 6.hours : now.yesterday.at_beginning_of_day + 6.hours
   end
 end

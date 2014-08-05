@@ -77,6 +77,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def search
+    @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?
       @group = Group.find_by_id(params[:group_id])
       if @group
@@ -85,8 +86,12 @@ class Api::V1::VenuesController < ApiBaseController
         render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
       end
     else
-      venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id])
-      render json: venues
+      @venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
+      if params[:timewalk_start_time].present? and params[:timewalk_end_time].present?
+        render 'timewalk.json.jbuilder'
+      else
+        render 'search.json.jbuilder'
+      end
     end
   end
 
@@ -110,9 +115,8 @@ class Api::V1::VenuesController < ApiBaseController
     rating = venue.rating
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
                       :prime => venue.get_k, :raw_value => params[:rating])
-    venue.delay.account_new_vote(vote_value)
-
     if v.save
+      venue.delay.account_new_vote(vote_value, v.id)
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity

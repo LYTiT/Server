@@ -74,12 +74,8 @@ class Group < ActiveRecord::Base
   end
 
   def remove_venue(venue_id, user_id)
-    if self.is_user_admin?(user_id)
-      GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all
-      return true
-    else
-      return false, 'You are not an admin of this group'
-    end
+    GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all
+    return true
   end
 
   def venues_with_user_who_added
@@ -95,10 +91,26 @@ class Group < ActiveRecord::Base
 
   def send_notification_to_users(user_ids, event_id)
     for user_id in user_ids
-      token = User.find(user_id).push_token
-      if token
-        a = APNS.delay.send_notification(token, {:alert => '', :content_available => 1, :other => {:object_id => event_id, :type => 'event_added', :user_id => user_id}})
+      user = User.find(user_id)
+
+      payload = {
+        :object_id => event_id, 
+        :type => 'event_added', 
+        :user_id => user_id
+      }
+
+      if user.push_token
+        a = APNS.delay.send_notification(token, {:alert => '', :content_available => 1, :other => payload})
       end
+
+      if user.gcm_token
+        options = {
+          :data => payload
+        }
+        request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
+        request.send([user.gcm_token], options)
+      end
+      
     end
   end
 

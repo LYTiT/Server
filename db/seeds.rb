@@ -1,3 +1,10 @@
+# This file should contain all the record creation needed to seed the database with its default values.
+# The data can then be loaded with the rake db:seed (or created alongside the db with db:setup).
+#
+# Examples:
+#
+#   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
+#   Mayor.create(name: 'Emanuel', city: cities.first)
 #new data here
 # Find What: (\d)(\d)(\d)(\w)(\d)
 
@@ -6,18 +13,6 @@
 
 # Replace With: {code: "$1$2$3$4$5", kvalue: 0},
 Accesscode.delete_all
-
-
-=begin
-Accesscode.create!([
-
-
-{	code: "000R1", kvalue: 0},
-{	code: "000O7", kvalue: 0},
-{	code: "000R3", kvalue: 0}
-
-])
-=end
 
 Accesscode.create!([
 {id: 1,	code: "000Y3", kvalue: 0},
@@ -1221,4 +1216,3 @@ Accesscode.create!([
 {id: 1199,	code: "058E1", kvalue: 0},
 {id: 1200,	code: "058R1", kvalue: 0}
 ])
-
