@@ -404,16 +404,20 @@ class Venue < ActiveRecord::Base
 
   def account_up_vote
     up_votes = self.v_up_votes.order('id ASC').to_a
-    last = up_votes.pop # last vote should not be considered for the sum of the past
-    self.r_up_votes = (get_sum_of_past_votes(up_votes, last.try(:created_at)) + 1 + get_k).round(4)
-    save
+    last = up_votes.pop # current vote should not be considered for the sum of the past
+
+    # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
+    # refer to the algo spec document
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at)) + 2 + get_k).round(4))
   end
 
   def account_down_vote
     down_votes = self.v_down_votes.order('id ASC').to_a
-    last = down_votes.pop # last vote should not be considered for the sum of the past
-    self.r_down_votes = (get_sum_of_past_votes(down_votes, last.try(:created_at)) + 1).round(4)
-    save
+    last = down_votes.pop # current vote should not be considered for the sum of the past
+
+    # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
+    # refer to the algo spec document
+    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at)) + 2).round(4))
   end
 
   # we need the timestamp of the last vote, since the accounting of votes

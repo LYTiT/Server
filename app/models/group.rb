@@ -100,7 +100,7 @@ class Group < ActiveRecord::Base
       }
 
       if user.push_token
-        a = APNS.delay.send_notification(token, {:alert => '', :content_available => 1, :other => payload})
+        APNS.delay.send_notification(user.push_token, {:alert => '', :content_available => 1, :other => payload})
       end
 
       if user.gcm_token
