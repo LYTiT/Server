@@ -110,7 +110,20 @@ class Group < ActiveRecord::Base
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
         request.send([user.gcm_token], options)
       end
-      
+
+      # Store Notification History
+      event = Event.find_by_id(event_id)
+      event = event.as_json(:include => [:venue])
+      event[:groups] = event.user_groups(user)
+      notification = {
+        :payload => payload,
+        :gcm => user.gcm_token.present?,
+        :apns => user.push_token.present?,
+        :response => event,
+        :user_id => user.id
+      }
+      Notification.create(notification)
+
     end
   end
 

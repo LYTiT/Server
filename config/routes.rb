@@ -29,6 +29,7 @@ LytitServer::Application.routes.draw do
       resources :users, only: [:create, :update] do
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
+        resources :notifications, only: [:index]
       end
 
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
