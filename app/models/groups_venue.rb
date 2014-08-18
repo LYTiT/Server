@@ -31,12 +31,11 @@ class GroupsVenue < ActiveRecord::Base
       end
 
       # Store Notification History
-      response = self.notification_payload(user)
       notification = {
         :payload => payload,
         :gcm => user.gcm_token.present?,
         :apns => user.push_token.present?,
-        :response => response,
+        :response => self.notification_payload(user),
         :user_id => user.id
       }
       Notification.create(notification)

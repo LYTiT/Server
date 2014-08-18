@@ -15,7 +15,6 @@ ActiveRecord::Schema.define(version: 20140728214527) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-  enable_extension "pg_stat_statements"
 
   create_table "accesscodes", force: true do |t|
     t.string   "code"
@@ -279,7 +278,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.float    "color_rating",           default: -1.0
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end
