@@ -30,6 +30,54 @@ class GroupsVenue < ActiveRecord::Base
         request.send([user.gcm_token], options)
       end
 
+      # Store Notification History
+      response = self.notification_payload(user)
+      notification = {
+        :payload => payload,
+        :gcm => user.gcm_token.present?,
+        :apns => user.push_token.present?,
+        :response => response,
+        :user_id => user.id
+      }
+      Notification.create(notification)
+
     end
   end
+
+  def notification_payload(user)
+    {
+      :venue => {
+        :id => self.venue.id,
+        :name => self.venue.name,
+        :rating => self.venue.rating,
+        :phone_number => self.venue.phone_number,
+        :address => self.venue.address,
+        :city => self.venue.city,
+        :state => self.venue.state,
+        :created_at => self.venue.created_at,
+        :updated_at => self.venue.updated_at,
+        :latitude => self.venue.latitude,
+        :longitude => self.venue.longitude,
+        :google_place_rating => self.venue.google_place_rating,
+        :google_place_key => self.venue.google_place_key,
+        :country => self.venue.country,
+        :postal_code => self.venue.postal_code,
+        :formatted_address => self.venue.formatted_address,
+        :google_place_reference => self.venue.google_place_reference,
+      },
+      :group => {
+        :id => self.group.id,
+        :name => self.group.name,
+        :description => self.group.description,
+        :can_link_events => self.group.can_link_events,
+        :can_link_venues => self.group.can_link_venues,
+        :is_public => self.group.is_public,
+        :created_at => self.group.created_at,
+        :updated_at => self.group.updated_at,
+        :is_group_admin => self.group.is_user_admin?(user.id),
+        :send_notification => GroupsUser.send_notification?(self.group.id, user.id)
+      }
+    }
+  end
+
 end
