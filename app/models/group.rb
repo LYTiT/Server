@@ -112,9 +112,26 @@ class Group < ActiveRecord::Base
       end
 
       # Store Notification History
-      event = Event.find_by_id(event_id)
-      event = event.as_json(:include => [:venue])
-      event[:groups] = event.user_groups(user)
+      @event = Event.find_by_id(event_id)
+      @event = Event.last
+      user = User.last
+      event = @event.as_json(:include => [:venue])
+      event["created_at"] = event["created_at"].utc rescue nil
+      event["updated_at"] = event["updated_at"].utc rescue nil
+      event["start_date"] = event["start_date"].utc rescue nil
+      event["end_date"] = event["end_date"].utc rescue nil
+      event["venue"]["created_at"] = event["venue"]["created_at"].utc rescue nil
+      event["venue"]["updated_at"] = event["venue"]["updated_at"].utc rescue nil
+      event["venue"]["fetched_at"] = event["venue"]["fetched_at"].utc rescue nil
+      event["venue"]["start_date"] = event["venue"]["start_date"].utc rescue nil
+      event["venue"]["end_date"] = event["venue"]["end_date"].utc rescue nil
+      event["groups"] = @event.user_groups(user)
+      event["groups"] = event["groups"].as_json
+      event["groups"].each do |group|
+        group["created_at"] = group["created_at"].utc rescue nil
+        group["updated_at"] = group["updated_at"].utc rescue nil
+        group["deleted_at"] = group["deleted_at"].utc rescue nil
+      end
       notification = {
         :payload => payload,
         :gcm => user.gcm_token.present?,
