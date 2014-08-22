@@ -31,16 +31,19 @@ class GroupsVenue < ActiveRecord::Base
       end
 
       # Store Notification History
-      notification = {
-        :payload => payload,
-        :gcm => user.gcm_token.present?,
-        :apns => user.push_token.present?,
-        :response => self.notification_payload(user),
-        :user_id => user.id
-      }
-      Notification.create(notification)
-
+      self.delay.store_notification(payload, user)
     end
+  end
+
+  def store_notification(payload, user)
+    notification = {
+      :payload => payload,
+      :gcm => user.gcm_token.present?,
+      :apns => user.push_token.present?,
+      :response => self.notification_payload(user),
+      :user_id => user.id
+    }
+    Notification.create(notification)
   end
 
   def notification_payload(user)
@@ -53,8 +56,8 @@ class GroupsVenue < ActiveRecord::Base
         :address => self.venue.address,
         :city => self.venue.city,
         :state => self.venue.state,
-        :created_at => self.venue.created_at,
-        :updated_at => self.venue.updated_at,
+        :created_at => self.venue.created_at.utc,
+        :updated_at => self.venue.updated_at.utc,
         :latitude => self.venue.latitude,
         :longitude => self.venue.longitude,
         :google_place_rating => self.venue.google_place_rating,
@@ -71,8 +74,8 @@ class GroupsVenue < ActiveRecord::Base
         :can_link_events => self.group.can_link_events,
         :can_link_venues => self.group.can_link_venues,
         :is_public => self.group.is_public,
-        :created_at => self.group.created_at,
-        :updated_at => self.group.updated_at,
+        :created_at => self.group.created_at.utc,
+        :updated_at => self.group.updated_at.utc,
         :is_group_admin => self.group.is_user_admin?(user.id),
         :send_notification => GroupsUser.send_notification?(self.group.id, user.id)
       }
