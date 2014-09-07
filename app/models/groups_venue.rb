@@ -3,7 +3,11 @@ class GroupsVenue < ActiveRecord::Base
   belongs_to :venue
   belongs_to :group
 
-  after_create :send_venue_added_notification
+  after_create :venue_added_notification
+
+  def venue_added_notification
+    self.delay.send_venue_added_notification
+  end
 
   def send_venue_added_notification
     for user in self.group.users
@@ -18,6 +22,8 @@ class GroupsVenue < ActiveRecord::Base
         :user_id => user.id 
       }
       message = "#{self.venue.name} has been added to your group #{self.group.name}"
+      notification = self.store_notification(payload, user, message)
+      payload[:notification_id] = notification.id
 
       if user.push_token
         count = Notification.where(user_id: user.id, read: false).count
@@ -35,8 +41,6 @@ class GroupsVenue < ActiveRecord::Base
         request.send([user.gcm_token], options)
       end
 
-      # Store Notification History
-      self.delay.store_notification(payload, user, message)
     end
   end
 
