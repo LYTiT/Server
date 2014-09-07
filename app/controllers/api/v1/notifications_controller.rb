@@ -5,7 +5,7 @@ class Api::V1::NotificationsController < ApiBaseController
   end
 
   def mark_as_read
-    notification = Notification.where(id: params[:notification_id], user_id: @user.id)
+    notification = Notification.where(id: params[:notification_id], user_id: @user.id).first
     if notification.present?
       notification[:read] = true
       notification.save
