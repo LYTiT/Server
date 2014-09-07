@@ -101,6 +101,8 @@ class Group < ActiveRecord::Base
         :user_id => user_id
       }
       message = "New event posted to #{group_names.join(", ")}"
+      notification = self.store_notification(payload, user, event_id, message)
+      payload[:notification_id] = notification.id
 
       if user.push_token
         count = Notification.where(user_id: user.id, read: false).count
@@ -118,8 +120,6 @@ class Group < ActiveRecord::Base
         request.send([user.gcm_token], options)
       end
 
-      # Store Notification History
-      self.delay.store_notification(payload, user, event_id, message)
     end
   end
 

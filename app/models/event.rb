@@ -55,7 +55,7 @@ class Event < ActiveRecord::Base
         users_ids.push(user.id)
       end
     end
-    group.send_notification_to_users(users_ids.uniq, self.id)
+    group.delay.send_notification_to_users(users_ids.uniq, self.id)
   end
 
   def user_groups(user)
