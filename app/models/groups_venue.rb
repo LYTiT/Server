@@ -17,31 +17,38 @@ class GroupsVenue < ActiveRecord::Base
         :group_id => self.group.id, 
         :user_id => user.id 
       }
-      
+      message = "#{self.venue.name} has been added to your group #{self.group.name}"
+
       if user.push_token
-        APNS.delay.send_notification(user.push_token, { :alert => '', :content_available => 1, :other => payload})
+        count = Notification.where(user_id: user.id, read: false).count
+        count = count + 1
+        APNS.delay.send_notification(user.push_token, { :alert => message, :content_available => 1, :other => payload, :badge => count})
       end
 
       if user.gcm_token
+        gcm_payload = payload.dup
+        gcm_payload[:message] = message
         options = {
-          :data => payload
+          :data => gcm_payload
         }
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
         request.send([user.gcm_token], options)
       end
 
       # Store Notification History
-      self.delay.store_notification(payload, user)
+      self.delay.store_notification(payload, user, message)
     end
   end
 
-  def store_notification(payload, user)
+  def store_notification(payload, user, message)
     notification = {
       :payload => payload,
       :gcm => user.gcm_token.present?,
       :apns => user.push_token.present?,
       :response => self.notification_payload(user),
-      :user_id => user.id
+      :user_id => user.id,
+      :read => false,
+      :message => message
     }
     Notification.create(notification)
   end

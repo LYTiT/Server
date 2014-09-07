@@ -90,33 +90,40 @@ class Group < ActiveRecord::Base
   end
 
   def send_notification_to_users(user_ids, event_id)
+    event = Event.find(event_id)
     for user_id in user_ids
       user = User.find(user_id)
-
+      groups = event.user_groups(user)
+      group_names = groups.collect(&:name)
       payload = {
         :object_id => event_id, 
         :type => 'event_added', 
         :user_id => user_id
       }
+      message = "New event posted to #{group_names.join(", ")}"
 
       if user.push_token
-        APNS.delay.send_notification(user.push_token, {:alert => '', :content_available => 1, :other => payload})
+        count = Notification.where(user_id: user.id, read: false).count
+        count = count + 1
+        APNS.delay.send_notification(user.push_token, {:alert => message, :content_available => 1, :other => payload, :badge => count})
       end
 
       if user.gcm_token
+        gcm_payload = payload.dup
+        gcm_payload[:message] = message
         options = {
-          :data => payload
+          :data => gcm_payload
         }
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
         request.send([user.gcm_token], options)
       end
 
       # Store Notification History
-      self.delay.store_notification(payload, user, event_id)
+      self.delay.store_notification(payload, user, event_id, message)
     end
   end
 
-  def store_notification(payload, user, event_id)
+  def store_notification(payload, user, event_id, message)
     @event = Event.find_by_id(event_id)
     event = @event.as_json(:include => [:venue])
     event["created_at"] = event["created_at"].utc rescue nil
@@ -140,7 +147,9 @@ class Group < ActiveRecord::Base
       :gcm => user.gcm_token.present?,
       :apns => user.push_token.present?,
       :response => event,
-      :user_id => user.id
+      :user_id => user.id,
+      :read => false,
+      :message => message
     }
     Notification.create(notification)
   end
