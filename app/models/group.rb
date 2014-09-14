@@ -149,7 +149,8 @@ class Group < ActiveRecord::Base
       :response => event,
       :user_id => user.id,
       :read => false,
-      :message => message
+      :message => message,
+      :deleted => false
     }
     Notification.create(notification)
   end
