@@ -29,7 +29,7 @@ LytitServer::Application.routes.draw do
       resources :users, only: [:create, :update] do
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
-        resources :notifications, only: [:index] do
+        resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
         end
       end

@@ -52,7 +52,8 @@ class GroupsVenue < ActiveRecord::Base
       :response => self.notification_payload(user),
       :user_id => user.id,
       :read => false,
-      :message => message
+      :message => message,
+      :deleted => false
     }
     Notification.create(notification)
   end
