@@ -65,8 +65,8 @@ class Venue < ActiveRecord::Base
     meters ||= 50000
     list = []
     client = Venue.google_place_client
-    if timewalk_start_time.present? and timewalk_end_time.present?
-      list = default_venues(fetch_type, meters, latitude, longitude, q)
+    if (timewalk_start_time.present? and timewalk_end_time.present?) or group_id.present?
+      list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
     else
       begin
         if fetch_type == 'rankby'
@@ -95,7 +95,7 @@ class Venue < ActiveRecord::Base
           list << venue.id if venue.persisted?
         end
       rescue HTTParty::ResponseError => e
-        list = default_venues(fetch_type, meters, latitude, longitude, q)
+        list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
       end
     end
     
@@ -123,8 +123,9 @@ class Venue < ActiveRecord::Base
         end
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
-        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("venues.id IN (?)", list.uniq)
+        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?        
+        venues.sort{ |a,b| Levenshtein.distance(q, a.name) <=> Levenshtein.distance(q, b.name) }
       end
     end
 
@@ -140,15 +141,19 @@ class Venue < ActiveRecord::Base
 
   end
 
-  def self.default_venues(fetch_type, meters, latitude, longitude, q)
+  def self.default_venues(fetch_type, meters, latitude, longitude, q, group_id)
     list = []
     if fetch_type == 'rankby'
-      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude])
+      list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+      list = list.limit(20).collect(&:id)
     else
       if q.blank?
         # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
       else
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%")
+        list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        list = list.limit(20).collect(&:id)
       end
     end
     list
