@@ -5,7 +5,7 @@ class Api::V1::NotificationsController < ApiBaseController
   end
 
   def destroy
-    notification = Notification.where(id: params[:notification_id], user_id: @user.id, deleted: false).first
+    notification = Notification.where(id: params[:id], user_id: @user.id, deleted: false).first
     if notification.present?
       notification[:deleted] = true
       notification.save
