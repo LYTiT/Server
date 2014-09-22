@@ -237,7 +237,7 @@ class Venue < ActiveRecord::Base
         self.phone_number = spot.formatted_phone_number
         self.fetched_at = Time.now
         self.save
-      rescue HTTParty::ResponseError => e
+      rescue
       end
     end
   end
