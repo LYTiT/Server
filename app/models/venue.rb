@@ -94,7 +94,7 @@ class Venue < ActiveRecord::Base
           venue.save
           list << venue.id if venue.persisted?
         end
-      rescue HTTParty::ResponseError => e
+      rescue
         list = default_venues(fetch_type, meters, latitude, longitude, q)
       end
     end
