@@ -123,9 +123,9 @@ class Venue < ActiveRecord::Base
         end
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("venues.id IN (?)", list.uniq)
+        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
         venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?        
-        venues.sort{ |a,b| Levenshtein.distance(q, a.name) <=> Levenshtein.distance(q, b.name) }
+        venues = venues.sort{ |a,b| Levenshtein.distance(q, a.name) <=> Levenshtein.distance(q, b.name) }
       end
     end
 
