@@ -40,6 +40,7 @@ gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag
 gem 'bson_ext'
 gem 'mongo'
 gem 'levenshtein-ffi', :require => 'levenshtein'
+gem 'kaminari'
 
 group :development do
   gem 'better_errors'

@@ -1,4 +1,4 @@
-json.array! @user.venue_comments do |comment|
+json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
@@ -12,4 +12,8 @@ json.array! @user.venue_comments do |comment|
   json.total_views comment.total_views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
+end
+json.pagination do 
+  json.current_page @comments.current_page
+  json.total_pages @comments.total_pages
 end

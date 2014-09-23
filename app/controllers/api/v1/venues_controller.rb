@@ -51,6 +51,8 @@ class Api::V1::VenuesController < ApiBaseController
     @venue = Venue.find_by_id(params[:venue_id])
     if not @venue
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
+    else
+      @comments = @venue.visible_venue_comments.page(params[:page]).per(10)
     end
   end
 
