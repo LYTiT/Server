@@ -18,7 +18,16 @@ respond_to :json
   end
 
   def profile_comments
-  	@user = User.where(id: params[:featured_id]).take 
+  	#@user = User.where(id: params[:featured_id]).take 
+
+    @user = User.find_by_id(params[:featured_id])
+    if not @user
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
+    else
+      v = @user.venue_comments.where("username_private = 'false'")
+      @comments = v.page(params[:page]).per(5).order("updated_at desc")
+    end
+
   end
 
 end
