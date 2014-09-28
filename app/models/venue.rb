@@ -320,6 +320,39 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def update_rating()
+    up_votes = self.v_up_votes.order('id ASC').to_a
+    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil).round(4))
+
+    down_votes = self.v_down_votes.order('id ASC').to_a
+    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil).round(4))
+
+    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
+
+    r_up_votes = self.r_up_votes
+    r_down_votes = self.r_down_votes
+
+    a = r_up_votes > 0 ? r_up_votes : (1.0 + get_k)
+    b = r_down_votes > 0 ? r_down_votes : 1.0
+
+    puts "A = #{a}, B = #{b}, Y = #{y}"
+
+    # x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+
+    if $?.to_i == 0
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
+
+      new_rating = eval(x).round(4)
+
+      update_columns(rating: new_rating)
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
+    end
+  end
+
   def is_visible?
     if not self.rating
       return false
