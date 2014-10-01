@@ -16,10 +16,17 @@ namespace :lytit do
       bar.recalculate_bar_position
       puts 'Bar updated'
 
+      venues = Venue.visible
+
+      puts "Recaculating venue ratings..."
+      for venue in venues
+        venue.update_rating()
+      end
+      puts "Done."
+
       puts "Recalculating venue colors"
 
       Venue.update_all(color_rating: -1.0)
-      venues = Venue.visible
 
       diff_ratings = Set.new
       for venue in venues

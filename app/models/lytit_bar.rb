@@ -3,7 +3,7 @@ class LytitBar < ActiveRecord::Base
 
   def recalculate_bar_position
     sum = 0
-    venues = Venue.all
+    venues = Venue.visible
     venues.each do |venue|
       sum += venue.bayesian_voting_average
     end
