@@ -18,8 +18,6 @@ respond_to :json
   end
 
   def profile_comments
-  	#@user = User.where(id: params[:featured_id]).take 
-
     @user = User.find_by_id(params[:featured_id])
     if not @user
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
