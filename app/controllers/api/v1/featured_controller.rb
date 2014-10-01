@@ -25,7 +25,6 @@ respond_to :json
       v = @user.venue_comments.where("username_private = 'false'")
       @comments = v.page(params[:page]).per(5).order("updated_at desc")
     end
-
   end
 
 end
