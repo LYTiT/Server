@@ -4,7 +4,9 @@ respond_to :json
   def today
   	selected_date = params[:featured_id]
   	now = Date.parse(selected_date)
-  	v = VenueComment.where("DATE(created_at) = DATE(?) AND media_type = ?", now, 'image')
+    now_1 = (now + 4.hour)
+    now_2 = (now + 28.hour)
+  	v = VenueComment.where("media_type = ? AND DATE(created_at) BETWEEN DATE(?) AND DATE(?)", 'image', now_1, now_2)
   	s = v.sort_by {|i| i.total_views}
   	@venue_comments = s.reverse.first(5)
   end
@@ -12,7 +14,9 @@ respond_to :json
   def allTime
   	selected_date = params[:featured_id]
   	now = Date.parse(selected_date)
-  	v = VenueComment.where("DATE(created_at) = DATE(?) AND media_type = ?", now, 'video')
+    now_1 = (now + 4.hour)
+    now_2 = (now + 28.hour)
+  	v = VenueComment.where("media_type = ? AND DATE(created_at) BETWEEN DATE(?) AND DATE(?)", 'video', now_1, now_2)
   	s = v.sort_by {|i| i.total_views}
   	@venue_comments = s.reverse.first(5)
   end
