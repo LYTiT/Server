@@ -6,9 +6,6 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
 
-config.time_zone = 'Eastern Time (US & Canada)'
-config.active_record.default_timezone = 'Eastern Time (US & Canada)'
-
 module LytitServer
   class Application < Rails::Application
     config.active_record.default_timezone = :utc
