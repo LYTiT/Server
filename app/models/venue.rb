@@ -54,8 +54,8 @@ class Venue < ActiveRecord::Base
     venue_messages
   end
 
-  def visible_venue_comments
-    venue_comments.select{|comment| comment.flagged_comments.count < 50}
+ def visible_venue_comments
+    venue_comments.order("updated_at desc").select{|comment| comment.flagged_comments.count < 50}
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
