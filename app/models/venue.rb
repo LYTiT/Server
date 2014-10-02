@@ -24,7 +24,7 @@ class Venue < ActiveRecord::Base
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
-  
+
   MILE_RADIUS = 2
 
   GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
@@ -55,12 +55,17 @@ class Venue < ActiveRecord::Base
   end
 
   def visible_venue_comments
-    venue_comments.select{|comment| comment.flagged_comments.count < 2}
+    sane_comments = []
+    venue_comments.each do |comment|
+      sane_comments << comment if comment.flagged_comments.count < 2
+    end
+    sane_comments
+    #venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
-      meters = 50000 
+      meters = 50000
     end
     meters ||= 50000
     list = []
@@ -98,7 +103,7 @@ class Venue < ActiveRecord::Base
         list = default_venues(fetch_type, meters, latitude, longitude, q)
       end
     end
-    
+
     if timewalk_start_time.present? and timewalk_end_time.present?
       start_time = Time.parse(timewalk_start_time).utc.to_time
       end_time = Time.parse(timewalk_end_time).utc.to_time
@@ -133,7 +138,7 @@ class Venue < ActiveRecord::Base
         :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
         :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time, user)
       }
-      return data 
+      return data
     else
       return venues.uniq
     end
@@ -164,7 +169,7 @@ class Venue < ActiveRecord::Base
       begin
         slots << current_slot
         current_slot = current_slot + 15.minutes
-      end while current_slot <= timewalk_end_time 
+      end while current_slot <= timewalk_end_time
       slots.each do |time_slot|
         timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("user_id = ? AND created_at BETWEEN ? AND ?", user.id, (time_slot - 45.minutes), time_slot).last.try(:venue_id)
       end
@@ -182,7 +187,7 @@ class Venue < ActiveRecord::Base
     begin
       slots << current_slot
       current_slot = current_slot + 15.minutes
-    end while current_slot <= timewalk_end_time 
+    end while current_slot <= timewalk_end_time
     slots.each do |time_slot|
       start_time = (time_slot - (7.minutes + 5.seconds)).utc.to_time
       end_time = (time_slot + (7.minutes + 5.seconds)).utc.to_time
@@ -203,8 +208,8 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    venues.collect{|a| 
-      if a["timewalk_color_ratings"].present? 
+    venues.collect{|a|
+      if a["timewalk_color_ratings"].present?
         color_values = a["timewalk_color_ratings"].values.uniq.compact
         if color_values.size == 1 and color_values.first == -1
         else
