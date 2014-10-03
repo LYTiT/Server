@@ -90,28 +90,69 @@ class Group < ActiveRecord::Base
   end
 
   def send_notification_to_users(user_ids, event_id)
+    event = Event.find(event_id)
     for user_id in user_ids
       user = User.find(user_id)
-
+      groups = event.user_groups(user)
+      group_names = groups.collect(&:name)
       payload = {
         :object_id => event_id, 
         :type => 'event_added', 
         :user_id => user_id
       }
+      message = "New event posted to #{group_names.join(", ")}"
+      notification = self.store_notification(payload, user, event_id, message)
+      payload[:notification_id] = notification.id
 
       if user.push_token
-        APNS.delay.send_notification(user.push_token, {:alert => '', :content_available => 1, :other => payload})
+        count = Notification.where(user_id: user.id, read: false).count
+        count = count + 1
+        APNS.delay.send_notification(user.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
       end
 
       if user.gcm_token
+        gcm_payload = payload.dup
+        gcm_payload[:message] = message
         options = {
-          :data => payload
+          :data => gcm_payload
         }
         request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
         request.send([user.gcm_token], options)
       end
-      
+
     end
+  end
+
+  def store_notification(payload, user, event_id, message)
+    @event = Event.find_by_id(event_id)
+    event = @event.as_json(:include => [:venue])
+    event["created_at"] = event["created_at"].utc rescue nil
+    event["updated_at"] = event["updated_at"].utc rescue nil
+    event["start_date"] = event["start_date"].utc rescue nil
+    event["end_date"] = event["end_date"].utc rescue nil
+    event["venue"]["created_at"] = event["venue"]["created_at"].utc rescue nil
+    event["venue"]["updated_at"] = event["venue"]["updated_at"].utc rescue nil
+    event["venue"]["fetched_at"] = event["venue"]["fetched_at"].utc rescue nil
+    event["venue"]["start_date"] = event["venue"]["start_date"].utc rescue nil
+    event["venue"]["end_date"] = event["venue"]["end_date"].utc rescue nil
+    event["groups"] = @event.user_groups(user)
+    event["groups"] = event["groups"].as_json
+    event["groups"].each do |group|
+      group["created_at"] = group["created_at"].utc rescue nil
+      group["updated_at"] = group["updated_at"].utc rescue nil
+      group["deleted_at"] = group["deleted_at"].utc rescue nil
+    end
+    notification = {
+      :payload => payload,
+      :gcm => user.gcm_token.present?,
+      :apns => user.push_token.present?,
+      :response => event,
+      :user_id => user.id,
+      :read => false,
+      :message => message,
+      :deleted => false
+    }
+    Notification.create(notification)
   end
 
 end
