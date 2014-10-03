@@ -55,12 +55,11 @@ class Venue < ActiveRecord::Base
   end
 
   def visible_venue_comments
-    sane_comments = []
-    venue_comments.each do |comment|
-      sane_comments << comment if comment.flagged_comments.count < 2
+    ids = FlaggedComment.select("count(*) as count, venue_comment_id").joins(:venue_comment).where(:venue_comments => {:venue_id => self.id}).group("flagged_comments.venue_comment_id").collect{|a| a.venue_comment_id if a.count >= 2}
+    unless ids.present?
+      ids = [-1]
     end
-    sane_comments
-    # venue_comments.select{|comment| comment.flagged_comments.count < 2}
+    venue_comments.where("venue_comments.id NOT IN (?)", ids)
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
