@@ -17,6 +17,8 @@ class Api::V1::UsersController < ApiBaseController
     @user = User.find_by_id(params[:user_id])
     if not @user
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
+    else
+      @comments = @user.venue_comments.page(params[:page]).per(5).order("updated_at desc")
     end
   end
 

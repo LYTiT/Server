@@ -60,7 +60,7 @@ class Venue < ActiveRecord::Base
       sane_comments << comment if comment.flagged_comments.count < 2
     end
     sane_comments
-    #venue_comments.select{|comment| comment.flagged_comments.count < 2}
+    # venue_comments.select{|comment| comment.flagged_comments.count < 2}
   end
 
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
@@ -70,8 +70,8 @@ class Venue < ActiveRecord::Base
     meters ||= 50000
     list = []
     client = Venue.google_place_client
-    if timewalk_start_time.present? and timewalk_end_time.present?
-      list = default_venues(fetch_type, meters, latitude, longitude, q)
+    if (timewalk_start_time.present? and timewalk_end_time.present?) or group_id.present?
+      list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
     else
       begin
         if fetch_type == 'rankby'
@@ -100,7 +100,7 @@ class Venue < ActiveRecord::Base
           list << venue.id if venue.persisted?
         end
       rescue
-        list = default_venues(fetch_type, meters, latitude, longitude, q)
+        list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
       end
     end
 
@@ -129,7 +129,8 @@ class Venue < ActiveRecord::Base
       else
         list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
         venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
-        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?        
+        venues = venues.sort{ |a,b| Levenshtein.distance(q, a.name) <=> Levenshtein.distance(q, b.name) }
       end
     end
 
@@ -145,15 +146,19 @@ class Venue < ActiveRecord::Base
 
   end
 
-  def self.default_venues(fetch_type, meters, latitude, longitude, q)
+  def self.default_venues(fetch_type, meters, latitude, longitude, q, group_id)
     list = []
     if fetch_type == 'rankby'
-      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
+      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude])
+      list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+      list = list.limit(20).collect(&:id)
     else
       if q.blank?
         # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
       else
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%").limit(20).collect(&:id)
+        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%")
+        list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
+        list = list.limit(20).collect(&:id)
       end
     end
     list
@@ -311,6 +316,39 @@ class Venue < ActiveRecord::Base
       vote = LytitVote.find(vote_id)
       vote.update_columns(rating_after: new_rating)
       save
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
+    end
+  end
+
+  def update_rating()
+    up_votes = self.v_up_votes.order('id ASC').to_a
+    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil).round(4))
+
+    down_votes = self.v_down_votes.order('id ASC').to_a
+    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil).round(4))
+
+    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
+
+    r_up_votes = self.r_up_votes
+    r_down_votes = self.r_down_votes
+
+    a = r_up_votes > 0 ? r_up_votes : (1.0 + get_k)
+    b = r_down_votes > 0 ? r_down_votes : 1.0
+
+    puts "A = #{a}, B = #{b}, Y = #{y}"
+
+    # x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+
+    if $?.to_i == 0
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
+
+      new_rating = eval(x).round(4)
+
+      update_columns(rating: new_rating)
     else
       puts "Could not calculate rating. Status: #{$?.to_i}"
     end

@@ -51,6 +51,9 @@ class Api::V1::VenuesController < ApiBaseController
     @venue = Venue.find_by_id(params[:venue_id])
     if not @venue
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
+    else
+      @comments = Kaminari.paginate_array(@venue.visible_venue_comments).page(params[:page]).per(5)
+      #@comments = @venue.visible_venue_comments.page(params[:page]).per(5).order("updated_at desc")
     end
   end
 
