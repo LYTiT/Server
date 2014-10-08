@@ -27,7 +27,6 @@ class GroupsVenue < ActiveRecord::Base
 
       if user.push_token
         count = Notification.where(user_id: user.id, read: false).count
-        count = count + 1
         APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
       end
 
