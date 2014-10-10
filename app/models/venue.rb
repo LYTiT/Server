@@ -322,10 +322,10 @@ class Venue < ActiveRecord::Base
 
   def update_rating()
     up_votes = self.v_up_votes.order('id ASC').to_a
-    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil).round(4))
+    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil, false).round(4))
 
     down_votes = self.v_down_votes.order('id ASC').to_a
-    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil).round(4))
+    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil, true).round(4))
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
@@ -450,7 +450,7 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at)) + 2 + get_k).round(4))
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at), false) + 2 + get_k).round(4))
   end
 
   def account_down_vote
@@ -459,7 +459,7 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at)) + 2).round(4))
+    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at), true) + 2).round(4))
   end
 
   # we need the timestamp of the last vote, since the accounting of votes
@@ -469,7 +469,7 @@ class Venue < ActiveRecord::Base
   # Time.now could be used if we have guaranteed that the accounting of
   # the vote will be done right away, which is not the case with the use of
   # delayed jobs
-  def get_sum_of_past_votes(votes, timestamp_last_vote)
+  def get_sum_of_past_votes(votes, timestamp_last_vote, is_down_vote)
     if not timestamp_last_vote
       timestamp_last_vote = Time.now.utc
     end
@@ -478,7 +478,11 @@ class Venue < ActiveRecord::Base
     for vote in votes
       minutes_passed_since_vote = (timestamp_last_vote - vote.created_at) / 1.minute
 
-      old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
+      if is_down_vote
+        old_votes_sum += 2 ** ((- minutes_passed_since_vote) / (2 * LytitConstants.vote_half_life_h))
+      else
+        old_votes_sum += 2 ** ((- minutes_passed_since_vote) / LytitConstants.vote_half_life_h)
+      end
     end
 
     old_votes_sum
