@@ -29,6 +29,45 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def following
+    #@title = "Following"
+    user = User.find(params[:user_id])
+    @followed_users = user.followed_users
+    #@users = @user.followed_users.paginate(page: params[:page])
+  end
+
+  def followers
+    #@title = followers
+    @user = User.find(params[:user_id])
+    @followers = @user.followers
+    #@users = @user.followers.paginate(page: params[:page])
+  end
+
+  def vfollowing
+    user = User.find(params[:user_id])
+    @followed_venues = @user.followed_venues
+  end
+
+  def is_following_user
+    @other_user = User.find_by_id(params[:user_id])
+    @user = User.find_by_authentication_token(params[:auth_token])
+  end
+
+  def is_following_venue
+    @venue = Venue.find_by_id(params[:user_id])
+    @user = User.find_by_authentication_token(params[:auth_token])
+  end
+
+  def get_feed
+       @user = User.find_by_id(params[:user_id])
+    if not @user
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
+    else
+      v = @user.totalfeed.sort_by(&:created_at).reverse
+      @comments = Kaminari.paginate_array(v).page(params[:page]).per(5) #.order("updated_at desc")
+    end
+  end
+
   def update
     @user = User.find params[:id]
     permitted_params = user_params

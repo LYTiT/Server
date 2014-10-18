@@ -125,6 +125,12 @@ class Api::V1::VenuesController < ApiBaseController
     end
   end
 
+  def followers
+    @venue = Venue.find(params[:venue_id])
+    @followers = @venue.followers
+  end
+
+
   private
 
   def venue

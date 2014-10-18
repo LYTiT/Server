@@ -11,10 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140728214527) do
+ActiveRecord::Schema.define(version: 20141018210732) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "pg_stat_statements"
 
   create_table "accesscodes", force: true do |t|
     t.string   "code"
@@ -190,6 +191,17 @@ ActiveRecord::Schema.define(version: 20140728214527) do
 
   add_index "menu_sections", ["venue_id"], name: "index_menu_sections_on_venue_id", using: :btree
 
+  create_table "relationships", force: true do |t|
+    t.integer  "follower_id"
+    t.integer  "followed_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "relationships", ["followed_id"], name: "index_relationships_on_followed_id", using: :btree
+  add_index "relationships", ["follower_id", "followed_id"], name: "index_relationships_on_follower_id_and_followed_id", unique: true, using: :btree
+  add_index "relationships", ["follower_id"], name: "index_relationships_on_follower_id", using: :btree
+
   create_table "roles", force: true do |t|
     t.string "name"
   end
@@ -225,6 +237,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "username_private", default: false
+    t.integer  "consider"
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
@@ -250,6 +263,17 @@ ActiveRecord::Schema.define(version: 20140728214527) do
 
   add_index "venue_ratings", ["user_id"], name: "index_venue_ratings_on_user_id", using: :btree
   add_index "venue_ratings", ["venue_id"], name: "index_venue_ratings_on_venue_id", using: :btree
+
+  create_table "venue_relationships", force: true do |t|
+    t.integer  "ufollower_id"
+    t.integer  "vfollowed_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "venue_relationships", ["ufollower_id", "vfollowed_id"], name: "index_venue_relationships_on_ufollower_id_and_vfollowed_id", unique: true, using: :btree
+  add_index "venue_relationships", ["ufollower_id"], name: "index_venue_relationships_on_ufollower_id", using: :btree
+  add_index "venue_relationships", ["vfollowed_id"], name: "index_venue_relationships_on_vfollowed_id", using: :btree
 
   create_table "venues", force: true do |t|
     t.string   "name"
@@ -278,7 +302,7 @@ ActiveRecord::Schema.define(version: 20140728214527) do
     t.float    "color_rating",           default: -1.0
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", using: :btree
+  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end

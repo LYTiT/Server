@@ -22,4 +22,52 @@ class VenueComment < ActiveRecord::Base
     CommentView.where(venue_comment_id: self.id).count
   end
 
+  def total_adj_views
+    views = CommentView.where(venue_comment_id: self.id)
+    now = Time.now.utc
+    total = 0
+    views.each {|view| total += 2 ** ((- (view.created_at - self.created_at) / 1.minute) / (10000))}
+    #LumenConstants.views_halflife
+  end
+
+  #returns comments of users followed
+  def VenueComment.from_users_followed_by(user)
+    followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id AND username_private = 'false'"
+    where("user_id IN (#{followed_users_ids})", user_id: user)
+  end
+
+  def VenueComment.from_venues_followed_by(user)
+    #followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id"
+    #where("user_id IN (#{followed_venues_ids})", user_id: user)
+    #followed_venues_ids = user.followed_venues_ids
+    #where("user_id IN (?)", vfollowed_ids, user) 
+    comments = where("venue_id IN (?)", user.followed_venues.ids)
+  end
+
+  def consider?
+    consider = 1
+    user = User.find_by(id: self.user_id)
+    comments = user.venue_comments
+    hash = Hash[comments.map.with_index.to_a]
+    index = hash[self]
+
+    if index == 0 
+      consider
+
+    else  
+      previous = comments[(index-1)]
+
+      if (self.venue_id == previous.venue_id) and ((self.created_at - previous.created_at) >= (300))
+        consider
+      elsif self.venue_id != previous.venue_id
+        consider
+      else
+        consider = 0
+      end
+
+    end
+
+  end
 end
+
+

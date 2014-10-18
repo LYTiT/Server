@@ -19,6 +19,10 @@ class Venue < ActiveRecord::Base
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
 
+  has_many :rvenue_relationships, foreign_key: "vfollowed_id", class_name: "VenueRelationship",  dependent: :destroy
+  has_many :followers, through: :rvenue_relationships, source: :ufollower
+
+
   has_many :events, :dependent => :destroy
 
   belongs_to :user

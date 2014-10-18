@@ -16,6 +16,15 @@ class User < ActiveRecord::Base
   has_many :groups, through: :groups_users
   has_many :flagged_comments, :dependent => :destroy
   has_many :venues
+  
+  has_many :relationships, foreign_key: "follower_id", dependent: :destroy
+  has_many :followed_users, through: :relationships, source: :followed
+  has_many :reverse_relationships, foreign_key: "followed_id", class_name: "Relationship", dependent: :destroy
+  has_many :followers, through: :reverse_relationships, source: :follower
+  
+  has_many :venue_relationships, foreign_key: "ufollower_id", dependent: :destroy
+  has_many :followed_venues, through: :venue_relationships, source: :vfollowed
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -56,6 +65,65 @@ class User < ActiveRecord::Base
   def send_event_added_to_group_notification?(group)
     self.notify_events_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
   end
+
+  def following?(other_user)
+    relationships.find_by(followed_id: other_user.id) ? true : false
+  end
+  #follows a user
+  def follow!(other_user)
+    relationships.create!(followed_id: other_user.id)
+  end
+
+  def unfollow!(other_user)
+    relationships.find_by(followed_id: other_user.id).destroy
+  end
+
+  #follows a venue
+  def vfollow!(venue)
+    venue_relationships.create!(vfollowed_id: venue.id)
+  end
+
+  def vunfollow!(venue)
+    venue_relationships.find_by(vfollowed_id: venue.id).destroy
+  end
+
+  def vfollowing?(venue)
+    venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
+  end
+
+  def userfeed
+    VenueComment.from_users_followed_by(self)
+  end
+
+  def venuefeed
+    VenueComment.where("venue_id IN(?)", self.followed_venues.ids)
+  end
+
+  def totalfeed
+    (userfeed+venuefeed).uniq 
+  end
+
+   #LUMEN Calculation
+=begin def update_lumens()
+    comments = self.venue_comments
+    media_value = 0
+
+    for comment in comments
+      
+      if(comment.media_type = 'text')
+        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.text_media_weight
+      
+      elsif(comment.media_type = 'image')
+        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.image_media_weight
+
+      else
+        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.video_media_weight
+
+      end
+    end
+
+  end
+=end
 
   private
 
