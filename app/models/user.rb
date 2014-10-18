@@ -104,26 +104,28 @@ class User < ActiveRecord::Base
   end
 
    #LUMEN Calculation
-=begin def update_lumens()
+  def update_lumens()
     comments = self.venue_comments
-    media_value = 0
+    lumens = self.total_votes*LumenConstants.votes_weight_adj
 
     for comment in comments
+      if(comment.media_type == 'text')
+        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.text_media_weight
       
-      if(comment.media_type = 'text')
-        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.text_media_weight
-      
-      elsif(comment.media_type = 'image')
-        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.image_media_weight
+      elsif(comment.media_type == 'image')
+        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.image_media_weight
 
       else
-        media_value += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.video_media_weight
+        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.video_media_weight
 
       end
     end
 
   end
-=end
+
+  def total_votes
+    LytitVote.where(user_id: self.id).count
+  end
 
   private
 
