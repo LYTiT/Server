@@ -26,8 +26,8 @@ class VenueComment < ActiveRecord::Base
     views = CommentView.where(venue_comment_id: self.id)
     now = Time.now.utc
     total = 0
-    views.each {|view| total += 2 ** ((- (view.created_at - self.created_at) / 1.minute) / (10000))}
-    #LumenConstants.views_halflife
+    views.each {|view| total += 2 ** ((- (view.created_at - self.created_at) / 1.minute) / (LumenConstants.views_halflife))}
+    total
   end
 
   #returns comments of users followed
