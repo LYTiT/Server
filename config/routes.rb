@@ -1,11 +1,6 @@
 
-#what is the difference between resource resources and controller?
-
-#What is the difference between resource/ resources/ and controller?
-
-#do they all do the same thing?
-
 LytitServer::Application.routes.draw do
+
 
   resources :tests
 
@@ -19,12 +14,29 @@ LytitServer::Application.routes.draw do
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
         end
+        get 'following'
+        get 'followers'
+        get 'is_following_user'
+        get 'vfollowing'
+        get 'is_following_venue'
+        get 'get_feed'
       end
 
       resources :featured do
         get '/today', :action => :today
         get '/allTime', :action => :allTime
         get '/profile_comments', :action => :profile_comments
+        get '/allUsers', :action => :allUsers
+        collection do
+          get 'search'
+        end
+      end
+
+      resources :relationships do
+        post 'create'
+        delete 'destroy'
+        post 'v_create'
+        delete 'v_destroy'
       end
 
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
