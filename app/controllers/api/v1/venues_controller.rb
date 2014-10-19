@@ -30,6 +30,7 @@ class Api::V1::VenuesController < ApiBaseController
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     end
+
   end
 
   def delete_comment
@@ -58,6 +59,14 @@ class Api::V1::VenuesController < ApiBaseController
 
   def mark_comment_as_viewed
     @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
+    #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
+    #updated to the true value for a particular comment after a view (comments with no views aren't considered
+    #for Lumen calcuation by default)
+    if @comment.consider > 1 
+      @comment.consider = @comment.consider?
+      @comment.save
+    end
+
     if @comment.present?
         comment_view = CommentView.new
         comment_view.user = @user

@@ -9,3 +9,4 @@ json.venue_id @comment.venue_id
 json.venue_name @comment.venue.try(:name)
 json.created_at @comment.created_at
 json.updated_at @comment.updated_at
+json.consider @comment.consider

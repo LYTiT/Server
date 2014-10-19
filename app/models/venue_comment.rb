@@ -30,6 +30,20 @@ class VenueComment < ActiveRecord::Base
     total
   end
 
+  #determines weight of venue comment for Lumen calculation
+  def weight
+    type = self.media_type
+
+    if type == "text"
+      LumenConstants.text_media_weight
+    elsif type == "image"
+      LumenConstants.image_media_weight
+    else
+      LumenConstants.video_media_weight
+    end
+
+  end
+
   #returns comments of users followed
   def VenueComment.from_users_followed_by(user)
     followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id AND username_private = 'false'"
@@ -57,7 +71,7 @@ class VenueComment < ActiveRecord::Base
     else  
       previous = comments[(index-1)]
 
-      if (self.venue_id == previous.venue_id) and ((self.created_at - previous.created_at) >= (300))
+      if (self.venue_id == previous.venue_id) and ((self.created_at - previous.created_at) >= (LumenConstants.posting_pause*60))
         consider
       elsif self.venue_id != previous.venue_id
         consider
@@ -66,8 +80,11 @@ class VenueComment < ActiveRecord::Base
       end
 
     end
-
   end
+
+
 end
+
+
 
 

@@ -103,25 +103,27 @@ class User < ActiveRecord::Base
     (userfeed+venuefeed).uniq 
   end
 
-   #LUMEN Calculation
-  def update_lumens()
+  #Lumens are acquired only after voting or posted content receives a view
+  def update_lumens_after_vote
+    new_lumens = self.lumens+LumenConstants.votes_weight_adj
+    update_columns(lumens: new_lumens)
+  end
+
+  def update_lumens_after_view(view)
+    comment = view.venue_comment
+    new_lumens = self.lumens+comment.consider*(comment.weight*comment.total_adj_views*LumenConstants.views_weight_adj)
+    update_columns(lumens: new_lumens)
+  end
+
+   #Lumen Calculation
+  def calculate_lumens()
     comments = self.venue_comments
     lumens = self.total_votes*LumenConstants.votes_weight_adj
 
-    for comment in comments
-      if(comment.media_type == 'text')
-        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.text_media_weight
-      
-      elsif(comment.media_type == 'image')
-        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.image_media_weight
-
-      else
-        lumens += comment.total_adj_views*comment.consider*LumenConstants.views_weight_adj*LumenConstants.video_media_weight
-
-      end
-    end
-
+    comments.each {|comment| lumens += comment.consider*(comment.weight*comment.total_adj_views*LumenConstants.views_weight_adj)}
+    update_columns(lumens: lumens)
   end
+
 
   def total_votes
     LytitVote.where(user_id: self.id).count

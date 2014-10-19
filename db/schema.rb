@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141018221851) do
+ActiveRecord::Schema.define(version: 20141019173409) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -246,7 +246,7 @@ ActiveRecord::Schema.define(version: 20141018221851) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "username_private", default: false
-    t.integer  "consider"
+    t.integer  "consider",         default: 2
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
