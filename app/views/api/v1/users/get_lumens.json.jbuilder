@@ -1,0 +1,10 @@
+json.lumen_value @user.lumens
+json.video_count @user.total_video_count
+json.image_count @user.total_image_count
+json.text_count @user.total_text_count
+json.total_votes @user.total_votes
+json.views_rank @user.lumen_views_contribution_rank
+json.video_rank @user.lumen_video_contribution_rank
+json.image_rank @user.lumen_image_contribution_rank
+json.text_rank @user.lumen_text_contribution_rank
+json.votes_rank @user.lumen_votes_contribution_rank
