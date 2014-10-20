@@ -67,6 +67,8 @@ class Api::V1::VenuesController < ApiBaseController
       @comment.save
     end
 
+    @user.update_lumens_after_view(@comment)
+
     if @comment.present?
         comment_view = CommentView.new
         comment_view.user = @user
@@ -126,6 +128,9 @@ class Api::V1::VenuesController < ApiBaseController
     rating = venue.rating
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
                       :prime => venue.get_k, :raw_value => params[:rating])
+    
+    @user.update_lumens_after_vote
+
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok

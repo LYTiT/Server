@@ -109,8 +109,7 @@ class User < ActiveRecord::Base
     update_columns(lumens: new_lumens)
   end
 
-  def update_lumens_after_view(view)
-    comment = view.venue_comment
+  def update_lumens_after_view(comment)
     new_lumens = self.lumens+comment.consider*(comment.weight*comment.total_adj_views*LumenConstants.views_weight_adj)
     update_columns(lumens: new_lumens)
   end
@@ -127,6 +126,53 @@ class User < ActiveRecord::Base
 
   def total_votes
     LytitVote.where(user_id: self.id).count
+  end
+
+  def total_video_comments
+    VenueComment.where(user_id: self.id, media_type: "video").count
+  end
+
+  def total_image_comments
+    VenueComment.where(user_id: self.id, media_type: "image").count
+  end
+
+  def total_text_comments
+    VenueComment.where(user_id: self.id, media_type: "text").count
+  end
+
+  def total_comment_views
+    count = 0
+    comments = self.venue_comments
+    comments.each {|comment| count += comment.total_views}
+    count
+  end
+
+  #averager number of adjusted views received
+  def avg_adj_views
+    comments = self.venue_comments
+    total_a_views = 0
+    total_considered_comments = 0
+
+    for comment in comments
+      if comment.consider == 1
+        total_a_views += comment.total_adj_views
+        total_considered_comments += 1
+      end
+    end
+
+    total_a_views -= total_text_comments*LumenConstants.text_media_weight
+    avg_adj_views = total_a_views / total_considered_comments
+    avg_adj_views
+  end
+
+  #determines if a user's Lumen value is more of a function of posting frequency or intensity (as determined by views received)
+  #returns 1 becuase it will be 1st of 5 categories of Lumen determinants, 3 because it will be 3rd (after volume of posted photos and videos)
+  def lumen_views_contribution
+    if avg_adj_views >= 1/LumenConstants.views_weight_adj
+      return 1
+    else
+      return 3
+    end
   end
 
   private

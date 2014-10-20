@@ -80,6 +80,18 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  #As related to Lumens
+  def calculate_lumens
+    @user = User.find(params[:user_id])
+    @user.calculate_lumens()
+  end
+
+  def get_lumens
+    @user.lumens 
+  end
+
+
+
   def register_push_token
     User.where(push_token: params[:push_token]).update_all(push_token: nil)
     @user.update(push_token: params[:push_token])
