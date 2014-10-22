@@ -22,16 +22,41 @@ class VenueComment < ActiveRecord::Base
     CommentView.where(venue_comment_id: self.id).count
   end
 
+  def update_views
+    update_columns(views: total_views)
+  end
+
+  def update_views
+    current = self.views
+    update_columns(views: (current + 1))
+  end
+
   def total_adj_views
+    self.adj_views
+  end
+
+  def calculate_adj_view
+    time = Time.now
+    comment_time = comment.created_at
+    time_delta = ((time - comment_time) / 1.minute) / (LumenConstants.views_halflife)
+    adjusted_view = 2.0 ** (-time_delta)
+
+    previous = self.adj_views
+    update_columns(adj_views: (adj_view + previous))
+  end
+
+  def calculate_adj_views
+    total = 0
     if self.media_type == 'text'
       total = 1
     else
       views = CommentView.where(venue_comment_id: self.id)
-      total = 0
       views.each {|view| total += 2 ** ((- (view.created_at - self.created_at) / 1.minute) / (LumenConstants.views_halflife))}
-      total
     end
+    update_columns(adj_views: total)
+    total
   end
+
 
   #determines weight of venue comment for Lumen calculation
   def weight
@@ -83,7 +108,7 @@ class VenueComment < ActiveRecord::Base
       end
 
     end
-    #update_columns(consider: consider)
+    update_columns(consider: consider)
   end
 
 

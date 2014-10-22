@@ -59,15 +59,21 @@ class Api::V1::VenuesController < ApiBaseController
 
   def mark_comment_as_viewed
     @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
+
     #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
     #updated to the true value for a particular comment after a view (comments with no views aren't considered
     #for Lumen calcuation by default)
-    if @comment.consider > 1 
-      @comment.consider = @comment.consider?
+  if @comment.consider > 1 
+      @comment.consider?
       @comment.save
     end
 
-    @user.update_lumens_after_view(@comment)
+    if @comment.is_viewed?(@user) == false
+      @comment.update_views
+      @comment.calculate_adj_view
+      @user.update_lumens_after_view(@comment)
+      @comment.save    
+    end
 
     if @comment.present?
         comment_view = CommentView.new
@@ -78,7 +84,9 @@ class Api::V1::VenuesController < ApiBaseController
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
       return
     end
+
   end
+
 
   def get_groups
     @venue = Venue.find_by_id(params[:venue_id])

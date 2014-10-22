@@ -110,8 +110,15 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_view(comment)
-    new_lumens = self.lumens+comment.consider*(comment.weight*comment.total_adj_views*LumenConstants.views_weight_adj)
-    update_columns(lumens: new_lumens)
+    time = Time.now
+    comment_time = comment.created_at
+    time_delta = ((time - comment_time) / 1.minute) / (LumenConstants.views_halflife)
+    adjusted_view = 2.0 ** (-time_delta)
+    
+    previous_lumens = self.lumens
+    new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj)
+    updated_lumens = previous_lumens + new_lumens
+    update_columns(lumens: updated_lumens)
   end
 
    #Lumen Calculation
@@ -119,7 +126,7 @@ class User < ActiveRecord::Base
     comments = self.venue_comments
     lumens = self.total_votes*LumenConstants.votes_weight_adj
 
-    comments.each {|comment| lumens += comment.consider*(comment.weight*comment.total_adj_views*LumenConstants.views_weight_adj)}
+    comments.each {|comment| lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)}
     update_columns(lumens: lumens)
   end
 
@@ -150,17 +157,17 @@ class User < ActiveRecord::Base
   #averager number of adjusted views received
   def avg_adj_views
     comments = self.venue_comments
-    total_a_views = 0
+    total_adjusted_views = 0
     total_considered_comments = 0
 
     for comment in comments
       if comment.consider == 1
-        total_a_views += comment.total_adj_views
+        total_adjusted_views += comment.adj_views
         total_considered_comments += 1
       end
     end
 
-    total_a_views -= total_text_comments*LumenConstants.text_media_weight
+    total_adjusted_views -= total_text_comments*LumenConstants.text_media_weight
     avg_adj_views = total_a_views / total_considered_comments
     avg_adj_views
   end

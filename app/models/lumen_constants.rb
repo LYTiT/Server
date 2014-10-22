@@ -7,7 +7,7 @@ class LumenConstants < ActiveRecord::Base
 	POSTING_PAUSE = 5 #number of minutes that need to pass before content adds lumens
 	
 	VIEWS_WEIGHT_ADJ = 0.2 #scaling factor for adjusted comment views
-	VIEWS_HALFLIFE = 44640 #(31*60*24) #halflife of a view in minutes
+	VIEWS_HALFLIFE = 44640.0 #(31*60*24) #halflife of a view in minutes
 
 	VOTES_WEIGHT_ADJ = 0.02 #scaling factor for placed LYTiT votes
 
