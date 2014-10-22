@@ -41,6 +41,7 @@ gem 'bson_ext'
 gem 'mongo'
 gem 'levenshtein-ffi', :require => 'levenshtein'
 gem 'kaminari'
+gem 'descriptive_statistics'
 
 group :development do
   gem 'better_errors'

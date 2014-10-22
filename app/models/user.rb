@@ -119,6 +119,7 @@ class User < ActiveRecord::Base
     new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj)
     updated_lumens = previous_lumens + new_lumens
     update_columns(lumens: updated_lumens)
+    update_lumen_percentile
   end
 
    #Lumen Calculation
@@ -130,6 +131,16 @@ class User < ActiveRecord::Base
     update_columns(lumens: lumens)
   end
 
+  def lumens_percentile
+    all_lumens = User.all.map { |user| user.lumens}
+    percentile = all_lumens.percentile_rank(self.lumens)
+  end
+
+  def update_lumen_percentile
+    all_lumens = User.all.map { |user| user.lumens}
+    percentile = all_lumens.percentile_rank(self.lumens)
+    update_columns(lumen_percentile: percentile)
+  end
 
   def total_votes
     LytitVote.where(user_id: self.id).count
