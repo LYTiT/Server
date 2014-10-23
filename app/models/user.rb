@@ -111,7 +111,7 @@ class User < ActiveRecord::Base
     updated_lumens = self.lumens + new_lumens
     update_columns(lumens: updated_lumens)
 
-    l = LumenValues.new(:value => new_lumens, :user_id => self.id)
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
     l.save
   end
 
@@ -128,7 +128,7 @@ class User < ActiveRecord::Base
     update_lumen_percentile
 
     if new_lumens > 0
-      l = LumenValues.new(:value => new_lumens.round(4), :user_id => self.id)
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
       l.save
     end
   end
@@ -144,7 +144,7 @@ class User < ActiveRecord::Base
 
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
-   lumens_of_date = LumenValues.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day)
+   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day)
    lumens_of_date.inject(0) { |sum, l| sum + l.value}
   end
 
@@ -189,7 +189,7 @@ class User < ActiveRecord::Base
   end
 
   #2-D array containing the Lumen value of a day and the corresponding color value
-  def lumen_pacakge
+  def lumen_package
     package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
   end
 
@@ -197,7 +197,7 @@ class User < ActiveRecord::Base
   def populate_lumen_values 
     votes = LytitVote.where(user_id: self.id)
     for vote in votes
-      l = LumenValues.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id)
+      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id)
       l.created_at = vote.created_at
       l.save
     end
@@ -207,7 +207,7 @@ class User < ActiveRecord::Base
       views = CommentView.where(venue_comment_id: comment.id)
       for view in views
         adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-        l2 = LumenValues.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id)
+        l2 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id)
         l2.created_at = view.created_at
         l2.save
       end
