@@ -8,3 +8,4 @@ json.video_rank @user.lumen_video_contribution_rank
 json.image_rank @user.lumen_image_contribution_rank
 json.text_rank @user.lumen_text_contribution_rank
 json.votes_rank @user.lumen_votes_contribution_rank
+json.percentile @user.lumens_percentile

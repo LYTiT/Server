@@ -160,6 +160,39 @@ class User < ActiveRecord::Base
     weekly_lumens = [lumens_on_date(t_1), lumens_on_date(t_2), lumens_on_date(t_3), lumens_on_date(t_4), lumens_on_date(t_5), lumens_on_date(t_6), lumens_on_date(t_7)]
   end
 
+  #Constructs array of color values which determine which coloor to assign to particular weekly Lumen value on the front-end.
+  def weekly_lumen_color_values(weekly_lumens)
+    color_values = [] 
+    weekly_lumens.each {|l| color_values << color_value_assignment(l)}
+    color_values
+  end
+
+  #Determining color values ranges
+  def color_value_assignment(value)
+    if value == 0
+      0
+    elsif value.between(1 , 2)
+      1
+    elsif value.between(3, 7)
+      2
+    elsif value.between(8, 16)
+      3
+    elsif value.between(17, 32)
+      4
+    elsif value.between(33, 64)
+      5
+    elsif value.between(65, 128)
+      6
+    else 
+      7
+    end
+  end
+
+  #2-D array containing the Lumen value of a day and the corresponding color value
+  def lumen_pacakge
+    package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
+  end
+
   #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.
   def populate_lumen_values 
     votes = LytitVote.where(user_id: self.id)

@@ -21,6 +21,7 @@ LytitServer::Application.routes.draw do
         get 'is_following_venue'
         get 'get_feed'
         get 'get_lumens'
+        get 'daily_lumens'
       end
 
       resources :featured do

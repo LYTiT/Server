@@ -91,6 +91,9 @@ class Api::V1::UsersController < ApiBaseController
     @user.lumens 
   end
 
+  def get_deaily_lumens
+    @user = User.find(params[:user_id])
+  end
 
 
   def register_push_token
