@@ -262,8 +262,8 @@ class User < ActiveRecord::Base
     end
 
     total_adjusted_views -= total_text_comments*LumenConstants.text_media_weight
-    avg_adj_views = total_a_views / total_considered_comments
-    avg_adj_views
+    average_adj_views = total_adjusted_views / total_considered_comments
+    average_adj_views
   end
 
   #determines if a user's Lumen value is more of a function of posting frequency or intensity (as determined by views received)

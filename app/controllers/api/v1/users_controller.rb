@@ -91,7 +91,7 @@ class Api::V1::UsersController < ApiBaseController
     @user.lumens 
   end
 
-  def get_deaily_lumens
+  def get_daily_lumens
     @user = User.find(params[:user_id])
   end
 

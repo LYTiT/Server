@@ -10,3 +10,4 @@ json.notify_venue_added_to_groups @user.notify_venue_added_to_groups
 json.mapbox_id 'lytit.iad41i30'
 json.followers_count @user.followers.count
 json.following_count @user.followed_users.count
+json.lumen_value @user.lumens
