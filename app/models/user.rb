@@ -25,6 +25,8 @@ class User < ActiveRecord::Base
   has_many :venue_relationships, foreign_key: "ufollower_id", dependent: :destroy
   has_many :followed_venues, through: :venue_relationships, source: :vfollowed
 
+  has_many :lumen_values, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -105,8 +107,12 @@ class User < ActiveRecord::Base
 
   #Lumens are acquired only after voting or posted content receives a view
   def update_lumens_after_vote
-    new_lumens = self.lumens+LumenConstants.votes_weight_adj
-    update_columns(lumens: new_lumens)
+    new_lumens = LumenConstants.votes_weight_adj
+    updated_lumens = self.lumens + new_lumens
+    update_columns(lumens: updated_lumens)
+
+    l = LumenValues.new(:value => new_lumens, :user_id => self.id)
+    l.save
   end
 
   def update_lumens_after_view(comment)
@@ -118,8 +124,13 @@ class User < ActiveRecord::Base
     previous_lumens = self.lumens
     new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj)
     updated_lumens = previous_lumens + new_lumens
-    update_columns(lumens: updated_lumens)
+    update_columns(lumens: updated_lumens.round(4))
     update_lumen_percentile
+
+    if new_lumens > 0
+      l = LumenValues.new(:value => new_lumens.round(4), :user_id => self.id)
+      l.save
+    end
   end
 
    #Lumen Calculation
@@ -128,7 +139,46 @@ class User < ActiveRecord::Base
     lumens = self.total_votes*LumenConstants.votes_weight_adj
 
     comments.each {|comment| lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)}
-    update_columns(lumens: lumens)
+    update_columns(lumens: lumens.round(4))
+  end
+
+  #Extract acquired Lumens for user on a particulare date
+  def lumens_on_date(date)
+   lumens_of_date = LumenValues.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day)
+   lumens_of_date.inject(0) { |sum, l| sum + l.value}
+  end
+
+  def weekly_lumens
+    t_1 = Time.now + 4.hours - 6.days
+    t_2 = t_1 + 1.days
+    t_3 = t_2 + 1.days
+    t_4 = t_3 + 1.days
+    t_5 = t_4 + 1.days
+    t_6 = t_5 + 1.days
+    t_7 = t_6 + 1.days
+
+    weekly_lumens = [lumens_on_date(t_1), lumens_on_date(t_2), lumens_on_date(t_3), lumens_on_date(t_4), lumens_on_date(t_5), lumens_on_date(t_6), lumens_on_date(t_7)]
+  end
+
+  #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.
+  def populate_lumen_values 
+    votes = LytitVote.where(user_id: self.id)
+    for vote in votes
+      l = LumenValues.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id)
+      l.created_at = vote.created_at
+      l.save
+    end
+
+    comments = self.venue_comments
+    for comment in comments
+      views = CommentView.where(venue_comment_id: comment.id)
+      for view in views
+        adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
+        l2 = LumenValues.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id)
+        l2.created_at = view.created_at
+        l2.save
+      end
+    end
   end
 
   def lumens_percentile
