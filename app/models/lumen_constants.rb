@@ -9,7 +9,7 @@ class LumenConstants < ActiveRecord::Base
 	VIEWS_WEIGHT_ADJ = 0.2 #scaling factor for adjusted comment views
 	VIEWS_HALFLIFE = 44640.0 #(31*60*24) #halflife of a view in minutes
 
-	VOTES_WEIGHT_ADJ = 0.02 #scaling factor for placed LYTiT votes
+	VOTES_WEIGHT_ADJ = 0.1 #scaling factor for placed LYTiT votes
 
 	def self.text_media_weight
 		LumenConstants.where(:constant_name => 'text_media_weight').first.try(:constant_value) || TEXT_MEDIA_WEIGHT

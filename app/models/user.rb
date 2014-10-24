@@ -109,6 +109,10 @@ class User < ActiveRecord::Base
   def update_lumens_after_vote
     new_lumens = LumenConstants.votes_weight_adj
     updated_lumens = self.lumens + new_lumens
+
+    vt_l = self.text_lumens
+    update_columns(vote_lumens: (vt_l + new_lumens).round(4))
+
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
@@ -119,13 +123,16 @@ class User < ActiveRecord::Base
   def update_lumens_after_text
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
+
+    t_l = self.text_lumens
+    update_columns(text_lumens: (t_l + new_lumens).round(4))
+
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
     l.save
   end
-
 
   def update_lumens_after_view(comment)
     time = Time.now
@@ -136,6 +143,15 @@ class User < ActiveRecord::Base
     previous_lumens = self.lumens
     new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj)
     updated_lumens = previous_lumens + new_lumens
+
+    if comment.media_type == 'video'
+      v_l = self.video_lumens
+      update_columns(video_lumens: (v_l + new_lumens).round(4))
+    else
+      i_l = self.image_lumens
+      update_columns(image_lumens: (i_l + new_lumens).round(4))
+    end
+
     update_columns(lumens: updated_lumens.round(4))
     update_lumen_percentile
 
@@ -148,17 +164,29 @@ class User < ActiveRecord::Base
    #Lumen Calculation
   def calculate_lumens()
     comments = self.venue_comments
-    lumens = self.total_votes*LumenConstants.votes_weight_adj
+    v_lumens = 0
+    i_lumens = 0
+    t_lumens = 0
+    vt_lumens = self.total_votes*LumenConstants.votes_weight_adj
+    
+    lumens = vt_lumens 
 
     comments.each do |comment|
-      if comment.media_type == "text"
-        lumens += comment.consider*(comment.weight)
+      if comment.media_type == 'video'
+        v_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
+      elsif comment.media_type == 'image'
+        i_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
       else
-        lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj).round(4)
+        t_lumens += comment.consider*(comment.weight)
       end
     end
 
-    update_columns(lumens: lumens.round(4))
+      update_columns(video_lumens: v_lumens.round(4))
+      update_columns(image_lumens: i_lumens.round(4))
+      update_columns(text_lumens: t_lumens.round(4))
+      update_columns(vote_lumens: vt_lumens.round(4))
+
+      update_columns(lumens: (v_lumens + i_lumens + t_lumens + vt_lumens).round(4))
   end
 
   #Extract acquired Lumens for user on a particulare date
@@ -234,6 +262,7 @@ class User < ActiveRecord::Base
     end
   end
 
+
   def lumens_percentile
     all_lumens = User.all.map { |user| user.lumens}
     percentile = all_lumens.percentile_rank(self.lumens)
@@ -244,6 +273,7 @@ class User < ActiveRecord::Base
     percentile = all_lumens.percentile_rank(self.lumens)
     update_columns(lumen_percentile: percentile)
   end
+
 
   def total_votes
     LytitVote.where(user_id: self.id).count
@@ -262,8 +292,9 @@ class User < ActiveRecord::Base
   end
 
   def total_comment_views
+    #CommentView.where(user_id: self.id).count
     count = 0
-    comments = self.venue_comments
+    comments = VenueComment.where(user_id: self.id, media_type: "video").append(VenueComment.where(user_id: self.id, media_type: "image")).flatten!
     comments.each {|comment| count += comment.total_views}
     count
   end
@@ -291,19 +322,6 @@ class User < ActiveRecord::Base
     average_adj_views
   end
 
-=begin  #determines if a user's Lumen value is more of a function of posting frequency or intensity (as determined by views received)
-  #returns 1 becuase it will be 1st of 5 categories of Lumen determinants, 3 because it will be 3rd (after volume of posted photos and videos)
-  def lumen_views_contribution_rank
-    if avg_adj_views >= 1/LumenConstants.views_weight_adj
-      return 1
-    elsif avg_adj_views == 0
-      return 0
-    else
-      return 3
-    end
-  end
-=end 
-
 
   #Utilizes a dynamic radius assignent based on optimized max std deviation with a boundry constraint
   def radius_assignment
@@ -330,21 +348,13 @@ class User < ActiveRecord::Base
       span = 150
     end
 
-    video_lumens = media_lumens[0]
-    image_lumens = media_lumens[1]
-    text_lumens = media_lumens[2]
-    vote_lumens = total_votes*LumenConstants.votes_weight_adj
-
-    total_lumens = media_lumens
+    total_lumens = []
+    total_lumens << video_lumens
+    total_lumens << image_lumens
+    total_lumens << text_lumens
     total_lumens << vote_lumens
 
     min_lumen = total_lumens.min
-
-    #root1 = (-span + 2 ** -((span ** 2) - 4 * (min_lumen / self.lumens) * 65)) / (-2)
-    #root2 = (-span - 2 ** -((span ** 2) - 4 * (min_lumen / self.lumens) * 65)) / (-2)
-
-    #range = [root1, root2].max
-    #radius = span - range
 
     range = (span - 65)/ (1 + (min_lumen / self.lumens))
     radius = span - range
@@ -361,81 +371,26 @@ class User < ActiveRecord::Base
     return radii
   end
 
-  def media_lumens
 
-    #comments = "SELECT VenueComment FROM VenueComments WHERE media_type = video"
-    #where("user_id IN (#{followed_users_ids})", user_id: user)
-
-
-
-
-    comments = self.venue_comments#.where(media_type: 'video', consider: 1)
-    video_lumens = 0
-    image_lumens = 0
-    text_lumens = 0
-    media = []
-
-
-
-
-    comments.each do |comment|
-      if comment.media_type == 'video'
-        video_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      elsif comment.media_type == 'image'
-        image_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      else
-        text_lumens += comment.consider*(comment.weight)
-      end
-
-    end
-    
-    media << video_lumens
-    media << image_lumens
-    media << text_lumens
-    media
+  def video_radius(hash)
+    hash["video"]
   end
 
-
-=begin  def lumen_contribution_breakdown
-    comments = self.venue_comments
-    video_contribution = 0
-    image_contribution = 0
-    text_contribution = 0
-    votes_contribution = self.total_votes*LumenConstants.votes_weight_adj
-    ranking_array = []
-
-    video_contribution = total_video_comments*LumenConstants.video_media_weight
-    image_contribution = total_image_comments*LumenConstants.image_media_weight
-    text_contribution = total_text_comments*LumenConstants.text_media_weight
-
-    ranking_array << video_contribution
-    ranking_array << image_contribution
-    ranking_array << text_contribution
-    ranking_array << votes_contribution
-
-    (ranking_array.sort!).reverse!
-
-    breakdown = Hash.new
-    breakdown["video"] = ranking_array.index(video_contribution)+1
-    breakdown["image"] = ranking_array.index(image_contribution)+1
-    breakdown["text"] = ranking_array.index(text_contribution)+1
-    breakdown["votes"] = ranking_array.index(votes_contribution)+1
-
-    if lumen_views_contribution_rank == 1
-      breakdown.each {|k, v| breakdown[k] = v+1}
-    else
-      breakdown.each do |k, v|
-        if v >= 3
-          breakdown[k] = v+1
-        end
-      end
-    end
-
-    breakdown["views"] = lumen_views_contribution_rank
-
-    return breakdown
+  def image_radius(hash)
+    hash["image"]
   end
-=end
+  
+  def text_radius(hash)
+    hash["text"]
+  end
+
+  def votes_radius(hash)
+    hash["votes"]
+  end
+
+  def views_raidus(hash)
+  end
+
 
   def lumen_video_contribution_rank
     rank = radius_assignment.keys.index("video") + 1
@@ -453,6 +408,18 @@ class User < ActiveRecord::Base
     rank = radius_assignment.keys.index("votes") + 1
   end 
 
+  def lumen_views_contribution_rank
+    return 5
+  end 
+
+  def view_density
+    vd = (total_comment_views*1.0 / (total_video_comments + total_image_comments)).round(4)
+    if vd >= 10
+      10
+    else
+      vd.round
+    end
+  end
 
   private
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141022223458) do
+ActiveRecord::Schema.define(version: 20141024162017) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -240,12 +240,20 @@ ActiveRecord::Schema.define(version: 20141022223458) do
     t.string   "gcm_token"
     t.float    "lumens",                                      default: 0.0
     t.float    "lumen_percentile"
+    t.float    "video_lumens",                                default: 0.0
+    t.float    "image_lumens",                                default: 0.0
+    t.float    "text_lumens",                                 default: 0.0
+    t.float    "vote_lumens",                                 default: 0.0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
+  add_index "users", ["image_lumens"], name: "index_users_on_image_lumens", using: :btree
   add_index "users", ["lumens"], name: "index_users_on_lumens", using: :btree
   add_index "users", ["remember_token"], name: "index_users_on_remember_token", using: :btree
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
+  add_index "users", ["text_lumens"], name: "index_users_on_text_lumens", using: :btree
+  add_index "users", ["video_lumens"], name: "index_users_on_video_lumens", using: :btree
+  add_index "users", ["vote_lumens"], name: "index_users_on_vote_lumens", using: :btree
 
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
