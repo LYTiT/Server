@@ -98,7 +98,7 @@ class User < ActiveRecord::Base
   end
 
   def venuefeed
-    VenueComment.where("venue_id IN(?)", self.followed_venues.ids)
+    VenueComment.where("venue_id IN(?) and user_id != ?", self.followed_venues.ids, id)
   end
 
   def totalfeed
@@ -110,10 +110,22 @@ class User < ActiveRecord::Base
     new_lumens = LumenConstants.votes_weight_adj
     updated_lumens = self.lumens + new_lumens
     update_columns(lumens: updated_lumens)
+    update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
     l.save
   end
+
+  def update_lumens_after_text
+    new_lumens = LumenConstants.text_media_weight
+    updated_lumens = self.lumens + new_lumens
+    update_columns(lumens: updated_lumens)
+    update_lumen_percentile
+
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
+    l.save
+  end
+
 
   def update_lumens_after_view(comment)
     time = Time.now
@@ -138,7 +150,14 @@ class User < ActiveRecord::Base
     comments = self.venue_comments
     lumens = self.total_votes*LumenConstants.votes_weight_adj
 
-    comments.each {|comment| lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)}
+    comments.each do |comment|
+      if comment.media_type == "text"
+        lumens += comment.consider*(comment.weight)
+      else
+        lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj).round(4)
+      end
+    end
+
     update_columns(lumens: lumens.round(4))
   end
 
@@ -167,21 +186,22 @@ class User < ActiveRecord::Base
     color_values
   end
 
-  #Determining color values ranges
+  #Determining color values for daily lumens. 0 is no Lumens which corresponds to an empty circle, 7 is white.
   def color_value_assignment(value)
-    if value == 0
+    rvalue = value.ceil
+    if rvalue == 0
       0
-    elsif value.between(1 , 2)
+    elsif rvalue.between?(0.00001, 2.0)
       1
-    elsif value.between(3, 7)
+    elsif rvalue.between?(2.00001, 7.0)
       2
-    elsif value.between(8, 16)
+    elsif rvalue.between?(7.00001, 16.0)
       3
-    elsif value.between(17, 32)
+    elsif rvalue.between?(16.00001, 32.0)
       4
-    elsif value.between(33, 64)
+    elsif rvalue.between?(32.00001, 64.0)
       5
-    elsif value.between(65, 128)
+    elsif rvalue.between?(64.00001, 128.0)
       6
     else 
       7
@@ -254,7 +274,7 @@ class User < ActiveRecord::Base
     total_adjusted_views = 0
     total_considered_comments = 0
 
-    for comment in comments
+    comments.each do |comment|
       if comment.consider == 1
         total_adjusted_views += comment.adj_views
         total_considered_comments += 1
@@ -262,21 +282,121 @@ class User < ActiveRecord::Base
     end
 
     total_adjusted_views -= total_text_comments*LumenConstants.text_media_weight
-    average_adj_views = total_adjusted_views / total_considered_comments
+    if total_considered_comments >0
+      average_adj_views = total_adjusted_views / total_considered_comments
+    else
+      average_adj_views = 0
+    end
+
     average_adj_views
   end
 
-  #determines if a user's Lumen value is more of a function of posting frequency or intensity (as determined by views received)
+=begin  #determines if a user's Lumen value is more of a function of posting frequency or intensity (as determined by views received)
   #returns 1 becuase it will be 1st of 5 categories of Lumen determinants, 3 because it will be 3rd (after volume of posted photos and videos)
   def lumen_views_contribution_rank
     if avg_adj_views >= 1/LumenConstants.views_weight_adj
       return 1
+    elsif avg_adj_views == 0
+      return 0
     else
       return 3
     end
   end
+=end 
 
-  def lumen_contribution_breakdown
+
+  #Utilizes a dynamic radius assignent based on optimized max std deviation with a boundry constraint
+  def radius_assignment
+    perc = lumen_percentile
+    if perc.between?(0, 10)
+      span = 100
+    elsif perc.between?(11, 20)
+      span = 105
+    elsif perc.between?(21, 30)
+      span = 110
+    elsif perc.between?(31, 40)
+      span = 115
+    elsif perc.between?(41, 50)
+      span = 120
+    elsif perc.between?(51, 60)
+      span = 125
+    elsif perc.between?(61, 70)
+      span = 135
+    elsif perc.between?(71, 80)
+      span = 140 
+    elsif perc.between?(81, 90)
+      span = 145
+    else
+      span = 150
+    end
+
+    video_lumens = media_lumens[0]
+    image_lumens = media_lumens[1]
+    text_lumens = media_lumens[2]
+    vote_lumens = total_votes*LumenConstants.votes_weight_adj
+
+    total_lumens = media_lumens
+    total_lumens << vote_lumens
+
+    min_lumen = total_lumens.min
+
+    #root1 = (-span + 2 ** -((span ** 2) - 4 * (min_lumen / self.lumens) * 65)) / (-2)
+    #root2 = (-span - 2 ** -((span ** 2) - 4 * (min_lumen / self.lumens) * 65)) / (-2)
+
+    #range = [root1, root2].max
+    #radius = span - range
+
+    range = (span - 65)/ (1 + (min_lumen / self.lumens))
+    radius = span - range
+
+    radii = Hash.new
+    radii["video"] = (video_lumens / self.lumens) * range + radius
+    radii["image"] = (image_lumens / self.lumens) * range + radius
+    radii["text"] = (text_lumens / self.lumens) * range + radius
+    radii["votes"] = (vote_lumens / self.lumens) * range + radius
+
+    puts "span :  #{span}....range: #{range}"
+
+    radii.sort_by {|k, v| v}
+    return radii
+  end
+
+  def media_lumens
+
+    #comments = "SELECT VenueComment FROM VenueComments WHERE media_type = video"
+    #where("user_id IN (#{followed_users_ids})", user_id: user)
+
+
+
+
+    comments = self.venue_comments#.where(media_type: 'video', consider: 1)
+    video_lumens = 0
+    image_lumens = 0
+    text_lumens = 0
+    media = []
+
+
+
+
+    comments.each do |comment|
+      if comment.media_type == 'video'
+        video_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
+      elsif comment.media_type == 'image'
+        image_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
+      else
+        text_lumens += comment.consider*(comment.weight)
+      end
+
+    end
+    
+    media << video_lumens
+    media << image_lumens
+    media << text_lumens
+    media
+  end
+
+
+=begin  def lumen_contribution_breakdown
     comments = self.venue_comments
     video_contribution = 0
     image_contribution = 0
@@ -315,21 +435,22 @@ class User < ActiveRecord::Base
 
     return breakdown
   end
+=end
 
   def lumen_video_contribution_rank
-    rank = lumen_contribution_breakdown["video"]
+    rank = radius_assignment.keys.index("video") + 1
   end
 
   def lumen_image_contribution_rank
-    rank = lumen_contribution_breakdown["image"]
+    rank = radius_assignment.keys.index("image") + 1 
   end
 
   def lumen_text_contribution_rank
-    rank = lumen_contribution_breakdown["text"]
+    rank = radius_assignment.keys.index("text") + 1
   end
 
   def lumen_votes_contribution_rank
-    rank = lumen_contribution_breakdown["votes"]
+    rank = radius_assignment.keys.index("votes") + 1
   end 
 
 

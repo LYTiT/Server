@@ -27,6 +27,10 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
     @comment.username_private = @user.username_private
 
+    if venue_comment_params.media_type == 'text'
+      @user.update_lumens_after_text
+    end
+
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     end
