@@ -30,7 +30,7 @@ gem 'apns', git: 'https://github.com/jpoz/APNS.git'
 gem 'higcm'
 gem 'rufus-scheduler'
 gem 'rubypython', "0.6.3"
-gem 'honeybadger'
+#gem 'honeybadger'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
 gem 'jquery-ui-rails'
 gem 'acts_as_singleton'
