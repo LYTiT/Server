@@ -57,7 +57,6 @@ class VenueComment < ActiveRecord::Base
     total
   end
 
-
   #determines weight of venue comment for Lumen calculation
   def weight
     type = self.media_type

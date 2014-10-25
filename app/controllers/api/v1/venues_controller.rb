@@ -73,6 +73,7 @@ class Api::V1::VenuesController < ApiBaseController
     end
 
     if @comment.is_viewed?(@user) == false
+      @comment.user_id.update_total_views
       @comment.update_views
       @comment.calculate_adj_view
       @user.update_lumens_after_view(@comment)

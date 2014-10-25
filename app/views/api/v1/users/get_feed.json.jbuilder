@@ -12,6 +12,7 @@ json.comments(@comments) do |comment|
   json.total_views comment.total_views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
+  json.from_user comment.from_user
 end
 json.pagination do 
   json.current_page @comments.current_page

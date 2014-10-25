@@ -94,11 +94,19 @@ class User < ActiveRecord::Base
   end
 
   def userfeed
-    VenueComment.from_users_followed_by(self)
+    ufeed = VenueComment.from_users_followed_by(self)
+    for comment in ufeed
+      comment.update_columns(from_user: true)
+    end
+    ufeed
   end
 
   def venuefeed
-    VenueComment.where("venue_id IN(?) and user_id != ?", self.followed_venues.ids, id)
+    vfeed = VenueComment.where("venue_id IN(?) and user_id != ?", self.followed_venues.ids, id)
+    for comment in vfeed
+      comment.update_columns(from_user: false)
+    end
+    vfeed
   end
 
   def totalfeed
@@ -161,7 +169,7 @@ class User < ActiveRecord::Base
     end
   end
 
-   #Lumen Calculation
+   #Lumen Calculation########################################################################################
   def calculate_lumens()
     comments = self.venue_comments
     v_lumens = 0
@@ -196,7 +204,7 @@ class User < ActiveRecord::Base
   end
 
   def weekly_lumens
-    t_1 = Time.now + 4.hours - 6.days
+    t_1 = (Time.now + 4.hours) - 6.days
     t_2 = t_1 + 1.days
     t_3 = t_2 + 1.days
     t_4 = t_3 + 1.days
@@ -241,7 +249,7 @@ class User < ActiveRecord::Base
     package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
   end
 
-  #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.
+  #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.#########################
   def populate_lumen_values 
     votes = LytitVote.where(user_id: self.id)
     for vote in votes
@@ -268,6 +276,7 @@ class User < ActiveRecord::Base
     percentile = all_lumens.percentile_rank(self.lumens)
   end
 
+  ############################################################################################################################################################
   def update_lumen_percentile
     all_lumens = User.all.map { |user| user.lumens}
     percentile = all_lumens.percentile_rank(self.lumens)
@@ -291,12 +300,16 @@ class User < ActiveRecord::Base
     VenueComment.where(user_id: self.id, media_type: "text").count
   end
 
-  def total_comment_views
-    #CommentView.where(user_id: self.id).count
+  def calculate_total_views
     count = 0
     comments = VenueComment.where(user_id: self.id, media_type: "video").append(VenueComment.where(user_id: self.id, media_type: "image")).flatten!
     comments.each {|comment| count += comment.total_views}
-    count
+    update_columns(total_views: count)
+  end
+
+  def update_total_views
+    current = total_views
+    update_columns(total_views: (current + 1) )
   end
 
   #averager number of adjusted views received
@@ -372,25 +385,29 @@ class User < ActiveRecord::Base
   end
 
 
-  def video_radius(hash)
-    hash["video"]
+  def video_radius
+    radius_assignment["video"]
   end
 
-  def image_radius(hash)
-    hash["image"]
+  def image_radius
+    radius_assignment["image"]
   end
   
-  def text_radius(hash)
-    hash["text"]
+  def text_radius
+    radius_assignment["text"]
   end
 
-  def votes_radius(hash)
-    hash["votes"]
+  def votes_radius
+    radius_assignment["votes"]
   end
 
-  def views_raidus(hash)
+  def views_radius
+    if total_views == 0
+      70
+    else
+      [Math::log(total_views) + 75, 85].min
+    end
   end
-
 
   def lumen_video_contribution_rank
     rank = radius_assignment.keys.index("video") + 1
@@ -413,7 +430,7 @@ class User < ActiveRecord::Base
   end 
 
   def view_density
-    vd = (total_comment_views*1.0 / (total_video_comments + total_image_comments)).round(4)
+    vd = (total_views*1.0 / (total_video_comments + total_image_comments)).round(4)
     if vd >= 10
       10
     else
