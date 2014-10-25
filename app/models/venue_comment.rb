@@ -37,12 +37,12 @@ class VenueComment < ActiveRecord::Base
 
   def calculate_adj_view
     time = Time.now
-    comment_time = comment.created_at
+    comment_time = self.created_at
     time_delta = ((time - comment_time) / 1.minute) / (LumenConstants.views_halflife)
     adjusted_view = 2.0 ** (-time_delta)
 
     previous = self.adj_views
-    update_columns(adj_views: (adj_view + previous).round(4))
+    update_columns(adj_views: (adjusted_view + previous).round(4))
   end
 
   def calculate_adj_views

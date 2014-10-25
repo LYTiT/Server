@@ -1,4 +1,4 @@
-class Api::V1::EventsController < ApiBaseController
+ class Api::V1::EventsController < ApiBaseController
 
   skip_before_filter :set_user, only: [:index, :show]
 

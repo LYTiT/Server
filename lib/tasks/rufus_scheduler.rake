@@ -28,6 +28,8 @@ namespace :lytit do
 
       Venue.update_all(color_rating: -1.0)
 
+
+    ###needs by city
       diff_ratings = Set.new
       for venue in venues
         if venue.rating
@@ -54,6 +56,7 @@ namespace :lytit do
           :color_rating => colors_map[rating]
         })
       end
+    ###
 
       end_time = Time.now
 

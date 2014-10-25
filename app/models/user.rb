@@ -330,7 +330,7 @@ class User < ActiveRecord::Base
     end
 
     total_adjusted_views -= total_text_comments*LumenConstants.text_media_weight
-    if total_considered_comments >0
+    if total_considered_comments > 0
       average_adj_views = total_adjusted_views / total_considered_comments
     else
       average_adj_views = 0
@@ -344,11 +344,12 @@ class User < ActiveRecord::Base
   def radius_assignment
     radii = Hash.new
 
-    if self.lumens == 0
-      radii["video"] = 0
-      radii["image"] = 0
-      radii["text"] = 0
-      radii["votes"] = 0
+    if self.lumens < 1
+      radii["video"] = 0.0
+      radii["image"] = 0.0
+      radii["text"] = 0.0
+      radii["votes"] = 0.0
+      return radii
     else
       perc = lumen_percentile
       if perc.between?(0, 10)
@@ -360,7 +361,7 @@ class User < ActiveRecord::Base
       elsif perc.between?(31, 40)
         span = 115
       elsif perc.between?(41, 50)
-        span = 120
+        span = 120#120
       elsif perc.between?(51, 60)
         span = 125
       elsif perc.between?(61, 70)
@@ -391,8 +392,9 @@ class User < ActiveRecord::Base
 
       puts "span :  #{span}....range: #{range}"
 
-      radii.sort_by {|k, v| v}
-      return radii
+
+      radii2 = Hash[radii.sort_by {|k, v| v}]
+      return radii2
     end
   end
 

@@ -27,7 +27,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
     @comment.username_private = @user.username_private
 
-    if venue_comment_params.media_type == 'text'
+    if @comment.media_type == 'text'
       @user.update_lumens_after_text
     end
 
@@ -73,7 +73,9 @@ class Api::V1::VenuesController < ApiBaseController
     end
 
     if @comment.is_viewed?(@user) == false
-      @comment.user_id.update_total_views
+      poster_id = @comment.user_id
+      poster = User.find_by(id: poster_id)
+      poster.update_total_views
       @comment.update_views
       @comment.calculate_adj_view
       @user.update_lumens_after_view(@comment)

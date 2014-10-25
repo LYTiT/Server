@@ -384,6 +384,15 @@ class Venue < ActiveRecord::Base
     0
   end
 
+  def cord_to_city
+    query = self.latitude.to_s + "," + self.longitude.to_s
+    result = Geocoder.search(query).first 
+     if (result)
+      city = result.country
+    end
+    return city
+  end
+
   private
 
   def valid_votes_timestamp
