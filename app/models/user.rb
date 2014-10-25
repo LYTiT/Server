@@ -118,7 +118,7 @@ class User < ActiveRecord::Base
     new_lumens = LumenConstants.votes_weight_adj
     updated_lumens = self.lumens + new_lumens
 
-    vt_l = self.text_lumens
+    vt_l = self.vote_lumens
     update_columns(vote_lumens: (vt_l + new_lumens).round(4))
 
     update_columns(lumens: updated_lumens)
@@ -278,9 +278,13 @@ class User < ActiveRecord::Base
 
   ############################################################################################################################################################
   def update_lumen_percentile
-    all_lumens = User.all.map { |user| user.lumens}
-    percentile = all_lumens.percentile_rank(self.lumens)
-    update_columns(lumen_percentile: percentile)
+    if self.lumens == 0
+      update_columns(lumen_percentile: 0)
+    else
+      all_lumens = User.all.map { |user| user.lumens}
+      percentile = all_lumens.percentile_rank(self.lumens)
+      update_columns(lumen_percentile: percentile)
+    end
   end
 
 
@@ -338,50 +342,58 @@ class User < ActiveRecord::Base
 
   #Utilizes a dynamic radius assignent based on optimized max std deviation with a boundry constraint
   def radius_assignment
-    perc = lumen_percentile
-    if perc.between?(0, 10)
-      span = 100
-    elsif perc.between?(11, 20)
-      span = 105
-    elsif perc.between?(21, 30)
-      span = 110
-    elsif perc.between?(31, 40)
-      span = 115
-    elsif perc.between?(41, 50)
-      span = 120
-    elsif perc.between?(51, 60)
-      span = 125
-    elsif perc.between?(61, 70)
-      span = 135
-    elsif perc.between?(71, 80)
-      span = 140 
-    elsif perc.between?(81, 90)
-      span = 145
-    else
-      span = 150
-    end
-
-    total_lumens = []
-    total_lumens << video_lumens
-    total_lumens << image_lumens
-    total_lumens << text_lumens
-    total_lumens << vote_lumens
-
-    min_lumen = total_lumens.min
-
-    range = (span - 65)/ (1 + (min_lumen / self.lumens))
-    radius = span - range
-
     radii = Hash.new
-    radii["video"] = (video_lumens / self.lumens) * range + radius
-    radii["image"] = (image_lumens / self.lumens) * range + radius
-    radii["text"] = (text_lumens / self.lumens) * range + radius
-    radii["votes"] = (vote_lumens / self.lumens) * range + radius
 
-    puts "span :  #{span}....range: #{range}"
+    if self.lumens == 0
+      radii["video"] = 0
+      radii["image"] = 0
+      radii["text"] = 0
+      radii["votes"] = 0
+    else
+      perc = lumen_percentile
+      if perc.between?(0, 10)
+        span = 100
+      elsif perc.between?(11, 20)
+        span = 105
+      elsif perc.between?(21, 30)
+        span = 110
+      elsif perc.between?(31, 40)
+        span = 115
+      elsif perc.between?(41, 50)
+        span = 120
+      elsif perc.between?(51, 60)
+        span = 125
+      elsif perc.between?(61, 70)
+        span = 135
+      elsif perc.between?(71, 80)
+        span = 140 
+      elsif perc.between?(81, 90)
+        span = 145
+      else
+        span = 150
+      end
 
-    radii.sort_by {|k, v| v}
-    return radii
+      total_lumens = []
+      total_lumens << video_lumens
+      total_lumens << image_lumens
+      total_lumens << text_lumens
+      total_lumens << vote_lumens
+
+      min_lumen = total_lumens.min
+
+      range = (span - 65)/ (1 + (min_lumen / self.lumens))
+      radius = span - range
+
+      radii["video"] = (video_lumens / self.lumens) * range + radius
+      radii["image"] = (image_lumens / self.lumens) * range + radius
+      radii["text"] = (text_lumens / self.lumens) * range + radius
+      radii["votes"] = (vote_lumens / self.lumens) * range + radius
+
+      puts "span :  #{span}....range: #{range}"
+
+      radii.sort_by {|k, v| v}
+      return radii
+    end
   end
 
 
@@ -430,11 +442,15 @@ class User < ActiveRecord::Base
   end 
 
   def view_density
-    vd = (total_views*1.0 / (total_video_comments + total_image_comments)).round(4)
-    if vd >= 10
-      10
+    if (total_video_comments + total_image_comments) == 0
+      return 0
     else
-      vd.round
+      vd = (total_views*1.0 / (total_video_comments + total_image_comments)).round(4)
+      if vd >= 10
+        10
+      else
+        vd.round
+      end
     end
   end
 
