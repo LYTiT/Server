@@ -284,7 +284,7 @@ class Venue < ActiveRecord::Base
   end
 
   def account_new_vote(vote_value, vote_id)
-    puts "bar position = #{LytitBar.instance.position}"
+    #puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
       puts "up vote, accounting"
       account_up_vote

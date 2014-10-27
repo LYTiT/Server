@@ -78,8 +78,8 @@ class Api::V1::VenuesController < ApiBaseController
       poster.update_total_views
       @comment.update_views
       @comment.calculate_adj_view
-      @user.update_lumens_after_view(@comment)
-      @comment.save    
+      @comment.save  
+      poster.update_lumens_after_view(@comment)
     end
 
     if @comment.present?

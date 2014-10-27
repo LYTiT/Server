@@ -204,7 +204,7 @@ class User < ActiveRecord::Base
   end
 
   def weekly_lumens
-    t_1 = (Time.now + 4.hours) - 6.days
+    t_1 = (Time.now - 6.days)
     t_2 = t_1 + 1.days
     t_3 = t_2 + 1.days
     t_4 = t_3 + 1.days
