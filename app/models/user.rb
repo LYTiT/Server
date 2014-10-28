@@ -114,7 +114,7 @@ class User < ActiveRecord::Base
   end
 
   #Lumens are acquired only after voting or posted content receives a view
-  def update_lumens_after_vote
+  def update_lumens_after_vote(id)
     new_lumens = LumenConstants.votes_weight_adj
     updated_lumens = self.lumens + new_lumens
 
@@ -124,11 +124,12 @@ class User < ActiveRecord::Base
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :vote_id => id)
     l.save
   end
 
-  def update_lumens_after_text
+  def update_lumens_after_text(text_id)
+    id = text_id
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
 
@@ -138,11 +139,12 @@ class User < ActiveRecord::Base
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :comment_id => id, :media_type => "text")
     l.save
   end
 
   def update_lumens_after_view(comment)
+    id = comment.id
     time = Time.now
     comment_time = comment.created_at
     time_delta = ((time - comment_time) / 1.minute) / (LumenConstants.views_halflife)
@@ -164,7 +166,7 @@ class User < ActiveRecord::Base
     update_lumen_percentile
 
     if new_lumens > 0
-      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id)
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :comment_id => id, :media_type => comment.media_type)
       l.save
     end
   end
