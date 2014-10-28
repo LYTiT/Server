@@ -255,7 +255,7 @@ class User < ActiveRecord::Base
   def populate_lumen_values 
     votes = LytitVote.where(user_id: self.id)
     for vote in votes
-      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id)
+      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id, :vote_id => vote.id)
       l.created_at = vote.created_at
       l.save
     end
@@ -265,7 +265,7 @@ class User < ActiveRecord::Base
       views = CommentView.where(venue_comment_id: comment.id)
       for view in views
         adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-        l2 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id)
+        l2 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :comment_id => comment.id, :media_type => comment.media_type)
         l2.created_at = view.created_at
         l2.save
       end
