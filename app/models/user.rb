@@ -279,7 +279,7 @@ class User < ActiveRecord::Base
   end
 
   ############################################################################################################################################################
-  def populate_lumen_percentile
+  def update_lumen_percentile
     if self.lumens == 0
       update_columns(lumen_percentile: 0)
     else
