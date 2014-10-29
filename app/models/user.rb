@@ -342,7 +342,7 @@ class User < ActiveRecord::Base
   end
 
 
-  #Utilizes a dynamic radius assignent based on optimized max std deviation with a boundry constraint
+  #Radius assignment to Lumen contributing categories for Lumen breakout screen
   def radius_assignment
     radii = Hash.new
 
@@ -425,6 +425,7 @@ class User < ActiveRecord::Base
     end
   end
 
+  #Used for color assignment of Lumen contribution categories in the Lumen breakout screen
   def lumen_video_contribution_rank
     rank = radius_assignment.keys.index("video") + 1
   end
@@ -445,6 +446,7 @@ class User < ActiveRecord::Base
     return 5
   end 
 
+  #Average views received per photo/video posting, i.e are Lumens coming from popularity or posting frequency
   def view_density
     if (total_video_comments + total_image_comments) == 0
       return 0
