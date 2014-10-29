@@ -273,7 +273,7 @@ class User < ActiveRecord::Base
   end
 
 
-  def lumens_percentile
+  def lumen_percentile_calculation
     all_lumens = User.all.map { |user| user.lumens}
     percentile = all_lumens.percentile_rank(self.lumens)
   end
