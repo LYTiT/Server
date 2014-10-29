@@ -76,14 +76,17 @@ class Api::V1::VenuesController < ApiBaseController
       @comment.save
     end
 
-    if @comment.is_viewed?(@user) == false
+    if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
       poster_id = @comment.user_id
       poster = User.find_by(id: poster_id)
       poster.update_total_views
       @comment.update_views
-      @comment.calculate_adj_view
-      @comment.save  
-      poster.update_lumens_after_view(@comment)
+      @comment.save
+      if poster_id != @user.id
+        @comment.calculate_adj_view
+        @comment.save  
+        poster.update_lumens_after_view(@comment)
+      end
     end
 
     if @comment.present?
@@ -148,7 +151,6 @@ class Api::V1::VenuesController < ApiBaseController
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
                       :prime => venue.get_k, :raw_value => params[:rating])
     
-    @user.update_lumens_after_vote(v.id)
 
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)

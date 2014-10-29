@@ -172,7 +172,7 @@ class User < ActiveRecord::Base
   end
 
    #Lumen Calculation########################################################################################
-  def calculate_lumens()
+  def populate_lumens()
     comments = self.venue_comments
     v_lumens = 0
     i_lumens = 0
@@ -279,7 +279,7 @@ class User < ActiveRecord::Base
   end
 
   ############################################################################################################################################################
-  def update_lumen_percentile
+  def populate_lumen_percentile
     if self.lumens == 0
       update_columns(lumen_percentile: 0)
     else
@@ -306,7 +306,7 @@ class User < ActiveRecord::Base
     VenueComment.where(user_id: self.id, media_type: "text").count
   end
 
-  def calculate_total_views
+  def populate_total_views
     count = 0
     comments = VenueComment.where(user_id: self.id, media_type: "video").append(VenueComment.where(user_id: self.id, media_type: "image")).flatten!
     comments.each {|comment| count += comment.total_views}
