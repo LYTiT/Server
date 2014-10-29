@@ -262,7 +262,7 @@ class User < ActiveRecord::Base
 
     comments = self.venue_comments
     for comment in comments
-      views = CommentView.where(venue_comment_id: comment.id)
+      views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
       for view in views
         adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
         l2 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :comment_id => comment.id, :media_type => comment.media_type)
