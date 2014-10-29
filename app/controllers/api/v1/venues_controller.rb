@@ -69,7 +69,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
 
     #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
-    #updated to the true value for a particular comment after a view (comments with no views aren't considered
+    #updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
     #for Lumen calcuation by default)
   if @comment.consider > 1 
       @comment.consider?
@@ -98,7 +98,6 @@ class Api::V1::VenuesController < ApiBaseController
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
       return
     end
-
   end
 
 
