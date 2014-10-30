@@ -30,9 +30,9 @@ class Api::V1::VenuesController < ApiBaseController
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
-      if @comment.media_type == 'text'
+      if @comment.media_type == 'text' and @comment.consider? == 1
         @user.update_lumens_after_text(@comment.id)
-       end
+      end
     end
 
   end
@@ -67,7 +67,7 @@ class Api::V1::VenuesController < ApiBaseController
     #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
     #updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
     #for Lumen calcuation by default)
-  if @comment.consider > 1 
+    if @comment.consider > 1 
       @comment.consider?
       @comment.save
     end

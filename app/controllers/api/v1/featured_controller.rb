@@ -4,14 +4,15 @@ respond_to :json
   def today
     selected_date = params[:featured_id]
     now = Date.parse(selected_date)
-    now_1 = (now + 4.hour)
-    now_2 = (now + 28.hour)
-    v = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", now_2, now_1)
-    s = v.sort_by {|i| i.total_views}
-    @venue_comments = s.reverse.first(5)
+    start_t = (now + 4.hour)
+    end_t = (now + 28.hour)
+    v = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", end_t, start_t)
+    s = v.sort_by {|i| i.views}
+    @venue_comments = s.reverse.first(10)
   end
 
-  def allTime
+=begin
+    def allTime
     selected_date = params[:featured_id]
     now = Date.parse(selected_date)
     now_1 = (now + 4.hour)
@@ -20,6 +21,7 @@ respond_to :json
     s = v.sort_by {|i| i.total_views}
     @venue_comments = s.reverse.first(5)
   end
+=end
 
   def profile_comments
     @user = User.find_by_id(params[:featured_id])

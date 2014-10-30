@@ -15,4 +15,4 @@ json.image_radius @user.image_radius
 json.text_radius @user.text_radius
 json.vote_radius @user.votes_radius
 json.view_radius @user.views_radius
-json.percentile @user.lumens_percentile
+json.percentile @user.lumen_percentile

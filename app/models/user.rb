@@ -102,7 +102,7 @@ class User < ActiveRecord::Base
   end
 
   def venuefeed
-    vfeed = VenueComment.where("venue_id IN(?) and user_id != ?", self.followed_venues.ids, id)
+    vfeed = VenueComment.from_venues_followed_by(self)
     for comment in vfeed
       comment.update_columns(from_user: false)
     end
@@ -110,7 +110,7 @@ class User < ActiveRecord::Base
   end
 
   def totalfeed
-    (userfeed+venuefeed).uniq 
+    feed = (userfeed + venuefeed)
   end
 
   #Lumens are acquired only after voting or posted content receives a view
@@ -214,7 +214,7 @@ class User < ActiveRecord::Base
     t_6 = t_5 + 1.days
     t_7 = t_6 + 1.days
 
-    weekly_lumens = [lumens_on_date(t_1), lumens_on_date(t_2), lumens_on_date(t_3), lumens_on_date(t_4), lumens_on_date(t_5), lumens_on_date(t_6), lumens_on_date(t_7)]
+    weekly_lumens = [lumens_on_date(t_1).round(4), lumens_on_date(t_2).round(4), lumens_on_date(t_3).round(4), lumens_on_date(t_4).round(4), lumens_on_date(t_5).round(4), lumens_on_date(t_6).round(4), lumens_on_date(t_7).round(4)]
   end
 
   #Constructs array of color values which determine which coloor to assign to particular weekly Lumen value on the front-end.
@@ -262,16 +262,21 @@ class User < ActiveRecord::Base
 
     comments = self.venue_comments
     for comment in comments
-      views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
-      for view in views
-        adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-        l2 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :comment_id => comment.id, :media_type => comment.media_type)
-        l2.created_at = view.created_at
+      if comment.media_type == 'text' and comment.consider? == 1
+        l2 = LumenValue.new(:value => comment.weight, :user_id => self.id, :comment_id => comment.id, :media_type => 'text')
+        l2.created_at = comment.created_at
         l2.save
+      else
+        views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
+        for view in views
+          adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
+          l3 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :comment_id => comment.id, :media_type => comment.media_type)
+          l3.created_at = view.created_at
+          l3.save
+        end
       end
     end
   end
-
 
   def lumen_percentile_calculation
     all_lumens = User.all.map { |user| user.lumens}
@@ -391,9 +396,6 @@ class User < ActiveRecord::Base
       radii["image"] = (image_lumens / self.lumens) * range + radius
       radii["text"] = (text_lumens / self.lumens) * range + radius
       radii["votes"] = (vote_lumens / self.lumens) * range + radius
-
-      puts "span :  #{span}....range: #{range}"
-
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
       return radii2
