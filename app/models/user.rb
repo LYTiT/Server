@@ -95,22 +95,20 @@ class User < ActiveRecord::Base
 
   def userfeed
     ufeed = VenueComment.from_users_followed_by(self)
-    for comment in ufeed
-      comment.update_columns(from_user: true)
-    end
-    ufeed
+    type = Array.new(ufeed.count, 1)
+    ufeed.zip(type.to_a)
   end
 
   def venuefeed
     vfeed = VenueComment.from_venues_followed_by(self)
-    for comment in vfeed
-      comment.update_columns(from_user: false)
-    end
-    vfeed
+    type = Array.new(vfeed.count, 0)
+    vfeed.zip(type.to_a)
   end
 
+  #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
   def totalfeed
     feed = (userfeed + venuefeed)
+    feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
   #Lumens are acquired only after voting or posted content receives a view

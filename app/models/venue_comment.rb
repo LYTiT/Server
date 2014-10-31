@@ -82,8 +82,17 @@ class VenueComment < ActiveRecord::Base
   def VenueComment.from_venues_followed_by(user)
     #followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
     ids_followed_by_user = user.followed_users.map(&:id).join(', ')
-    followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"
-    where("venue_id IN (#{followed_venues_ids})", user_id: user)
+
+    if ids_followed_by_user.length > 0
+      followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"
+      where("venue_id IN (#{followed_venues_ids})", user_id: user)
+    else
+      followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
+      where("venue_id IN (#{followed_venues_ids})", user_id: user)
+    end
+
+    #{}"UPDATE venue_comments INNER JOIN followed_venues_ids ON venue_comment.id = followed_venues_ids SET venue_comment.from_user = false"
+    #followed_venues_ids
   end
 
   def consider?
@@ -94,7 +103,7 @@ class VenueComment < ActiveRecord::Base
     index = hash[self]
 
     if index == 0 
-      consider
+      consider = 1
 
     else  
       previous = comments[(index-1)]
