@@ -326,18 +326,18 @@ class Venue < ActiveRecord::Base
 
   def update_rating()
     up_votes = self.v_up_votes.order('id ASC').to_a
-    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil, false).round(4))
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, nil, false) + 1.0 + get_k).round(4))
 
     down_votes = self.v_down_votes.order('id ASC').to_a
-    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil, true).round(4))
+    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, nil, true) + 1.0).round(4))
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
     r_up_votes = self.r_up_votes
     r_down_votes = self.r_down_votes
 
-    a = r_up_votes > 0 ? r_up_votes : (1.0 + get_k)
-    b = r_down_votes > 0 ? r_down_votes : 1.0
+    a = r_up_votes >= 1 ? r_up_votes : (1.0 + get_k)
+    b = r_down_votes >= 1 ? r_down_votes : 1.0
 
     puts "A = #{a}, B = #{b}, Y = #{y}"
 
@@ -463,7 +463,12 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at), false) + 2 + get_k).round(4))
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at), false) + 2.0 + get_k).round(4))
+
+    #making sure down votes component is initialized (is set by default though to 1.0)
+    if self.r_down_votes < 1.0
+      update_columns(r_down_votes: 1.0)
+    end
   end
 
   def account_down_vote
@@ -472,7 +477,12 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at), true) + 2).round(4))
+    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at), true) + 2.0).round(4))
+
+    #if first vote is a down vote up votes must be primed
+    if self.r_up_votes <= 1 and get_k > 0
+      update_columns(r_up_votes: (1.0 + get_k))
+    end
   end
 
   # we need the timestamp of the last vote, since the accounting of votes
