@@ -326,10 +326,10 @@ class Venue < ActiveRecord::Base
 
   def update_rating()
     up_votes = self.v_up_votes.order('id ASC').to_a
-    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil, false).round(4))
+    update_columns(r_up_votes: get_sum_of_past_votes(up_votes, nil, false).round(4) + 1 + get_k)
 
     down_votes = self.v_down_votes.order('id ASC').to_a
-    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil, true).round(4))
+    update_columns(r_down_votes: get_sum_of_past_votes(down_votes, nil, true).round(4) + 1)
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
