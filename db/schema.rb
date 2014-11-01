@@ -110,19 +110,6 @@ ActiveRecord::Schema.define(version: 20141031065827) do
   add_index "flagged_groups", ["group_id"], name: "index_flagged_groups_on_group_id", using: :btree
   add_index "flagged_groups", ["user_id"], name: "index_flagged_groups_on_user_id", using: :btree
 
-  create_table "geolookups", force: true do |t|
-    t.string   "country"
-    t.string   "region"
-    t.string   "city"
-    t.integer  "postal"
-    t.float    "latitude"
-    t.float    "longitude"
-    t.integer  "metro"
-    t.integer  "area"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "groups", force: true do |t|
     t.string   "name"
     t.string   "description"
