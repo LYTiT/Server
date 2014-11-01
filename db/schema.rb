@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141101053245) do
+ActiveRecord::Schema.define(version: 20141028005032) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -326,14 +326,13 @@ ActiveRecord::Schema.define(version: 20141101053245) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
-    t.float    "r_up_votes",             default: 1.0
-    t.float    "r_down_votes",           default: 1.0
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
     t.string   "menu_link"
     t.float    "color_rating",           default: -1.0
-    t.string   "lyt_sphere"
   end
 
   add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
