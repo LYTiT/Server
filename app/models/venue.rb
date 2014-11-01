@@ -37,7 +37,7 @@ class Venue < ActiveRecord::Base
 
   has_many :lytit_votes, :dependent => :destroy
 
-  scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - 210.minutes) }
+  scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   def menu_link=(val)
     if val.present?
@@ -339,26 +339,30 @@ class Venue < ActiveRecord::Base
     a = r_up_votes >= 1 ? r_up_votes : (1.0 + get_k)
     b = r_down_votes >= 1 ? r_down_votes : 1.0
 
-    puts "A = #{a}, B = #{b}, Y = #{y}"
-
-    # x = LytitBar::inv_inc_beta(a, b, y)
-    # for some reason the python interpreter installed is not recognized by RubyPython
-    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
-
-    if $?.to_i == 0
-      puts "rating before = #{self.rating}"
-      puts "rating after = #{x}"
-
-      new_rating = eval(x).round(4)
-
-      update_columns(rating: new_rating)
+    if (a - 1.0 - get_k).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
+      update_columns(rating: 0.0)
     else
-      puts "Could not calculate rating. Status: #{$?.to_i}"
+      puts "A = #{a}, B = #{b}, Y = #{y}"
+
+      # x = LytitBar::inv_inc_beta(a, b, y)
+      # for some reason the python interpreter installed is not recognized by RubyPython
+      x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+
+      if $?.to_i == 0
+        puts "rating before = #{self.rating}"
+        puts "rating after = #{x}"
+
+        new_rating = eval(x).round(4)
+
+        update_columns(rating: new_rating)
+      else
+        puts "Could not calculate rating. Status: #{$?.to_i}"
+      end
     end
   end
 
   def is_visible?
-    if not self.rating
+    if not self.rating || self.rating == 0.0
       return false
     end
 
@@ -480,7 +484,7 @@ class Venue < ActiveRecord::Base
     update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at), true) + 2.0).round(4))
 
     #if first vote is a down vote up votes must be primed
-    if self.r_up_votes <= 1 and get_k > 0
+    if self.r_up_votes <= 1.0 && get_k > 0
       update_columns(r_up_votes: (1.0 + get_k))
     end
   end

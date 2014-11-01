@@ -29,7 +29,7 @@ namespace :lytit do
 
     diff_ratings = Set.new
     for venue in venues
-      if venue.rating
+      if venue.rating != nil && venue.rating > 0.0
         rat = venue.rating.round(2)
         diff_ratings.add(rat)
       end
