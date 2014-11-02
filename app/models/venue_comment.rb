@@ -98,7 +98,7 @@ class VenueComment < ActiveRecord::Base
   def consider?
     consider = 1
     user = User.find_by(id: self.user_id)
-    comments = user.venue_comments
+    comments = user.venue_comments.sort_by {|comment| comment.created_at}
     hash = Hash[comments.map.with_index.to_a]
     index = hash[self]
 
@@ -108,7 +108,7 @@ class VenueComment < ActiveRecord::Base
     else  
       previous = comments[(index-1)]
 
-      if (self.venue_id == previous.venue_id) and ((self.created_at - previous.created_at) >= (LumenConstants.posting_pause*60))
+      if (self.venue_id == previous.venue_id) && ((self.created_at - previous.created_at) >= (LumenConstants.posting_pause*60))
         consider = 1
       elsif self.venue_id != previous.venue_id
         consider = 1
