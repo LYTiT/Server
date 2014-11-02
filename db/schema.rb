@@ -333,7 +333,6 @@ ActiveRecord::Schema.define(version: 20141028005032) do
     t.integer  "user_id"
     t.string   "menu_link"
     t.float    "color_rating",           default: -1.0
-    t.string   "lyt_sphere"
   end
 
   add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree

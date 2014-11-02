@@ -67,10 +67,6 @@ class Api::V1::VenuesController < ApiBaseController
     #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
     #updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
     #for Lumen calcuation by default)
-    if @comment.consider > 1 
-      @comment.consider?
-      @comment.save
-    end
 
     if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
       poster_id = @comment.user_id
@@ -80,8 +76,10 @@ class Api::V1::VenuesController < ApiBaseController
       @comment.save
       if poster_id != @user.id
         @comment.calculate_adj_view
-        @comment.save  
-        poster.update_lumens_after_view(@comment)
+        @comment.save
+        if @comment.consider? == 1 
+          poster.update_lumens_after_view(@comment)
+        end
       end
     end
 

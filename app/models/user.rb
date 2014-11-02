@@ -149,7 +149,7 @@ class User < ActiveRecord::Base
     adjusted_view = 2.0 ** (-time_delta)
     
     previous_lumens = self.lumens
-    new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj)
+    new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj).round(4)
     updated_lumens = previous_lumens + new_lumens
 
     if comment.media_type == 'video'
