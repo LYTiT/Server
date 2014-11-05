@@ -83,7 +83,8 @@ class Venue < ActiveRecord::Base
           if q.blank?
             spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
           else
-            spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+            #spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
+             spots = client.predictions_by_input(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
           end
         end
         keys = spots.collect(&:place_id)
@@ -339,7 +340,7 @@ class Venue < ActiveRecord::Base
     a = r_up_votes >= 1 ? r_up_votes : (1.0 + get_k)
     b = r_down_votes >= 1 ? r_down_votes : 1.0
 
-    if (a - 1.0 - get_k).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
+    if (a - 1.0 - get_k).round(4) <= 0.0 and (b - 1.0).round(4) == 0.0
       update_columns(rating: 0.0)
     else
       puts "A = #{a}, B = #{b}, Y = #{y}"

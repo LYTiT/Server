@@ -35,6 +35,8 @@ namespace :lytit do
         if venue.rating != nil && venue.rating > 0.0
           rat = venue.rating.round(2)
           diff_ratings.add(rat)
+        else
+          venues.delete(venue)
         end
       end
 
