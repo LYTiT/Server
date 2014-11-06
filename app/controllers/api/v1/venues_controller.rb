@@ -4,6 +4,7 @@ class Api::V1::VenuesController < ApiBaseController
 
   def index
     @venues = Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, nil, nil, params[:group_id])
+    puts "HIT INDEX>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
   end
 
   def show
@@ -104,6 +105,8 @@ class Api::V1::VenuesController < ApiBaseController
     end
   end
 
+=begin >>>SEARCHING 1.0<<<
+
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?
@@ -122,6 +125,52 @@ class Api::V1::VenuesController < ApiBaseController
       end
     end
   end
+=end
+
+
+
+  def search
+    @user = User.find_by_authentication_token(params[:auth_token])
+    if params[:group_id].present? and not params[:q].present?
+      @group = Group.find_by_id(params[:group_id])
+      if @group
+        render json: @group.venues_with_user_who_added
+      else
+        render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
+      end
+    else
+      
+      #params.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
+
+      venue0 = Venue.newfetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+
+      venue1 = Venue.newfetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1])
+      venue2 = Venue.newfetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2])
+      venue3 = Venue.newfetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3])
+      venue4 = Venue.newfetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4])
+      venue5 = Venue.newfetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5])
+      venue6 = Venue.newfetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6])
+      venue7 = Venue.newfetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7])
+      venue8 = Venue.newfetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8])
+      venue9 = Venue.newfetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9])
+      venue10 = Venue.newfetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10])
+
+      @venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+      puts "#{@venues}XXXXXXXXXXXXXXXXXXXXXXXXXXX^^^^^^^^^^^^^^^^^^^^^^^^^"
+
+
+      #@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
+      #puts 'BEFORE ADDITION!!!!!!!!!!!!!!!!!!!!!!'
+      
+      #@venues = Venue.newfetch(search[:name], search[:formatted_address], search[:city], search[:state], search[:country], search[:postal_code], search[:phone_number], search[:latitude], search[:longitude])
+      #first = @venues.first.name
+     #puts '#{@venues.first.name} XXXXXXX#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+
+      render 'search.json.jbuilder'
+    end
+  end 
+  
+
 
   def rate_venue
     venue = Venue.find(params[:venue_id])
@@ -143,7 +192,6 @@ class Api::V1::VenuesController < ApiBaseController
     rating = venue.rating
     v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
                       :prime => venue.get_k, :raw_value => params[:rating])
-    
 
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)

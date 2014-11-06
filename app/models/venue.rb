@@ -66,6 +66,9 @@ class Venue < ActiveRecord::Base
     venue_comments.where("venue_comments.id NOT IN (?)", ids)
   end
 
+=begin >>>SEARCHING 1.0<<<
+=end
+
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
       meters = 50000
@@ -256,6 +259,114 @@ class Venue < ActiveRecord::Base
     end
   end
 
+
+  def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+
+    puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+    puts "#{vaddress}"
+
+    if vname == nil && vcountry == nil
+      return
+    end
+
+    lookup_key = createKey(vlatitude, vlongitude, vaddress)
+    venues = Venue.where("key = ?", lookup_key)
+    lookup = nil
+
+    for venue in venues 
+      if (venue.name).include? vname or (Levenshtein.distance(venue.name, vname) < (vname.length - 1))
+        lookup = venue
+      end
+    end
+
+    if lookup != nil
+      if lookup.city == nil || lookup.formatted_address == nil
+        lookup.address = vaddress
+        
+        part1 = [vaddress, vcity].compact.join(', ')
+        part2 = [part1, vstate].compact.join(', ')
+        part3 = [part2, vpostal_code].compact.join(' ')
+        part4 = [part3, vcountry].compact.join(', ')
+
+        lookup.formatted_address = part4
+        lookup.city = vcity
+        lookup.state = vstate
+        lookup.country = vcountry
+        lookup.postal_code = vpostal_code
+        lookup.phone_number = formatTelephone(vphone)
+        lookup.save
+      end
+      return lookup
+    else
+      venue = Venue.new
+      venue.name = vname
+      venue.address = vaddress
+      
+      part1 = [vaddress, vcity].compact.join(', ')
+      part2 = [part1, vstate].compact.join(', ')
+      part3 = [part2, vpostal_code].compact.join(' ')
+      part4 = [part3, vcountry].compact.join(', ')
+
+      venue.formatted_address = part4
+      venue.city = vcity
+      venue.state = vstate
+      venue.country = vcountry
+      venue.postal_code = vpostal_code
+      venue.phone_number = formatTelephone(vphone)
+      venue.latitude = vlatitude
+      venue.longitude = vlongitude
+      venue.key = createKey(vlatitude, vlongitude, vaddress)
+      venue.fetched_at = Time.now
+      venue.save
+      return venue
+    end
+  end
+
+  def self.createKey(lat, long, addrs)
+    part1 = ((lat.to_f)*1000).floor.abs.to_s
+    part2 = ((long.to_f)*1000).floor.abs.to_s
+    part3 = addrs.split(" ").first.to_s
+
+    key = (part1+part2+part3).to_i
+  end
+
+  def addKey
+    a1 = self.address
+    a2 = self.formatted_address
+    target = a1 || a2
+
+    if target == nil 
+      self.delete
+    else
+      key = createKey(self.latitude, self.longitude, target)
+      if Venue.where(key: key).count > 0
+        self.delete
+      else
+        update_columns(key: key)
+      end
+    end
+  end
+
+  def self.formatTelephone(number)
+    if number == nil
+      return
+    end
+
+    digits = number.gsub(/\D/, '').split(//)
+    lead = digits[0]
+
+    if (digits.length == 11)
+      digits.shift
+    end
+
+    digits = digits.join
+    if (digits.length == 10)
+      number = '+%s (%s) %s-%s' % [lead, digits[0,3], digits[3,3], digits[6,4] ]
+    end
+    
+  end  
+
+
   def self.google_place_client
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
@@ -340,7 +451,7 @@ class Venue < ActiveRecord::Base
     a = r_up_votes >= 1 ? r_up_votes : (1.0 + get_k)
     b = r_down_votes >= 1 ? r_down_votes : 1.0
 
-    if (a - 1.0 - get_k).round(4) <= 0.0 and (b - 1.0).round(4) == 0.0
+    if (a - 1.0 - get_k).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
       update_columns(rating: 0.0)
     else
       puts "A = #{a}, B = #{b}, Y = #{y}"
