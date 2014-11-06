@@ -330,6 +330,14 @@ class Venue < ActiveRecord::Base
     key = (part1+part2+part3).to_i
   end
 
+  def createKeylocal(lat, long, addrs)
+    part1 = ((lat.to_f)*1000).floor.abs.to_s
+    part2 = ((long.to_f)*1000).floor.abs.to_s
+    part3 = addrs.split(" ").first.to_s
+
+    key = (part1+part2+part3).to_i
+  end
+
   def addKey
     a1 = self.address
     a2 = self.formatted_address
@@ -338,7 +346,7 @@ class Venue < ActiveRecord::Base
     if target == nil 
       self.delete
     else
-      key = self.createKey(self.latitude, self.longitude, target)
+      key = createKeylocal(self.latitude, self.longitude, target)
       if Venue.where(key: key).count > 0
         self.delete
       else
