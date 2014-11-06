@@ -338,7 +338,7 @@ class Venue < ActiveRecord::Base
     if target == nil 
       self.delete
     else
-      key = createKey(self.latitude, self.longitude, target)
+      key = self.createKey(self.latitude, self.longitude, target)
       if Venue.where(key: key).count > 0
         self.delete
       else
