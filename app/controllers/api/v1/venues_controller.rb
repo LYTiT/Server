@@ -37,7 +37,7 @@ class Api::V1::VenuesController < ApiBaseController
       last_post.venue_id = @comment.venue_id
       last_post.username_private = @comment.username_private
       @comment = last_post
-      last_post.delete
+      #last_post.delete
     end
 
     if not @comment.save
