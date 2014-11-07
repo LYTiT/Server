@@ -460,7 +460,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  #Posting by parts implementation
+  #For posting by parts implementation
   def posting_kill_request
     comment = self.venue_comments.order('id ASC').to_a.pop
     if comment.venue_id == 40782
