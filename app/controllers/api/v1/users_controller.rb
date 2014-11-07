@@ -69,6 +69,11 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def posting_kill_request
+    @user = User.find_by_id(params[:user_id])
+    render json: { success: true }
+  end
+
   def update
     @user = User.find params[:id]
     permitted_params = user_params

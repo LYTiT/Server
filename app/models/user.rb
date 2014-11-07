@@ -460,6 +460,13 @@ class User < ActiveRecord::Base
     end
   end
 
+  #Posting by parts implementation
+  def posting_kill_request
+    comment = self.venue_comments.order('id ASC').to_a.pop
+    comment.delete
+  end
+
+
   private
 
   def generate_confirmation_token_for_venue_manager

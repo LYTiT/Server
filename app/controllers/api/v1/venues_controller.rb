@@ -9,7 +9,7 @@ class Api::V1::VenuesController < ApiBaseController
 
   def show
     @venue = Venue.find(params[:id])
-    @venue.populate_google_address
+    #@venue.populate_google_address
     venue = @venue.as_json(include: :venue_messages)
     venue[:menu] = @venue.menu_sections.as_json(
       only: [:id, :name], 
@@ -23,19 +23,30 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def add_comment
+    update = false
     @comment = VenueComment.new(venue_comment_params)
     @comment.venue = venue
     @comment.user = @user
     @comment.username_private = @user.username_private
 
+    last_post = @user.venue_comments.order('id ASC').to_a.pop
+
+    if last_post.venue_id == 0
+      update = true
+      last_post.comment = @comment.comment
+      last_post.venue_id = @comment.venue_id
+      last_post.username_private = @comment.username_private
+      @comment = last_post
+      last_post.delete
+    end
+
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
-      if @comment.media_type == 'text' and @comment.consider? == 1
+      if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
         @user.update_lumens_after_text(@comment.id)
       end
     end
-
   end
 
   def delete_comment
@@ -106,7 +117,6 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
 =begin >>>SEARCHING 1.0<<<
-
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?
@@ -127,8 +137,6 @@ class Api::V1::VenuesController < ApiBaseController
   end
 =end
 
-
-
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?
@@ -139,9 +147,8 @@ class Api::V1::VenuesController < ApiBaseController
         render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
       end
     else
-      
-      #params.each_pair { |k, v| puts "Key: #{k}, Value: #{v}" }
 
+      #I am aware this approach is Muppet, need to update later 
       venue0 = Venue.newfetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 
       venue1 = Venue.newfetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1])
@@ -156,20 +163,12 @@ class Api::V1::VenuesController < ApiBaseController
       venue10 = Venue.newfetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10])
 
       @venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
-      puts "#{@venues}XXXXXXXXXXXXXXXXXXXXXXXXXXX^^^^^^^^^^^^^^^^^^^^^^^^^"
-
 
       #@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
-      #puts 'BEFORE ADDITION!!!!!!!!!!!!!!!!!!!!!!'
-      
-      #@venues = Venue.newfetch(search[:name], search[:formatted_address], search[:city], search[:state], search[:country], search[:postal_code], search[:phone_number], search[:latitude], search[:longitude])
-      #first = @venues.first.name
-     #puts '#{@venues.first.name} XXXXXXX#$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-
       render 'search.json.jbuilder'
     end
   end 
-  
+
 
 
   def rate_venue
