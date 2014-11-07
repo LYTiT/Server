@@ -71,6 +71,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def posting_kill_request
     @user = User.find_by_id(params[:user_id])
+    @user.posting_kill_request
     render json: { success: true }
   end
 
