@@ -31,7 +31,7 @@ class Api::V1::VenuesController < ApiBaseController
 
     last_post = @user.venue_comments.order('id ASC').to_a.pop
 
-    if last_post.venue_id == 0
+    if last_post.venue_id == 40782
       update = true
       last_post.comment = @comment.comment
       last_post.venue_id = @comment.venue_id
