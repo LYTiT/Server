@@ -22,6 +22,7 @@ LytitServer::Application.routes.draw do
         get 'get_feed'
         get 'get_lumens'
         get 'get_daily_lumens'
+        post 'posting_kill_request'
       end
 
       resources :featured do
