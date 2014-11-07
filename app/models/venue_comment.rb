@@ -5,6 +5,7 @@ class VenueComment < ActiveRecord::Base
   belongs_to :venue
 
   has_many :flagged_comments, :dependent => :destroy
+  has_many :lumen_values
 
   validate :comment_or_media
 

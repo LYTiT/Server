@@ -122,7 +122,7 @@ class User < ActiveRecord::Base
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :vote_id => id)
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :lytit_vote_id => id)
     l.save
   end
 
@@ -137,7 +137,7 @@ class User < ActiveRecord::Base
     update_columns(lumens: updated_lumens)
     update_lumen_percentile
 
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :comment_id => id, :media_type => "text")
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => "text")
     l.save
   end
 
@@ -164,7 +164,7 @@ class User < ActiveRecord::Base
     update_lumen_percentile
 
     if new_lumens > 0
-      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :comment_id => id, :media_type => comment.media_type)
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => comment.media_type)
       l.save
     end
   end
@@ -253,7 +253,7 @@ class User < ActiveRecord::Base
   def populate_lumen_values 
     votes = LytitVote.where(user_id: self.id)
     for vote in votes
-      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id, :vote_id => vote.id)
+      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id, :lytit_vote_id => vote.id)
       l.created_at = vote.created_at
       l.save
     end
@@ -261,14 +261,14 @@ class User < ActiveRecord::Base
     comments = self.venue_comments
     for comment in comments
       if comment.media_type == 'text' and comment.consider? == 1
-        l2 = LumenValue.new(:value => comment.weight, :user_id => self.id, :comment_id => comment.id, :media_type => 'text')
+        l2 = LumenValue.new(:value => comment.weight, :user_id => self.id, :venue_comment_id => comment.id, :media_type => 'text')
         l2.created_at = comment.created_at
         l2.save
       else
         views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
         for view in views
           adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-          l3 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :comment_id => comment.id, :media_type => comment.media_type)
+          l3 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => comment.media_type)
           l3.created_at = view.created_at
           l3.save
         end

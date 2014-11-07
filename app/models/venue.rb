@@ -258,13 +258,9 @@ class Venue < ActiveRecord::Base
       end
     end
   end
-
+###
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
-
-    puts ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-    puts "#{vaddress}"
-
     if vname == nil && vcountry == nil
       return
     end

@@ -4,4 +4,5 @@ class LytitVote < ActiveRecord::Base
 
   belongs_to :venue
   belongs_to :user
+  has_many :lumen_values
 end
