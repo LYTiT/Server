@@ -463,8 +463,7 @@ class User < ActiveRecord::Base
   #For posting by parts implementation
   def posting_kill_request
     comment = self.venue_comments.order('id ASC').to_a.pop
-    comment_venue = Venue.find_by(id: comment.venue_id)
-    if comment_venue.name == "Posting Temp Housing212"
+    if comment.venue_id == 14002
       comment.delete
     end
   end
