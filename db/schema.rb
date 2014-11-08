@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141031065827) do
+ActiveRecord::Schema.define(version: 20141025012607) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -155,9 +155,6 @@ ActiveRecord::Schema.define(version: 20141031065827) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "lytit_vote_id"
-    t.integer  "venue_comment_id"
-    t.string   "media_type"
   end
 
   add_index "lumen_values", ["user_id"], name: "index_lumen_values_on_user_id", using: :btree
@@ -326,8 +323,8 @@ ActiveRecord::Schema.define(version: 20141031065827) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
-    t.float    "r_up_votes",             default: 1.0
-    t.float    "r_down_votes",           default: 1.0
+    t.float    "r_up_votes"
+    t.float    "r_down_votes"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
