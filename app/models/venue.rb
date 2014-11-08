@@ -343,11 +343,7 @@ class Venue < ActiveRecord::Base
       self.delete
     else
       key = createKeylocal(self.latitude, self.longitude, target)
-      if Venue.where(key: key).count > 0
-        self.delete
-      else
-        update_columns(key: key)
-      end
+      update_columns(key: key)
     end
   end
 
