@@ -30,13 +30,13 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.username_private = @user.username_private
 
     #To prevent posting pieces being pulled into the following feed we make part i posted invisibly
-    if @comment.venue_id == 40782
+    if @comment.venue_id == 14002
       @comment.username_private = true
     end
 
     last_post = @user.venue_comments.order('id ASC').to_a.pop
 
-    if last_post.venue_id == 40782
+    if last_post.venue_id == 14002
       update = true
       last_post.comment = @comment.comment
       last_post.venue_id = @comment.venue_id
