@@ -67,8 +67,6 @@ class Venue < ActiveRecord::Base
   end
 
 =begin >>>SEARCHING 1.0<<<
-=end
-
   def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
     if not meters.present? and q.present?
       meters = 50000
@@ -258,7 +256,7 @@ class Venue < ActiveRecord::Base
       end
     end
   end
-###
+=end
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
     if vname == nil && vcountry == nil
@@ -509,7 +507,37 @@ class Venue < ActiveRecord::Base
     return city
   end
 
-  private
+  def add_Geohash
+    update_columns(geohash: GeoHash.encode(self.latitude, self.longitude))
+  end
+
+  def self.near_locations(lat, long)
+=begin    boundry = GeoHash.neighbors(self.geohash)
+    adj_boundry = []
+    boundry.each {|bound| adj_boundry << bound[0,7]}
+    adj_boundry
+    #neighbors = "SELECT venue FROM venues WHERE LEFT(geohash,7) IN (#{boundry})"
+    neighbors = Venue.where("LEFT(geohash, 7) IN (?)", adj_boundry)
+    neighbors = neighbors.order('distance ASC')
+=end
+    meter_radius = 400
+    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
+    suggestions = []
+    count = 0
+
+    for location in surroundings
+      if LytitVote.where("venue_id = ?", location.id).count > 0
+        suggestions << location
+        count += 1
+        if count == 10
+          break
+        end
+      end
+    end 
+    return suggestions
+  end
+
+  private ##################################################################################################
 
   def valid_votes_timestamp
     now = Time.now

@@ -2,10 +2,11 @@ class Api::V1::VenuesController < ApiBaseController
 
   skip_before_filter :set_user, only: [:search, :index]
 
+=begin
   def index
     @venues = Venue.fetch_venues('rankby', '', params[:lat], params[:lng], nil, nil, nil, params[:group_id])
-    puts "HIT INDEX>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
   end
+=end
 
   def show
     @venue = Venue.find(params[:id])
@@ -172,9 +173,13 @@ class Api::V1::VenuesController < ApiBaseController
       #@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
       render 'search.json.jbuilder'
     end
-  end 
+  end
 
-
+  def get_suggested_venues
+    @user = User.find_by_authentication_token(params[:auth_token])
+    @suggestions = Venue.near_locations(params[:latitude], params[:longitude])
+    render 'get_suggested_venues.json.jbuilder'
+  end
 
   def rate_venue
     venue = Venue.find(params[:venue_id])

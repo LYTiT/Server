@@ -43,6 +43,7 @@ gem 'levenshtein-ffi', :require => 'levenshtein'
 gem 'kaminari'
 gem 'descriptive_statistics'
 gem 'geocoder'
+gem 'pr_geohash'
 
 group :development do
   gem 'better_errors'

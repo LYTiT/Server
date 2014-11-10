@@ -220,6 +220,7 @@ GEM
     plucky (0.6.6)
       mongo (~> 1.5)
     polyglot (0.3.4)
+    pr_geohash (1.0.0)
     pry (0.9.12.6)
       coderay (~> 1.0)
       method_source (~> 0.8)
@@ -395,6 +396,7 @@ DEPENDENCIES
   paperclip (~> 4.1)
   paranoia (~> 2.0)
   pg
+  pr_geohash
   pry-byebug
   rack-timeout
   rails (>= 4.0.0)

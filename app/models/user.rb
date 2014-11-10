@@ -468,8 +468,7 @@ class User < ActiveRecord::Base
     end
   end
 
-
-  private
+  private ##################################################################################################
 
   def generate_confirmation_token_for_venue_manager
     if role_id_changed?

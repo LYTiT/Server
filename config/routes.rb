@@ -57,10 +57,14 @@ LytitServer::Application.routes.draw do
         get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
         post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
+
         
 
         collection do
           get 'search'
+        end
+        collection do
+          get 'get_suggested_venues'
         end
         post 'vote'
       end
