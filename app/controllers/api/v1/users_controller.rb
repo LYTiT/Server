@@ -102,6 +102,10 @@ class Api::V1::UsersController < ApiBaseController
     @user = User.find(params[:user_id])
   end
 
+  def get_suggested_locations
+    @user = User.find(params[:user_id])
+    @user.near_locations()
+  end
 
   def register_push_token
     User.where(push_token: params[:push_token]).update_all(push_token: nil)
