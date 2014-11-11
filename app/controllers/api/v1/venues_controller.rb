@@ -183,7 +183,7 @@ class Api::V1::VenuesController < ApiBaseController
 
   def get_recommendations
     @user = User.find_by_authentication_token(params[:auth_token])
-    @recommendations = Venue.near_locations(params[:latitude], params[:longitude])
+    @recommendations = Venue.recommended_venues(@user, params[:latitude], params[:longitude])
     render 'get_recommendations.json.jbuilder'
   end
 
