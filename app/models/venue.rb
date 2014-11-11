@@ -392,7 +392,7 @@ class Venue < ActiveRecord::Base
         end
       end
     end 
-    return suggestions
+    return suggestions.compact
   end
 
   def self.recommended_venues(user, lat, long)
@@ -410,13 +410,15 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    return recommendations
+    return recommendations.compact
   end
 
   def last_image_url
     images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image")
     images = images.sort_by{|x,y| x.created_at}.reverse
-    return images.first.media_url
+    if images.first != nil
+      return images.first.media_url
+    end
   end
 
   def cord_to_city
