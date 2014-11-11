@@ -39,10 +39,11 @@ respond_to :json
 
   def search
     #@users = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
+    @user = User.find_by_authentication_token(params[:auth_token])
     if User.where("name = ?", params[:q].to_s).any?
-      @users = User.where("name = ?", params[:q].to_s)
+      @person = User.where("name = ?", params[:q].to_s)
     else
-      @users = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
+      @person = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
     end  
   end
 
