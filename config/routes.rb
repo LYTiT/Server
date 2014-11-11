@@ -66,6 +66,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_suggested_venues'
         end
+        collection do 
+          get 'get_recommendations'
+        end
         post 'vote'
       end
 
