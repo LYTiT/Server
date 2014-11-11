@@ -15,45 +15,61 @@ namespace :lytit do
     bar.recalculate_bar_position
     puts 'Bar updated'
 
-    venues = Venue.visible
+    #venues = Venue.visible
+    spheres = LytSphere.uniq.pluck(:sphere)
+    #venues = Venue.where("id IN (?)", LytSphere.pluck(:venue_id)).to_a
 
-    puts "Recaculating venue ratings..."
-    for venue in venues
-      venue.update_rating()
-    end
-    puts "Done."
+    #puts "Recaculating venue ratings..."
+    #for venue in venues
+    #    venue.update_rating()
+    #end
+
+    #for venue in venues
+    #  venue.update_rating()
+    #end
+
+    #puts "Done."
 
     puts "Recalculating venue colors"
 
     Venue.update_all(color_rating: -1.0)
 
-    diff_ratings = Set.new
-    for venue in venues
-      if venue.rating != nil && venue.rating > 0.0
-        rat = venue.rating.round(2)
-        diff_ratings.add(rat)
-      else
-        venues.delete(venue)
+
+    for entry in spheres
+      sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
+
+      diff_ratings = Set.new
+      for venue in sphericles
+        venue.update_rating()
+        if venue.is_visible? #venue.rating != nil && venue.rating > 0.0
+          rat = venue.rating.round(2)
+          diff_ratings.add(rat)
+        else
+          #venues.delete(venue)
+          sphericles.delete(venue)
+          LytSphere.where("venue_id = ?", venue.id).delete_all
+        end
       end
-    end
 
-    diff_ratings = diff_ratings.to_a.sort
-    step = 1.0 / (diff_ratings.size - 1)
-    colors_map = {0.0 => 0.0}
-    color = -step
+      diff_ratings = diff_ratings.to_a.sort
+      step = 1.0 / (diff_ratings.size - 1)
+      colors_map = {0.0 => 0.0}
+      color = -step
 
-    for rating in diff_ratings
-      color += step
-      colors_map[rating] = color.round(2)
-    end
+      for rating in diff_ratings
+        color += step
+        colors_map[rating] = color.round(2)
+      end
 
-    for venue in venues
-      rating = venue.rating ? venue.rating.round(2) : 0.0
-      venue.update_columns(color_rating: colors_map[rating])
-      VenueColorRating.create({
-        :venue_id => venue.id,
-        :color_rating => colors_map[rating]
-      })
+      for venue in sphericles
+        rating = venue.rating ? venue.rating.round(2) : 0.0
+        venue.update_columns(color_rating: colors_map[rating])
+        VenueColorRating.create({
+          :venue_id => venue.id,
+          :color_rating => colors_map[rating]
+        })
+      end
+
     end
 
     end_time = Time.now

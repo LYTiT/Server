@@ -205,6 +205,13 @@ class Api::V1::VenuesController < ApiBaseController
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)
       @user.update_lumens_after_vote(v.id)
+
+      if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
+        sphere = venue.city.delete(" ")+(venue.latitude.floor.abs).to_s+(venue.longitude.floor.abs).to_s
+        lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => sphere)
+        lyt_sphere.save
+      end
+
       render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
