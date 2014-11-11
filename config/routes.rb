@@ -69,6 +69,10 @@ LytitServer::Application.routes.draw do
         collection do 
           get 'get_recommendations'
         end
+        collection do 
+          get 'search_to_follow'
+        end
+
         post 'vote'
       end
 
