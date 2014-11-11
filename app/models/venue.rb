@@ -274,7 +274,7 @@ class Venue < ActiveRecord::Base
     end
 
     if lookup != nil
-      if lookup.city == nil || lookup.formatted_address == nil
+      if lookup.city == nil
         lookup.address = vaddress
         
         part1 = [vaddress, vcity].compact.join(', ')
@@ -362,8 +362,73 @@ class Venue < ActiveRecord::Base
       number = '+%s (%s) %s-%s' % [lead, digits[0,3], digits[3,3], digits[6,4] ]
     end
     
-  end  
+  end
 
+  def add_Geohash
+    update_columns(geohash: GeoHash.encode(self.latitude, self.longitude))
+  end
+
+  def self.near_locations(lat, long)
+=begin    
+    boundry = GeoHash.neighbors(self.geohash)
+    adj_boundry = []
+    boundry.each {|bound| adj_boundry << bound[0,7]}
+    adj_boundry
+    #neighbors = "SELECT venue FROM venues WHERE LEFT(geohash,7) IN (#{boundry})"
+    neighbors = Venue.where("LEFT(geohash, 7) IN (?)", adj_boundry)
+    neighbors = neighbors.order('distance ASC')
+=end
+    meter_radius = 400
+    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
+    suggestions = []
+    count = 0
+
+    for location in surroundings
+      if LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil
+        suggestions << location
+        count += 1
+        if count == 10
+          break
+        end
+      end
+    end 
+    return suggestions.compact
+  end
+
+  def self.recommended_venues(user, lat, long)
+    meter_radius = 1000
+    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
+    recommendations = []
+    count = 0
+
+    for location in surroundings
+      if VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false
+        recommendations << location
+        count += 1
+        if count == 10
+          break
+        end
+      end
+    end
+    return recommendations.compact
+  end
+
+  def last_image_url
+    images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image")
+    images = images.sort_by{|x,y| x.created_at}.reverse
+    if images.first != nil
+      return images.first.media_url
+    end
+  end
+
+  def cord_to_city
+    query = self.latitude.to_s + "," + self.longitude.to_s
+    result = Geocoder.search(query).first 
+     if (result)
+      city = result.country
+    end
+    return city
+  end
 
   def self.google_place_client
     GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
@@ -496,45 +561,6 @@ class Venue < ActiveRecord::Base
     end
 
     0
-  end
-
-  def cord_to_city
-    query = self.latitude.to_s + "," + self.longitude.to_s
-    result = Geocoder.search(query).first 
-     if (result)
-      city = result.country
-    end
-    return city
-  end
-
-  def add_Geohash
-    update_columns(geohash: GeoHash.encode(self.latitude, self.longitude))
-  end
-
-  def self.near_locations(lat, long)
-=begin    boundry = GeoHash.neighbors(self.geohash)
-    adj_boundry = []
-    boundry.each {|bound| adj_boundry << bound[0,7]}
-    adj_boundry
-    #neighbors = "SELECT venue FROM venues WHERE LEFT(geohash,7) IN (#{boundry})"
-    neighbors = Venue.where("LEFT(geohash, 7) IN (?)", adj_boundry)
-    neighbors = neighbors.order('distance ASC')
-=end
-    meter_radius = 400
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
-    suggestions = []
-    count = 0
-
-    for location in surroundings
-      if LytitVote.where("venue_id = ?", location.id).count > 0
-        suggestions << location
-        count += 1
-        if count == 10
-          break
-        end
-      end
-    end 
-    return suggestions
   end
 
   private ##################################################################################################
