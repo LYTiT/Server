@@ -404,6 +404,7 @@ class Venue < ActiveRecord::Base
     for location in surroundings
       if VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false
         recommendations << location
+        count += 1
         if count == 10
           break
         end
