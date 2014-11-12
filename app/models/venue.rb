@@ -258,6 +258,17 @@ class Venue < ActiveRecord::Base
   end
 =end
 
+  #1 degree of latitude is ~110.54km while 1 degree of longitude is ~113.20*cos(latitude)km. This does not account for flattening at the earth's poles but in our 
+  #case it is sufficiently accurate (Santa, dealt with it!)
+  #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
+  def self.venues_in_view(lat_radius, lat, long)
+    min_lat = lat - lat_radius / (110.54 * 1000)
+    max_lat = lat + lat_radius / (110.54 * 1000)
+    min_long = long - ((lat_radius) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat * Math::PI / 180))
+    max_long = long + ((lat_radius) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat * Math::PI / 180))
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long) 
+  end
+
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
     if vname == nil && vcountry == nil
       return
@@ -273,7 +284,7 @@ class Venue < ActiveRecord::Base
     lookup = nil
 
     for venue in venues 
-      if (venue.name).include? vname or (Levenshtein.distance(venue.name, vname) < (vname.length - 1))
+      if (venue.name).include? vname || (Levenshtein.distance(venue.name, vname) < (vname.length - 1))
         lookup = venue
       end
     end
@@ -388,8 +399,9 @@ class Venue < ActiveRecord::Base
     suggestions = []
     count = 0
 
+    #Must ommit custom locations (addresses) from being pulled into the surrounding venues display that is the reason for the second part of the if block
     for location in surroundings
-      if LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil
+      if (LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil) && (location.address != location.name) 
         suggestions << location
         count += 1
         if count == 10

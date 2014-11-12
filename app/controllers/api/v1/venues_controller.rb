@@ -143,6 +143,12 @@ class Api::V1::VenuesController < ApiBaseController
   end
 =end
 
+  def refresh_map_view
+    @user = User.find_by_authentication_token(params[:auth_token])
+    @venues = Venue.venues_in_view(params[:radius], params[:latitude], params[:longitude])
+    render 'display.json.jbuilder'
+  end
+
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if params[:group_id].present? and not params[:q].present?

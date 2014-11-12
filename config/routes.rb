@@ -59,16 +59,22 @@ LytitServer::Application.routes.draw do
         post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
 
         
-
+        collection do
+          get 'refresh_map_view'
+        end
+        
         collection do
           get 'search'
         end
+
         collection do
           get 'get_suggested_venues'
         end
+
         collection do 
           get 'get_recommendations'
         end
+
         collection do 
           get 'search_to_follow'
         end
