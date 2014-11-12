@@ -264,7 +264,12 @@ class Venue < ActiveRecord::Base
     end
 
     lookup_key = createKey(vlatitude, vlongitude, vaddress)
-    venues = Venue.where("key = ?", lookup_key)
+    #venues = Venue.where("key = ?", lookup_key)
+    # 3 is the allowed deviation allowed in lat and long in the 1/1000 place
+    lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
+    long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
+    venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
+
     lookup = nil
 
     for venue in venues 
