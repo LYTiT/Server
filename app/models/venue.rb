@@ -302,7 +302,7 @@ class Venue < ActiveRecord::Base
       end
 
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
-      if Levenshtein.distance(venue.name, vname) < (proximity - 1)
+      if Levenshtein.distance(venue.name, vname) <= (proximity/2)
         lookup = venue
       end
     end
