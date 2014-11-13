@@ -266,7 +266,7 @@ class Venue < ActiveRecord::Base
     max_lat = lat.to_f + lat_radius.to_i / (110.54 * 1000)
     min_long = long.to_f - ((lat_radius.to_i) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + ((lat_radius.to_i) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
   end
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
