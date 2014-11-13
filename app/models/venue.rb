@@ -262,8 +262,8 @@ class Venue < ActiveRecord::Base
   #case it is sufficiently accurate (Santa, dealt with it!)
   #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
   def self.venues_in_view(radius, lat, long)
-    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (110.54 * 1000)
-    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (110.54 * 1000)
+    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
+    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
