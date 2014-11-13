@@ -262,11 +262,11 @@ class Venue < ActiveRecord::Base
   #case it is sufficiently accurate (Santa, dealt with it!)
   #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
   def self.venues_in_view(lat_radius, lat, long)
-    min_lat = lat - lat_radius / (110.54 * 1000)
-    max_lat = lat + lat_radius / (110.54 * 1000)
+    min_lat = lat - lat_radius.to_i / (110.54 * 1000)
+    max_lat = lat + lat_radius.to_i / (110.54 * 1000)
     min_long = long - ((lat_radius) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat * Math::PI / 180))
     max_long = long + ((lat_radius) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long) 
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
   end
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
