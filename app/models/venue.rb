@@ -269,7 +269,7 @@ class Venue < ActiveRecord::Base
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
   end
 
-  def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+  def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     if vname == nil && vcountry == nil
       return
     end
@@ -289,6 +289,11 @@ class Venue < ActiveRecord::Base
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
 
     lookup = nil
+    specific_address = false
+
+    if ( vname == vaddress ) && ( pin_drop == "0" )
+      specific_address = true
+    end
 
     for venue in venues
       if venue.name == vname
@@ -296,13 +301,13 @@ class Venue < ActiveRecord::Base
         break
       end
 
-      if ((venue.name).include? vname) || ((vname).include? venue.name)
+      if ( ((venue.name).include? vname) || ((vname).include? venue.name) ) && ( specific_address == false )
         lookup = venue
         break
       end
 
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
-      if Levenshtein.distance(venue.name, vname) <= (proximity/2)
+      if ( Levenshtein.distance(venue.name, vname) <= (proximity/2) ) && ( specific_address == false )
         lookup = venue
       end
     end
