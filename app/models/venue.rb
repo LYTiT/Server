@@ -277,9 +277,16 @@ class Venue < ActiveRecord::Base
     lookup_key = createKey(vlatitude, vlongitude, vaddress)
     #venues = Venue.where("key = ?", lookup_key)
     # 3 is the allowed deviation allowed in lat and long in the 1/1000 place
-    lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
-    long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
-    venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
+    
+    #lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
+    #long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
+    #venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
+    radius = 300
+    min_lat = vlatitude.to_f - radius.to_i / (109.0 * 1000)
+    max_lat = vlatitude.to_f + radius.to_i / (109.0 * 1000)
+    min_long = vlongitude.to_f - radius.to_i / (113.2 * 1000 * Math.cos(vlatitude.to_f * Math::PI / 180))
+    max_long = vlongitude.to_f + radius.to_i / (113.2 * 1000 * Math.cos(vlatitude.to_f * Math::PI / 180))
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
 
     lookup = nil
 
@@ -287,10 +294,12 @@ class Venue < ActiveRecord::Base
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
       if (venue.name).include? vname || (Levenshtein.distance(venue.name, vname) < (proximity - 1))
         lookup = venue
+        break
       end
     end
 
     if lookup != nil
+      print "NOT NIL$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
       if lookup.city == nil
         lookup.address = vaddress
         
