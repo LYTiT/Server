@@ -284,9 +284,14 @@ class Venue < ActiveRecord::Base
     lookup = nil
 
     for venue in venues 
-      if (venue.name).include? vname || (Levenshtein.distance(venue.name, vname) < (vname.length - 1))
+      if (venue.name).include? vname
         lookup = venue
       end
+
+      if (Levenshtein.distance(venue.name, vname) < (vname.length - 1))
+        lookup = venue
+      end
+      
     end
 
     if lookup != nil
