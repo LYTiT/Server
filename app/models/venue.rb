@@ -264,8 +264,8 @@ class Venue < ActiveRecord::Base
   def self.venues_in_view(lat_radius, lat, long)
     min_lat = lat.to_f - lat_radius.to_i / (110.54 * 1000)
     max_lat = lat.to_f + lat_radius.to_i / (110.54 * 1000)
-    min_long = long.to_f - ((lat_radius.to_i) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + ((lat_radius.to_i) * (284 / 160)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    min_long = long.to_f - ((lat_radius.to_i) * (284.0 / 160.0)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    max_long = long.to_f + ((lat_radius.to_i) * (284.0 / 160.0)) / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
   end
 
