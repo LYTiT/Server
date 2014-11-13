@@ -291,15 +291,18 @@ class Venue < ActiveRecord::Base
     lookup = nil
 
     for venue in venues
+      if venue.name == vname
+        lookup = venue
+        break
+      end
+      
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
       if (venue.name).include? vname || (Levenshtein.distance(venue.name, vname) < (proximity - 1))
         lookup = venue
-        break
       end
     end
 
     if lookup != nil
-      print "NOT NIL$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
       if lookup.city == nil
         lookup.address = vaddress
         
