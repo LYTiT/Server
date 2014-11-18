@@ -274,46 +274,79 @@ class Venue < ActiveRecord::Base
       return
     end
 
-    lookup_key = createKey(vlatitude, vlongitude, vaddress)
+    #Lookup up by unique key. Perhaps may have to resort to in the future.
+
+    #lookup_key = createKey(vlatitude, vlongitude, vaddress)
     #venues = Venue.where("key = ?", lookup_key)
     # 3 is the allowed deviation allowed in lat and long in the 1/1000 place
     
     #lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
     #long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
     #venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
-    radius = 300
-    min_lat = vlatitude.to_f - radius.to_i / (109.0 * 1000)
-    max_lat = vlatitude.to_f + radius.to_i / (109.0 * 1000)
-    min_long = vlongitude.to_f - radius.to_i / (113.2 * 1000 * Math.cos(vlatitude.to_f * Math::PI / 180))
-    max_long = vlongitude.to_f + radius.to_i / (113.2 * 1000 * Math.cos(vlatitude.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
+    #--------------------------------
 
-    lookup = nil
-    specific_address = false
+    #We need to determin the type of search being conducted whether it is venue specific or geographic
+    if vaddress == nil
+      if vcity != nil #city search
+        radius = 3000
+        boundries = bounding_box(radius, vlatitude, vlongitude)
+        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+          address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
+        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+      end
 
+      if vstate != nil && vcity == nil #state search
+        radius = 30000
+        boundries = bounding_box(radius, vlatitude, vlongitude)
+        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+          address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
+        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+      end
+
+      if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+        radius = 300000
+        boundries = bounding_box(radius, vlatitude, vlongitude)
+        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+          address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
+        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+      end
+    else #venue search 
+      radius = 300
+      boundries = bounding_box(radius, vlatitude, vlongitude)
+      venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+    end
+
+    lookup = nil 
+    specific_address = false 
+
+    #When a user searches for a specific address we should always take him/her to the venue page of that exact address; however
+    #when a pin is dropped, because a specific address is not established by the user
     if ( vname == vaddress ) && ( pin_drop == "0" )
       specific_address = true
     end
 
+    #Iterate through venues in target area to find a string match by name
     for venue in venues
-      if venue.name == vname
+      if venue.name == vname #Is there a direct string match?
         lookup = venue
         break
       end
 
-      if ( ((venue.name).include? vname) || ((vname).include? venue.name) ) && ( specific_address == false )
+      if ( ((venue.name).include? vname) || ((vname).include? venue.name) ) && ( specific_address == false ) #Are they substrings?
         lookup = venue
         break
       end
 
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
-      if ( Levenshtein.distance(venue.name, vname) <= (proximity/2) ) && ( specific_address == false )
+      if ( Levenshtein.distance(venue.name, vname) <= (proximity/2) ) && ( specific_address == false ) #Levenshtein distance as a last resort
         lookup = venue
       end
     end
 
     if lookup != nil
-      if lookup.city == nil
+      lookup.postal_code = vpostal_code #We always set the postal code no matter what because we use it as a flag to determine if a venue page should be displayed
+      lookup.save
+      if lookup.city == nil || lookup.state == nil #Add venue details if they are not present
         lookup.address = vaddress
         
         part1 = [vaddress, vcity].compact.join(', ')
@@ -325,7 +358,6 @@ class Venue < ActiveRecord::Base
         lookup.city = vcity
         lookup.state = vstate
         lookup.country = vcountry
-        lookup.postal_code = vpostal_code
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
@@ -348,14 +380,15 @@ class Venue < ActiveRecord::Base
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
-      venue.key = createKey(vlatitude, vlongitude, vaddress)
+      #venue.key = createKey(vlatitude, vlongitude, vaddress)
       venue.fetched_at = Time.now
       venue.save
       return venue
     end
   end
 
-  def self.createKey(lat, long, addrs)
+  #LYTiT specific identifier keys for venues
+=begin  def self.createKey(lat, long, addrs)
     part1 = ((lat.to_f)*1000).floor.abs.to_s
     part2 = ((long.to_f)*1000).floor.abs.to_s
     part3 = addrs.split(" ").first.to_s
@@ -383,7 +416,18 @@ class Venue < ActiveRecord::Base
       update_columns(key: key)
     end
   end
+=end
 
+  def self.bounding_box(radius, lat, long)
+    box = Hash.new()
+    box["min_lat"] = lat.to_f - radius.to_i / (109.0 * 1000)
+    box["max_lat"] = lat.to_f + radius.to_i / (109.0 * 1000)
+    box["min_long"] = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    box["max_long"] = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    return box
+  end
+
+  #Uniform formatting of venues phone numbers into a "+X (XXX) XXX-XXXX" style
   def self.formatTelephone(number)
     if number == nil
       return
@@ -400,7 +444,6 @@ class Venue < ActiveRecord::Base
     if (digits.length == 10)
       number = '+%s (%s) %s-%s' % [lead, digits[0,3], digits[3,3], digits[6,4] ]
     end
-    
   end
 
   def add_Geohash
