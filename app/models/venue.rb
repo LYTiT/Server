@@ -344,7 +344,7 @@ class Venue < ActiveRecord::Base
     end
 
     if lookup != nil
-      lookup.postal_code = vpostal_code #We always set the postal code no matter what because we use it as a flag to determine if a venue page should be displayed
+      lookup.postal_code = vpostal_code.to_i #We always set the postal code no matter what because we use it as a flag to determine if a venue page should be displayed
       lookup.save
       if lookup.city == nil || lookup.state == nil #Add venue details if they are not present
         lookup.address = vaddress
@@ -376,7 +376,7 @@ class Venue < ActiveRecord::Base
       venue.city = vcity
       venue.state = vstate
       venue.country = vcountry
-      venue.postal_code = vpostal_code
+      venue.postal_code = vpostal_code.to_i
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
