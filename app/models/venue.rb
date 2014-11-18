@@ -292,7 +292,7 @@ class Venue < ActiveRecord::Base
         boundries = bounding_box(radius, vlatitude, vlongitude)
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
           address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
-        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
       end
 
       if vstate != nil && vcity == nil #state search
@@ -300,7 +300,7 @@ class Venue < ActiveRecord::Base
         boundries = bounding_box(radius, vlatitude, vlongitude)
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
           address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
-        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
       end
 
       if (vcountry != nil && vstate == nil ) && vcity == nil #country search
@@ -308,7 +308,7 @@ class Venue < ActiveRecord::Base
         boundries = bounding_box(radius, vlatitude, vlongitude)
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
           address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
-        vpostal_code = -1 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
       end
     else #venue search 
       radius = 300
