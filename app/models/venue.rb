@@ -467,7 +467,7 @@ class Venue < ActiveRecord::Base
 
     #Must ommit custom locations (addresses) from being pulled into the surrounding venues display that is the reason for the second part of the if block
     for location in surroundings
-      if (LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil) && (location.address != location.name) 
+      if (LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", "")) 
         suggestions << location
         count += 1
         if count == 10
