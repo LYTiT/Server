@@ -417,7 +417,8 @@ class Venue < ActiveRecord::Base
     end
   end
 =end
-
+  
+  #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
     box["min_lat"] = lat.to_f - radius.to_i / (109.0 * 1000)
