@@ -32,14 +32,14 @@ class Api::V1::UsersController < ApiBaseController
   def following
     #@title = "Following"
     user = User.find(params[:user_id])
-    @followed_users = user.followed_users.sort_by{|name| name.downcase}
+    @followed_users = user.followed_users.sort_by{|following| following.name.downcase}
     #@users = @user.followed_users.paginate(page: params[:page])
   end
 
   def followers
     #@title = followers
     @user = User.find(params[:user_id])
-    @followers = @user.followers.sort_by{|name| name.downcase}
+    @followers = @user.followers.sort_by{|followers| followers.name.downcase}
     #@users = @user.followers.paginate(page: params[:page])
   end
 
