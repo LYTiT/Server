@@ -479,6 +479,7 @@ class Venue < ActiveRecord::Base
     return suggestions.compact
   end
 
+  #Active venue's nearby to follow
   def self.recommended_venues(user, lat, long)
     meter_radius = 1000
     surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
@@ -486,7 +487,7 @@ class Venue < ActiveRecord::Base
     count = 0
 
     for location in surroundings
-      if VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false
+      if (VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", ""))
         recommendations << location
         count += 1
         if count == 10
