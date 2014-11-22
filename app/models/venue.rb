@@ -476,7 +476,7 @@ class Venue < ActiveRecord::Base
         end
       end
     end 
-    return suggestions.compact.unique
+    return suggestions.compact
   end
 
   #Active venue's nearby to follow
@@ -495,7 +495,7 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-    return recommendations.compact.unique
+    return recommendations.compact
   end
 
   def last_image_url

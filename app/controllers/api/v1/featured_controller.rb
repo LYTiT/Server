@@ -1,11 +1,12 @@
 class Api::V1::FeaturedController < ApplicationController
 respond_to :json  
 
+  #Note that +4 and +28 is to account for the difference between EST and UCT times. Daylight savings also has to be considered (+1 hour).
   def today
     selected_date = params[:featured_id]
-    now = Date.parse(selected_date)
-    start_t = (now + 4.hour)
-    end_t = (now + 28.hour)
+    selection = Date.parse(selected_date)
+    start_t = (selection + 5.hour)
+    end_t = (selection + 29.hour)
     photos = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", end_t, start_t)
     videos = VenueComment.where("media_type = 'video' AND created_at <= ? AND created_at >= ?", end_t, start_t)
     content = photos + videos
