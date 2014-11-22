@@ -6,7 +6,7 @@ respond_to :json
     now = Date.parse(selected_date)
     start_t = (now + 4.hour)
     end_t = (now + 28.hour)
-    v = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", end_t, start_t)
+    v = VenueComment.where("media_type = 'image' OR media_type = 'video' AND created_at <= ? AND created_at >= ?", end_t, start_t)
     s = v.sort_by {|i| i.views}
     @venue_comments = s.reverse.first(10)
   end
