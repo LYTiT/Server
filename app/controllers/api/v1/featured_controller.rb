@@ -8,8 +8,8 @@ respond_to :json
     end_t = (now + 28.hour)
     photos = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", end_t, start_t)
     videos = VenueComment.where("media_type = 'video' AND created_at <= ? AND created_at >= ?", end_t, start_t)
-    photos << videos
-    spotlyts = photos.sort_by {|i| i.views}
+    content = photos + videos
+    spotlyts = content.sort_by {|entry| entry.views}
     @venue_comments = spotlyts.reverse.first(10)
   end
 
