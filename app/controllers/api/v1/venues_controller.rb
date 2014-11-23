@@ -198,8 +198,8 @@ class Api::V1::VenuesController < ApiBaseController
     venue9 = Venue.newfetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
     venue10 = Venue.newfetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
 
-    @venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
-    @venues = @venues.uniq
+    venues_crude = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+    @venues = venues_crude.uniq
     render 'search_to_follow.json.jbuilder'
   end  
 

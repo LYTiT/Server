@@ -338,7 +338,7 @@ class Venue < ActiveRecord::Base
       end
 
       proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
-      if ( Levenshtein.distance(venue.name, vname) <= (proximity/2) ) && ( specific_address == false ) #Levenshtein distance as a last resort
+      if ( Levenshtein.distance(venue.name, vname) <= (proximity/3) ) && ( specific_address == false ) #Levenshtein distance as a last resort
         lookup = venue
       end
     end
