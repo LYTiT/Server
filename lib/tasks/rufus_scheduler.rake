@@ -16,6 +16,7 @@ namespace :lytit do
       bar.recalculate_bar_position
       puts 'Bar updated'
 
+      spheres = LytSphere.uniq.pluck(:sphere)
 
       puts "Recalculating venue colors"
 
