@@ -40,7 +40,8 @@ class Api::V1::VenuesController < ApiBaseController
     #Note: this is flawed!
     if @comment.venue_id == 14002
       @comment.username_private = true
-      if (@comment.created_at - last_post.created_at / 1.minute).abs < 2 && last_post.media_type == 'text'
+
+      if (Time.now - last_post.created_at / 1.minute).abs < 2 && last_post.media_type == 'text'
         if last_post.venue_id == 14002 && last_post.comment == 'temp'
           last_post.venue_id = last_post.views
           last_post.views = 0
@@ -54,6 +55,7 @@ class Api::V1::VenuesController < ApiBaseController
           @comment = last_post
         end
       end
+
     end
 
     #Regular posting by parts, text is uploaded after media part.
