@@ -37,7 +37,10 @@ class Api::V1::VenuesController < ApiBaseController
     end
 
     if @user.venue_comments.count > 0
-      last_post = @user.venue_comments.order('id ASC').to_a.pop
+      #last_post = @user.venue_comments.order('id ASC').to_a.pop
+      #we pop off 5 Venue Comments just to be safe we are assigning parts in chronological order
+      last_posts = @user.venue_comments.order('id ASC').to_a.pop(5)
+      last_post = last_post.detect{|comment| comment.venue_id == 14002}
     end
 
     if last_post != nil and last_post.venue_id == 14002
