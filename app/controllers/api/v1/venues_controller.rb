@@ -41,18 +41,29 @@ class Api::V1::VenuesController < ApiBaseController
     if @comment.venue_id == 14002
       @comment.username_private = true
 
-      if ((Time.now - last_post.created_at) / 1.minute).abs < 2 && last_post.media_type == 'text'
+      if ((Time.now - last_post.created_at) / 1.minute).abs <= 1 && last_post.media_type == 'text'
         if last_post.venue_id == 14002 && last_post.comment == 'temp'
           last_post.venue_id = last_post.views
           last_post.views = 0
           last_post.comment = nil
           last_post.media_type = @comment.media_type
           last_post.media_url = @comment.media_url
+          last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
           @comment = last_post
+
+          #Beacause text uploads seperately it is generates Lumens which should not happen. Need to clean up once media comes in.
+          @user.update_columns(lumens: (@user.lumens-LumenConstants.text_media_weight).round(4))
+          @user.update_columns(text_lumens: (@user.text_lumens-LumenConstants.text_media_weight).round(4))
         else
           last_post.media_type = @comment.media_type
           last_post.media_url = @comment.media_url
+          last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
           @comment = last_post
+
+          #Beacause text uploads seperately it is generates Lumens which should not happen. Need to clean up once media comes in.
+          @user.update_columns(lumens: (@user.lumens-LumenConstants.text_media_weight).round(4))
+          @user.update_columns(text_lumens: (@user.text_lumens-LumenConstants.text_media_weight).round(4))
+
         end
       end
 
