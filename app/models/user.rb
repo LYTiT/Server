@@ -465,7 +465,7 @@ class User < ActiveRecord::Base
     last_comments = self.venue_comments.order('id ASC').to_a.pop(2)
     if last_comments.last.venue_id == 14002
       if last_comments.first.venue_id == 14002 && last_comments.first.comment.length == 0
-        last_comments.first.venue_id = last_comments.first.media_url
+        last_comments.first.venue_id = last_comments.first.views
         last_comments.first.media_type = last_comments.last.media_type
         last_comments.first.media_url = last_comments.last.media_url
         last_comments.first.save

@@ -48,10 +48,17 @@ class Api::V1::VenuesController < ApiBaseController
       #last_post.delete
     end
 
-    #removing whitespaces from comment to check if it is truly blank. If blank we do not post the comment to the VP.
+    #A comment that is blank is never posted to a Venue Page; however, if it is part of a picture or video then we need to post it to temp housing
+    #so we can assign the proper venue id to the media part of the comment. This is a temp solution for when the comment of posting is uploaded 
+    #before the actual content. Note, we store the venue id in the media url of the comment to later retrieve and assign to the other part of the
+    #comment.
     clean_comment = @comment.comment.gsub(/\D/, '').split(//)
+    if clean_comment.length == 0
+      @comment.views = @comment.venue_id
+      @comment.venue_id = 14002
+    end
 
-    if not @comment.save || clean_comment.length == 0
+    if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
