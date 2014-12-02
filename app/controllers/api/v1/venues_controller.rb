@@ -40,7 +40,7 @@ class Api::V1::VenuesController < ApiBaseController
       last_post = @user.venue_comments.order('id ASC').to_a.pop
     end
 
-    if last_post != nil and last_post.venue_id == 14002
+    if (last_post != nil and last_post.venue_id == 14002) && last_post.media_type != 'text'
       update = true
       last_post.comment = @comment.comment
       last_post.venue_id = @comment.venue_id
@@ -60,7 +60,7 @@ class Api::V1::VenuesController < ApiBaseController
       blank = true
     end
 
-    if not @comment.save || blank == true
+    if not @comment.save && blank == 
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
