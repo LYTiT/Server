@@ -25,6 +25,7 @@ class Api::V1::VenuesController < ApiBaseController
 
   def add_comment
     update = false
+    blank = false
     @comment = VenueComment.new(venue_comment_params)
     @comment.venue = venue
     @comment.user = @user
@@ -56,9 +57,10 @@ class Api::V1::VenuesController < ApiBaseController
       @comment.views = @comment.venue_id
       @comment.venue_id = 14002
       @comment.comment = "temp"
+      blank = true
     end
 
-    if not @comment.save
+    if not @comment.save || blank
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
