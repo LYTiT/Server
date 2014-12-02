@@ -48,7 +48,10 @@ class Api::V1::VenuesController < ApiBaseController
       #last_post.delete
     end
 
-    if not @comment.save
+    #removing whitespaces from comment to check if it is truly blank. If blank we do not post the comment to the VP.
+    clean_comment = @comment.comment.gsub(/\D/, '').split(//)
+
+    if not @comment.save || clean_comment.length == 0
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
