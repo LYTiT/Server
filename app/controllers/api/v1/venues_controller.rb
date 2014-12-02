@@ -40,13 +40,15 @@ class Api::V1::VenuesController < ApiBaseController
       last_post = @user.venue_comments.order('id ASC').to_a.pop
     end
 
-    if (last_post != nil and last_post.venue_id == 14002) && last_post.media_type != 'text'
-      update = true
-      last_post.comment = @comment.comment
-      last_post.venue_id = @comment.venue_id
-      last_post.username_private = @comment.username_private
-      @comment = last_post
-      #last_post.delete
+    if last_post != nil and last_post.venue_id == 14002
+      if not last_post.media_url.blank?
+        update = true
+        last_post.comment = @comment.comment
+        last_post.venue_id = @comment.venue_id
+        last_post.username_private = @comment.username_private
+        @comment = last_post
+        #last_post.delete
+      end
     end
 
     #A comment that is blank is never posted to a Venue Page; however, if it is part of a picture or video then we need to post it to temp housing
@@ -60,7 +62,7 @@ class Api::V1::VenuesController < ApiBaseController
       blank = true
     end
 
-    if not @comment.save && blank == 
+    if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
