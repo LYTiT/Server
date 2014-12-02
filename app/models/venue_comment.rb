@@ -5,13 +5,16 @@ class VenueComment < ActiveRecord::Base
   belongs_to :venue
 
   has_many :flagged_comments, :dependent => :destroy
+  has_many :comment_views, :dependent => :destroy
   has_many :lumen_values
 
   validate :comment_or_media
 
   def comment_or_media
     if self.comment.blank? and self.media_url.blank?
-      errors.add(:comment, 'or image is required')
+      #errors.add(:comment, 'or image is required')
+      #errors.add(:comment, 'Comment or image is required') <= use this once sorted out posting by parts fully. :comment is now set to "" in en.yml file in config
+       errors.add(:comment, 'Oops, something went wrong')    
     end
   end
 

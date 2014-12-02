@@ -45,7 +45,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def vfollowing
     user = User.find(params[:user_id])
-    @followed_venues = @user.followed_venues
+    @followed_venues = user.followed_venues.sort_by{|following| following.name.downcase}
   end
 
   def is_following_user
