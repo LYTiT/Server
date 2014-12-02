@@ -463,8 +463,8 @@ class User < ActiveRecord::Base
   #For posting by parts implementation
   def posting_kill_request
     last_comments = self.venue_comments.order('id ASC').to_a.pop(2)
-    if last_comments.first.venue_id == 14002
-      if last_comments.last.media_type == "text" && ((last_comments.last.created_at-last_comments.first.created_at)/ 1.minute).abs < 1
+    if last_comments.last.venue_id == 14002
+      if last_comments.first.media_type == "text" && ((last_comments.last.created_at-last_comments.first.created_at)/ 1.minute).abs < 1
         last_comments.first.media_type = last_comments.last.media_type
         last_comments.first.media_url = last_comments.last.media_url
         last_comments.first.save
