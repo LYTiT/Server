@@ -35,11 +35,13 @@ class Api::V1::VenuesController < ApiBaseController
       last_post = @user.venue_comments.order('id ASC').to_a.pop
     end
 
-    #To prevent posting pieces being pulled into the following feed we make part i posted invisibly
+    #To prevent posting pieces being pulled into the following feed we make part i posted invisibly. 
+    #This is a temp solution to handle the instance of the text uploading before the media (occurs under poor service conditions).
+    #Note: this is flawed!
     if @comment.venue_id == 14002
       @comment.username_private = true
-      if (last_post.created_at - @comment.created_at / 1.minute).abs < 2 && last_post.media_type == 'text'
-        if last_post.venue_id == 14002 && last_post.comment.blank?
+      if (@comment.created_at - last_post.created_at / 1.minute).abs < 2 && last_post.media_type == 'text'
+        if last_post.venue_id == 14002 && last_post.comment == 'temp'
           last_post.venue_id = last_post.views
           last_post.views = 0
           last_post.comment = nil
@@ -54,6 +56,7 @@ class Api::V1::VenuesController < ApiBaseController
       end
     end
 
+    #Regular posting by parts, text is uploaded after media part.
     if last_post != nil and last_post.venue_id == 14002
       if not last_post.media_url.blank?
         update = true
@@ -65,10 +68,7 @@ class Api::V1::VenuesController < ApiBaseController
       end
     end
 
-    #A comment that is blank is never posted to a Venue Page; however, if it is part of a picture or video then we need to post it to temp housing
-    #so we can assign the proper venue id to the media part of the comment. This is a temp solution for when the comment of posting is uploaded 
-    #before the actual content. Note, we store the venue id in the media url of the comment to later retrieve and assign to the other part of the
-    #comment.
+    #Handles the case when blank text is uploaded before media part of comment.
     if @comment.comment.blank? && @comment.media_url.blank?
       @comment.views = @comment.venue_id
       @comment.venue_id = 14002

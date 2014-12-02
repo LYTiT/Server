@@ -462,15 +462,17 @@ class User < ActiveRecord::Base
 
   #For posting by parts implementation
   def posting_kill_request
-    last_comment = self.venue_comments.order('id ASC').to_a.pop
+    last_comments = self.venue_comments.order('id ASC').to_a.pop(5)
 
-    if last_comment.venue_id == 14002 && last_comment.media_type != "text"
-      last_comment.delete
-    end
-    
-    if last_comment.venue_id == 14002 && last_comment.media_type == "text"
-      if (Time.now - last_comment.created_at) / 1.minute > 5
+    for last_comment in last_comments
+      if last_comment.venue_id == 14002 && last_comment.media_type != "text"
         last_comment.delete
+      end
+
+      if last_comment.venue_id == 14002 && last_comment.media_type == "text"
+        if (Time.now - last_comment.created_at) / 1.minute > 5
+          last_comment.delete
+        end
       end
     end
 
