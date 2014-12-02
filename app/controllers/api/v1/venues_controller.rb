@@ -55,10 +55,11 @@ class Api::V1::VenuesController < ApiBaseController
     if @comment.blank? && @comment.media_url.blank?
       @comment.views = @comment.venue_id
       @comment.venue_id = 14002
+      @comment.comment = "temp"
     end
 
     if not @comment.save
-      #render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
+      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
         @user.update_lumens_after_text(@comment.id)
