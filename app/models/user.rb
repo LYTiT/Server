@@ -464,8 +464,8 @@ class User < ActiveRecord::Base
   def posting_kill_request
     last_comments = self.venue_comments.order('id ASC').to_a.pop(2)
     if last_comments.last.venue_id == 14002
-      if last_comments.first.venue_id == 14002 && last_comments.first.comment.length == 0
-        last_comments.first.venue_id = last_comments.first.views
+      if last_comments.first.venue_id == 14002 && last_comments.first.media_type == "text"
+        last_comments.first.venue_id = last_comments.first.views #views is where we house the venue_id for a posting with no comment
         last_comments.first.media_type = last_comments.last.media_type
         last_comments.first.media_url = last_comments.last.media_url
         last_comments.first.save

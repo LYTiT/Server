@@ -52,8 +52,7 @@ class Api::V1::VenuesController < ApiBaseController
     #so we can assign the proper venue id to the media part of the comment. This is a temp solution for when the comment of posting is uploaded 
     #before the actual content. Note, we store the venue id in the media url of the comment to later retrieve and assign to the other part of the
     #comment.
-    clean_comment = @comment.comment.gsub(/\D/, '').split(//)
-    if clean_comment.length == 0
+    if @comment.comment == nil or @comment.comment.gsub(/\D/, '').length == 0
       @comment.views = @comment.venue_id
       @comment.venue_id = 14002
     end
