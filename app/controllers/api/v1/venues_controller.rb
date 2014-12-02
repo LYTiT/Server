@@ -31,16 +31,27 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
     @comment.username_private = @user.username_private
 
+    if @user.venue_comments.count > 0
+      last_post = @user.venue_comments.order('id ASC').to_a.pop
+    end
+
     #To prevent posting pieces being pulled into the following feed we make part i posted invisibly
     if @comment.venue_id == 14002
       @comment.username_private = true
-    end
-
-    if @user.venue_comments.count > 0
-      #last_post = @user.venue_comments.order('id ASC').to_a.pop
-      #we pop off 5 Venue Comments just to be safe we are assigning parts in chronological order
-      last_posts = @user.venue_comments.order('id ASC').to_a.pop(5)
-      last_post = last_posts.detect{|comment| comment.venue_id == 14002}
+      if (last_post.created_at - @comment.created_at / 1.minute).abs < 2 && last_post.media_type == 'text'
+        if last_post.venue_id == 14002 && last_post.comment.blank?
+          last_post.venue_id = last_post.views
+          last_post.views = 0
+          last_post.comment = nil
+          last_post.media_type = @comment.media_type
+          last_post.media_url = @comment.media_url
+          @comment = last_post
+        else
+          last_post.media_type = @comment.media_type
+          last_post.media_url = @comment.media_url
+          @comment = last_post
+        end
+      end
     end
 
     if last_post != nil and last_post.venue_id == 14002
