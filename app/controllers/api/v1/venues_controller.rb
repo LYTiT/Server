@@ -51,12 +51,14 @@ class Api::V1::VenuesController < ApiBaseController
           last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
           @comment = last_post
 
+          @user.adjust_lumens #removing text lumens since posting is not a text
         else
           last_post.media_type = @comment.media_type
           last_post.media_url = @comment.media_url
           last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
           @comment = last_post
 
+          @user.adjust_lumens #removing text lumens since posting is not a text
         end
       end
 

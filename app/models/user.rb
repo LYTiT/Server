@@ -169,6 +169,14 @@ class User < ActiveRecord::Base
     end
   end
 
+  def adjust_lumens
+    adjusted_total_lumens = (self.lumens - LumenConstants.text_media_weight).round(4)
+    adjusted_text_lumens = (self.text_lumens - LumenConstants.text_media_weight).round(4)
+
+    update_columns(lumens: adjusted_total_lumens)
+    update_columns(text_lumens: adjusted_text_lumens)
+  end
+
    #Lumen Calculation########################################################################################
   def populate_lumens()
     comments = self.venue_comments
