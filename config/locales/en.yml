@@ -10,8 +10,3 @@ en:
       date: '%b %-d, %Y'
       short: '%B %d'
 
-en:
-    activerecord:
-        attributes:
-            venue_comment:
-                comment: ""
