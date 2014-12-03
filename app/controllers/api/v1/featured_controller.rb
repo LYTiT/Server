@@ -7,8 +7,8 @@ respond_to :json
     selection = Date.parse(selected_date)
     start_t = (selection + 5.hour)
     end_t = (selection + 29.hour)
-    photos = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ?", end_t, start_t)
-    videos = VenueComment.where("media_type = 'video' AND created_at <= ? AND created_at >= ?", end_t, start_t)
+    photos = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ? AND venue_id != 14002", end_t, start_t)
+    videos = VenueComment.where("media_type = 'video' AND created_at <= ? AND created_at >= ? AND venue_id != 14002", end_t, start_t)
     content = photos + videos
     spotlyts = content.sort_by {|entry| entry.views}
     @venue_comments = spotlyts.reverse.first(10)
