@@ -280,6 +280,7 @@ ActiveRecord::Schema.define(version: 20141110052046) do
     t.integer  "consider",         default: 2
     t.integer  "views",            default: 0
     t.float    "adj_views",        default: 0.0
+    t.boolean  "from_user",        default: false
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree

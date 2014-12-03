@@ -24,64 +24,116 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def add_comment
-    update = false
+    update = false #used to make sure text part of comment is not assigned stand alone lumens
+    completion = false #determines if posting parts have conjoined
     @comment = VenueComment.new(venue_comment_params)
     @comment.venue = venue
     @comment.user = @user
     @comment.username_private = @user.username_private
 
-    if @user.venue_comments.count > 0
-      last_post = @user.venue_comments.order('id ASC').to_a.pop
-    end
+    #V3.0.1 AND ABOVE PROPER POSTING BY PARTS THAT INCORPORATE SESSION IDS TO PREVENT CROSS CONTAMINATION OF VENUE COMMENTS
+    if @comment.session != nil
 
-    #To prevent posting pieces being pulled into the following feed we make part i posted invisibly. 
-    #This is a temp solution to handle the instance of the text uploading before the media (occurs under poor service conditions).
-    #Note: this is flawed!
-    if @comment.venue_id == 14002
-      @comment.username_private = true
+      if @comment.session != 0 #not a simple text post but one with media
+        last_posts = @user.venue_comments.order('id ASC').to_a.pop(5)
 
-      if ((Time.now - last_post.created_at) / 1.minute).abs <= 1 && last_post.media_type == 'text'
-        if last_post.venue_id == 14002 && last_post.comment == 'temp'
-          last_post.venue_id = last_post.views
-          last_post.views = 0
-          last_post.comment = nil
-          last_post.media_type = @comment.media_type
-          last_post.media_url = @comment.media_url
-          last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
-          @comment = last_post
+        if @comment.venue_id == 14002 #media part of venue comment always first sent to temp housing. Regular service.
+          @comment.username_private = true #prevent comment showing up in moments feed prematurely
 
-          @user.adjust_lumens #removing text lumens since posting is not a text
-        else
-          last_post.media_type = @comment.media_type
-          last_post.media_url = @comment.media_url
-          last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
-          @comment = last_post
+          for post in last_posts #checks if text came in before otherwise store in temp housing.
+            if post.session == @comment.session
+              if post.venue_id != 14002 #venue comment had text so is already in VP.
+                post.media_type = @comment.media_type
+                post.media_url = @comment.media_url
+                @comment = post
+              else #venue comment did not have text so empty text field stored in temp housing. because a venue comment cannot be blank
+                   #temp value assigned to comment field, and the venue_id is temp stored in views (text cannot get views regardless)
+                post.venue_id = post.views
+                post.views = 0
+                post.comment = nil
+                post.media_type = @comment.media_type
+                post.media_url = @comment.media_url
+                @comment = post
+              end
+            end
+          end
 
-          @user.adjust_lumens #removing text lumens since posting is not a text
+        else #dealing with the text part of venue comment
+          for post in last_posts #check to see if media part has already arrived otherwise either assign directly to VP or to temp housing depending if text field is empty.
+            if post.session == @comment.session
+              post.comment = @comment.comment
+              post.venue_id = @comment.venue_id
+              post.username_private = @comment.username_private
+              @comment = post
+              completion = true
+            end
+          end
+
+          if completion == false #media part has not been uploaded yet
+            update = true
+            if @comment.comment.blank? && @comment.media_url.blank? #venue comment with empty text field.
+              @comment.views = @comment.venue_id
+              @comment.venue_id = 14002
+              @comment.comment = "temp"
+            end
+          end
+
         end
       end
 
-
-    end
-
-    #Regular posting by parts, text is uploaded after media part.
-    if last_post != nil and last_post.venue_id == 14002
-      if not last_post.media_url.blank?
-        update = true
-        last_post.comment = @comment.comment
-        last_post.venue_id = @comment.venue_id
-        last_post.username_private = @comment.username_private
-        @comment = last_post
-        #last_post.delete
+    #V3.0 POSTING BY PARTS WHICH DOES NOT INCORPORATE SESSION IDS
+    else
+      if @user.venue_comments.count > 0
+        last_post = @user.venue_comments.order('id ASC').to_a.pop
       end
-    end
+      #To prevent posting pieces being pulled into the following feed we make part i posted invisibly. 
+      #This is a temp solution to handle the instance of the text uploading before the media (occurs under poor service conditions).
+      #Note: this is flawed!
+      if @comment.venue_id == 14002
+        @comment.username_private = true
+        if last_post != nil
+          if ((Time.now - last_post.created_at) / 1.minute).abs <= 1 && last_post.media_type == 'text'
+            if last_post.venue_id == 14002 && last_post.comment == 'temp'
+              last_post.venue_id = last_post.views
+              last_post.views = 0
+              last_post.comment = nil
+              last_post.media_type = @comment.media_type
+              last_post.media_url = @comment.media_url
+              last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
+              @comment = last_post
 
-    #Handles the case when blank text is uploaded before media part of comment.
-    if @comment.comment.blank? && @comment.media_url.blank?
-      @comment.views = @comment.venue_id
-      @comment.venue_id = 14002
-      @comment.comment = "temp"
+              @user.adjust_lumens #removing text lumens since posting is not a text
+            else
+              last_post.media_type = @comment.media_type
+              last_post.media_url = @comment.media_url
+              last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
+              @comment = last_post
+
+              @user.adjust_lumens #removing text lumens since posting is not a text
+            end
+          end
+        end
+      end
+      #Regular posting by parts, text is uploaded after media part.
+      if last_post != nil and last_post.venue_id == 14002
+        if not last_post.media_url.blank?
+          update = true
+          last_post.comment = @comment.comment
+          last_post.venue_id = @comment.venue_id
+          last_post.username_private = @comment.username_private
+          @comment = last_post
+          #last_post.delete
+        end
+      end
+      #Handles the case when blank text is uploaded before media part of comment.
+      if @comment.comment.blank? && @comment.media_url.blank?
+        @comment.views = @comment.venue_id
+        @comment.venue_id = 14002
+        @comment.comment = "temp"
+      end
+
     end
+    ##################################################################################################################################
 
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
@@ -302,6 +354,6 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def venue_comment_params
-    params.permit(:comment, :media_type, :media_url)
+    params.permit(:comment, :media_type, :media_url, :session)
   end
 end
