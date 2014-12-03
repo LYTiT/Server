@@ -41,7 +41,8 @@ class Api::V1::VenuesController < ApiBaseController
           @comment.username_private = true #prevent comment showing up in moments feed prematurely
 
           for post in last_posts #checks if text came in before otherwise store in temp housing.
-            if post.session == @comment.session
+            
+            if post.session != nil and post.session == @comment.session
               if post.venue_id != 14002 #venue comment had text so is already in VP.
                 post.media_type = @comment.media_type
                 post.media_url = @comment.media_url
@@ -60,7 +61,7 @@ class Api::V1::VenuesController < ApiBaseController
 
         else #dealing with the text part of venue comment
           for post in last_posts #check to see if media part has already arrived otherwise either assign directly to VP or to temp housing depending if text field is empty.
-            if post.session == @comment.session
+            if post.session != nil and post.session == @comment.session
               post.comment = @comment.comment
               post.venue_id = @comment.venue_id
               post.username_private = @comment.username_private
