@@ -88,6 +88,10 @@ class Api::V1::VenuesController < ApiBaseController
     if not @comment.save
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
     else 
+      if blank == true
+        render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
+      end
+
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
         @user.update_lumens_after_text(@comment.id)
       end
