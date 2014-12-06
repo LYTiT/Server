@@ -44,7 +44,7 @@ class Relationship < ActiveRecord::Base
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
 		  :apns => user.push_token.present?,
-		  :response => self
+		  :response => self,
 		  :user_id => user.id,
 		  :read => false,
 		  :message => message,

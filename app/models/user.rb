@@ -487,49 +487,6 @@ class User < ActiveRecord::Base
   end
 
 
-  def send_new_follower_notification(follower, relationship_id)
-    payload = {
-        :object_id => relationship_id, 
-        :type => 'new_follower', 
-        :user_id => user_id
-    }
-    message = "#{follower.name} is now following you"
-    notification = self.store_new_follower_notification(payload, message, relationship_id)
-    payload[:notification_id] = notification.id
-
-    if self.push_token
-      count = Notification.where(user_id: self.id, read: false).count
-      APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
-    end
-
-    if self.gcm_token
-      gcm_payload = payload.dup
-      gcm_payload[:message] = message
-      options = {
-        :data => gcm_payload
-      }
-      request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-      request.send([self.gcm_token], options)
-    end
-  
-  end
-
-  def store_new_follower_notification(payload, message, relationship_id)
-    notification = {
-      :payload => payload,
-      :gcm => self.gcm_token.present?,
-      :apns => self.push_token.present?,
-      :response => Relationship.find_by(id: relationship_id)
-      :user_id => self.id,
-      :read => false,
-      :message => message,
-      :deleted => false
-    }
-    Notification.create(notification)
-
-  end
-
-
   private ##################################################################################################
 
   def generate_confirmation_token_for_venue_manager
