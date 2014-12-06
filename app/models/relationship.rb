@@ -4,7 +4,7 @@ class Relationship < ActiveRecord::Base
 	validates :follower_id, presence: true
 	validates :followed_id, presence: true
 
-	#after_create :new_follower_notification
+	after_create :new_follower_notification
 
 
 	def new_follower_notification
@@ -19,7 +19,7 @@ class Relationship < ActiveRecord::Base
 		    :user_id => followed_id
 		}
 		message = "#{follower.name} is now following you"
-		notification = followed.store_new_follower_notification(payload, followed, message)
+		notification = self.store_new_follower_notification(payload, followed, message)
 		payload[:notification_id] = notification.id
 
 		if followed.push_token
