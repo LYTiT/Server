@@ -45,13 +45,23 @@ class Relationship < ActiveRecord::Base
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
 		  :apns => user.push_token.present?,
-		  :response => new_follower,
+		  :response => notification_payload,
 		  :user_id => user.id,
 		  :read => false,
 		  :message => message,
 		  :deleted => false
 		}
 		Notification.create(notification)
+	end
+
+	def notification_payload
+	  {
+	    :user => {
+	      :id => follower.id,
+	      :name => follower.name,
+	    }
+	    
+	  }
 	end
 
 end
