@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141110052046) do
+ActiveRecord::Schema.define(version: 20141207233358) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -257,6 +257,7 @@ ActiveRecord::Schema.define(version: 20141110052046) do
     t.float    "text_lumens",                                 default: 0.0
     t.float    "vote_lumens",                                 default: 0.0
     t.integer  "total_views",                                 default: 0
+    t.float    "lumen_notification",                          default: 0.0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -281,6 +282,7 @@ ActiveRecord::Schema.define(version: 20141110052046) do
     t.integer  "views",            default: 0
     t.float    "adj_views",        default: 0.0
     t.boolean  "from_user",        default: false
+    t.integer  "session"
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree

@@ -3,49 +3,51 @@ class LumenValue < ActiveRecord::Base
 	belongs_to :venue_comment
 	belongs_to :lytit_vote
 
-	#after_create :lumens_received_notification
+	after_create :new_lumens_notification
 
-=begin
-	def lumens_received_notification
-		if user.weekly_lumens.last 
-			self.send_lumens_received_notification
+
+	def new_lumens_notification
+		if (user.lumens - user.lumen_notification) >= 2.0
+			self.send_new_lumens_notification
+			user.lumen_notification = user.lumens
+			user.save
 		end
 	end
 
 
-	def send_lumens_received_notification
+	def send_new_lumens_notification
 		payload = {
 		    :object_id => self.id, 
-		    :type => 'lumens_received', 
+		    :type => 'new_lumens', 
 		    :user_id => user.id
 		}
-		message = "#{follower.name} is now following you"
-		notification = self.store_new_follower_notification(payload, followed, message)
+		message = "+10 lumens received! You now have #{user.lumens.floor} lumens."
+		notification = self.store_new_lumens_notification(payload, message)
 		payload[:notification_id] = notification.id
 
-		if followed.push_token
-		  count = Notification.where(user_id: followed_id, read: false).count
-		  APNS.delay.send_notification(followed.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+		if user.push_tokenn
+		  count = Notification.where(user_id: user.id, read: false).count
+		  APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
-		if followed.gcm_token
+		if user.gcm_token
 		  gcm_payload = payload.dup
 		  gcm_payload[:message] = message
 		  options = {
 		    :data => gcm_payload
 		  }
 		  request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-		  request.send([followed.gcm_token], options)
+		  request.send([user.gcm_token], options)
 		end
 
 	end
 
-	def store_new_follower_notification(payload, user, message)
+	def store_new_lumens_notification(payload, message)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
 		  :apns => user.push_token.present?,
-		  #:response => notification_payload(user),
+		  :response => notification_payload,
 		  :user_id => user.id,
 		  :read => false,
 		  :message => message,
@@ -53,6 +55,15 @@ class LumenValue < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
-=end
+
+	def notification_payload
+	  {
+	    :new_lumens => {
+	      :addition => 10,
+	      :lumens => user.lumens,
+	    }
+	    
+	  }
+	end
 
 end
