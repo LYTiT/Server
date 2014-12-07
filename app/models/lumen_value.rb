@@ -3,19 +3,21 @@ class LumenValue < ActiveRecord::Base
 	belongs_to :venue_comment
 	belongs_to :lytit_vote
 
-	after_create :lumens_received_notifications	
+	#after_create :lumens_received_notification
 
-
-	def new_follower_notification
-		self.send_new_follower_notification
+=begin
+	def lumens_received_notification
+		if user.weekly_lumens.last 
+			self.send_lumens_received_notification
 		end
+	end
 
 
-	def send_new_follower_notification
+	def send_lumens_received_notification
 		payload = {
 		    :object_id => self.id, 
-		    :type => 'new_follower', 
-		    :user_id => followed_id
+		    :type => 'lumens_received', 
+		    :user_id => user.id
 		}
 		message = "#{follower.name} is now following you"
 		notification = self.store_new_follower_notification(payload, followed, message)
@@ -51,6 +53,6 @@ class LumenValue < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
-
+=end
 
 end
