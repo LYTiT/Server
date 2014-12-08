@@ -56,6 +56,25 @@ class User < ActiveRecord::Base
     role.try(:name) == "Admin"
   end
 
+  def version_compatible?(ver)
+    version_split = self.version.split(".")
+    v0 = version_split[0].to_i
+    u0 = version_split[1].to_i
+    p0 = version_split[2].to_i
+
+    target_version = ver.split(".")
+    v1 = target_version[0].to_i
+    u1 = target_version[1].to_i
+    p1 = target_version[2].to_i
+
+    if (v0 >= v1) && (u0 >= u1) && (p0 >= p1)
+      return true
+    else
+      return false
+    end
+
+  end
+
   def manages_any_venues?
     venues.size > 0
   end

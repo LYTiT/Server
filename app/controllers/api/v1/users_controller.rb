@@ -13,6 +13,12 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def set_version
+    @user = User.find_by_id(params[:user_id])
+    @user.version = :version
+    @user.save
+  end
+  
   def get_comments
     @user = User.find_by_id(params[:user_id])
     if not @user
