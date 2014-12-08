@@ -71,8 +71,12 @@ class User < ActiveRecord::Base
     u1 = target_version[1].to_i
     p1 = target_version[2].to_i
 
-    if (v0 >= v1) && (u0 >= u1) && (p0 >= p1)
-      return true
+    if (v0 >= v1) && (u0 >= u1) 
+      if (p0 >= p1)
+        return true
+      else
+        return false
+      end
     else
       return false
     end
