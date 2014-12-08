@@ -25,7 +25,7 @@ class LumenValue < ActiveRecord::Base
 		notification = self.store_new_lumens_notification(payload, message)
 		payload[:notification_id] = notification.id
 
-		if user.push_tokenn
+		if user.push_token
 		  count = Notification.where(user_id: user.id, read: false).count
 		  APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
