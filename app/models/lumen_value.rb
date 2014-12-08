@@ -7,8 +7,8 @@ class LumenValue < ActiveRecord::Base
 
 
 	def new_lumens_notification
-		if ( (user.lumens - user.lumen_notification) >= 2.0 ) && user.version_compatible?("3.0.0")
-			self.send_new_lumens_notification
+		if ( (user.lumens - user.lumen_notification) >= 2.0 ) && user.version_compatible?("3.0.0")?
+			self.delay.send_new_lumens_notification
 			user.lumen_notification = user.lumens
 			user.save
 		end
