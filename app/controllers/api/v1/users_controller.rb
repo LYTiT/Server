@@ -15,8 +15,8 @@ class Api::V1::UsersController < ApiBaseController
 
   def set_version
     @user = User.find_by_id(params[:user_id])
-    @user.version = params[:version]
-    @user.save
+    @user.set_version(params[:version])
+    render json: { success: true }
   end
   
   def get_comments
