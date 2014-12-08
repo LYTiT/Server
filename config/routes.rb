@@ -14,7 +14,7 @@ LytitServer::Application.routes.draw do
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
         end
-        get 'set_version'
+        post 'set_version'
         get 'following'
         get 'followers'
         get 'is_following_user'
