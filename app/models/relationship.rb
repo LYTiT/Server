@@ -42,7 +42,6 @@ class Relationship < ActiveRecord::Base
 	end
 
 	def store_new_follower_notification(payload, user, message)
-		new_follower = follower.as_json()
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,

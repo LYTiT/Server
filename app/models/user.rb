@@ -63,20 +63,20 @@ class User < ActiveRecord::Base
   def version_compatible?(ver)
     version_split = self.version.split(".")
     v0 = version_split[0].to_i
-    u0 = version_split[1].to_i
-    p0 = version_split[2].to_i
+    u0 = version_split[1].to_i || 0
+    p0 = version_split[2].to_i || 0 
 
     target_version = ver.split(".")
     v1 = target_version[0].to_i
-    u1 = target_version[1].to_i
-    p1 = target_version[2].to_i
+    u1 = target_version[1].to_i || 0
+    p1 = target_version[2].to_i || 0
 
-    if (v0 >= v1) && (u0 >= u1) 
-      if (p0 >= p1)
-        return true
-      else
-        return false
-      end
+    if v0 > v1 
+      return true
+    elsif v0 >= v1 && u0 > u1
+      return true
+    elsif (v0 >= v1 && u0 >= u1) && (p0 >= p1)
+      return true
     else
       return false
     end
