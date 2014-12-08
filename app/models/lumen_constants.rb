@@ -11,6 +11,8 @@ class LumenConstants < ActiveRecord::Base
 
 	VOTES_WEIGHT_ADJ = 0.1 #scaling factor for placed LYTiT votes
 
+	NOTIFICATION_DELTA = 10.0 #the amount of lumens a users needs to receive to be sent a new lumens push notification
+
 	def self.text_media_weight
 		LumenConstants.where(:constant_name => 'text_media_weight').first.try(:constant_value) || TEXT_MEDIA_WEIGHT
 	end
@@ -37,6 +39,10 @@ class LumenConstants < ActiveRecord::Base
 
 	def self.votes_weight_adj
 		LumenConstants.where(:constant_name => 'votes_weight_adj').first.try(:constant_value) || VOTES_WEIGHT_ADJ
-	end 
+	end
+
+	def self.notification_delta
+		LumenConstants.where(:constant_name => 'notification_delta').first.try(:constant_value) || NOTIFICATION_DELTA
+	end
 	
 end

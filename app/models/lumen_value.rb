@@ -7,7 +7,7 @@ class LumenValue < ActiveRecord::Base
 
 
 	def new_lumens_notification
-		if ( (user.lumens - user.lumen_notification) >= 2.0 ) && user.version_compatible?("3.0.0") == true
+		if ( (user.lumens - user.lumen_notification) >= LumenConstants.notification_delta ) && user.version_compatible?("3.0.1") == true
 			self.delay.send_new_lumens_notification
 			user.lumen_notification = user.lumens
 			user.save
@@ -21,7 +21,8 @@ class LumenValue < ActiveRecord::Base
 		    :type => 'new_lumens', 
 		    :user_id => user.id
 		}
-		message = "+10 lumens received! You now have #{user.lumens.floor} lumens."
+		lumens_received = LumenConstants.notification_delta.to_i
+		message = "+#{lumens_received} lumens received! You now have #{user.lumens.floor} lumens."
 		notification = self.store_new_lumens_notification(payload, message)
 		payload[:notification_id] = notification.id
 
@@ -59,7 +60,7 @@ class LumenValue < ActiveRecord::Base
 	def notification_payload
 	  {
 	    :new_lumens => {
-	      :addition => 10,
+	      :addition => LumenConstants.notification_delta.to_i,
 	      :lumens => user.lumens,
 	    }
 	    
