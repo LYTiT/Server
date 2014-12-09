@@ -498,17 +498,55 @@ class User < ActiveRecord::Base
   #For posting by parts implementation
   def posting_kill_request
     last_comments = self.venue_comments.order('id ASC').to_a.pop(5)
+    last_comments.reverse!
+    pos = 0
+    rescued = false
 
     for last_comment in last_comments
-      if last_comment.venue_id == 14002 && last_comment.media_type != "text"
-        last_comment.delete
-      end
 
-      if last_comment.venue_id == 14002 && last_comment.media_type == "text"
-        if (Time.now - last_comment.created_at) / 1.minute > 5
-          last_comment.delete
+      if last_comment.venue_id == 14002
+        
+        #This is probably redundent however just to make sure that cases such as simultaneous photo and comment saving are accounted for.
+        for c in last_comments[pos..last_comments.length] 
+          if last_comment.session == c.session
+            if c.venue_id != 14002 #c must be the text
+              c.media_type = last_comment.media_type
+              c.media_url = last_comment.media_url
+              c.save
+              last_comment.delete
+              rescued = true
+            else
+              if c.media_type == "text" #last_comment is media
+                c.venue_id = c.views
+                c.views = 0
+                c.comment = nil
+                c.media_type = last_comment.media_type
+                c.media_url = last_comment.media_url
+                c.save
+                last_comment.delete
+                rescued = true
+              else #last_comment is text that is blank
+                c.venue_id = last_comment.views
+                c.save
+                last_comment.delete
+                rescued = true
+              end
+            end
+          end
         end
+
+        if rescued == false
+          if (last_comment.media_type != "text") && ((Time.now - last_comment.created_at) / 1.minute >= 1)
+            last_comment.delete
+          end
+
+          if (last_comment.media_type == "text") && ((Time.now - last_comment.created_at) / 1.minute > 5)
+            last_comment.delete
+          end
+        end
+
       end
+      pos = pos + 1
     end
 
   end
