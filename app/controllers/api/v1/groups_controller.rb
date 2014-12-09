@@ -120,7 +120,7 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def group_venue_details
-    @groups_venue = GroupsVenue.find(params[:group_id])
+    @groups_venue = GroupsVenue.find(params[:group_id]) #temp solution :group_id should infact be a GroupVenue id, here using group_id as a mule.
     @group = @groups_venue.group
     @venue = @groups_venue.venue
   end

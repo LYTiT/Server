@@ -121,7 +121,7 @@ LytitServer::Application.routes.draw do
 
       #are the next three post get post under the "resources :events"
       post '/venues/report_comment/:comment_id' => 'venues#report_comment'
-      get '/group_venue_details/:id' => 'groups#group_venue_details'
+      #get '/group_venue_details/:id' => 'groups#group_venue_details'
       post '/report_event/:event_id' => 'events#report'
     end
   end
