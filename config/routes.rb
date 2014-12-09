@@ -100,6 +100,7 @@ LytitServer::Application.routes.draw do
         get 'venues'
         post 'delete'
         post 'report'
+        get 'group_venue_details'
         collection do
           get 'search'
         end
