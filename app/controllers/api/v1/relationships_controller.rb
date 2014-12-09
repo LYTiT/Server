@@ -25,5 +25,11 @@ class Api::V1::RelationshipsController < ApplicationController
     current_user.vunfollow!(@venue)
     render json: { success: true }
   end
-  
+
+  def get_follower
+    @relationship = Relationship.find_by_id(params[:relationship_id])
+    @follower = @relationship.follower
+    render json: @follower.as_json
+  end
+
 end

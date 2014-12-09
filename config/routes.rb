@@ -24,6 +24,7 @@ LytitServer::Application.routes.draw do
         get 'get_lumens'
         get 'get_daily_lumens'
         post 'posting_kill_request'
+        get 'get_lumen_notification_details'
       end
 
       resources :featured do
@@ -41,6 +42,7 @@ LytitServer::Application.routes.draw do
         delete 'destroy'
         post 'v_create'
         delete 'v_destroy'
+        get 'get_follower'
       end
 
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
