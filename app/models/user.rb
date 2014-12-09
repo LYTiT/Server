@@ -536,11 +536,11 @@ class User < ActiveRecord::Base
         end
 
         if rescued == false
-          if (last_comment.media_type != "text") && ((Time.now - last_comment.created_at) / 1.minute >= 1)
+          if (last_comment.media_type != "text") && (((Time.now - last_comment.created_at) / 1.minute) >= 5)
             last_comment.delete
           end
 
-          if (last_comment.media_type == "text") && ((Time.now - last_comment.created_at) / 1.minute > 5)
+          if (last_comment.media_type == "text") && (((Time.now - last_comment.created_at) / 1.minute) > 5)
             last_comment.delete
           end
         end
