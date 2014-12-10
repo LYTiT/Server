@@ -5,6 +5,8 @@ class GroupInvitation < ActiveRecord::Base
 	validates :igroup_id, presence: true
 	validates :invited_id, presence: true
 
+
+
 	after_create :new_group_invitation_notification
 
 	def new_group_invitation_notification
@@ -19,7 +21,7 @@ class GroupInvitation < ActiveRecord::Base
 		    :type => 'new_invitation', 
 		    :user_id => invited_id
 		}
-		message = "#{host.name} has invited you to join #{group.name}"
+		message = "#{host.name} has invited you to join #{igroup.name}"
 		notification = self.store_new_group_invitation_notification(payload, invited, message)
 		payload[:notification_id] = notification.id
 
