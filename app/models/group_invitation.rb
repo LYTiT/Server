@@ -59,12 +59,12 @@ class GroupInvitation < ActiveRecord::Base
 	def notification_payload
 	  {
 	    :group => {
-	      :grp_id => igroup.id,
-	      :grp_name => igroup.name,
+	      :id => igroup.id,
+	      :name => igroup.name,
 	  	},
 	  	:user => {
-	      :hst_id => host.id,
-	      :hst_name => host.name,
+	      :id => host.id,
+	      :name => host.name,
 	    }
 	    
 	  }
