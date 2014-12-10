@@ -8,8 +8,9 @@ class Api::V1::GroupInvitationsController < ApplicationController
 
   def validate_invitation
     @invite = GroupInvitation.find_by_id(params[:group_invitation_id])
-    validation = @invite ? true : false
-    render json: { success: validation }
+    @validation = @invite ? true : false
+    render json: {validated @validation }
+    #render json: { success: validation }
   end
 
   def get_group_invite_notification_details
