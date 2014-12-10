@@ -120,8 +120,6 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def invite_users
-    puts "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$#{params[:group_invitation_attributes]}"
-    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#{params[:host]}"
     @group = Group.find(params[:group_id])
     for invitee in params[:group_invitation_attributes]
       @group.invite_to_join(invitee["user_id"], params[:host])
@@ -148,6 +146,6 @@ class Api::V1::GroupsController < ApiBaseController
   private
 
   def group_params
-    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password, :group_invitation_attributes => [:user_id])
+    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password)
   end
 end
