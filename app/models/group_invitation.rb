@@ -65,8 +65,8 @@ class GroupInvitation < ActiveRecord::Base
 	  	:user => {
 	      :id => host.id,
 	      :name => host.name,
-	    }
-	    
+	    },
+	    :invitation_id => self.id 
 	  }
 	end
 
