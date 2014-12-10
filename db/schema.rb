@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141208042953) do
+ActiveRecord::Schema.define(version: 20141209195548) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -109,6 +109,19 @@ ActiveRecord::Schema.define(version: 20141208042953) do
 
   add_index "flagged_groups", ["group_id"], name: "index_flagged_groups_on_group_id", using: :btree
   add_index "flagged_groups", ["user_id"], name: "index_flagged_groups_on_user_id", using: :btree
+
+  create_table "group_invitations", force: true do |t|
+    t.integer  "igroup_id"
+    t.integer  "invited_id"
+    t.integer  "host_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "group_invitations", ["host_id"], name: "index_group_invitations_on_host_id", using: :btree
+  add_index "group_invitations", ["igroup_id", "invited_id"], name: "index_group_invitations_on_igroup_id_and_invited_id", unique: true, using: :btree
+  add_index "group_invitations", ["igroup_id"], name: "index_group_invitations_on_igroup_id", using: :btree
+  add_index "group_invitations", ["invited_id"], name: "index_group_invitations_on_invited_id", using: :btree
 
   create_table "groups", force: true do |t|
     t.string   "name"
