@@ -8,7 +8,7 @@ class Api::V1::GroupInvitationsController < ApplicationController
 
   def validate_invitation
     @invite = GroupInvitation.find_by_id(params[:group_invitation_id])
-    @group = @invite.group
+    @group = @invite.igroup
     @invited = @invite.invited
     @host = @invite.host
     validation = @invited.invited?(@group)
