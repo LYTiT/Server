@@ -25,6 +25,9 @@ class User < ActiveRecord::Base
   has_many :venue_relationships, foreign_key: "ufollower_id", dependent: :destroy
   has_many :followed_venues, through: :venue_relationships, source: :vfollowed
 
+  has_many :reverse_group_invitations, foreign_key: "invited_id", class_name: "GroupInvitation",  dependent: :destroy
+  has_many :groups, through: :reverse_group_invitations, source: :group
+
   has_many :lumen_values, :dependent => :destroy
 
   belongs_to :role
@@ -136,6 +139,11 @@ class User < ActiveRecord::Base
   def totalfeed
     feed = (userfeed + venuefeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
+  end
+
+  #has the user been invited to a the Group "group"?
+  def invited?(group)
+    reverse_group_invitations.find_by(group_id: group.id) ? true : false
   end
 
   #Lumens are acquired only after voting or posted content receives a view

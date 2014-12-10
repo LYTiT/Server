@@ -45,6 +45,12 @@ LytitServer::Application.routes.draw do
         get 'get_follower'
       end
 
+      resources :group_invitations do
+        get 'get_group_invite_notification_details'
+        get 'validate_invitation'
+        post 'destroy'
+      end
+
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
 
@@ -103,6 +109,7 @@ LytitServer::Application.routes.draw do
         post 'delete'
         post 'report'
         get 'group_venue_details'
+        post 'invite_users'
         collection do
           get 'search'
         end

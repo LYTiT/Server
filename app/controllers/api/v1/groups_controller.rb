@@ -119,6 +119,14 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
 
+  def invite_users
+    @group = Group.find(params[:group_id])
+    for invitee in params[:group_invitation_attributes]
+      @group.invite_to_join(invitee, params[:host])
+    end
+    render json: { success: true }
+  end
+
   def group_venue_details
     @groups_venue = GroupsVenue.find(params[:group_id]) #temp solution :group_id should infact be a GroupVenue id, here using group_id as a mule.
     @group = @groups_venue.group
@@ -138,6 +146,6 @@ class Api::V1::GroupsController < ApiBaseController
   private
 
   def group_params
-    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password)
+    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password, :group_invitation_attributes => [:user_id])
   end
 end
