@@ -1,9 +1,6 @@
-json.set! :venue do
-  json.set! :id, @venue.id
-  json.set! :name, @venue.name
-  json.set! :latitude, @venue.latitude
-  json.set! :longitude, @venue.longitude
-  json.set! :rating, @venue.rating
+json.set! :user do
+  json.set! :id, @host.id
+  json.set! :name, @host.name
 end
 
 json.set! :group do
