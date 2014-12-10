@@ -58,6 +58,7 @@ class Group < ActiveRecord::Base
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).first ? true : false
   end
 
+  #invite a user to join the group. Need to declare a host.
   def invite_to_join(invitee_id, inviter_id)
     group_invitations.create!(igroup_id: self.id, invited_id: invitee_id, host_id: inviter_id)
   end
