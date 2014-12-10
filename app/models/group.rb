@@ -14,7 +14,7 @@ class Group < ActiveRecord::Base
   
   validates_inclusion_of :can_link_venues, in: [true, false]
 
-  has_many :group_invitations, foreign_key: "group_id", dependent: :destroy
+  has_many :group_invitations, foreign_key: "igroup_id", dependent: :destroy
   has_many :invitations, through: :group_invitations, source: :invited
 
   has_many :groups_users
@@ -59,7 +59,7 @@ class Group < ActiveRecord::Base
   end
 
   def invite_to_join(invitee_id, inviter_id)
-    group_invitations.create!(group_id: self.id, invited_id: invitee_id, host_id: inviter_id)
+    group_invitations.create!(igroup_id: self.id, invited_id: invitee_id, host_id: inviter_id)
   end
 
   def return_password_if_admin(user_id)
