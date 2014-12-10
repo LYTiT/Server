@@ -1,8 +1,8 @@
 class GroupInvitation < ActiveRecord::Base
-	belongs_to :group, class_name: "Group"
+	belongs_to :igroup, class_name: "Group"
 	belongs_to :invited, class_name: "User"
 	belongs_to :host, class_name: "User"
-	validates :group_id, presence: true
+	validates :igroup_id, presence: true
 	validates :invited_id, presence: true
 
 	after_create :new_group_invitation_notification
@@ -57,8 +57,8 @@ class GroupInvitation < ActiveRecord::Base
 	def notification_payload
 	  {
 	    :invitation => {
-	      :grp_id => group.id,
-	      :grp_name => group.name,
+	      :grp_id => igroup.id,
+	      :grp_name => igroup.name,
 	      :hst_id => host.id,
 	      :hst_name => host.name,
 	    }
