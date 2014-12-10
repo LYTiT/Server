@@ -17,7 +17,7 @@ class Api::V1::GroupInvitationsController < ApplicationController
 
   def get_group_invite_notification_details
     @invite = GroupInvitation.find_by_id(params[:group_invitation_id])
-    @group = @invite.group
+    @group = @invite.igroup
     @invited = @invite.invited
     @host = @invite.host
   end
