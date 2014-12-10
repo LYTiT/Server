@@ -146,6 +146,6 @@ class Api::V1::GroupsController < ApiBaseController
   private
 
   def group_params
-    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password, :group_invitation_attributes => [:user_id])
+    params.require(:group).permit(:name, :description, :can_link_events, :can_link_venues, :is_public, :password)
   end
 end
