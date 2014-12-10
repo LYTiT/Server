@@ -122,7 +122,7 @@ class Api::V1::GroupsController < ApiBaseController
   def invite_users
     @group = Group.find(params[:group_id])
     for invitee in params[:group_invitation_attributes]
-      @group.invite_to_join(invitee, params[:host])
+      @group.invite_to_join(invitee["user_id"], params[:host])
     end
     render json: { success: true }
   end
