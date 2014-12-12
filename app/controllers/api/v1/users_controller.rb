@@ -35,6 +35,21 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_linkable_groups
+    @user = User.find_by_id(params[:user_id])
+    if not @user
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
+    else
+      @groups = @user.linkable_groups(@user.groups.to_a)
+    end
+  end
+
+  def is_member
+    @group = Group.find_by_id(params[:group_id])
+    @membership = @group.is_user_member?(params[:user_id])
+    render json: { bool_response: @membership }
+  end
+
   def following
     #@title = "Following"
     user = User.find(params[:user_id])

@@ -174,6 +174,35 @@ class User < ActiveRecord::Base
 
   end
 
+  #Returns list of Groups user is a member of which ar linkable to a Venue Page (either linkable xor admin of)
+  def linkable_groups(user_groups)
+    return user_groups if user_groups.length <= 1
+
+    pivot_index = (user_groups.length / 2).to_i
+    pivot_value = user_groups[pivot_index]
+    user_groups.delete_at(pivot_index)
+
+    lesser = Array.new
+    greater = Array.new
+
+    user_groups.each do |x|
+      if (x.can_link_venues == true) || (x.is_user_admin?(self.id) == true)
+        if x.name <= pivot_value.name
+          lesser << x
+        else
+          greater << x
+        end
+      end
+    end
+
+    if (pivot_value.can_link_venues == true) || (pivot_value.is_user_admin?(self.id) == true)
+      return linkable_groups(lesser) + [pivot_value] + linkable_groups(greater)
+    else
+      return linkable_groups(lesser) + linkable_groups(greater)
+    end
+
+  end
+
 
   #has the user been invited to a the Group "group"?
   def invited?(group)
