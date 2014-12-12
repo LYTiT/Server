@@ -51,7 +51,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_followers_for_invite
     @user = User.find(params[:user_id])
-    @prospects = @user.followers_not_in_group(@user.followers.to_a, params[:group_id]).to_a
+    @prospects = @user.followers_not_in_group(@user.followers.to_a, params[:group_id])
   end
 
   def vfollowing
