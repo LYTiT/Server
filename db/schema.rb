@@ -11,18 +11,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141212012458) do
+ActiveRecord::Schema.define(version: 20141212074856) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
   enable_extension "pg_stat_statements"
-
-  create_table "accesscodes", force: true do |t|
-    t.string   "code"
-    t.integer  "kvalue"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "announcement_users", force: true do |t|
     t.integer  "user_id"

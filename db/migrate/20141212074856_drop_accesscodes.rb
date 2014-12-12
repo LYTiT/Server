@@ -1,5 +1,9 @@
-class CreateAccesscodes < ActiveRecord::Migration
-  def change
+class DropAccesscodes < ActiveRecord::Migration
+  def up
+  	drop_table :accesscodes
+  end
+
+  def down
     create_table :accesscodes do |t|
       t.string :code
       t.integer :kvalue
@@ -7,4 +11,5 @@ class CreateAccesscodes < ActiveRecord::Migration
       t.timestamps
     end
   end
+
 end
