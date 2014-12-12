@@ -1,4 +1,4 @@
-json.array! @group do |group|
+json.array! @venue.groups.order("groups.name ASC") do |group|
   json.id group.id
   json.name group.name
   json.description group.description
