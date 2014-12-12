@@ -25,6 +25,7 @@ LytitServer::Application.routes.draw do
         get 'get_daily_lumens'
         post 'posting_kill_request'
         get 'get_lumen_notification_details'
+        get 'get_followers_for_invite'
       end
 
       resources :featured do
@@ -53,7 +54,6 @@ LytitServer::Application.routes.draw do
         get 'get_group_invite_notification_details'
         get 'validate_invitation'
         post 'destroy'
-        post 'get_prospects'
       end
 
       resources :accesscodes, only: [:show] do #accesscodes call to show made here

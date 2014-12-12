@@ -49,6 +49,11 @@ class Api::V1::UsersController < ApiBaseController
     #@users = @user.followers.paginate(page: params[:page])
   end
 
+  def get_followers_for_invite
+    @user = User.find(params[:user_id])
+    @prospects = @user.followers_not_in_group(@user.followers.to_a, params[:group_id])
+  end
+
   def vfollowing
     user = User.find(params[:user_id])
     @followed_venues = user.followed_venues.sort_by{|following| following.name.downcase}
