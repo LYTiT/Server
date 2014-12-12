@@ -34,7 +34,7 @@ class Announcement < ActiveRecord::Base
 				:type => 'announcement', 
 				:user_id => user.id
 			}
-			message = "{self.news}"
+			message = "#{self.news}"
 			notification = self.store_new_announcement(payload, user, message)
 			payload[:notification_id] = notification.id
 

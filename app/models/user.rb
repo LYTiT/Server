@@ -144,7 +144,7 @@ class User < ActiveRecord::Base
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
-  #Returns users sorted in alphabetical order that are not in a group
+  #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
   def followers_not_in_group(users, group_id)
     target_group = Group.find_by_id(group_id)
     return users if users.length <= 1
@@ -157,7 +157,7 @@ class User < ActiveRecord::Base
     greater = Array.new
 
     users.each do |x|
-      if target_group.is_user_member?(x.id) == false
+      if (target_group.is_user_member?(x.id) == false) && (x.invited?(target_group) == false)
         if x.name <= pivot_value.name
           lesser << x
         else
