@@ -207,7 +207,7 @@ class Api::V1::VenuesController < ApiBaseController
     @venue = Venue.find_by_id(params[:venue_id])
     if @venue
       @groups = @venue.groups.order("groups.name ASC")
-      render json: 'get_linked_groups.json.jbuilder'
+      render 'get_linked_groups.json.jbuilder'
     else
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
     end
