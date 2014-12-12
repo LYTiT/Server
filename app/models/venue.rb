@@ -311,7 +311,7 @@ class Venue < ActiveRecord::Base
         vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
       end
     else #venue search 
-      radius = 300
+      radius = 75
       boundries = bounding_box(radius, vlatitude, vlongitude)
       venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
     end

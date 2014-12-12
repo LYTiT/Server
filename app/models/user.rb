@@ -30,6 +30,9 @@ class User < ActiveRecord::Base
 
   has_many :lumen_values, :dependent => :destroy
 
+  has_many :announcement_users, :dependent => :destroy
+  has_many :announcements, through: :announcement_users
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -140,6 +143,37 @@ class User < ActiveRecord::Base
     feed = (userfeed + venuefeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
+
+  #Returns users sorted in alphabetical order that are not in a group
+  def followers_not_in_group(users, group_id)
+    target_group = Group.find_by_id(group_id)
+    return users if users.length <= 1
+
+    pivot_index = (users.length / 2).to_i
+    pivot_value = users[pivot_index]
+    users.delete_at(pivot_index)
+
+    lesser = Array.new
+    greater = Array.new
+
+    users.each do |x|
+      if target_group.is_user_member?(x.id) == false
+        if x.name <= pivot_value.name
+          lesser << x
+        else
+          greater << x
+        end
+      end
+    end
+
+    if target_group.is_user_member?(pivot_value.id) == false
+      return followers_not_in_group(lesser, group_id) + [pivot_value] + followers_not_in_group(greater, group_id)
+    else
+      return followers_not_in_group(lesser, group_id) + followers_not_in_group(greater, group_id)
+    end
+
+  end
+
 
   #has the user been invited to a the Group "group"?
   def invited?(group)

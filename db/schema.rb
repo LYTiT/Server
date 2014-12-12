@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141209195548) do
+ActiveRecord::Schema.define(version: 20141212012458) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,23 @@ ActiveRecord::Schema.define(version: 20141209195548) do
   create_table "accesscodes", force: true do |t|
     t.string   "code"
     t.integer  "kvalue"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "announcement_users", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "announcement_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "announcement_users", ["announcement_id"], name: "index_announcement_users_on_announcement_id", using: :btree
+  add_index "announcement_users", ["user_id"], name: "index_announcement_users_on_user_id", using: :btree
+
+  create_table "announcements", force: true do |t|
+    t.string   "news"
+    t.boolean  "send_to_all", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -116,6 +133,7 @@ ActiveRecord::Schema.define(version: 20141209195548) do
     t.integer  "host_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "active",     default: true
   end
 
   add_index "group_invitations", ["host_id"], name: "index_group_invitations_on_host_id", using: :btree

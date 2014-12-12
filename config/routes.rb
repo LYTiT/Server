@@ -37,6 +37,10 @@ LytitServer::Application.routes.draw do
         end
       end
 
+      resources :announcement do
+        get 'get_announcement_details'
+      end
+
       resources :relationships do
         post 'create'
         delete 'destroy'
@@ -49,6 +53,7 @@ LytitServer::Application.routes.draw do
         get 'get_group_invite_notification_details'
         get 'validate_invitation'
         post 'destroy'
+        post 'get_prospects'
       end
 
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
