@@ -76,7 +76,7 @@ class VenueComment < ActiveRecord::Base
 
   #returns comments of users followed
   def VenueComment.from_users_followed_by(user)
-    followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id AND username_private = 'false'"
+    followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id AND username_private = 'false' AND venue_id != 14002"
     where("user_id IN (#{followed_users_ids})", user_id: user)
   end
 

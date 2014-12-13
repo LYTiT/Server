@@ -22,6 +22,7 @@ class Venue < ActiveRecord::Base
   has_many :rvenue_relationships, foreign_key: "vfollowed_id", class_name: "VenueRelationship",  dependent: :destroy
   has_many :followers, through: :rvenue_relationships, source: :ufollower
 
+  has_many :lyt_spheres, :dependent => :destroy
 
   has_many :events, :dependent => :destroy
 

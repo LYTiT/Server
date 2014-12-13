@@ -10,7 +10,7 @@ class GroupInvitation < ActiveRecord::Base
 	after_create :new_group_invitation_notification
 
 	def new_group_invitation_notification
-		if invited.version_compatible?("3.0.1") == true
+		if invited.version_compatible?("3.1.0") == true
 			self.delay.send_new_group_invitation_notification
 		end
 	end

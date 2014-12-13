@@ -31,7 +31,7 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
     @comment.username_private = @user.username_private
 
-    #V3.0.1 AND ABOVE PROPER POSTING BY PARTS THAT INCORPORATE SESSION IDS TO PREVENT CROSS CONTAMINATION OF VENUE COMMENTS
+    #V3.1.0 AND ABOVE PROPER POSTING BY PARTS THAT INCORPORATE SESSION IDS TO PREVENT CROSS CONTAMINATION OF VENUE COMMENTS
     if @comment.session != nil
 
       if @comment.session != 0 #not a simple text post but one with media

@@ -579,7 +579,7 @@ class User < ActiveRecord::Base
         
         #This is probably redundent however just to make sure that cases such as simultaneous photo and comment saving are accounted for.
         for c in last_comments[pos..last_comments.length] 
-          if last_comment.session == c.session
+          if last_comment.session != nil and last_comment.session == c.session
             if c.venue_id != 14002 #c must be the text
               c.media_type = last_comment.media_type
               c.media_url = last_comment.media_url

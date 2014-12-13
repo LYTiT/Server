@@ -38,12 +38,12 @@ class Announcement < ActiveRecord::Base
 			notification = self.store_new_announcement(payload, user, message)
 			payload[:notification_id] = notification.id
 
-			if user.push_token && user.version_compatible?("3.0.1") == true
+			if user.push_token && user.version_compatible?("3.1.0") == true
 				count = Notification.where(user_id: user.id, read: false).count
 				APNS.delay.send_notification(user.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end
 
-			if user.gcm_token && user.version_compatible?("3.0.1") == true #change to android when released
+			if user.gcm_token && user.version_compatible?("3.1.0") == true #change to android when released
 				gcm_payload = payload.dup
 				gcm_payload[:message] = message
 				options = {
