@@ -333,7 +333,7 @@ class Venue < ActiveRecord::Base
         break
       end
 
-      if ( ((venue.name).include? vname) || ((vname).include? venue.name) ) && ( specific_address == false ) #Are they substrings?
+      if ( (((venue.name).include? vname) || ((vname).include? venue.name)) && (specific_address == false) ) && (venue.address == vaddress) #Are they substrings?
         lookup = venue
         break
       end
