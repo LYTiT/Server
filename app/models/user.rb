@@ -157,7 +157,7 @@ class User < ActiveRecord::Base
     greater = Array.new
 
     users.each do |x|
-      if (target_group.is_user_member?(x.id) == false) && (x.invited?(target_group) == false)
+      if (target_group.is_user_member?(x.id) == false) && (x.invited?(group_id) == false)
         if x.name <= pivot_value.name
           lesser << x
         else
