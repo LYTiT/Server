@@ -205,8 +205,8 @@ class User < ActiveRecord::Base
 
 
   #has the user been invited to a the Group "group"?
-  def invited?(group)
-    reverse_group_invitations.find_by(igroup_id: group.id) ? true : false
+  def invited?(group_id)
+    reverse_group_invitations.find_by(igroup_id: group_id) ? true : false
   end
 
   #Lumens are acquired only after voting or posted content receives a view
