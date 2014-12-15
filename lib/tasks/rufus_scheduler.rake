@@ -40,7 +40,11 @@ namespace :lytit do
         end
 
         diff_ratings = diff_ratings.to_a.sort
-        step = 1.0 / (diff_ratings.size - 1)
+        if diff_ratings.size == 1
+          step = 0.0
+        else
+          step = 1.0 / (diff_ratings.size - 1)
+        end
         colors_map = {0.0 => 0.0}
         color = -step
 
