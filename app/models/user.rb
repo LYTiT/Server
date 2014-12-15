@@ -166,7 +166,7 @@ class User < ActiveRecord::Base
       end
     end
 
-    if (target_group.is_user_member?(pivot_value.id) == false) && (x.invited?(group_id) == false)
+    if (target_group.is_user_member?(pivot_value.id) == false) && (pivot_value.invited?(group_id) == false)
       return followers_not_in_group(lesser, group_id) + [pivot_value] + followers_not_in_group(greater, group_id)
     else
       return followers_not_in_group(lesser, group_id) + followers_not_in_group(greater, group_id)
