@@ -9,7 +9,7 @@ json.comments(@comments) do |comment|
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
   json.viewed comment.is_viewed?(@user)
-  json.total_views comment.total_views
+  json.total_views comment.views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
 end
