@@ -28,40 +28,40 @@ class Announcement < ActiveRecord::Base
 	end
 
 	def send_new_announcement(members)
-		for user in members
+		for member in members
 			payload = {
 				:object_id => self.id,
 				:type => 'announcement', 
-				:user_id => user.id
+				:user_id => member.id
 			}
 			message = "#{self.news}"
-			notification = self.store_new_announcement(payload, user, message)
+			notification = self.store_new_announcement(payload, member, message)
 			payload[:notification_id] = notification.id
 
-			if user.push_token && user.version_compatible?("3.1.0") == true
-				count = Notification.where(user_id: user.id, read: false).count
-				APNS.delay.send_notification(user.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+			if (member.push_token) && (member.version_compatible?("3.1.0") == true)
+				count = Notification.where(user_id: member.id, read: false).count
+				APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end
 
-			if user.gcm_token && user.version_compatible?("3.1.0") == true #change to android when released
+			if member.gcm_token && member.version_compatible?("3.1.0") == true #change to android when released
 				gcm_payload = payload.dup
 				gcm_payload[:message] = message
 				options = {
 					:data => gcm_payload
 				}
 				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-				request.send([user.gcm_token], options)
+				request.send([member.gcm_token], options)
 			end
 		end
 	end
 
-	def store_new_announcement(payload, user, message)
+	def store_new_announcement(payload, receiver, message)
 		notification = {
 			:payload => payload,
-			:gcm => user.gcm_token.present?,
-			:apns => user.push_token.present?,
+			:gcm => receiver.gcm_token.present?,
+			:apns => receiver.push_token.present?,
 			:response => notification_payload,
-			:user_id => user.id,
+			:user_id => receiver.id,
 			:read => false,
 			:message => message,
 			:deleted => false

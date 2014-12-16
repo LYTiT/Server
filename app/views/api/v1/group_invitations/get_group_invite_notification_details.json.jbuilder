@@ -6,4 +6,5 @@ end
 json.set! :group do
   json.set! :id, @group.id
   json.set! :name, @group.name
+  json.set! :password, @group.group_password
 end

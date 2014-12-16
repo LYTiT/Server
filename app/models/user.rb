@@ -158,7 +158,7 @@ class User < ActiveRecord::Base
 
     users.each do |x|
       if (target_group.is_user_member?(x.id) == false) && (x.invited?(group_id) == false)
-        if x.name <= pivot_value.name
+        if x.name.upcase <= pivot_value.name.upcase
           lesser << x
         else
           greater << x
@@ -187,7 +187,7 @@ class User < ActiveRecord::Base
 
     user_groups.each do |x|
       if (x.can_link_venues == true) || (x.is_user_admin?(self.id) == true)
-        if x.name <= pivot_value.name
+        if x.name.upcase <= pivot_value.name.upcase
           lesser << x
         else
           greater << x
