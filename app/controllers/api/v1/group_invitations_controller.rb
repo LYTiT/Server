@@ -10,6 +10,9 @@ class Api::V1::GroupInvitationsController < ApplicationController
   def validate_invitation
     @invite = GroupInvitation.find_by_id(params[:group_invitation_id])
     @validation = @invite.active
+    if @validation == nil
+      @validation = 0
+    end
     render json: { validated: @validation }
   end
 

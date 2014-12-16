@@ -22,7 +22,7 @@ class LumenValue < ActiveRecord::Base
 		    :user_id => user.id
 		}
 		lumens_received = LumenConstants.notification_delta.to_i
-		message = "+#{lumens_received} lumens received! You now have #{user.lumens.floor} lumens."
+		message = "+#{lumens_received} lumens received! You now have #{user.lumens.floor} lumens"
 		notification = self.store_new_lumens_notification(payload, message)
 		payload[:notification_id] = notification.id
 
