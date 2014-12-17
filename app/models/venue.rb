@@ -444,7 +444,7 @@ class Venue < ActiveRecord::Base
 
     digits = digits.join
     if (digits.length == 10)
-      number = '+%s (%s) %s-%s' % [lead, digits[0,3], digits[3,3], digits[6,4] ]
+      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4] ]
     end
   end
 
