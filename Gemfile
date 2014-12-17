@@ -32,7 +32,7 @@ gem 'rufus-scheduler'
 gem 'rubypython', "0.6.3"
 gem 'honeybadger'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
-gem 'jquery-ui-rails'
+gem 'jquery-ui-rails', github: 'joliss/jquery-ui-rails', branch: 'rails-4.0.2'
 gem 'acts_as_singleton'
 gem "paperclip", "~> 4.1"
 gem 'aws-sdk', '~> 1.5.7'
