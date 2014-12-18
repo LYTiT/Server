@@ -429,7 +429,7 @@ class Venue < ActiveRecord::Base
     return box
   end
 
-  #Uniform formatting of venues phone numbers into a "+X (XXX) XXX-XXXX" style
+  #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
   def self.formatTelephone(number)
     if number == nil
       return
@@ -447,6 +447,28 @@ class Venue < ActiveRecord::Base
       number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
     end
   end
+
+  #temp method to reformat older tepephones
+  def reformatTelephone
+    number = phone_number
+    if number == nil
+      return
+    end
+
+    digits = number.gsub(/\D/, '').split(//)
+    lead = digits[0]
+
+    if (digits.length == 11)
+      digits.shift
+    end
+
+    digits = digits.join
+    if (digits.length == 10)
+      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
+    end
+    update_columns(phone_number: number)
+  end  
+
 
   def add_Geohash
     update_columns(geohash: GeoHash.encode(self.latitude, self.longitude))

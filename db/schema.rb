@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141212074856) do
+ActiveRecord::Schema.define(version: 20141218213438) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -357,7 +357,6 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.float    "latitude"
     t.float    "longitude"
     t.float    "google_place_rating"
-    t.string   "google_place_key"
     t.string   "country"
     t.string   "postal_code"
     t.text     "formatted_address"
@@ -373,7 +372,6 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.integer  "key",                    limit: 8
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
