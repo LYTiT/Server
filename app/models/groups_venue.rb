@@ -72,7 +72,7 @@ class GroupsVenue < ActiveRecord::Base
         :latitude => self.venue.latitude,
         :longitude => self.venue.longitude,
         :google_place_rating => self.venue.google_place_rating,
-        :google_place_key => self.venue.google_place_key,
+        #:google_place_key => self.venue.google_place_key,
         :country => self.venue.country,
         :postal_code => self.venue.postal_code,
         :formatted_address => self.venue.formatted_address,
