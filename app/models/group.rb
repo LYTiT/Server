@@ -26,6 +26,9 @@ class Group < ActiveRecord::Base
   has_many :events_groups
   has_many :events, through: :events_groups
 
+  has_many :at_group_relationships, :dependent => :destroy
+  has_many :venue_comments, through: :at_group_relationships
+
   def should_validate_password?
   	not is_public
   end
@@ -95,6 +98,37 @@ class Group < ActiveRecord::Base
       venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name})
     end
     venues
+  end
+
+  def at_group!(venue_comment)
+    at_group_relationships.create!(venue_comment_id: venue_comment.id)
+  end
+
+  def group_venuefeed
+    vc_ids = venue_comments.map(&:id).join(', ')
+    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
+    if vc_ids.length > 0
+      VenueComment.where("venue_id in (#{group_venue_ids}) AND id NOT IN (#{vc_ids})", group_id: id)
+    else
+      VenueComment.where("venue_id in (#{group_venue_ids})", group_id: id)
+    end
+  end
+
+  def groupfeed
+    feed = (group_venuefeed + venue_comments)
+    feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
+  end
+
+  def groupfeed_for_moments(target_user)
+    target_user_id = target_user.id
+    vc_ids = venue_comments.map(&:id).join(', ')
+    exclusion = (venue_comments<<VenueComment.from_users_followed_by(target_user)<<VenueComment.from_venues_followed_by(target_user)).flatten.map(&:id).join(', ')
+    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
+    if exclusion.length > 0
+      VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{target_user_id} AND id NOT IN (#{exclusion})", group_id: id)
+    else
+      VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{target_user_id}", group_id: id)
+    end  
   end
 
   def send_notification_to_users(user_ids, event_id)

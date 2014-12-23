@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141218213438) do
+ActiveRecord::Schema.define(version: 20141221184427) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,17 @@ ActiveRecord::Schema.define(version: 20141218213438) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "at_group_relationships", force: true do |t|
+    t.integer  "venue_comment_id"
+    t.integer  "group_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "at_group_relationships", ["group_id"], name: "index_at_group_relationships_on_group_id", using: :btree
+  add_index "at_group_relationships", ["venue_comment_id", "group_id"], name: "index_at_group_relationships_on_venue_comment_id_and_group_id", unique: true, using: :btree
+  add_index "at_group_relationships", ["venue_comment_id"], name: "index_at_group_relationships_on_venue_comment_id", using: :btree
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"

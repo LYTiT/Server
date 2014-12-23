@@ -126,6 +126,68 @@ class User < ActiveRecord::Base
     venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
   end
 
+  def groupfeed
+    gfeed = []
+    for group in self.groups.to_a
+      gfeed << group.groupfeed_for_moments(self)
+      gfeed.flatten!
+    end
+    type = Array.new(gfeed.count, 3)
+    gfeed.zip(type.to_a)
+  end
+
+  def groupfeed(group_number, excluded_ids)
+    #no Groups mean there can be no group feed - we return null
+    if self.groups.count == 0
+      return nil
+    #either this is the last step of the recursion which means its time to append the last Group's venuefeed and reuturn
+    #the total groupfeed or a user is only in one Group thus no need to recursivly check the inclusion of other Group's venues  
+    elsif group_number == self.groups.count - 1
+      considered_group = self.groups[group_number]
+      group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{considered_group.id}"
+      if excluded_ids != nil
+        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})", group_id: considered_group.id)
+        type =  Array.new(gfeed.count, 3)
+        return gfeed.zip(type.to_a)
+      else
+        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id}", group_id: considered_group.id)
+        type =  Array.new(gfeed.count, 3)
+        return gfeed.zip(type.to_a)
+      end
+    #a recursion is used to append the ids of venue comments of mutually inclusive Group venues to the excluded_ids array in order to prevent dupicate venue comments
+    #from appearing in a User's Moments feed 
+    else
+      if group_number == nil
+        group_number = 0
+      end
+      #iterate through a User's Groups one by one
+      considered_group = self.groups[group_number]
+
+      #dealing with first runthrough of recursion so thus must inject the ids of venue comments coming from users and venues followed by the user to the excluded_ids array 
+      if excluded_ids == nil
+        if considered_group != nil
+          at_venue = []
+          at_venue << considered_group.venue_comments
+          excluded_ids = (at_venue<<VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
+        else
+          excluded_ids = (VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
+        end
+      end
+
+      group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{considered_group.id}"
+      #The user is following users or venues
+      if excluded_ids.length > 0
+        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})", group_id: considered_group.id)
+      else
+        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id}", group_id: considered_group.id)
+      end
+      excluded_ids = excluded_ids << gfeed.map(&:id).join(', ')
+      excluded_ids
+      group_number = group_number + 1
+      return groupfeed(group_number, excluded_ids)
+    end
+  end
+
   def userfeed
     ufeed = VenueComment.from_users_followed_by(self)
     type = Array.new(ufeed.count, 1)
@@ -140,7 +202,7 @@ class User < ActiveRecord::Base
 
   #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
   def totalfeed
-    feed = (userfeed + venuefeed)
+    feed = (userfeed + venuefeed + groupfeed(0, nil))
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 

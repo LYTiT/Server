@@ -7,6 +7,7 @@ class VenueComment < ActiveRecord::Base
   has_many :flagged_comments, :dependent => :destroy
   has_many :comment_views, :dependent => :destroy
   has_many :lumen_values
+  #has_many :at_group_relationships, :dependent => :destroy
 
   validate :comment_or_media
 
@@ -96,6 +97,12 @@ class VenueComment < ActiveRecord::Base
     #{}"UPDATE venue_comments INNER JOIN followed_venues_ids ON venue_comment.id = followed_venues_ids SET venue_comment.from_user = false"
     #followed_venues_ids
   end
+
+  def VenueComment.from_group_venues(group)
+    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
+    where("venue_id in (#{group_venue_ids})", group_id: id)
+  end
+
 
   def consider?
     consider = 1
