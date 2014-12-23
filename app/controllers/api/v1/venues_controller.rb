@@ -142,6 +142,14 @@ class Api::V1::VenuesController < ApiBaseController
       if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
         @user.update_lumens_after_text(@comment.id)
       end
+
+      if @comment.venue_id != 14002
+        for g_id in params[:at_ids]
+          receiving_group = Group.find_by_id(g_id)
+          receiving_group.at_group!(@comment)
+        end
+      end
+      
     end
   end
 
