@@ -44,6 +44,8 @@ gem 'kaminari'
 gem 'descriptive_statistics'
 gem 'geocoder'
 gem 'pr_geohash'
+gem 'timezone'
+gem 'tzinfo'
 
 group :development do
   gem 'better_errors'
