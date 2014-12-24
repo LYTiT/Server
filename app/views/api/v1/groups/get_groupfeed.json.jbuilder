@@ -1,4 +1,4 @@
-json.array! @venue_comments do |comment|
+json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
@@ -8,8 +8,10 @@ json.array! @venue_comments do |comment|
   json.username_private comment.username_private
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
-  json.total_views comment.total_views
+  json.viewed comment.is_viewed?(@user)
+  json.total_views comment.views
   json.created_at comment.created_at
+  json.updated_at comment.updated_at
   json.group_1_name comment.groups[0].try(:name)
   json.group_1_id comment.groups[0].try(:id)
   json.group_2_name comment.groups[1].try(:name)
@@ -20,4 +22,8 @@ json.array! @venue_comments do |comment|
   json.group_4_id comment.groups[3].try(:id)
   json.group_5_name comment.groups[4].try(:name)
   json.group_5_id comment.groups[4].try(:id)
+end
+json.pagination do 
+  json.current_page @comments.current_page
+  json.total_pages @comments.total_pages
 end

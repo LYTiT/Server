@@ -133,6 +133,11 @@ class Api::V1::GroupsController < ApiBaseController
     @venue = @groups_venue.venue
   end
 
+  def get_groupfeed
+    @group = Group.find(params[:group_id])
+    @comments = @group.groupfeed
+  end
+
   def report
     group = Group.find(params[:group_id])
     flagged_group = FlaggedGroup.new

@@ -118,6 +118,7 @@ LytitServer::Application.routes.draw do
         post 'report'
         get 'group_venue_details'
         post 'invite_users'
+        get 'get_groupfeed'
         collection do
           get 'search'
         end
