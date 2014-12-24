@@ -119,18 +119,6 @@ class Group < ActiveRecord::Base
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
-  def groupfeed_for_moments(target_user)
-    target_user_id = target_user.id
-    vc_ids = venue_comments.map(&:id).join(', ')
-    exclusion = (venue_comments<<VenueComment.from_users_followed_by(target_user)<<VenueComment.from_venues_followed_by(target_user)).flatten.map(&:id).join(', ')
-    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
-    if exclusion.length > 0
-      VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{target_user_id} AND id NOT IN (#{exclusion})", group_id: id)
-    else
-      VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{target_user_id}", group_id: id)
-    end  
-  end
-
   def send_notification_to_users(user_ids, event_id)
     event = Event.find(event_id)
     for user_id in user_ids
