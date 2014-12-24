@@ -12,16 +12,16 @@ json.comments(@comments) do |comment|
   json.total_views comment.views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
-  json.group_1_name comment.groups[0].name
-  json.group_1_id comment.groups[0].id
-  json.group_2_name comment.groups[1].name
-  json.group_2_id comment.group[1].id
-  json.group_3_name comment.group[2].name
-  json.group_3_id comment.group[2].id
-  json.group_4_name comment.group[3].name
-  json.group_4_id comment.group[3].id
-  json.group_5_name comment.group[4].name
-  json.group_5_id comment.group[4].id
+  json.group_1_name comment.groups[0].try(:name)
+  json.group_1_id comment.groups[0].try(:id)
+  json.group_2_name comment.groups[1].try(:name)
+  json.group_2_id comment.groups[1].try(:id)
+  json.group_3_name comment.groups[2].try(:name)
+  json.group_3_id comment.groups[2].try(:id)
+  json.group_4_name comment.groups[3].try(:name)
+  json.group_4_id comment.groups[3].try(:id)
+  json.group_5_name comment.groups[4].try(:name)
+  json.group_5_id comment.groups[4].try(:id)
 end
 json.pagination do 
   json.current_page @comments.current_page
