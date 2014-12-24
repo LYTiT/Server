@@ -138,9 +138,9 @@ class Api::V1::VenuesController < ApiBaseController
       end
 
       if @comment.venue_id != 14002
-        for g_id in params[:at_ids]
+        for gid in params[:at_ids]
           puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#{g_id}"
-          receiving_group = Group.find(g_id)
+          receiving_group = Group.find(gid)
           receiving_group.at_group!(@comment)
         end
       end
