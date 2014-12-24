@@ -20,8 +20,8 @@ class AtGroupRelationship < ActiveRecord::Base
        :object_id => self.id, 
        :type => 'at_group', 
        :group_id => self.group.id,
-       :venue_comment_id => self.venue_comment.id 
-       :user_id => user.id 
+       :venue_comment_id => self.venue_comment.id, 
+       :user_id => user.id
      }
      message = "An @#{self.group.name} Moment has been mapped"
      notification = self.store_notification(payload, user, message)
