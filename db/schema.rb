@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141221184427) do
+ActiveRecord::Schema.define(version: 20141224222352) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -268,6 +268,21 @@ ActiveRecord::Schema.define(version: 20141221184427) do
   create_table "roles", force: true do |t|
     t.string "name"
   end
+
+  create_table "temp_posting_housings", force: true do |t|
+    t.string   "comment"
+    t.string   "media_type"
+    t.string   "media_url"
+    t.integer  "session"
+    t.boolean  "username_private"
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "temp_posting_housings", ["user_id"], name: "index_temp_posting_housings_on_user_id", using: :btree
+  add_index "temp_posting_housings", ["venue_id"], name: "index_temp_posting_housings_on_venue_id", using: :btree
 
   create_table "users", force: true do |t|
     t.datetime "created_at",                                                    null: false

@@ -33,6 +33,8 @@ class User < ActiveRecord::Base
   has_many :announcement_users, :dependent => :destroy
   has_many :announcements, through: :announcement_users
 
+  has_many :temp_posting_housings, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -124,16 +126,6 @@ class User < ActiveRecord::Base
 
   def vfollowing?(venue)
     venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
-  end
-
-  def groupfeed
-    gfeed = []
-    for group in self.groups.to_a
-      gfeed << group.groupfeed_for_moments(self)
-      gfeed.flatten!
-    end
-    type = Array.new(gfeed.count, 3)
-    gfeed.zip(type.to_a)
   end
 
   def groupfeed(group_number, excluded_ids)

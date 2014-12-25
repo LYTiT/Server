@@ -25,6 +25,42 @@ class Api::V1::VenuesController < ApiBaseController
     @comment.user = @user
     @comment.username_private = @user.username_private
 
+    
+    if @user.version_compatible?("3.2.0")
+      if @comment.session != 0
+        posting_parts = @user.temp_posting_housings.order('id ASC')
+
+        if @comment.venue_id == 14002 #dealing with media
+          @comment.username_private = true
+
+          if posting_parts.count == 0
+            part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => @comment.media_type, :media_url => @comment.media_url, 
+                                          :session => @comment.session)
+          else
+
+          end
+
+
+
+
+
+
+
+
+
+
+
+
+    else
+    end
+
+
+
+
+
+
+
+
     #V3.1.0 AND ABOVE PROPER POSTING BY PARTS THAT INCORPORATE SESSION IDS TO PREVENT CROSS CONTAMINATION OF VENUE COMMENTS
     if @comment.session != nil
 
@@ -138,11 +174,10 @@ class Api::V1::VenuesController < ApiBaseController
       end
 
       if @comment.venue_id != 14002
-        for gid in params[:at_ids]
-          puts "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#{gid["group_id"]}"
-          receiving_group = Group.find_by_id(gid["group_id"])
-          receiving_group.at_group!(@comment)
-        end
+          for gid in params[:at_ids]
+            receiving_group = Group.find_by_id(gid["group_id"])
+            receiving_group.at_group!(@comment)
+          end
       end
 
     end
