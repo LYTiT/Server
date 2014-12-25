@@ -138,7 +138,7 @@ class Api::V1::VenuesController < ApiBaseController
       end
 
       if @comment.venue_id != 14002
-        if params[:at_ids].count > 0
+        if params[:at_ids] != nil
           for gid in params[:at_ids]
             receiving_group = Group.find_by_id(gid["group_id"])
             receiving_group.at_group!(@comment)
