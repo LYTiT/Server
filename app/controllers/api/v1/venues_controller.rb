@@ -145,7 +145,7 @@ class Api::V1::VenuesController < ApiBaseController
           end
         else
           for gname in params[:at_names]
-            receiving_group = Group.find_by_name(gid["group_name"])
+            receiving_group = Group.find_by_name(gname["group_name"])
             receiving_group.at_group!(@comment)
           end
         end
