@@ -36,6 +36,7 @@ class Api::V1::VenuesController < ApiBaseController
                                         :session => session, :username_private => @user.username_private)
           vc_part.save
           completion = true
+          render json: { success: true }
         else
           for part in posting_parts #iterate through posting parts to find matching part (equivalen session id) of incoming Venue Comment part
 
@@ -63,6 +64,7 @@ class Api::V1::VenuesController < ApiBaseController
                                           :session => session, :username_private => @user.username_private)          
             vc_part.save
             completion = true
+            render json: { success: true }
           end
         end
 
