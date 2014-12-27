@@ -133,9 +133,14 @@ class Api::V1::GroupsController < ApiBaseController
     @venue = @groups_venue.venue
   end
 
+  def get_group_details
+    @group = Group.find(params[:group_id])
+  end
+
   def get_groupfeed
     @group = Group.find(params[:group_id])
-    @comments = @group.groupfeed
+    feed = @group.groupfeed
+    @comments = Kaminari.paginate_array(feed).page(params[:page]).per(5)
   end
 
   def report
