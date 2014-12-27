@@ -139,7 +139,8 @@ class Api::V1::GroupsController < ApiBaseController
 
   def get_groupfeed
     @group = Group.find(params[:group_id])
-    @comments = @group.groupfeed.to_a.page(params[:page]).per(5).order("created_at desc")
+    feed = @group.groupfeed
+    @comment = Kaminari.paginate_array(feed).page(params[:page]).per(5)
   end
 
   def report
