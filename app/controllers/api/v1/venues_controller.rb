@@ -43,14 +43,15 @@ class Api::V1::VenuesController < ApiBaseController
             if part.session != nil and part.session == session
               @comment = VenueComment.new(venue_comment_params)
               @comment.user = @user
+              @comment.venue = venue
               @comment.username_private = @user.username_private
               if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
                 @comment.venue = part.venue
                 @comment.comment = part.comment
                 @comment.username_private = part.username_private
               else #pull media data as the incoming part is the text
-                @comment.media_type
-                @comment.media_url
+                @comment.media_type = part.media_type
+                @comment.media_url = part.media_url
               end
               part.delete
               parts_linked = true
