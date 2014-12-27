@@ -56,6 +56,10 @@ class Api::V1::VenuesController < ApiBaseController
               part.delete
               parts_linked = true
               break  
+            else #if a part has been housed for over a reasonable period of time we can assume that it is no longer needed.
+              if (((Time.now - part.created_at) / 1.minute) >= 30.0)
+                part.delete
+              end
             end
 
           end
