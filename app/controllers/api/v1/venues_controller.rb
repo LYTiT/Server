@@ -18,102 +18,69 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def add_comment
-    update = false #used to make sure text part of comment is not assigned stand alone lumens
-    completion = false #determines if posting parts have conjoined
-    @comment = VenueComment.new(venue_comment_params)
-    @comment.venue = venue
-    @comment.user = @user
-    @comment.username_private = @user.username_private
+    parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
+    assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
 
+    session = venue_comment_params.session
+    incoming_part_type = venue.id == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
+
+    completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
     
-    if @user.version_compatible?("3.2.0")
-      if @comment.session != 0
+    if session != nil #posting by parts algorithm for versions >= 3.1.0 have session ids assigned to all Venue Comments and their parts
+
+      if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
         posting_parts = @user.temp_posting_housings.order('id ASC')
 
-        if @comment.venue_id == 14002 #dealing with media
-          @comment.username_private = true
+        if posting_parts.count == 0 #if no parts are housed there is nothing to link
+          vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => venue_comment_params.media_type, :media_url => venue_comment_params.media_url, 
+                                        :session => venue_comment_params.session, :username_private => @user.username_private)
+          vc_part.save
+          completion = true
+        else
+          for part in posting_parts #iterate through posting parts to find matching part (equivalen session id) of incoming Venue Comment part
 
-          if posting_parts.count == 0
-            part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => @comment.media_type, :media_url => @comment.media_url, 
-                                          :session => @comment.session)
-          else
-
-          end
-
-
-
-
-
-
-
-
-
-
-
-
-    else
-    end
-
-
-
-
-
-
-
-
-    #V3.1.0 AND ABOVE PROPER POSTING BY PARTS THAT INCORPORATE SESSION IDS TO PREVENT CROSS CONTAMINATION OF VENUE COMMENTS
-    if @comment.session != nil
-
-      if @comment.session != 0 #not a simple text post but one with media
-        last_posts = @user.venue_comments.order('id ASC').to_a.pop(5)
-
-        if @comment.venue_id == 14002 #media part of venue comment always first sent to temp housing. Regular service.
-          @comment.username_private = true #prevent comment showing up in moments feed prematurely
-
-          for post in last_posts #checks if text came in before otherwise store in temp housing.
-            
-            if post.session != nil and post.session == @comment.session
-              if post.venue_id != 14002 #venue comment had text so is already in VP.
-                post.media_type = @comment.media_type
-                post.media_url = @comment.media_url
-                @comment = post
-              else #venue comment did not have text so empty text field stored in temp housing. because a venue comment cannot be blank
-                   #temp value assigned to comment field, and the venue_id is temp stored in views (text cannot get views regardless)
-                post.venue_id = post.views
-                post.views = 0
-                post.comment = nil
-                post.media_type = @comment.media_type
-                post.media_url = @comment.media_url
-                @comment = post
+            if part.session != nil and part.session == session
+              @comment = VenueComment.new(venue_comment_params)
+              @comment.user = @user
+              @comment.username_private = @user.username_private
+              if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
+                @comment.venue = part.venue
+                @comment.comment = part.comment
+                @comment.username_private = part.username_private
+              else #pull media data as the incoming part is the text
+                @comment.media_type
+                @comment.media_url
               end
+              part.delete
+              parts_linked = true
+              break  
             end
+
           end
 
-        else #dealing with the text part of venue comment
-          for post in last_posts #check to see if media part has already arrived otherwise either assign directly to VP or to temp housing depending if text field is empty.
-            if post.session != nil and post.session == @comment.session
-              post.comment = @comment.comment
-              post.venue_id = @comment.venue_id
-              post.username_private = @comment.username_private
-              @comment = post
-              completion = true
-            end
+          if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
+            vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => venue_comment_params.media_type, :media_url => venue_comment_params.media_url, 
+                                          :session => venue_comment_params.session, :username_private => @user.username_private)          
+            vc_part.save
+            completion = true
           end
-
-          if completion == false #media part has not been uploaded yet
-            update = true
-            if @comment.comment.blank? && @comment.media_url.blank? #venue comment with empty text field.
-              @comment.views = @comment.venue_id
-              @comment.venue_id = 14002
-              @comment.comment = "temp"
-            end
-          end
-
         end
+
+      else #dealing with a simple text comment
+        assign_lumens = true
+        @comment = VenueComment.new(venue_comment_params)
+        @comment.venue = venue
+        @comment.user = @user
+        @comment.username_private = @user.username_private
       end
 
-    #V3.0 POSTING BY PARTS WHICH DOES NOT INCORPORATE SESSION IDS
-    else
+
+#V3.0.0 Posting by Parts Backward Compatability >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+    else 
+      @comment = VenueComment.new(venue_comment_params)
+      @comment.venue = venue
+      @comment.user = @user
+      @comment.username_private = @user.username_private
       if @user.venue_comments.count > 0
         last_post = @user.venue_comments.order('id ASC').to_a.pop
       end
@@ -133,7 +100,6 @@ class Api::V1::VenuesController < ApiBaseController
               last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
               @comment = last_post
 
-              @user.adjust_lumens #removing text lumens since posting is not a text
             else
               last_post.media_type = @comment.media_type
               last_post.media_url = @comment.media_url
@@ -144,11 +110,13 @@ class Api::V1::VenuesController < ApiBaseController
             end
           end
         end
+      else #regular text comment not part of posting by parts thus should receive lumens
+        assign_lumens = true
       end
+
       #Regular posting by parts, text is uploaded after media part.
       if last_post != nil and last_post.venue_id == 14002
         if not last_post.media_url.blank?
-          update = true
           last_post.comment = @comment.comment
           last_post.venue_id = @comment.venue_id
           last_post.username_private = @comment.username_private
@@ -162,22 +130,34 @@ class Api::V1::VenuesController < ApiBaseController
         @comment.venue_id = 14002
         @comment.comment = "temp"
       end
-
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     end
-    ##################################################################################################################################
 
-    if not @comment.save
-      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
-    else 
-      if (@comment.media_type == 'text' and @comment.consider? == 1) and update == false
-        @user.update_lumens_after_text(@comment.id)
-      end
 
-      if @comment.venue_id != 14002
-          for gid in params[:at_ids]
-            receiving_group = Group.find_by_id(gid["group_id"])
-            receiving_group.at_group!(@comment)
+    if completion == false #a Venue Comment has been created instead of a Temp Posting Housing object so now it needs to be saved
+
+      if not @comment.save
+        render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
+      else 
+        if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
+          @user.update_lumens_after_text(@comment.id)
+        end
+
+        #check to see if there is @Group link present in text (introduced in v3.2.0)
+        if @user.version_compatible?("3.2.0")
+          if params[:at_ids] != nil
+            for gid in params[:at_ids]
+              receiving_group = Group.find_by_id(gid["group_id"])
+              receiving_group.at_group!(@comment)
+            end
+          else
+            for gname in params[:at_names]
+              receiving_group = Group.find_by_name(gname["group_name"])
+              receiving_group.at_group!(@comment)
+            end
           end
+        end
+
       end
 
     end

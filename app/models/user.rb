@@ -622,6 +622,7 @@ class User < ActiveRecord::Base
 
   #For posting by parts implementation
   def posting_kill_request
+=begin
     last_comments = self.venue_comments.order('id ASC').to_a.pop(5)
     last_comments.reverse!
     pos = 0
@@ -673,7 +674,8 @@ class User < ActiveRecord::Base
       end
       pos = pos + 1
     end
-
+=end
+    return 
   end
 
 

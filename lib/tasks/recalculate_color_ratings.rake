@@ -76,6 +76,12 @@ namespace :lytit do
 
     end
 
+    #clear Temp Posting Housing as well as VC from P
+    TempPostingHousing.delete_all
+    temp_vc_parts = VenueComment.find_by_venue_id(14002)
+    temp_vc_parts.delete_all
+
+
     end_time = Time.now
 
     puts "Done. Time Taken: #{end_time - start_time}s"
