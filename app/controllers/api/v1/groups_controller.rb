@@ -140,7 +140,7 @@ class Api::V1::GroupsController < ApiBaseController
   def get_groupfeed
     @group = Group.find(params[:group_id])
     feed = @group.groupfeed
-    @comment = Kaminari.paginate_array(feed).page(params[:page]).per(5)
+    @comments = Kaminari.paginate_array(feed).page(params[:page]).per(5)
   end
 
   def report
