@@ -11,7 +11,7 @@ class AtGroupRelationship < ActiveRecord::Base
  end
 
  def send_at_group_notification
-   for user in self.group.users
+   for user in self.group.users.to_a
    
      next if user.id == self.user_id or !user.send_location_added_to_group_notification?(self.group)
      next if user.version_compatible?("3.2.0") == false
@@ -23,7 +23,7 @@ class AtGroupRelationship < ActiveRecord::Base
        :venue_comment_id => self.venue_comment.id, 
        :user_id => user.id
      }
-     message = "An @#{self.group.name} Moment has been mapped"
+     message = "A Moment @#{self.group.name} has been mapped"
      notification = self.store_notification(payload, user, message)
      payload[:notification_id] = notification.id
 

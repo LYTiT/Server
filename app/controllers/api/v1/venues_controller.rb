@@ -82,7 +82,7 @@ class Api::V1::VenuesController < ApiBaseController
       end
 
 
-#V3.0.0 Posting by Parts Backward Compatability >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#V3.0.0 Posting by Parts for Backward Compatability >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     else 
       @comment = VenueComment.new(venue_comment_params)
       @comment.venue = venue
