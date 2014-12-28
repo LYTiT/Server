@@ -155,12 +155,16 @@ class Api::V1::VenuesController < ApiBaseController
           if params[:at_ids] != nil
             for gid in params[:at_ids]
               receiving_group = Group.find_by_id(gid["group_id"])
-              receiving_group.at_group!(@comment)
+              if receiving_group.is_user_member?(@user.id)
+                receiving_group.at_group!(@comment)
+              end
             end
           else
             for gname in params[:at_names]
               receiving_group = Group.find_by_name(gname["group_name"])
-              receiving_group.at_group!(@comment)
+              if receiving_group.is_user_member?(@user.id)
+                receiving_group.at_group!(@comment)
+              end
             end
           end
         end
