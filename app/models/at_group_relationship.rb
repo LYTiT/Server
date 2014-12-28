@@ -62,7 +62,7 @@ class AtGroupRelationship < ActiveRecord::Base
 
  def notification_payload(user)
    {
-     :venue => {
+     :venuecomment => {
        :id => self.venue_comment.id,
        :comment => self.venue_comment.comment,
        :media_type => self.venue_comment.media_type,
