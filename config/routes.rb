@@ -58,6 +58,10 @@ LytitServer::Application.routes.draw do
         post 'destroy'
       end
 
+      resources :at_group_relationships do
+        get 'get_at_group_notification_details'
+      end
+
       resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
 
