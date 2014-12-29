@@ -288,8 +288,10 @@ class Api::V1::VenuesController < ApiBaseController
       end
     end
 
-    if comments.to_a.length > 0
-      sorted_comments = comments.to_a.sort_by {|entry| entry.views}
+    comments = comments.to_a.flatten
+
+    if comments.length > 0
+      sorted_comments = comments.sort_by {|entry| entry.views}
       @spotlyts = sorted_comments.reverse.first(10)
     else
       @spotlyts = nil
