@@ -62,18 +62,18 @@ class AtGroupRelationship < ActiveRecord::Base
 
  def notification_payload(user)
    {
-     :leon => {
-       #:id => self.venue_comment.id,
+     :comment => {
+       :id => self.venue_comment.id,
        :comment => self.venue_comment.comment,
-       #:media_type => self.venue_comment.media_type,
-       #:media_url => self.venue_comment.media_url,
-       #:user_name => self.venue_comment.user.name,
-       #:user_id => self.venue_comment.user.id,
-       #:username_private => self.venue_comment.user.username_private,
-       #:venue_name => self.venue_comment.venue.name,
-       #:venue_id => self.venue_comment.venue.id,
-       #:created_at => self.venue_comment.created_at.utc,
-       #:updated_at => self.venue_comment.updated_at.utc,
+       :media_type => self.venue_comment.media_type,
+       :media_url => self.venue_comment.media_url,
+       :user_name => self.venue_comment.user.name,
+       :user_id => self.venue_comment.user.id,
+       :username_private => self.venue_comment.user.username_private,
+       :venue_name => self.venue_comment.venue.name,
+       :venue_id => self.venue_comment.venue.id,
+       :created_at => self.venue_comment.created_at.utc,
+       :updated_at => self.venue_comment.updated_at.utc,
      },
      :group => {
        :id => self.group.id,
