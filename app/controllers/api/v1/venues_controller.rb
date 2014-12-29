@@ -262,7 +262,6 @@ class Api::V1::VenuesController < ApiBaseController
 
     rep_timezone = Timezone::Zone.new :latlon => [@venues[0].latitude, @venues[0].longitude]
 
-
     comments = []
     for venue in @venues
       #requesting spotlyt of a larger area which may contain multiple timezones thus must check each venue's timezone individually.  

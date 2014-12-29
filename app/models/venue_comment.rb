@@ -95,8 +95,6 @@ class VenueComment < ActiveRecord::Base
       where("venue_id IN (#{followed_venues_ids})", user_id: user)
     end
 
-    #{}"UPDATE venue_comments INNER JOIN followed_venues_ids ON venue_comment.id = followed_venues_ids SET venue_comment.from_user = false"
-    #followed_venues_ids
   end
 
   def VenueComment.from_group_venues(group)
