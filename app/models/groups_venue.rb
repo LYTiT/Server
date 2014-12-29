@@ -59,7 +59,7 @@ class GroupsVenue < ActiveRecord::Base
 
   def notification_payload(user)
     {
-      :leon => {
+      :venue => {
         :id => self.venue.id,
         :name => self.venue.name,
         :rating => self.venue.rating,
@@ -89,10 +89,6 @@ class GroupsVenue < ActiveRecord::Base
         :updated_at => self.group.updated_at.utc,
         :is_group_admin => self.group.is_user_admin?(user.id),
         :send_notification => GroupsUser.send_notification?(self.group.id, user.id)
-      },
-      :user => {
-        :id => user.id,
-        :name => user.name,
       }
     }
   end

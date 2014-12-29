@@ -62,7 +62,7 @@ class AtGroupRelationship < ActiveRecord::Base
 
  def notification_payload(user)
    {
-     :comment => {
+     :leon => {
        :id => self.venue_comment.id,
        :comment => self.venue_comment.comment,
        :media_type => self.venue_comment.media_type,
@@ -86,7 +86,11 @@ class AtGroupRelationship < ActiveRecord::Base
        :updated_at => self.group.updated_at.utc,
        :is_group_admin => self.group.is_user_admin?(user.id),
        :send_notification => GroupsUser.send_notification?(self.group.id, user.id)
-     }
+     },
+     :user => {
+       :id => follower.id,
+       :name => follower.name,
+      }
    }
  end
 
