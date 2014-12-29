@@ -99,7 +99,10 @@ LytitServer::Application.routes.draw do
           get 'search_to_follow'
         end
 
-        get 'get_geo_spotlyt'
+        collection do 
+          get 'get_geo_spotlyt'
+        end
+
         post 'vote'
       end
 
