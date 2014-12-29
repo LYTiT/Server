@@ -1,6 +1,6 @@
 json.set! :venue_comment do
   json.set! :id, @venue_comment.id
-  json.set! :comment, @venue_comment.name
+  json.set! :comment, @venue_comment.comment
   json.set! :media_type, @venue_comment.media_type
   json.set! :media_url, @venue_comment.media_url
   json.set! :user_id, @venue_comment.user_id
