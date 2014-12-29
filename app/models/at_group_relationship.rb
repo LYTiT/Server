@@ -88,8 +88,8 @@ class AtGroupRelationship < ActiveRecord::Base
        :send_notification => GroupsUser.send_notification?(self.group.id, user.id)
      },
      :user => {
-       :id => follower.id,
-       :name => follower.name,
+       :id => user.id,
+       :name => user.name,
       }
    }
  end
