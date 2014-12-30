@@ -328,13 +328,13 @@ ActiveRecord::Schema.define(version: 20141230021944) do
     t.integer  "venue_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "username_private",      default: false
-    t.integer  "consider",              default: 2
-    t.integer  "views",                 default: 0
-    t.float    "adj_views",             default: 0.0
-    t.boolean  "from_user",             default: false
+    t.boolean  "username_private",    default: false
+    t.integer  "consider",            default: 2
+    t.integer  "views",               default: 0
+    t.float    "adj_views",           default: 0.0
+    t.boolean  "from_user",           default: false
     t.integer  "session"
-    t.string   "local_time_created_at"
+    t.string   "local_time_creation"
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree

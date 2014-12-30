@@ -84,8 +84,8 @@ class Venue < ActiveRecord::Base
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = Venue.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_long, max_long).flatten.map(&:id).join(', ')
-    images = VenueComment.where("media_type = 'image' AND local_time_created_at < ? AND local_time_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
-    videos = VenueComment.where("media_type = 'video' AND local_time_created_at < ? AND local_time_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
+    images = VenueComment.where("media_type = 'image' AND local_time_creation < ? AND local_time_creation >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
+    videos = VenueComment.where("media_type = 'video' AND local_time_creation < ? AND local_time_creation >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
     spotlyts = (images << videos).flatten
   end
 
