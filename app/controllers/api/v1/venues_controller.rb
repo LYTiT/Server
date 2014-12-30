@@ -145,12 +145,6 @@ class Api::V1::VenuesController < ApiBaseController
       if not @comment.save
         render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
       else
-        Timezone::Configure.begin do |c|
-          c.username = 'LYTiT'
-        end
-        timezone = Timezone::Zone.new :latlon => [@comment.latitude, @comment.longitude]
-        @comment.time_zone = timezone.active_support_time_zone
-        @comment.save
 
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
           @user.update_lumens_after_text(@comment.id)
