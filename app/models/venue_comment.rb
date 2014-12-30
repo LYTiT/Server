@@ -104,6 +104,7 @@ class VenueComment < ActiveRecord::Base
   end
 
   def set_offset_created_at
+    #note that offset time will still be stored in UTC, disregard the timezone
     if venue != nil
       offset = created_at.in_time_zone(venue.time_zone).utc_offset
       offset_time = created_at + offset
