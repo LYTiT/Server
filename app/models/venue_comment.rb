@@ -104,8 +104,10 @@ class VenueComment < ActiveRecord::Base
   end
 
   def set_local_time_offset
-    offset = created_at.in_time_zone(venue.time_zone).utc_offset
-    update_columns(local_time_offset: offset)
+    if venue != nil
+      offset = created_at.in_time_zone(venue.time_zone).utc_offset
+      update_columns(local_time_offset: offset)
+    end
   end
 
   def consider?
