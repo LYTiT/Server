@@ -78,21 +78,13 @@ class Venue < ActiveRecord::Base
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
   end
 
-  def self.venues_in_view_for_spotlyt(radius, lat, long)
-    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", min_lat, max_lat, min_long, max_long)
-  end
-
   def self.geo_spotlyt(radius, lat, long, start_t, end_t)
     min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = Venue.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_long, max_long).flatten.map(&:id).join(', ')
-    spotlyts = VenueComment.where("media_type = 'image' OR media_type = 'video' AND created_at <= ? AND created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
+    spotlyts = VenueComment.where("media_type = 'image' OR media_type = 'video' AND local_time_created_at <= ? AND local_time_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
   end
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
@@ -187,6 +179,14 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
+      if lookup.time_zone == nil #Add timezone of venue if not present
+        Timezone::Configure.begin do |c|
+          c.username = 'LYTiT'
+        end
+        timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+        lookup.time_zone = timezone.active_support_time_zone
+        lookup.save
+      end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -227,11 +227,6 @@ class Venue < ActiveRecord::Base
     timezone = Timezone::Zone.new :latlon => [lat, long]
     self.time_zone = timezone.active_support_time_zone
     self.save
-  end
-
-  def self.set_venue_time_zone
-    venues = Venue.where("time_zone IS NULL")
-    venues.each {|v| v.set_time_zone}
   end
 
   #LYTiT specific identifier keys for venues

@@ -103,8 +103,10 @@ class VenueComment < ActiveRecord::Base
   end
 
   def set_local_time_created_at
-    self.local_time_created_at = self.created_at.in_time_zone(venue.time_zone)
-    self.save
+    if venue != nil
+      self.local_time_created_at = self.created_at.in_time_zone(venue.time_zone)
+      self.save
+    end
   end
 
   def consider?

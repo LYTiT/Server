@@ -144,7 +144,14 @@ class Api::V1::VenuesController < ApiBaseController
 
       if not @comment.save
         render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
-      else 
+      else
+        Timezone::Configure.begin do |c|
+          c.username = 'LYTiT'
+        end
+        timezone = Timezone::Zone.new :latlon => [@comment.latitude, @comment.longitude]
+        @comment.time_zone = timezone.active_support_time_zone
+        @comment.save
+
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
           @user.update_lumens_after_text(@comment.id)
         end
@@ -244,49 +251,15 @@ class Api::V1::VenuesController < ApiBaseController
     render 'display.json.jbuilder'
   end
 
-  #Top viewed comments of a geographical area based on zoom level. Note how we must account for different timezones since all dates are stored in UTC.
+  #Top viewed comments of a geographical area based on zoom level.
   def get_geo_spotlyt
-    Timezone::Configure.begin do |c|
-      c.username = 'LYTiT'
-    end
     selected_date = params[:spotlyt_date]
     selection = Time.parse(selected_date)
 
-    @user = User.find_by_authentication_token(params[:auth_token])
-    @venues = Venue.venues_in_view_for_spotlyt(params[:radius], params[:latitude], params[:longitude]).to_a
+    start_t = selection
+    end_t = selection + 24.hour
 
-    min_long = params[:longitude].to_f - params[:radius].to_i / (113.2 * 1000 * Math.cos(params[:latitude].to_f * Math::PI / 180))
-    max_long = params[:longitude].to_f + params[:radius].to_i / (113.2 * 1000 * Math.cos(params[:latitude].to_f * Math::PI / 180))
-    lat_coverage = (max_long-min_long).abs
-
-    rep_timezone = Timezone::Zone.new :latlon => [@venues[0].latitude, @venues[0].longitude]
-
-    comments = []
-    for venue in @venues
-      #requesting spotlyt of a larger area which may contain multiple timezones thus must check each venue's timezone individually.  
-      if lat_coverage >= 15.0 
-        timezone = Timezone::Zone.new :latlon => [venue.latitude, venue.longitude]
-      #requesting spotlyt of a small area which is in one timezone thus no need to pull the timezone for each venue individually.
-      else
-        timezone = rep_timezone
-      end
-
-
-      start_t = selection + (selection - selection.in_time_zone(timezone.active_support_time_zone)).seconds
-      end_t = (selection + 24.hour) + ((selection + 24.hour) - (selection + 24.hour).in_time_zone(timezone.active_support_time_zone)).seconds
-
-      images = VenueComment.where("media_type = 'image' AND created_at <= ? AND created_at >= ? AND venue_id = #{venue.id}", end_t, start_t)
-      if images.length > 0
-        comments << images
-      end
-
-      videos = VenueComment.where("media_type = 'video' AND created_at <= ? AND created_at >= ? AND venue_id = #{venue.id}", end_t, start_t)
-      if videos.length > 0
-        comments << videos
-      end
-    end
-
-    comments = comments.to_a.flatten
+    comments = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t).to_a
 
     if comments.length > 0
       sorted_comments = comments.sort_by {|entry| entry.views}
