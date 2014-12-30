@@ -103,10 +103,11 @@ class VenueComment < ActiveRecord::Base
     where("venue_id in (#{group_venue_ids})", group_id: id)
   end
 
-  def set_local_time_offset
+  def set_offset_created_at
     if venue != nil
       offset = created_at.in_time_zone(venue.time_zone).utc_offset
-      update_columns(local_time_offset: offset)
+      offset_time = created_at + offset
+      update_columns(offset_created_at: offset_time)
     end
   end
 
