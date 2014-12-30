@@ -102,6 +102,10 @@ class VenueComment < ActiveRecord::Base
     where("venue_id in (#{group_venue_ids})", group_id: id)
   end
 
+  def set_local_time_created_at
+    self.local_time_created_at = self.created_at.in_time_zone(venue.time_zone)
+    self.save
+  end
 
   def consider?
     consider = 1
