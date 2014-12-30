@@ -224,8 +224,8 @@ class Venue < ActiveRecord::Base
     end
     lat = 0/self.latitude == 0.0 ? self.latitude : 0.0
     long = 0/self.longitude == 0.0 ? self.longitude : 0.0
-    timezone = Timezone::Zone.new :latlon => [lat, long]
-    self.time_zone = timezone.active_support_time_zone
+    timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
+    self.time_zone = timezone.active_support_time_zone rescue nil
     self.save
   end
 
