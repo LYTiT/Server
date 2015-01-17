@@ -11,6 +11,7 @@ class LumenValue < ActiveRecord::Base
 			self.delay.send_new_lumens_notification
 			user.lumen_notification = user.lumens
 			user.save
+			user.update_lumen_percentile
 		end
 	end
 

@@ -115,7 +115,7 @@ class VenueComment < ActiveRecord::Base
   def consider?
     consider = 1
     user = User.find_by(id: self.user_id)
-    comments = user.venue_comments.sort_by {|comment| comment.created_at}
+    comments = user.venue_comments.order("created_at desc")
     hash = Hash[comments.map.with_index.to_a]
     index = hash[self]
 

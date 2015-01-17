@@ -272,7 +272,7 @@ class User < ActiveRecord::Base
     update_columns(vote_lumens: (vt_l + new_lumens).round(4))
 
     update_columns(lumens: updated_lumens)
-    update_lumen_percentile
+    #update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :lytit_vote_id => id)
     l.save
@@ -287,7 +287,7 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: (t_l + new_lumens).round(4))
 
     update_columns(lumens: updated_lumens)
-    update_lumen_percentile
+    #update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => "text")
     l.save
@@ -313,7 +313,7 @@ class User < ActiveRecord::Base
     end
 
     update_columns(lumens: updated_lumens.round(4))
-    update_lumen_percentile
+    #update_lumen_percentile
 
     if new_lumens > 0
       l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => comment.media_type)
