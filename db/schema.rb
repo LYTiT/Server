@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 20150127204907) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.boolean  "validity",     default: true
-    t.string   "type"
+    t.string   "media_type"
     t.string   "comment"
   end
 
