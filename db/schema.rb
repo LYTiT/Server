@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141230021947) do
+ActiveRecord::Schema.define(version: 20150127204907) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,6 +44,32 @@ ActiveRecord::Schema.define(version: 20141230021947) do
   add_index "at_group_relationships", ["group_id"], name: "index_at_group_relationships_on_group_id", using: :btree
   add_index "at_group_relationships", ["venue_comment_id", "group_id"], name: "index_at_group_relationships_on_venue_comment_id_and_group_id", unique: true, using: :btree
   add_index "at_group_relationships", ["venue_comment_id"], name: "index_at_group_relationships_on_venue_comment_id", using: :btree
+
+  create_table "bounties", force: true do |t|
+    t.integer  "lumen_reward"
+    t.string   "expiration"
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "validity",     default: true
+    t.string   "type"
+    t.string   "comment"
+  end
+
+  add_index "bounties", ["user_id"], name: "index_bounties_on_user_id", using: :btree
+  add_index "bounties", ["venue_id"], name: "index_bounties_on_venue_id", using: :btree
+
+  create_table "bounty_claims", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "bounty_id"
+    t.integer  "venue_comment_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "bounty_claims", ["bounty_id"], name: "index_bounty_claims_on_bounty_id", using: :btree
+  add_index "bounty_claims", ["user_id"], name: "index_bounty_claims_on_user_id", using: :btree
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -398,6 +424,7 @@ ActiveRecord::Schema.define(version: 20141230021947) do
     t.float    "color_rating",                     default: -1.0
     t.integer  "key",                    limit: 8
     t.string   "time_zone"
+    t.integer  "outstanding_bounties",             default: 0
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree

@@ -52,6 +52,10 @@ LytitServer::Application.routes.draw do
         get 'get_follower'
       end
 
+      resources :bounties do
+        post 'create'
+      end
+
       resources :group_invitations do
         get 'get_group_invite_notification_details'
         get 'validate_invitation'
