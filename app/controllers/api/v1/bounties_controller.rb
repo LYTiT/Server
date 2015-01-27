@@ -1,4 +1,4 @@
-class Api::V1::BountiesController < ApiBaseController
+class Api::V1::BountiesController < ApplicationController
   def create
   	bounty = Bounty.new(:user_id => params[:user_id], :venue_id => params[:venue_id], :lumen_reward => params[:lumen_reward], :expiration => params[:expiration], :type => params[:type], :comment => params[:comment])
   	@venue = Venue.find_by_id(params[:venue_id])
@@ -8,7 +8,7 @@ class Api::V1::BountiesController < ApiBaseController
   	@venue.save
   	@user.save
   	render json: { success: true }
-    
+
   end
 
   def destroy
