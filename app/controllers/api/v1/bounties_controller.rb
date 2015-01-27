@@ -8,6 +8,7 @@ class Api::V1::BountiesController < ApiBaseController
   	@venue.save
   	@user.save
   	render json: { success: true }
+    
   end
 
   def destroy
