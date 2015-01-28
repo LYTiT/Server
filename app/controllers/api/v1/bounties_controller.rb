@@ -6,6 +6,7 @@ class Api::V1::BountiesController < ApiBaseController
   	@user = User.find_by_id(params[:user_id])
   	@venue.outstanding_bounties = @venue.outstanding_bounties + 1
   	@user.lumens = @user.lumens - params[:lumen_reward]
+    bounty.save
   	@venue.save
   	@user.save
   	render json: { success: true }
