@@ -6,5 +6,6 @@ json.array! @followed_venues do |v|
   	json.formatted_address v.address
   	json.latitude v.latitude
  	json.longitude v.longitude
+ 	json.is_following 1
   	json.followers_count v.followers.count
 end
