@@ -13,9 +13,11 @@ class BountyClaims < ActiveRecord::Base
 
 		bounty.valid = false
 		bounty.save
+		#SEND NOTIFICATION TO RESPONDER
 	end
 
 	def rejected
+		#SEND NOTIFICATION TO RESPONDER
 	end
 
 end
