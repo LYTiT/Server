@@ -3,7 +3,7 @@ class Bounty < ActiveRecord::Base
 	belongs_to :venue
 
 	def is_valid?
-		if self.expiration - self.created_at < 0
+		if self.expiration.to_time < Time.now
 			self.validity = false
 			save
 			return false
