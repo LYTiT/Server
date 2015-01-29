@@ -30,7 +30,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_bounties
     @user = User.find_by_id(params[:user_id])
-    @bounties = @user.bounties.order('id DSC')
+    @bounties = @user.bounties.order('id DESC')
   end
 
   def get_groups
