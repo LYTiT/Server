@@ -155,6 +155,15 @@ class Api::V1::VenuesController < ApiBaseController
           @user.update_lumens_after_text(@comment.id)
         end
 
+        #If the Venue Comment is a Bounty response we must create a Bounty Response Object
+        if params[:is_bounty_response] != nil
+          bc = BountyClaim.new(:venue_comment_id => @comment.id, :user_id => @comment.user_id, :bounty_id => params[:is_bounty_response])
+          bc.save
+          b = Bounty.find_by_id(params[:is_bounty_response])
+          b.response_received = true
+          b.save
+        end
+
         #check to see if there is @Group link present in text (introduced in v3.2.0)
         if @user.version_compatible?("3.2.0")
           if params[:at_ids] != nil

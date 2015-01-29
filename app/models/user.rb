@@ -35,6 +35,8 @@ class User < ActiveRecord::Base
 
   has_many :temp_posting_housings, :dependent => :destroy
 
+  has_many :bounties, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token

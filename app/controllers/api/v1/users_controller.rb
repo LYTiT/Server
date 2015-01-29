@@ -28,6 +28,11 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_bounties
+    @user = User.find_by_id(params[:user_id])
+    @bounties = @user.bounties
+  end
+
   def get_groups
     @user = User.find_by_id(params[:user_id])
     if not @user
