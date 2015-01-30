@@ -2,7 +2,7 @@ class Api::V1::BountiesController < ApiBaseController
 
   def create
     bounty_expiration = Time.now + params[:expiration].to_i.minutes
-  	bounty = Bounty.new(:user_id => params[:user_id], :venue_id => params[:venue_id], :lumen_reward => params[:lumen_reward], :expiration => bounty_expiration.to_time, :media_type => params[:media_type], :comment => params[:comment])
+  	bounty = Bounty.new(:user_id => params[:user_id], :venue_id => params[:venue_id], :lumen_reward => params[:lumen_reward], :expiration => bounty_expiration, :media_type => params[:media_type], :comment => params[:comment])
   	@venue = Venue.find_by_id(params[:venue_id])
   	@user = User.find_by_id(params[:user_id])
   	@venue.outstanding_bounties = @venue.outstanding_bounties + 1

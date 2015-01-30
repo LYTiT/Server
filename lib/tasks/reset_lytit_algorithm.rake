@@ -16,6 +16,10 @@ namespace :lytit do
       venue.reset_r_vector
     end
 
+    Bounty.all.each do |bounty|
+      bounty.is_valid?
+    end
+
     puts "done."
   end
 

@@ -5,6 +5,8 @@ class Bounty < ActiveRecord::Base
 	def is_valid?
 		if self.expiration.to_time < Time.now
 			self.validity = false
+			venue.outstanding_bounties = venue.outstanding_bounties - 1
+			venue.save
 			save
 			return false
 		else

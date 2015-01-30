@@ -53,6 +53,14 @@ class Venue < ActiveRecord::Base
     write_attribute(:menu_link, val)
   end
 
+  def has_menue?
+    if menue.menu_section_items.count = 0
+      return false
+    else
+      return true
+    end
+  end
+
   def to_param
     [id, name.parameterize].join("-")
   end
@@ -77,7 +85,7 @@ class Venue < ActiveRecord::Base
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND (color_rating > -1.0 OR outstanding_bounties > 0)", min_lat, max_lat, min_long, max_long)
   end
 
   def self.geo_spotlyt(radius, lat, long, start_t, end_t)

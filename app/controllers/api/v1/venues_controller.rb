@@ -16,6 +16,12 @@ class Api::V1::VenuesController < ApiBaseController
     render json: venue
   end
 
+  def get_bounties
+    @venue = Venue.find(params[:id])
+    @bounties = @venue.bounties.order('id DESC')
+    @bounties.each{|bounty| bounty.is_valid?}
+  end
+
   def add_comment
     parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
     assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
