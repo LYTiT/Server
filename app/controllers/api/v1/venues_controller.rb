@@ -17,7 +17,7 @@ class Api::V1::VenuesController < ApiBaseController
   end
 
   def get_bounties
-    @venue = Venue.find(params[:id])
+    @venue = Venue.find_by_id(params[:venue_id])
     @bounties = @venue.bounties.order('id DESC')
     @bounties.each{|bounty| bounty.is_valid?}
   end
