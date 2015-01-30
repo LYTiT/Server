@@ -106,6 +106,7 @@ LytitServer::Application.routes.draw do
           get 'get_geo_spotlyt'
         end
 
+        get 'get_bounties'
         post 'vote'
       end
 
