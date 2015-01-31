@@ -55,6 +55,7 @@ LytitServer::Application.routes.draw do
 
       resources :bounties, only: [:create] do
         get 'get_claims'
+        post 'viewed_claim'
       end
 
       resources :group_invitations do

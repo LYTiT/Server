@@ -18,4 +18,9 @@ class Api::V1::BountiesController < ApiBaseController
     @comments = @bounty.venue_comments.page(params[:page]).per(12).order("created_at desc")
   end
 
+  def viewed_claim
+    @bounty = Bounty.find_by_id(params[:bounty_id])
+    @bounty.viewed_claim
+  end
+
 end

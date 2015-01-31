@@ -4,6 +4,14 @@ class BountyClaim < ActiveRecord::Base
 
 	belongs_to :venue_comment
 
+	validate :proper_media_type
+
+	def proper_media_type
+		if self.venue_comment.media_type != self.bounty.media_type
+			errors.add('Improper bounty claim media type. Please try again.')
+		end
+	end
+
 	def accepted
 		reward = bounty.lumen_reward
 		user.lumens = user.lumens + reward

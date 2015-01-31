@@ -10,6 +10,7 @@ class Venue < ActiveRecord::Base
   validates :latitude, presence: true
   validates :longitude, presence: true
   validate :validate_menu_link
+  validates_numericality_of :outstanding_bounties, :greater_than => 0
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
@@ -115,7 +116,7 @@ class Venue < ActiveRecord::Base
     #venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
     #--------------------------------
 
-    #We need to determin the type of search being conducted whether it is venue specific or geographic
+    #We need to determine the type of search being conducted whether it is venue specific or geographic
     if vaddress == nil
       if vcity != nil #city search
         radius = 3000

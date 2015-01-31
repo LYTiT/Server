@@ -18,7 +18,13 @@ class Api::V1::UsersController < ApiBaseController
     @user.set_version(params[:version])
     render json: { success: true }
   end
-  
+
+  def get_bounties
+    @user = User.find_by_id(params[:user_id])
+    @bounties = Bounty.where("user_id = ? AND validity = true", @user.id).order('id DESC')
+    @bounties.each{|bounty| bounty.check_validity}
+  end
+
   def get_comments
     @user = User.find_by_id(params[:user_id])
     if not @user
@@ -26,12 +32,6 @@ class Api::V1::UsersController < ApiBaseController
     else
       @comments = @user.venue_comments.page(params[:page]).per(12).order("created_at desc")
     end
-  end
-
-  def get_bounties
-    @user = User.find_by_id(params[:user_id])
-    @bounties = @user.bounties.order('id DESC')
-    #@bounties.each{|bounty| bounty.is_valid?}
   end
 
   def get_groups

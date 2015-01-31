@@ -7,4 +7,5 @@ json.array! @bounties do |bounty|
 	json.comment bounty.comment
   	json.media_type bounty.media_type
   	json.response_received bounty.response_received
+  	json.validity bounty.validity
 end
