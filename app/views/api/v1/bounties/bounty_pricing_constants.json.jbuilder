@@ -1,0 +1,5 @@
+json.slope BountyPricingConstants.slope
+json.intercept BountyPricingConstants.intercept
+json.text_media_weight BountyPricingConstants.text_media_weight
+json.image_media_weight BountyPricingConstants.image_media_weight
+json.video_media_weight BountyPricingConstants.video_media_weight

@@ -56,6 +56,8 @@ LytitServer::Application.routes.draw do
       resources :bounties, only: [:create] do
         get 'get_claims'
         post 'viewed_claim'
+        get 'get_pricing_constants'
+        get 'get_bounty_claim_notification_details'
       end
 
       resources :group_invitations do

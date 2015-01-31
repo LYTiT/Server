@@ -23,4 +23,21 @@ class Api::V1::BountiesController < ApiBaseController
     @bounty.viewed_claim
   end
 
+  def get_bounty_claim_notification_details
+    @bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
+    @venue = @bounty_claim.bounty.venue
+  end
+
+  def get_bounty_claim_rejection_notificaion_details
+  
+  end
+
+  def get_bounty_claim_accept_notification_details
+
+  end
+
+  def get_pricing_constants
+    render 'bounty_pricing_constants.json.jbuilder'
+  end
+
 end
