@@ -45,13 +45,13 @@ class BountyClaim < ActiveRecord::Base
 		
 	end
 
-	def store_new_bounty_claim_notification(payload, user, message)
+	def store_new_bounty_claim_notification(payload, payer, message)
 		notification = {
 		  :payload => payload,
-		  :gcm => user.gcm_token.present?,
-		  :apns => user.push_token.present?,
+		  :gcm => payer.gcm_token.present?,
+		  :apns => payer.push_token.present?,
 		  :response => notification_payload,
-		  :user_id => user.id,
+		  :user_id => payer.id,
 		  :read => false,
 		  :message => message,
 		  :deleted => false
