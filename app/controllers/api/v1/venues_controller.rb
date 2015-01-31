@@ -20,9 +20,11 @@ class Api::V1::VenuesController < ApiBaseController
     @venue = Venue.find_by_id(params[:venue_id])
     raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
     @bounties = []
-    for bounty in raw_bounties
-      if bounty.check_validity == true
-        @bounties << bounty
+    if raw_bounties.count > 0
+      for bounty in raw_bounties
+        if bounty.check_validity == true
+          @bounties << bounty
+        end
       end
     end
   end
@@ -188,10 +190,12 @@ class Api::V1::VenuesController < ApiBaseController
               end
             end
           else
-            for gname in params[:at_names]
-              receiving_group = Group.find_by_name(gname["group_name"])
-              if receiving_group.is_user_member?(@user.id)
-                receiving_group.at_group!(@comment)
+            if params[:at_names] != nil
+              for gname in params[:at_names]
+                receiving_group = Group.find_by_name(gname["group_name"])
+                if receiving_group.is_user_member?(@user.id)
+                  receiving_group.at_group!(@comment)
+                end
               end
             end
           end
