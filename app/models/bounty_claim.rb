@@ -1,4 +1,4 @@
-class BountyClaims < ActiveRecord::Base
+class BountyClaim < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :bounty
 
