@@ -23,3 +23,7 @@ json.comments(@comments) do |comment|
   json.group_5_name comment.groups[4].try(:name)
   json.group_5_id comment.groups[4].try(:id)
 end
+json.pagination do 
+  json.current_page @comments.current_page
+  json.total_pages @comments.total_pages
+end
