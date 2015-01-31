@@ -8,4 +8,5 @@ json.array! @bounties do |bounty|
   	json.media_type bounty.media_type
   	json.response_received bounty.response_received
   	json.validity bounty.validity
+  	json.claims_count bounty.bounty_claims.count
 end

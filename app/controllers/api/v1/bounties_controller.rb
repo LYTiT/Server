@@ -25,6 +25,7 @@ class Api::V1::BountiesController < ApiBaseController
 
   def get_bounty_claim_notification_details
     @bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
+    @bounty = @bounty_claim.bounty
     @venue = @bounty_claim.bounty.venue
   end
 

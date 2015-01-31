@@ -76,7 +76,7 @@ class BountyClaim < ActiveRecord::Base
 		venue.outstanding_bounties = venue.outstanding_bounties - 1 
 		venue.save
 
-		bounty.valid = false
+		bounty.validity = false
 		bounty.save
 		#SEND NOTIFICATION TO RESPONDER
 	end

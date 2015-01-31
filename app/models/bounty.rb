@@ -24,6 +24,7 @@ class Bounty < ActiveRecord::Base
 
 	def viewed_claim
 		self.last_viewed_claim_time = Time.now
+		self.response_received = false
 		save
 	end
 end
