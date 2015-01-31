@@ -11,7 +11,9 @@ class Bounty < ActiveRecord::Base
 			venue.outstanding_bounties = venue.outstanding_bounties - 1
 			venue.save
 
-			if bounty_claims.count == 0 || self.last_viewed_claim_time < (Time.now - 120.minutes) #cleanup
+			wrap_around_claim_time = self.last_viewed_claim_time || Time.now - 121.minutes
+
+			if bounty_claims.count == 0 || wrap_around_claim_time < (Time.now - 120.minutes) #cleanup
 				self.validity = false
 				result = false
 				self.save
