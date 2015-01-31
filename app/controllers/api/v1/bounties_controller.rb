@@ -15,7 +15,7 @@ class Api::V1::BountiesController < ApiBaseController
 
   def get_claims
     @bounty = Bounty.find_by_id(params[:bounty_id])
-    @comments = @bounty.venue_comments.order('id DESC')
+    @comments = @bounty.venue_comments.order('id DESC').to_a
   end
 
 end
