@@ -25,7 +25,7 @@ class BountyClaim < ActiveRecord::Base
 		    :user_id => bounty.user_id
 		}
 		message = "Someone responded to your Bounty at #{bounty.venue.name}"
-		notification = self.store_new_bounty_claim_notification((payload, bounty.user, message)
+		notification = self.store_new_bounty_claim_notification(payload, bounty.user, message)
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
@@ -42,7 +42,6 @@ class BountyClaim < ActiveRecord::Base
 		  request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
 		  request.send([bounty.user.gcm_token], options)
 		end
-		
 	end
 
 	def store_new_bounty_claim_notification(payload, payer, message)
