@@ -13,10 +13,9 @@ class Api::V1::BountiesController < ApiBaseController
   	render json: { success: true }
   end
 
-  def destroy
-  	@bounty = Bounty.find_by_id(params[:bounty_id])
-  	@bounty.destroy
-  	render json: { success: true }
+  def get_claims
+    @bounty = Bounty.find_by_id(params[:bounty_id])
+    @comments = @bounty.order('id DESC')
   end
 
 end
