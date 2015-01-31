@@ -14,9 +14,8 @@ class Bounty < ActiveRecord::Base
 			if bounty_claims.count == 0 || self.last_viewed_claim_time < (Time.now - 120.minutes) #cleanup
 				self.validity = false
 				result = false
+				self.save
 			end
-
-			save
 		end
 		return result
 	end
