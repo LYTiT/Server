@@ -18,8 +18,13 @@ class Api::V1::VenuesController < ApiBaseController
 
   def get_bounties
     @venue = Venue.find_by_id(params[:venue_id])
-    @bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
-    @bounties.each{|bounty| bounty.check_validity}
+    raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
+    @bounties = []
+    for bounty in raw_bounties
+      if bounty.check_validity == true
+        @bounties << bounty
+      end
+    end
   end
 
   def add_comment

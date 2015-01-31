@@ -6,16 +6,19 @@ class Bounty < ActiveRecord::Base
 	has_many :venue_comments, through: :bounty_claims, source: :venue_comment
 
 	def check_validity
+		result = true
 		if self.expiration.to_time < Time.now
 			venue.outstanding_bounties = venue.outstanding_bounties - 1
 			venue.save
 
 			if bounty_claims.count == 0 || self.last_viewed_claim_time < (Time.now - 120.minutes) #cleanup
 				self.validity = false
+				result = false
 			end
 
 			save
 		end
+		return result
 	end
 
 	def viewed_claim

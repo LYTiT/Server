@@ -17,7 +17,7 @@ namespace :lytit do
     end
 
     Bounty.all.each do |bounty|
-      bounty.is_valid?
+      bounty.check_validity
     end
 
     puts "done."
