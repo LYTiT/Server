@@ -23,6 +23,18 @@ class Api::V1::BountiesController < ApiBaseController
     @bounty.viewed_claim
   end
 
+  def accept_bounty_claim
+    @venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
+    @bounty_claim = @venue_comment.bounty_claim[0]
+    @bounty_claim.accepted
+  end
+
+  def reject_bounty_claim
+    @venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
+    @bounty_claim = @venue_comment.bounty_claim[0]
+    @bounty_claim.rejected
+  end
+
   def get_bounty_claim_notification_details
     @bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
     @bounty = @bounty_claim.bounty

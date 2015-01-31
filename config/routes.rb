@@ -58,6 +58,8 @@ LytitServer::Application.routes.draw do
         post 'viewed_claim'
         get 'get_pricing_constants'
         get 'get_bounty_claim_notification_details'
+        post 'accept_bounty_claim'
+        post 'reject_bounty_claim'
       end
 
       resources :group_invitations do

@@ -3,6 +3,8 @@ class VenueComment < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :venue
+  
+  has_many :bounty_claim, :dependent => :destroy
 
   has_many :flagged_comments, :dependent => :destroy
   has_many :comment_views, :dependent => :destroy
