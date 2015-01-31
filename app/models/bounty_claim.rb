@@ -2,7 +2,7 @@ class BountyClaim < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :bounty
 
-	has_many :venue_comments
+	belongs_to :venue_comment
 
 	def accepted
 		reward = bounty.lumen_reward
