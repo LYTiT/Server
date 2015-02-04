@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150131192714) do
+ActiveRecord::Schema.define(version: 20150204071607) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(version: 20150131192714) do
   add_index "at_group_relationships", ["venue_comment_id"], name: "index_at_group_relationships_on_venue_comment_id", using: :btree
 
   create_table "bounties", force: true do |t|
-    t.integer  "lumen_reward"
+    t.float    "lumen_reward"
     t.integer  "user_id"
     t.integer  "venue_id"
     t.datetime "created_at"
@@ -68,6 +68,8 @@ ActiveRecord::Schema.define(version: 20150131192714) do
     t.integer  "venue_comment_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "rejected",         default: false
+    t.string   "rejection_reason"
   end
 
   add_index "bounty_claims", ["bounty_id"], name: "index_bounty_claims_on_bounty_id", using: :btree
@@ -228,6 +230,7 @@ ActiveRecord::Schema.define(version: 20150131192714) do
     t.integer  "lytit_vote_id"
     t.integer  "venue_comment_id"
     t.string   "media_type"
+    t.integer  "bounty_id"
   end
 
   add_index "lumen_values", ["user_id"], name: "index_lumen_values_on_user_id", using: :btree
@@ -344,6 +347,7 @@ ActiveRecord::Schema.define(version: 20150131192714) do
     t.integer  "total_views",                                 default: 0
     t.float    "lumen_notification",                          default: 0.0
     t.string   "version",                                     default: "3.0.0"
+    t.float    "bounty_lumens",                               default: 0.0
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
@@ -370,6 +374,7 @@ ActiveRecord::Schema.define(version: 20150131192714) do
     t.boolean  "from_user",         default: false
     t.integer  "session"
     t.string   "offset_created_at"
+    t.integer  "bounty_claim_id"
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree

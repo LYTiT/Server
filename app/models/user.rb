@@ -130,55 +130,53 @@ class User < ActiveRecord::Base
     venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
   end
 
-  def groupfeed(group_number, excluded_ids)
-    #no Groups mean there can be no group feed - we return null
-    if self.groups.count == 0
+  def groupfeed
+    #List of the ids of Groups user is part of
+    group_ids = self.groups.flatten.map(&:id)
+    #User not part of any Group thus there can be no feed
+    if group_ids.length == 0
       return nil
-    #either this is the last step of the recursion which means its time to append the last Group's venuefeed and reuturn
-    #the total groupfeed or a user is only in one Group thus no need to recursivly check the inclusion of other Group's venues  
-    elsif group_number == self.groups.count - 1
-      considered_group = self.groups[group_number]
-      group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{considered_group.id}"
-      if excluded_ids != nil
-        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})", group_id: considered_group.id)
-        type =  Array.new(gfeed.count, 3)
-        return gfeed.zip(type.to_a)
-      else
-        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id}", group_id: considered_group.id)
-        type =  Array.new(gfeed.count, 3)
-        return gfeed.zip(type.to_a)
-      end
-    #a recursion is used to append the ids of venue comments of mutually inclusive Group venues to the excluded_ids array in order to prevent dupicate venue comments
-    #from appearing in a User's Moments feed 
     else
-      if group_number == nil
-        group_number = 0
-      end
-      #iterate through a User's Groups one by one
-      considered_group = self.groups[group_number]
-
-      #dealing with first runthrough of recursion so thus must inject the ids of venue comments coming from users and venues followed by the user to the excluded_ids array 
-      if excluded_ids == nil
-        if considered_group != nil
-          at_venue = []
-          at_venue << considered_group.venue_comments
-          excluded_ids = (at_venue<<VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
+      #To prevent redundent entries in the Moments feed will omit Venue Comments pulled from places and people the user follows
+      excluded_ids = (VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
+      valid_ids = ''
+      for g_id in group_ids
+        #We check to make sure the user is subscribed to the Group before pullings its associated Venue Comments
+        if GroupsUser.where("user_id = #{id} AND group_id = #{g_id}").first.notification_flag == false
+          next
         else
-          excluded_ids = (VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
+          considered_group = Group.find_by_id(g_id)
+          at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id} AND venue_comment_id NOT IN (#{excluded_ids})"
+          mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
+          valid_ids = valid_ids + mapped_at_group_valid_venue_comment_ids #these Venue Comments are the @Group comments of the Group that are not part of the followed people or places feed
+          
+          #We pull in the associated Venue Comments of a Group (Venue Comments posted at Venues belonging to the Group)
+          if excluded_ids.length > 0
+            group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{g_id}"
+            gfeed_vc_ids = VenueComment.where("venue_id IN (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})").flatten.map(&:id).join(', ')
+          else
+            group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{g_id}"
+            gfeed_vc_ids = VenueComment.where("venue_id IN (#{group_venue_ids}) AND user_id != #{self.id}").flatten.map(&:id).join(', ')
+          end
+
+          #Prevent double pulling of Venue Comments that belong to more than one Group (if for example the Venue Comment's venue belongs to both Groups)
+          if gfeed_vc_ids.length > 0
+            if valid_ids.length >0
+              valid_ids = valid_ids + ', ' + gfeed_vc_ids
+              exlcuded_ids = excluded_ids + ', ' + valid_ids
+            else
+              valid_ids = gfeed_vc_ids
+              exlcuded_ids = valid_ids
+            end
+          end
         end
       end
-
-      group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{considered_group.id}"
-      #The user is following users or venues
-      if excluded_ids.length > 0
-        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})", group_id: considered_group.id)
+      #Return the final list of Venue Comments if there is something new to return
+      if valid_ids.length > 0 
+        return VenueComment.where("id IN (#{valid_ids})")
       else
-        gfeed = VenueComment.where("venue_id in (#{group_venue_ids}) AND user_id != #{self.id}", group_id: considered_group.id)
+        return nil
       end
-      excluded_ids = excluded_ids << gfeed.map(&:id).join(', ')
-      excluded_ids
-      group_number = group_number + 1
-      return groupfeed(group_number, excluded_ids)
     end
   end
 
@@ -196,7 +194,7 @@ class User < ActiveRecord::Base
 
   #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
   def totalfeed
-    feed = (userfeed + venuefeed + groupfeed(0, nil))
+    feed = (userfeed + venuefeed + groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
@@ -528,7 +526,7 @@ class User < ActiveRecord::Base
       elsif perc.between?(31, 40)
         span = 115
       elsif perc.between?(41, 50)
-        span = 120#120
+        span = 120
       elsif perc.between?(51, 60)
         span = 125
       elsif perc.between?(61, 70)

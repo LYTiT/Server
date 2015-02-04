@@ -3,8 +3,9 @@ class VenueComment < ActiveRecord::Base
 
   belongs_to :user
   belongs_to :venue
+  belongs_to :bounty_claim
   
-  has_many :bounty_claim, :dependent => :destroy
+  #has_many :bounty_claim, :dependent => :destroy
 
   has_many :flagged_comments, :dependent => :destroy
   has_many :comment_views, :dependent => :destroy
@@ -97,7 +98,13 @@ class VenueComment < ActiveRecord::Base
       followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
       where("venue_id IN (#{followed_venues_ids})", user_id: user)
     end
+  end
 
+  def VenueComment.from_valid_bounty_claims(bounty)
+    b_id = bounty.id
+    valid_bounty_claim_ids = "SELECT id FROM bounty_claims WHERE bounty_id = #{b_id} AND rejected = false"
+    puts "HERE: #{valid_bounty_claim_ids}"
+    where("bounty_claim_id IN (#{valid_bounty_claim_ids})").order("created_at desc")
   end
 
   def VenueComment.from_group_venues(group)

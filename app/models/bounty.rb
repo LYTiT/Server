@@ -27,4 +27,8 @@ class Bounty < ActiveRecord::Base
 		self.response_received = false
 		save
 	end
+
+	def valid_bounty_claim_venue_comments
+		VenueComment.from_valid_bounty_claims(self)
+	end
 end

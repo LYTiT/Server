@@ -174,6 +174,8 @@ class Api::V1::VenuesController < ApiBaseController
           if not bc.save
             render json: { error: { code: ERROR_UNPROCESSABLE, messages: bc.errors.full_messages } }, status: :unprocessable_entity
           else
+            @comment.bounty_claim_id = bc.id
+            @comment.save
             b = Bounty.find_by_id(params[:is_bounty_response])
             b.response_received = true
             b.save
