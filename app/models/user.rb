@@ -178,7 +178,9 @@ class User < ActiveRecord::Base
       end
       #Return the final list of Venue Comments if there is something new to return
       if valid_ids.length > 0 
-        return VenueComment.where("id IN (#{valid_ids})")
+        gfeed = VenueComment.where("id IN (#{valid_ids})")
+        type = Array.new(gfeed.count, 2)
+        return gfeed.zip(type.to_a)
       else
         return nil
       end
