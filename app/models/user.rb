@@ -514,6 +514,7 @@ class User < ActiveRecord::Base
       radii["image"] = 0.0
       radii["text"] = 0.0
       radii["votes"] = 0.0
+      radii["bounty"] = 0.0
       return radii
     else
       perc = lumen_percentile
@@ -544,6 +545,7 @@ class User < ActiveRecord::Base
       total_lumens << image_lumens
       total_lumens << text_lumens
       total_lumens << vote_lumens
+      total_lumens << bounty_lumens
 
       min_lumen = total_lumens.min
 
@@ -554,12 +556,12 @@ class User < ActiveRecord::Base
       radii["image"] = (image_lumens / self.lumens) * range + radius
       radii["text"] = (text_lumens / self.lumens) * range + radius
       radii["votes"] = (vote_lumens / self.lumens) * range + radius
+      radii["bounty"] = (bounty_lumens / self.lumens) * range + radius
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
       return radii2
     end
   end
-
 
   def video_radius
     radius_assignment["video"]
@@ -575,6 +577,10 @@ class User < ActiveRecord::Base
 
   def votes_radius
     radius_assignment["votes"]
+  end
+
+  def bounty_radius
+    radius_assignment["bounty"]
   end
 
   def views_radius
@@ -600,6 +606,10 @@ class User < ActiveRecord::Base
 
   def lumen_votes_contribution_rank
     rank = radius_assignment.keys.index("votes") + 1
+  end
+
+  def lumen_bounty_contribution_rank
+    rank = radius_assignment.keys.index("bounty") + 1
   end 
 
   def lumen_views_contribution_rank
@@ -620,62 +630,10 @@ class User < ActiveRecord::Base
     end
   end
 
-  #For posting by parts implementation
-  def posting_kill_request
-=begin
-    last_comments = self.venue_comments.order('id ASC').to_a.pop(5)
-    last_comments.reverse!
-    pos = 0
-    rescued = false
+  #Sanity check if user is permited to claim Bounties based on his rejection history
+  def can_user_claim_bounty?
+    r#ejections = BountyClaimRejectionTracker.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, Time.now, date.at_beginning_of_day).order("created_at desc")
 
-    for last_comment in last_comments
-
-      if last_comment.venue_id == 14002
-        
-        #This is probably redundent however just to make sure that cases such as simultaneous photo and comment saving are accounted for.
-        for c in last_comments[pos..last_comments.length] 
-          if last_comment.session != nil and last_comment.session == c.session
-            if c.venue_id != 14002 #c must be the text
-              c.media_type = last_comment.media_type
-              c.media_url = last_comment.media_url
-              c.save
-              last_comment.delete
-              rescued = true
-            else
-              if c.media_type == "text" #last_comment is media
-                c.venue_id = c.views
-                c.views = 0
-                c.comment = nil
-                c.media_type = last_comment.media_type
-                c.media_url = last_comment.media_url
-                c.save
-                last_comment.delete
-                rescued = true
-              else #last_comment is text that is blank
-                c.venue_id = last_comment.views
-                c.save
-                last_comment.delete
-                rescued = true
-              end
-            end
-          end
-        end
-
-        if rescued == false
-          if (last_comment.media_type != "text") && (((Time.now - last_comment.created_at) / 1.minute) >= 1.0)
-            last_comment.delete
-          end
-
-          if (last_comment.media_type == "text") && (((Time.now - last_comment.created_at) / 1.minute) > 5.0)
-            last_comment.delete
-          end
-        end
-
-      end
-      pos = pos + 1
-    end
-=end
-    return 
   end
 
 
