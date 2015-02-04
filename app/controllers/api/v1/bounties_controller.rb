@@ -34,7 +34,7 @@ class Api::V1::BountiesController < ApiBaseController
     @venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
     @bounty_claim = @venue_comment.bounty_claim[0]
     reason = params[:reason]
-    @bounty_claim.rejected(reason)
+    @bounty_claim.rejection(reason)
     render json: { success: true }
   end
 
