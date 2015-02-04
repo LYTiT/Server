@@ -146,8 +146,13 @@ class User < ActiveRecord::Base
           next
         else
           considered_group = Group.find_by_id(g_id)
-          at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id} AND venue_comment_id NOT IN (#{excluded_ids})"
-          mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
+          if excluded_ids.length > 0
+            at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id} AND venue_comment_id NOT IN (#{excluded_ids})"
+            mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
+          else
+            at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id}"
+            mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
+          end
           valid_ids = valid_ids + mapped_at_group_valid_venue_comment_ids #these Venue Comments are the @Group comments of the Group that are not part of the followed people or places feed
           
           #We pull in the associated Venue Comments of a Group (Venue Comments posted at Venues belonging to the Group)
@@ -632,7 +637,7 @@ class User < ActiveRecord::Base
 
   #Sanity check if user is permited to claim Bounties based on his rejection history
   def can_user_claim_bounty?
-    r#ejections = BountyClaimRejectionTracker.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, Time.now, date.at_beginning_of_day).order("created_at desc")
+    #rejections = BountyClaimRejectionTracker.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, Time.now, date.at_beginning_of_day).order("created_at desc")
 
   end
 

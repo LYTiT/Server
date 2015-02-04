@@ -142,7 +142,7 @@ class BountyClaim < ActiveRecord::Base
 	end
 
 	#If a Bounty Claim is rejected a notification to the responder with the reason for rejection is sent
-	def rejection(reason)
+	def rejection(reasoning)
 		self.rejected = true
 		self.rejection_reason = reasoning
 		self.bounty_response_rejection_notification(reason)
