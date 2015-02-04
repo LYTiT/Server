@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204185215) do
+ActiveRecord::Schema.define(version: 20150204224949) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -67,6 +67,7 @@ ActiveRecord::Schema.define(version: 20150204185215) do
     t.integer  "bounty_claim_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "active",          default: true
   end
 
   add_index "bounty_claim_rejection_trackers", ["bounty_claim_id"], name: "index_bounty_claim_rejection_trackers_on_bounty_claim_id", using: :btree
@@ -358,6 +359,7 @@ ActiveRecord::Schema.define(version: 20150204185215) do
     t.float    "lumen_notification",                          default: 0.0
     t.string   "version",                                     default: "3.0.0"
     t.float    "bounty_lumens",                               default: 0.0
+    t.boolean  "can_claim_bounty",                            default: true
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
