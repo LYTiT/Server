@@ -35,6 +35,7 @@ class Api::V1::BountiesController < ApiBaseController
     @bounty_claim = @venue_comment.bounty_claim
     reason = params[:reason]
     @bounty_claim.rejection(reason)
+    @bounty_claim.save
     render json: { success: true }
   end
 
