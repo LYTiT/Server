@@ -645,8 +645,8 @@ class User < ActiveRecord::Base
     if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
       return false
     else
-      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).count
-      total_bounty_claims = BountyClaims.where("user_id = ? AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).count
+      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = BountyClaim.where("user_id = ? AND created_at <= ? AND created_at >= ?", id, Time.now, (Time.now - 7.days)).count
 
       if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
         self.can_claim_bounty = false
@@ -663,6 +663,10 @@ class User < ActiveRecord::Base
 
   def list_of_places_mapped
     Venue.where("id IN (?)", VenueComment.where("user_id = #{self.id}").uniq.pluck(:venue_id)).order("Name ASC")
+  end
+
+  def venue_comments_from_venue(venue_id)
+    VenueComment.where("user_id = #{self.id} AND venue_id = #{venue_id}").order("Id DESC")
   end
 
 
