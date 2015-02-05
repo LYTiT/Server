@@ -669,6 +669,11 @@ class User < ActiveRecord::Base
     VenueComment.where("user_id = #{self.id} AND venue_id = #{venue_id}").order("Id DESC")
   end
 
+  def top_posting_users
+     posting_users = VenueComment.group(:user_id).count.sort_by{|k, v| v}
+
+  end
+
 
   private ##################################################################################################
 

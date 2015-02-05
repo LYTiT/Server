@@ -84,21 +84,21 @@ class BountyClaim < ActiveRecord::Base
 
 		bounty.validity = false
 		bounty.save
-		self.bounty_claim_accept_notification
+		self.bounty_claim_acceptance_notification
 	end
 
-	def bounty_claim_accept_notification
-		self.delay.send_bounty_claim_accept_notification
+	def bounty_claim_acceptance_notification
+		self.delay.send_bounty_claim_acceptance_notification
 	end
 
-	def send_bounty_claim_accept_notification
+	def send_bounty_claim_acceptance_notification
 		payload = {
 		    :object_id => bounty.id,
 		    :type => 'bounty_claim_acceptance', 
 		    :user_id => user_id
 		}
 		message = "Congratulations! Your Bounty Claim at #{bounty.venue.name} has been accepted"
-		notification = self.store_new_bounty_claim_accept_notification(payload, user, message)
+		notification = self.store_new_bounty_claim_acceptance_notification(payload, user, message)
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
@@ -117,7 +117,7 @@ class BountyClaim < ActiveRecord::Base
 		end
 	end
 
-	def store_new_bounty_claim_accept_notification(payload, user, message)
+	def store_new_bounty_claim_acceptance_notification(payload, user, message)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
@@ -146,27 +146,28 @@ class BountyClaim < ActiveRecord::Base
 		self.rejected = true
 		self.rejection_reason = reasoning
 		self.response_received = false
-		self.bounty_response_rejection_notification(reasoning)
 		save
 		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :bounty_claim_id => self.id)
 		new_rejection_entry.save
 
 		user.latest_rejection_time = Time.now
 		user.save
+
+		self.bounty_claim_rejection_notification
 	end
 
-	def bount_response_rejection_notification
-		self.delay.send_bounty_response_reject_notification
+	def bounty_claim_rejection_notification
+		self.delay.send_bounty_claim_rejection_notification
 	end
 
-	def send_bounty_claim_accept_notification
+	def send_bounty_claim_rejection_notification
 		payload = {
 		    :object_id => self.id,
 		    :type => 'bounty_claim_rejection', 
 		    :user_id => user_id
 		}
 		message = "Your Bounty Claim at #{bounty.venue.name} has been rejected"
-		notification = self.store_new_bounty_claim_reject_notification(payload, user, message)
+		notification = self.store_new_bounty_claim_rejection_notification(payload, user, message)
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
@@ -185,12 +186,12 @@ class BountyClaim < ActiveRecord::Base
 		end
 	end
 
-	def store_new_bounty_claim_reject_notification(payload, user, message)
+	def store_new_bounty_claim_rejection_notification(payload, user, message)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
 		  :apns => user.push_token.present?,
-		  :response => acceptance_notification_payload,
+		  :response => rejection_notification_payload,
 		  :user_id => user.id,
 		  :read => false,
 		  :message => message,
@@ -199,7 +200,7 @@ class BountyClaim < ActiveRecord::Base
 		Notification.create(notification)
 	end
 
-	def acceptance_notification_payload
+	def rejection_notification_payload
 	  {
     	:bounty => {
 			:id => self.bounty.id,
