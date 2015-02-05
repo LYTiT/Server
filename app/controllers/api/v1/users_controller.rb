@@ -107,7 +107,7 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
-  def get_recomended_users
+  def get_recommended_users
     @user = User.find_by_id(params[:user_id])
     @top_users = User.top_posting_users
   end

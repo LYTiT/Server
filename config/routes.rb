@@ -30,7 +30,7 @@ LytitServer::Application.routes.draw do
         get 'is_member'
         get 'get_bounties'
         post 'can_claim_bounties'
-        get 'get_recomended_users'
+        get 'get_recommended_users'
       end
 
       resources :featured do
