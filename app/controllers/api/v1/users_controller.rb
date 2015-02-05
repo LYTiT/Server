@@ -107,6 +107,11 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_recomended_users
+    @user = User.find_by_id(params[:user_id])
+    @top_users = User.top_posting_users
+  end
+
   def posting_kill_request
     @user = User.find_by_id(params[:user_id])
     #@user.posting_kill_request

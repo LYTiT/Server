@@ -2,6 +2,7 @@ class LumenValue < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue_comment
 	belongs_to :lytit_vote
+	belongs_to :bounty
 
 	after_create :new_lumens_notification
 

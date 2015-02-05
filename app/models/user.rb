@@ -669,9 +669,11 @@ class User < ActiveRecord::Base
     VenueComment.where("user_id = #{self.id} AND venue_id = #{venue_id}").order("Id DESC")
   end
 
-  def top_posting_users
-     posting_users = VenueComment.group(:user_id).count.sort_by{|k, v| v}
-
+  #Returns 10 random users out of the top 20 most frequent venue comment posters
+  def self.top_posting_users
+     top_20_posting_users = VenueComment.group(:user_id).count.sort_by{|k, v| v}.reverse[0...19]
+     random_top_10_posting_users_ids = top_20_posting_users.sample(10).collect {|index| index[0]}
+     top_10_posters = User.where("id IN (?)", random_top_10_posting_users_ids)
   end
 
 
