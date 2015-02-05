@@ -145,8 +145,11 @@ class BountyClaim < ActiveRecord::Base
 	def rejection(reasoning)
 		self.rejected = true
 		self.rejection_reason = reasoning
-		self.response_received = false
 		save
+
+		self.bounty.response_received = false
+		self.bounty.save
+		
 		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :bounty_claim_id => self.id)
 		new_rejection_entry.save
 
