@@ -143,6 +143,11 @@ class Api::V1::GroupsController < ApiBaseController
     @comments = Kaminari.paginate_array(feed).page(params[:page]).per(5)
   end
 
+  def get_popular_groups
+    @user = User.find_by_authentication_token(params[:auth_token])
+    @groups = Group.popular_groups
+  end
+
   def report
     group = Group.find(params[:group_id])
     flagged_group = FlaggedGroup.new

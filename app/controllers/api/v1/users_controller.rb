@@ -51,7 +51,7 @@ class Api::V1::UsersController < ApiBaseController
     if not @user
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
     else
-      @groups = @user.linkable_groups(@user.groups.to_a)
+      @groups = @user.linkable_groups
     end
   end
 
@@ -68,22 +68,22 @@ class Api::V1::UsersController < ApiBaseController
 
   def following
     user = User.find(params[:user_id])
-    @followed_users = user.followed_users.sort_by{|following| following.name.downcase}
+    @followed_users = user.followed_users.order("Name ASC")
   end
 
   def followers
     @user = User.find(params[:user_id])
-    @followers = @user.followers.sort_by{|followers| followers.name.downcase}
+    @followers = @user.followers.order("Name ASC")
   end
 
   def get_followers_for_invite
     @user = User.find(params[:user_id])
-    @prospects = @user.followers_not_in_group(@user.followers.to_a, params[:group_id])
+    @prospects = @user.followers_not_in_group(params[:group_id])
   end
 
   def vfollowing
     user = User.find(params[:user_id])
-    @followed_venues = user.followed_venues.sort_by{|following| following.name.downcase}
+    @followed_venues = user.followed_venues.order("Name ASC")
   end
 
   def is_following_user
@@ -107,16 +107,35 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_list_of_places_mapped
+    @user = User.find_by_id(params[:user_id])
+    @places = @user.list_of_places_mapped
+  end
+
+  def get_venue_comments_from_venue
+    @user = User.find_by_id(params[:user_id])
+    vcs = @user.venue_comments_from_venue(params[:venue_id])
+    @comments = Kaminari.paginate_array(vcs).page(params[:page]).per(5)
+  end
+
   def get_recommended_users
     @user = User.find_by_id(params[:user_id])
     @top_users = User.top_posting_users
   end
 
-  def posting_kill_request
+  def posting_kill_request #no longer valid
     @user = User.find_by_id(params[:user_id])
-    #@user.posting_kill_request
     render json: { success: true }
   end
+
+  def search
+    @user = User.find_by_authentication_token(params[:auth_token])
+    if User.where("name = ?", params[:q].to_s).any?
+      @person = User.where("name = ?", params[:q].to_s)
+    else
+      @person = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
+    end  
+  end  
 
   def update
     @user = User.find params[:id]

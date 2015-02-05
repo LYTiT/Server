@@ -31,6 +31,11 @@ LytitServer::Application.routes.draw do
         get 'get_bounties'
         post 'can_claim_bounties'
         get 'get_recommended_users'
+        collection do
+          get 'search'
+        end
+        get 'get_list_of_places_mapped'
+        get 'get_venue_comments_from_venue'
       end
 
       resources :featured do
@@ -144,6 +149,9 @@ LytitServer::Application.routes.draw do
         get 'get_group_details'
         collection do
           get 'search'
+        end
+        collection do
+          get 'get_popular_groups'
         end
         post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue

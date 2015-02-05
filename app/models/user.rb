@@ -206,66 +206,21 @@ class User < ActiveRecord::Base
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
-  def followers_not_in_group(users, group_id)
-    target_group = Group.find_by_id(group_id)
-    return users if users.length <= 1
-
-    pivot_index = (users.length / 2).to_i
-    pivot_value = users[pivot_index]
-    users.delete_at(pivot_index)
-
-    lesser = Array.new
-    greater = Array.new
-
-    users.each do |x|
-      if (target_group.is_user_member?(x.id) == false) && (x.invited?(group_id) == false)
-        if x.name.upcase <= pivot_value.name.upcase
-          lesser << x
-        else
-          greater << x
-        end
-      end
-    end
-
-    if (target_group.is_user_member?(pivot_value.id) == false) && (pivot_value.invited?(group_id) == false)
-      return followers_not_in_group(lesser, group_id) + [pivot_value] + followers_not_in_group(greater, group_id)
-    else
-      return followers_not_in_group(lesser, group_id) + followers_not_in_group(greater, group_id)
-    end
-
+  def followers_not_in_group(group_id)
+    users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
+    followers_ids = "SELECT follower_id FROM relationships WHERE followed_id = #{self.id}"
+    User.where("id IN (#{followers_ids}) AND id NOT IN (#{users_in_group})").order("Name ASC")
   end
 
   #Returns list of Groups user is a member of which ar linkable to a Venue Page (either linkable xor admin of)
-  def linkable_groups(user_groups)
-    return user_groups if user_groups.length <= 1
-
-    pivot_index = (user_groups.length / 2).to_i
-    pivot_value = user_groups[pivot_index]
-    user_groups.delete_at(pivot_index)
-
-    lesser = Array.new
-    greater = Array.new
-
-    user_groups.each do |x|
-      if (x.can_link_venues == true) || (x.is_user_admin?(self.id) == true)
-        if x.name.upcase <= pivot_value.name.upcase
-          lesser << x
-        else
-          greater << x
-        end
-      end
-    end
-
-    if (pivot_value.can_link_venues == true) || (pivot_value.is_user_admin?(self.id) == true)
-      return linkable_groups(lesser) + [pivot_value] + linkable_groups(greater)
-    else
-      return linkable_groups(lesser) + linkable_groups(greater)
-    end
-
+  def linkable_groups
+    all_groups_ids = "SELECT group_id FROM groups_users WHERE user_id = #{self.id}"
+    admin_groups_ids = "SELECT group_id FROM groups_users WHERE user_id = #{self.id} AND is_admin = true"
+    Group.where("(id IN (#{all_groups_ids}) AND can_link_venues = true) OR id IN (#{admin_groups_ids})").order("Name ASC")
   end
 
 
-  #has the user been invited to a the Group "group"?
+  #Has the user been invited to a the Group "group"?
   def invited?(group_id)
     reverse_group_invitations.find_by(igroup_id: group_id) ? true : false
   end

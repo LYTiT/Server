@@ -119,6 +119,12 @@ class Group < ActiveRecord::Base
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
+  def self.popular_groups
+    top_20_popular_groups = GroupsUser.group(:group_id).count.sort_by{|k, v| v}.reverse[0...19]
+    random_top_10_popular_groups_id = top_20_popular_groups.sample(10).collect {|index| index[0]}
+    top_10_groups = Group.where("id IN (?)", random_top_10_popular_groups_id)
+  end
+
   def send_notification_to_users(user_ids, event_id)
     event = Event.find(event_id)
     for user_id in user_ids
