@@ -135,8 +135,8 @@ class BountyClaim < ActiveRecord::Base
 	  {
     	:bounty => {
 			:id => self.bounty.id,
-			:lumens => (self.bounty.lumen_reward)*0.9,
-			:venue => self.bounty.venue.name
+			:lumen_reward => (self.bounty.lumen_reward)*0.9,
+			:venue_name => self.bounty.venue.name
 		}
 	  }
 	end
