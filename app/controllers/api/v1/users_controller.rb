@@ -63,7 +63,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def can_claim_bounties
     @user = User.find_by_id(params[:user_id])
-    render json: { bool_response: @user.can_claim_bounty? } 
+    render json: { bool_response: @user.can_claim_bounties? } 
   end
 
   def following

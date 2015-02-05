@@ -661,6 +661,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def list_of_places_mapped
+    Venue.where("id IN (?)", VenueComment.where("user_id = #{self.id}").uniq.pluck(:venue_id)).order("Name ASC")
+  end
+
 
   private ##################################################################################################
 
