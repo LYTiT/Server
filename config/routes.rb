@@ -29,6 +29,7 @@ LytitServer::Application.routes.draw do
         get 'get_linkable_groups'
         get 'is_member'
         get 'get_bounties'
+        post 'can_claim_bounties'
       end
 
       resources :featured do

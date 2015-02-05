@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204224949) do
+ActiveRecord::Schema.define(version: 20150204235344) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -360,6 +360,7 @@ ActiveRecord::Schema.define(version: 20150204224949) do
     t.string   "version",                                     default: "3.0.0"
     t.float    "bounty_lumens",                               default: 0.0
     t.boolean  "can_claim_bounty",                            default: true
+    t.datetime "latest_rejection_time"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

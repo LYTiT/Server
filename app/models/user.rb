@@ -638,9 +638,27 @@ class User < ActiveRecord::Base
   end
 
   #Sanity check if user is permited to claim Bounties based on his rejection history
-  def can_user_claim_bounty?
-    rejections = BountyClaimRejectionTracker.where("user_id = ? AND created_at <= ? AND created_at >= ?", (Time.now - 7.days), Time.now, date.at_beginning_of_day).order("created_at desc")
+  def can_claim_bounties?
+    time_out = 1.0 #days
+    rejection_rate = 0.5
 
+    if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
+      return false
+    else
+      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = BountyClaims.where("user_id = ? AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).count
+
+      if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
+        self.can_claim_bounty = false
+        BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).update_all(active: false)
+      else
+        self.can_claim_bounty = true
+      end
+
+      save
+      return self.can_claim_bounty
+
+    end
   end
 
 

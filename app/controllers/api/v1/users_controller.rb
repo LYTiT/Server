@@ -61,18 +61,19 @@ class Api::V1::UsersController < ApiBaseController
     render json: { bool_response: @membership }
   end
 
+  def can_claim_bounties
+    @user = User.find_by_id(params[:user_id])
+    render json: { success: @user.can_claim_bounty? } 
+  end
+
   def following
-    #@title = "Following"
     user = User.find(params[:user_id])
     @followed_users = user.followed_users.sort_by{|following| following.name.downcase}
-    #@users = @user.followed_users.paginate(page: params[:page])
   end
 
   def followers
-    #@title = followers
     @user = User.find(params[:user_id])
     @followers = @user.followers.sort_by{|followers| followers.name.downcase}
-    #@users = @user.followers.paginate(page: params[:page])
   end
 
   def get_followers_for_invite
