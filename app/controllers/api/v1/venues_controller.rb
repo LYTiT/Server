@@ -287,14 +287,7 @@ class Api::V1::VenuesController < ApiBaseController
     start_t = selection
     end_t = selection + 24.hour
 
-    comments = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t).to_a
-
-    if comments.length > 0
-      sorted_comments = comments.sort_by {|entry| entry.views}
-      @spotlyts = sorted_comments.reverse.first(10)
-    else
-      @spotlyts = nil
-    end
+    @spotlyts = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t)
 
     render 'get_geo_spotlyt.json.jbuilder'
   end

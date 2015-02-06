@@ -21,7 +21,7 @@ class GroupsVenue < ActiveRecord::Base
         :group_id => self.group.id, 
         :user_id => user.id 
       }
-      message = "#{self.venue.name} has been linked to your Group #{self.group.name}"
+      message = "#{self.venue.name} has been added to your Placelist #{self.group.name}"
       notification = self.store_notification(payload, user, message)
       payload[:notification_id] = notification.id
 

@@ -26,14 +26,4 @@ class Api::V1::NotificationsController < ApiBaseController
     end
   end
 
-  def multiple_delete
-    for notification in params[:notifications_to_delete]
-      puts "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ #{notification["id"]}"
-      Notification.where(id: notification["id"], user_id: @user.id, deleted: false).first
-      notification[:deleted] = true
-      notification.save
-    end
-    render json: { success: true }
-  end
-
 end

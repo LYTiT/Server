@@ -32,10 +32,6 @@ class Group < ActiveRecord::Base
   def should_validate_password?
   	not is_public
   end
-  
-  # def can_link_event?
-  #   can_link_event
-  #end
 
   def join(user_id, pwd)
     if !self.is_public? and self.password != pwd
@@ -104,19 +100,14 @@ class Group < ActiveRecord::Base
     at_group_relationships.create!(venue_comment_id: venue_comment.id)
   end
 
-  def group_venuefeed
-    vc_ids = venue_comments.map(&:id).join(', ')
-    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
-    if vc_ids.length > 0
-      VenueComment.where("venue_id in (#{group_venue_ids}) AND id NOT IN (#{vc_ids})", group_id: id)
-    else
-      VenueComment.where("venue_id in (#{group_venue_ids})", group_id: id)
-    end
-  end
-
   def groupfeed
-    feed = (group_venuefeed + venue_comments)
-    feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
+    at_vc_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{self.id}"
+    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
+    if at_vc_ids.length > 0
+      VenueComment.where("venue_id in (#{group_venue_ids}) OR id NOT IN (#{at_vc_ids})", group_id: id).order("Id DESC")
+    else
+      VenueComment.where("venue_id in (#{group_venue_ids})", group_id: id).order("Id DESC")
+    end
   end
 
   def self.popular_groups

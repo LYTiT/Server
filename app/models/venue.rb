@@ -89,15 +89,15 @@ class Venue < ActiveRecord::Base
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND (color_rating > -1.0 OR outstanding_bounties > 0)", min_lat, max_lat, min_long, max_long)
   end
 
+  #Top 10 most viewed Venue Comments in an viewed area
   def self.geo_spotlyt(radius, lat, long, start_t, end_t)
     min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venue_ids = Venue.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_long, max_long).flatten.map(&:id).join(', ')
-    images = VenueComment.where("media_type = 'image' AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
-    videos = VenueComment.where("media_type = 'video' AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t)
-    spotlyts = (images << videos).flatten
+    #venue_ids = Venue.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_long, max_long).flatten.map(&:id).join(', ')
+    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
+    spotlyts = VenueComment.where("(media_type = 'image' OR media_type = 'video') AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t).order("Id DESC")[0...9]
   end
 
   def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
@@ -242,37 +242,6 @@ class Venue < ActiveRecord::Base
     self.save
   end
 
-  #LYTiT specific identifier keys for venues
-=begin  def self.createKey(lat, long, addrs)
-    part1 = ((lat.to_f)*1000).floor.abs.to_s
-    part2 = ((long.to_f)*1000).floor.abs.to_s
-    part3 = addrs.split(" ").first.to_s
-
-    key = (part1+part2+part3).to_i
-  end
-
-  def createKeylocal(lat, long, addrs)
-    part1 = ((lat.to_f)*1000).floor.abs.to_s
-    part2 = ((long.to_f)*1000).floor.abs.to_s
-    part3 = addrs.split(" ").first.to_s
-
-    key = (part1+part2+part3).to_i
-  end
-
-  def addKey
-    a1 = self.address
-    a2 = self.formatted_address
-    target = a1 || a2
-
-    if target == nil 
-      self.delete
-    else
-      key = createKeylocal(self.latitude, self.longitude, target)
-      update_columns(key: key)
-    end
-  end
-=end
-  
   #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
@@ -302,7 +271,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  #temp method to reformat older tepephones
+  #temp method to reformat older telephones
   def reformatTelephone
     number = phone_number
     if number == nil

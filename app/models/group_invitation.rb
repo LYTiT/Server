@@ -21,7 +21,7 @@ class GroupInvitation < ActiveRecord::Base
 		    :type => 'new_invitation', 
 		    :user_id => invited_id
 		}
-		message = "#{host.name} has invited you to join #{igroup.name}"
+		message = "#{host.name} has invited you to add #{igroup.name} to your Placelists"
 		notification = self.store_new_group_invitation_notification(payload, invited, message)
 		payload[:notification_id] = notification.id
 
