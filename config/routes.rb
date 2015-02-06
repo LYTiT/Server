@@ -13,7 +13,6 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
-          post 'multiple_delete'
         end
         post 'set_version'
         get 'following'
