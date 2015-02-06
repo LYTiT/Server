@@ -28,7 +28,7 @@ class Api::V1::NotificationsController < ApiBaseController
 
   def multiple_delete
     for notification in params[:notifications_to_delete]
-      Notification.find_by_id(notification["id"])
+      Notification.where(id: notification["id"], user_id: @user.id, deleted: false)
       notification[:deleted] = true
       notification.save
     end
