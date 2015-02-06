@@ -46,6 +46,16 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_a_users_profile
+    @user = User.find_by_id(params[:user_id])
+    if not @user
+      render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
+    else
+      v = @user.venue_comments.where("username_private = 'false'")
+      @comments = v.page(params[:page]).per(5).order("created_at desc")
+    end
+  end
+
   def get_linkable_groups
     @user = User.find_by_id(params[:user_id])
     if not @user

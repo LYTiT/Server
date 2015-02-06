@@ -13,6 +13,7 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
+          post 'multiple_delete'
         end
         post 'set_version'
         get 'following'
@@ -36,6 +37,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_list_of_places_mapped'
         get 'get_venue_comments_from_venue'
+        get 'get_a_users_profile'
       end
 
       resources :featured do

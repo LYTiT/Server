@@ -20,7 +20,7 @@ respond_to :json
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
     else
       v = @user.venue_comments.where("username_private = 'false'")
-      @comments = v.page(params[:page]).per(5).order("updated_at desc")
+      @comments = v.page(params[:page]).per(5).order("created_at desc")
     end
   end
 

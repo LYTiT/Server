@@ -26,4 +26,13 @@ class Api::V1::NotificationsController < ApiBaseController
     end
   end
 
+  def multiple_delete
+    for notification in params[:notifications_to_delete]
+      Notification.find_by_id(notification["id"])
+      notification[:deleted] = true
+      notification.save
+    end
+    render json: { success: true }
+  end
+
 end
