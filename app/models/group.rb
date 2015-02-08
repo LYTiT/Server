@@ -102,9 +102,9 @@ class Group < ActiveRecord::Base
 
   def groupfeed
     at_vc_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{self.id}"
-    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
+    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{self.id}"
     if at_vc_ids.length > 0
-      VenueComment.where("venue_id in (#{group_venue_ids}) OR id NOT IN (#{at_vc_ids})", group_id: id).order("Id DESC")
+      VenueComment.where("(venue_id in (#{group_venue_ids}) AND id NOT IN (#{at_vc_ids})) OR id IN (#{at_vc_ids})", group_id: id).order("Id DESC")
     else
       VenueComment.where("venue_id in (#{group_venue_ids})", group_id: id).order("Id DESC")
     end
