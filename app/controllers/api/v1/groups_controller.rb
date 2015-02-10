@@ -47,6 +47,7 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def search
+    @user = User.find_by_id(params[:user_id])
     @groups = Group.where("LOWER(name) like ? OR LOWER(description) like ?", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
   end
 
