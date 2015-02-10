@@ -70,7 +70,8 @@ class BountyClaim < ActiveRecord::Base
 	def acceptance
 		reward = bounty.lumen_reward
 		bounty_lumen_value = LumenValue.new(:value => reward*(0.9), :user_id => user.id, :bounty_id => bounty.id)
-		user.lumens = user.lumens + reward*(0.9) #10% is given back to the bounty issuer as a sign of good faith
+		user.bounty_lumens = (reward*(0.9)).round(4)
+		user.lumens = (user.lumens + reward*(0.9)).round(4) #10% is given back to the bounty issuer as a sign of good faith
 		bounty_lumen_value.save
 		user.save
 

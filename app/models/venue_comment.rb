@@ -80,14 +80,14 @@ class VenueComment < ActiveRecord::Base
 
   #returns comments of users followed
   def VenueComment.from_users_followed_by(user)
-    followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id AND username_private = 'false' AND venue_id != 14002"
-    where("user_id IN (#{followed_users_ids})", user_id: user)
+    followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id " #AND username_private = 'false' AND venue_id != 14002"
+    where("user_id IN (#{followed_users_ids}) AND username_private = 'false' AND venue_id != 14002", user_id: user)
   end
 
   #returns comments of venues followed
   def VenueComment.from_venues_followed_by(user)
     #followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
-    ids_followed_by_user = user.followed_users.map(&:id).join(', ')
+    ids_followed_by_user = "SELECT followed_id FROM relationships WHERE follower_id = #{user.id}" #user.followed_users.map(&:id).join(', ')
 
     if ids_followed_by_user.length > 0
       followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"

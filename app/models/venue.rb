@@ -10,7 +10,7 @@ class Venue < ActiveRecord::Base
   validates :latitude, presence: true
   validates :longitude, presence: true
   validate :validate_menu_link
-  validates_numericality_of :outstanding_bounties, :greater_than => 0
+  validates_numericality_of :outstanding_bounties, :greater_than_or_equal_to => 0
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy

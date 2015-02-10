@@ -3,6 +3,7 @@ class Api::V1::VenuesController < ApiBaseController
   skip_before_filter :set_user, only: [:search, :index]
 
   def show
+    #@user = User.find_by_authentication_token(params[:auth_token])
     @venue = Venue.find(params[:id])
     venue = @venue.as_json(include: :venue_messages)
     venue[:menu] = @venue.menu_sections.as_json(
@@ -14,6 +15,10 @@ class Api::V1::VenuesController < ApiBaseController
       }
     )
     render json: venue
+  end
+
+  def get_menue
+    @venue = Venue.find(params[:id])
   end
 
   def get_bounties
