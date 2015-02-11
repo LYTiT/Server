@@ -325,7 +325,7 @@ class Api::V1::VenuesController < ApiBaseController
       @venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
 
       #for the search of a place to add to a Placelist we check if the place is already in the place list
-      @group_id = params[:group_id]
+      @group_id = params[:g_id]
       #@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
       render 'search.json.jbuilder'
     end
