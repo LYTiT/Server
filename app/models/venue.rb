@@ -78,6 +78,14 @@ class Venue < ActiveRecord::Base
     venue_comments.where("venue_comments.id NOT IN (?)", ids)
   end
 
+  def is_linked_to_group?(group_id)
+    if group_id == nil
+      return nil
+    else
+      GroupsVenue.where("venue_id = ? and group_id = ?", self.id, group_id).first ? true : false
+    end
+  end
+
   #1 degree of latitude is ~110.54km while 1 degree of longitude is ~113.20*cos(latitude)km. This does not account for flattening at the earth's poles but in our 
   #case it is sufficiently accurate (Santa, dealt with it!)
   #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
@@ -100,7 +108,7 @@ class Venue < ActiveRecord::Base
     spotlyts = VenueComment.where("(media_type = 'image' OR media_type = 'video') AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t).order("Views DESC")[0...9]
   end
 
-  def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
+  def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     if vname == nil && vcountry == nil
       return
     end
