@@ -113,7 +113,7 @@ class Api::V1::UsersController < ApiBaseController
     else
 
     feed = @user.totalfeed
-    @news = Kaminari.paginate_array(feed).page(params[:page]).per(5) #.order("updated_at desc")  User.search(params[:query]).page(params[:page]).records.activated.page(params[:page])
+    @news = Kaminari.paginate_array(feed).page(params[:page]).per(5)
     end
   end
 

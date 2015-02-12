@@ -624,6 +624,10 @@ class User < ActiveRecord::Base
     VenueComment.where("user_id = #{self.id} AND venue_id = #{venue_id}").order("Id DESC")
   end
 
+  def last_three_comments
+    VenueComment.where("user_id = #{self.id} AND media_type != 'text'").order("Id DESC")[0...2]
+  end
+
   #Returns 10 random users out of the top 20 most frequent venue comment posters
   def self.top_posting_users
      top_20_posting_users = VenueComment.group(:user_id).count.sort_by{|k, v| v}.reverse[0...19]
