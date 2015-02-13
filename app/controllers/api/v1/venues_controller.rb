@@ -3,7 +3,7 @@ class Api::V1::VenuesController < ApiBaseController
   skip_before_filter :set_user, only: [:search, :index]
 
   def show
-    #@user = User.find_by_authentication_token(params[:auth_token])
+    @user = User.find_by_authentication_token(params[:auth_token])
     @venue = Venue.find(params[:id])
     venue = @venue.as_json(include: :venue_messages)
     venue[:menu] = @venue.menu_sections.as_json(
@@ -11,7 +11,8 @@ class Api::V1::VenuesController < ApiBaseController
       include: {
         :menu_section_items => {
           only: [:id, :name, :price, :description]
-        }
+        },
+        :is_following => { @user.vfollowing?(@venue) }
       }
     )
     render json: venue
