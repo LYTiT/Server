@@ -11,10 +11,11 @@ class Api::V1::VenuesController < ApiBaseController
       include: {
         :menu_section_items => {
           only: [:id, :name, :price, :description]
-        },
-        :is_following => { @user.vfollowing?(@venue) }
+        }
       }
     )
+
+    venue[:is_following] = @user.vfollowing?(@venue) 
     render json: venue
   end
 
