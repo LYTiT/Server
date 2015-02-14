@@ -31,4 +31,11 @@ class Bounty < ActiveRecord::Base
 	def valid_bounty_claim_venue_comments
 		VenueComment.from_valid_bounty_claims(self)
 	end
+
+	def self.bounty_feed
+		feed = Bounty.all.order('Id DESC')
+		feed << BountyClaim.where("rejected = false")
+		feed.sort_by{|x,y| x.created_at}.reverse
+	end
+
 end

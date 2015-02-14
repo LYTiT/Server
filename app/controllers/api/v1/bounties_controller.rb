@@ -61,4 +61,9 @@ class Api::V1::BountiesController < ApiBaseController
     render 'bounty_pricing_constants.json.jbuilder'
   end
 
+  def get_feed
+    feed = Bounty.bounty_feed
+    @bounty_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
+  end
+
 end

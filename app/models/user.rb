@@ -153,7 +153,7 @@ class User < ActiveRecord::Base
             at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id}"
             mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
           end
-          valid_ids = valid_ids + mapped_at_group_valid_venue_comment_ids #these Venue Comments are the @Group comments of the Group that are not part of the followed people or places feed
+          valid_ids << mapped_at_group_valid_venue_comment_ids #these Venue Comments are the @Group comments of the Group that are not part of the followed people or places feed
           
           #We pull in the associated Venue Comments of a Group (Venue Comments posted at Venues belonging to the Group)
           if excluded_ids.length > 0
@@ -201,7 +201,7 @@ class User < ActiveRecord::Base
 
   #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
   def totalfeed
-    feed = (userfeed + venuefeed + groupfeed)
+    feed = (userfeed << venuefeed << groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
