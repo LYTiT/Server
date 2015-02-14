@@ -201,7 +201,7 @@ class User < ActiveRecord::Base
 
   #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
   def totalfeed
-    feed = (userfeed << venuefeed << groupfeed).flatten
+    feed = (userfeed + venuefeed + groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
