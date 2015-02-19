@@ -6,7 +6,5 @@ json.array! @top_users do |top_user|
 	json.is_following @user.following?(top_user)
 	json.followers_count top_user.followers.count
 	json.following_count (top_user.followed_users.count + top_user.followed_venues.count)
-	json.comment1_media_url (top_user.last_three_comments[0]).try(media_url)
-	json.comment2_media_url (top_user.last_three_comments[1]).try(media_url)
-	json.comment3_media_url (top_user.last_three_comments[2]).try(media_url)
+	
 end
