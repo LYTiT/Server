@@ -23,7 +23,7 @@ body.splash {
       }
       c {
         position: fixed;
-        top: 67%;
+        top: 66%;
         left: 50%;
         transform: translate(-50%, -50%);
       }
@@ -45,6 +45,11 @@ body.splash {
     }
   }
   .login {
+    position: fixed;
+    top: 66%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     padding-left: 20%;
     padding-right: 20%;
     text-align: center;
@@ -57,7 +62,7 @@ body.splash {
       border: none;
       border-radius: 0px;
       border-bottom: 1px solid #555555;
-      color: #FFF;
+      color: #000;
       text-align: center;
       margin-top: 25px;
       &:focus {
@@ -74,7 +79,8 @@ body.splash {
         margin-top: 30px;
         input{
           background-color: transparent;
-          border: none;  
+          border: none; 
+          color: #000; 
         }
         input:hover {
           color: #00CCFF;
@@ -82,6 +88,11 @@ body.splash {
       }  
     }
     .alert-danger {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin-bottom: 55px;
       background-color: rgba(0, 0, 0, 0);
       border: none;
       color: #A94442;
