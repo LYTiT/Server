@@ -5,11 +5,27 @@ html {
 
 body.splash {  
   margin-bottom: 150px;
-  background-color: #000;
+  background-color: #FFF;
   .container-fluid {
     &.splash_login{
       img {
-        width: 100%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6%;
+      }
+      a {
+        position: fixed;
+        top: 62%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      c {
+        position: fixed;
+        top: 67%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
     }
   }
