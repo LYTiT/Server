@@ -5,11 +5,20 @@ html {
 
 body.splash {  
   margin-bottom: 150px;
-  background-color: #000;
+  background-color: #FFF;
   .container-fluid {
     &.splash_login{
       img {
-        width: 100%;
+        width: auto !important;
+        margin-top: 70%;
+      }
+      a {
+        margin-top: 110%;
+        margin-right: 50%;
+      }
+      c {
+        left: 50%;
+        width: auto !important;
       }
     }
   }
@@ -29,6 +38,11 @@ body.splash {
     }
   }
   .login {
+    position: fixed;
+    top: 66%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     padding-left: 20%;
     padding-right: 20%;
     text-align: center;
@@ -41,7 +55,7 @@ body.splash {
       border: none;
       border-radius: 0px;
       border-bottom: 1px solid #555555;
-      color: #FFF;
+      color: #000;
       text-align: center;
       margin-top: 25px;
       &:focus {
@@ -58,7 +72,8 @@ body.splash {
         margin-top: 30px;
         input{
           background-color: transparent;
-          border: none;  
+          border: none; 
+          color: #000; 
         }
         input:hover {
           color: #00CCFF;
@@ -66,6 +81,10 @@ body.splash {
       }  
     }
     .alert-danger {
+      position: fixed;
+      top: 10%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background-color: rgba(0, 0, 0, 0);
       border: none;
       color: #A94442;
