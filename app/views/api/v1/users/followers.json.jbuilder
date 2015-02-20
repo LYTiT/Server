@@ -6,4 +6,5 @@ json.array! @followers do |follower|
   	json.updated_at follower.updated_at
   	json.followers_count follower.followers.count
   	json.following_count (follower.followed_users.count + follower.followed_venues.count)
+  	json.is_following @user.following?(follower)
 end
