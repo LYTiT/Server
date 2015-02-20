@@ -6,10 +6,10 @@
 */
 
 body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "Times New Roman", Georgia, Serif;
   font-size: 14px;
   font-weight: 300;
-  color: #FFF;
+  color: #000;
   letter-spacing: 1px;
 }
 
@@ -23,12 +23,19 @@ a {
 }
 
 .text-muted a {
+  font-family: "Agency FB", verdana, helvetica, sans-serif;
   color: #999999;
   &:hover, &:active, &:focus {
     color: #00CCFF;
     text-decoration: none;
   }
 }
+
+.text-muted  {
+  font-family: "Agency FB", verdana, helvetica, sans-serif;
+  color: #999999;
+}
+
 
 .tooltip.right .tooltip-arrow {
   border-right-color: #808080;
