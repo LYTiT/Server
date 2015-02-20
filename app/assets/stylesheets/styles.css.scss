@@ -9,17 +9,16 @@ body.splash {
   .container-fluid {
     &.splash_login{
       img {
-        width: 15%;
+        width: auto !important;
         margin-top: 70%;
       }
       a {
         margin-top: 110%;
-        margin-left: 30%;
+        margin-right: 50%;
       }
       c {
-        margin-top: 60px;
-        margin-left: 30%;
-        text-align: center;
+        left: 50%;
+        width: auto !important;
       }
     }
   }

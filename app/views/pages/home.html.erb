@@ -4,7 +4,6 @@
     <div class="col-xs-10 col-sm-6 col-lg-6">
       <%= image_tag "lytit_icon.png", class: "center-block"  %> 
       <!-- <a style ="font-size: 20px; color: #999999; font-style:italic;"> New York City, </a> -->
-      <c style ="font-size: 25px; color: #999999; font-style:italic;"> Spring 2015</c>
       <div class="center-block">
         <% if flash[:notice].present? %>
           <div class="alert alert-danger"><%= flash[:notice] %></div>
@@ -15,11 +14,13 @@
         </div>
         <% end %>
         <div class="row downloads">
-          <div class="col-sm-6">
+          <div class="col-sm-6 col-lg-12">&nbsp;</div>
             <center>
               <br />
-              <a href="#">
+        
                 <!--<%= image_tag "Download_on_the_App_Store_Badge_US-UK_135x40.svg", height: "50px", alt: "Download on the App Store" %> -->
+                <div style ="font-size: 20px; color: #999999; font-style:italic; margin-top: 40px"> New York City,</div>                
+                <div style ="font-size: 25px; color: #999999; font-style:italic;"> Spring 2015</div>
               </a>
             </center>
           </div>
