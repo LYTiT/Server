@@ -200,7 +200,7 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
-      if lyt_sphere == nil #Add LYT Sphere if not present
+      if lookup.lyt_sphere == nil #Add LYT Sphere if not present
         lookup.lyt_sphere = lookup.city.delete(" ")+(lookup.latitude.round(0).abs).to_s+(lookup.longitude.round(0).abs).to_s
         lookup.save
       end
