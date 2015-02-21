@@ -223,7 +223,7 @@ class User < ActiveRecord::Base
 
     surrounding_moment_requests = Bounty.joins(:venue).where('lyt_sphere = ?', current_sphere)
     surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('lyt_sphere = ?', current_sphere)
-    surrounding_moments = VenueComment.where("venue_id IN (?)", venue_ids)
+    surrounding_moments = VenueComment.joins(:venue).where('lyt_sphere = ?', current_sphere)
 
     feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse

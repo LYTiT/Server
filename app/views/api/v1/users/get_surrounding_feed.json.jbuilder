@@ -11,7 +11,6 @@ json.array! @surrounding_feed do |entry|
 	json.media_type entry.try(:media_type)
 	json.response_received entry.try(:response_received)
 	json.validity entry.try(:validity)
-	json.claims_count entry.try(:bounty_claims).count
   json.minutes_left entry.try(:minutes_left)
 
 	json.user_id entry.try(:user_id)
