@@ -219,15 +219,23 @@ class User < ActiveRecord::Base
       venue.lyt_sphere = current_sphere
       venue.save
     end
-    venue_ids = "SELECT id FROM venues WHERE lyt_sphere = #{current_sphere}"
-    surrounding_moment_requests = Bounty.where("venue_id IN (?)", venue_ids) rescue nil
 
+    surrounding_moment_request = Bounty.joins(:venue).where('lyt_sphere = ?', current_sphere)
     surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('lyt_sphere = ?', current_sphere)
-
     surrounding_moments = VenueComment.where("venue_id IN (?)", venue_ids)
 
     feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+  end
+
+  def User.test_near
+    current_sphere = 'NewYork4174'
+    v_ids = "SELECT id FROM venues WHERE lyt_sphere = 'NewYork4174'"
+    if v_ids.length > 0
+      surrounding_moment_requests = Bounty.where("venue_id IN (#{v_ids})")
+    else
+      surrounding_moment_requests = nil
+    end
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.

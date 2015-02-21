@@ -101,7 +101,6 @@ class VenueComment < ActiveRecord::Base
   def VenueComment.from_valid_bounty_claims(bounty)
     b_id = bounty.id
     valid_bounty_claim_ids = "SELECT id FROM bounty_claims WHERE bounty_id = #{b_id} AND rejected = false"
-    puts "HERE: #{valid_bounty_claim_ids}"
     where("bounty_claim_id IN (#{valid_bounty_claim_ids})").order("created_at desc")
   end
 
