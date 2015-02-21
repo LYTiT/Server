@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150204235344) do
+ActiveRecord::Schema.define(version: 20150221031941) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -452,9 +452,11 @@ ActiveRecord::Schema.define(version: 20150204235344) do
     t.integer  "key",                    limit: 8
     t.string   "time_zone"
     t.integer  "outstanding_bounties",             default: 0
+    t.string   "lyt_sphere"
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
+  add_index "venues", ["lyt_sphere"], name: "index_venues_on_lyt_sphere", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end

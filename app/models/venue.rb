@@ -200,6 +200,10 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
+      if lyt_sphere == nil #Add LYT Sphere if not present
+        lookup.lyt_sphere = lookup.city.delete(" ")+(lookup.latitude.round(0).abs).to_s+(lookup.longitude.round(0).abs).to_s
+        lookup.save
+      end
       if lookup.time_zone == nil #Add timezone of venue if not present
         Timezone::Configure.begin do |c|
           c.username = 'LYTiT'
@@ -232,6 +236,7 @@ class Venue < ActiveRecord::Base
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
+      venue.lyt_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
       venue.save
