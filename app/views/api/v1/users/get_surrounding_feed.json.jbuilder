@@ -1,4 +1,4 @@
-json.array! @surrounding_feed do |entry|
+json.everything_moments(@surrounding_feed) do |entry|
 	json.id entry.id 
 	json.created_at entry.created_at
   json.updated_at entry.updated_at
@@ -6,7 +6,7 @@ json.array! @surrounding_feed do |entry|
 	json.expiration entry.try(:expiration)
 	json.lumen_reward entry.try(:lumen_reward)
   json.venue_id entry.try(:venue_id)
-	json.venue_name entry.try(:venue).name
+	json.venue_name entry.try(:venue).try(:name)
 	json.comment entry.try(:comment)
 	json.media_type entry.try(:media_type)
 	json.response_received entry.try(:response_received)
@@ -18,7 +18,7 @@ json.array! @surrounding_feed do |entry|
 	json.venue_comment_id entry.try(:venue_comment_id)
 
   json.media_url entry.try(:media_url)
-  json.user_name entry.try(:user).name
+  json.user_name entry.try(:user).try(:name)
   json.username_private entry.try(:username_private)
 end
 json.pagination do
