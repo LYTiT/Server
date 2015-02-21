@@ -20,7 +20,6 @@ json.array! @surrounding_feed do |entry|
   json.media_url entry.try(:media_url)
   json.user_name entry.try(:user).name
   json.username_private entry.try(:username_private)
-  json.total_views entry.try(:views)
 end
 json.pagination do
   json.current_page @surrounding_feed.current_page

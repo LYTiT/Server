@@ -39,7 +39,7 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def minutes_left
-		(self.expiration - Time.now).minute
+		(self.expiration - Time.now)
 	end
 
 
