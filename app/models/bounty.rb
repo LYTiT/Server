@@ -38,4 +38,9 @@ class Bounty < ActiveRecord::Base
 		feed.sort_by{|x,y| x.created_at}.reverse
 	end
 
+	def minutes_left
+		(self.expiration - Time.now).minute
+	end
+
+
 end

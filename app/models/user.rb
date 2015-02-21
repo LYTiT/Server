@@ -205,6 +205,24 @@ class User < ActiveRecord::Base
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
+  def surrounding_feed(lat, long)
+    min_lat = lat.to_f - (2 * (284.0 / 160.0)) / (109.0 * 1000)
+    max_lat = lat.to_f + (2 * (284.0 / 160.0)) / (109.0 * 1000)
+    min_long = long.to_f - 2 / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    max_long = long.to_f + 2 / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    nearby_venue = Venue.where("latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}")
+    current_sphere = nearby_venue.first.lyt_sphere
+    venue_ids = "SELECT id FROM venues WHERE lyt_sphere = #{current_sphere}"
+
+    surrounding_moment_request = Bounty.where("venue_id IN (?)", venue_ids)
+    surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('lyt_sphere = ?', current_sphere)
+
+    surrounding_moments = VenueComment.where("venue_id IN (?)", venue_ids)
+
+    feed = (surrounding_moment_request + surrounding_moment_request_responses + surrounding_moments)
+    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+  end
+
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
   def followers_not_in_group(group_id)
     users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
