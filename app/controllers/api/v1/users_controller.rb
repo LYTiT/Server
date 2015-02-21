@@ -67,7 +67,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_surrounding_feed
     @user = User.find_by_id(params[:user_id])
-    feed = @user.get_surrounding_feed(params[:lat], params[:long])
+    feed = @user.surrounding_feed(params[:lat], params[:long])
     @surrounding_feed = Kaminari.paginate_array(feed).page(params[:page]).per(5)
   end
 
