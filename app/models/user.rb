@@ -208,10 +208,17 @@ class User < ActiveRecord::Base
   def surrounding_feed(lat, long)
     min_lat = lat.to_f - (2 * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + (2 * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - 2 / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + 2 / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    nearby_venue = Venue.where("latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}")
-    current_sphere = nearby_venue.first.lyt_sphere
+    min_long = long.to_f - 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
+    max_long = long.to_f + 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
+    nearby_venues = Venue.where("latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}")
+    venue = nearby_venue.first
+    if venue.lyt_sphere != nil
+      current_sphere = venue.lyt_sphere
+    else
+      current_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+      venue.lyt_sphere = current_sphere
+      venue.save
+    end
     venue_ids = "SELECT id FROM venues WHERE lyt_sphere = #{current_sphere}"
 
     surrounding_moment_request = Bounty.where("venue_id IN (?)", venue_ids)
