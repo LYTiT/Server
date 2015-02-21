@@ -220,7 +220,7 @@ class User < ActiveRecord::Base
       venue.save
     end
     venue_ids = "SELECT id FROM venues WHERE lyt_sphere = #{current_sphere}"
-    surrounding_moment_requests = Bounty.where("venue_id IN (?)", venue_ids)
+    surrounding_moment_requests = Bounty.where("venue_id IN (?)", venue_ids) rescue nil
 
     surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('lyt_sphere = ?', current_sphere)
 
