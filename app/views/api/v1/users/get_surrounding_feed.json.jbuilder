@@ -26,6 +26,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.user_name entry.try(:user).try(:name)
   json.username_private entry.try(:username_private)
   json.comment entry.try(:comment)
+  json.views entry.try(:views)
 end
 json.pagination do
   json.current_page @surrounding_feed.current_page
