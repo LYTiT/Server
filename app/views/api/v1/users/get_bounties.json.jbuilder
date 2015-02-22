@@ -4,7 +4,7 @@ json.array! @bounties do |bounty|
 	json.expiration bounty.expiration
 	json.lumen_reward bounty.lumen_reward
 	json.venue_name bounty.venue.name
-	json.comment bounty.comment
+	json.comment bounty.detail
   	json.media_type bounty.media_type
   	json.response_received bounty.response_received
   	json.validity bounty.validity

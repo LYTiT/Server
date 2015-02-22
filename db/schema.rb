@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150221031941) do
+ActiveRecord::Schema.define(version: 20150222003622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,7 +53,7 @@ ActiveRecord::Schema.define(version: 20150221031941) do
     t.datetime "updated_at"
     t.boolean  "validity",               default: true
     t.string   "media_type"
-    t.string   "comment"
+    t.string   "detail"
     t.boolean  "response_received",      default: false
     t.datetime "expiration"
     t.datetime "last_viewed_claim_time"
