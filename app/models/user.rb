@@ -226,7 +226,7 @@ class User < ActiveRecord::Base
     surrounding_moments = VenueComment.joins(:venue).where('lyt_sphere = ?', current_sphere)
 
     feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
-    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+    surrounding_feed = feed.compact!.sort_by{|x,y| x.created_at}.reverse
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
