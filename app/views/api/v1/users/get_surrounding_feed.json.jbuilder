@@ -18,7 +18,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.request_lumen_reward entry.try(:bounty).try(:lumen_reward)
   json.response_comment entry.try(:venue_comment).try(:comment)
   json.response_venue_name entry.try(:bounty).try(:venue).try(:name)
-  json.response_media_url entry.try(:bounty).try(:venue_comment).try(:media_url)
+  json.response_media_url entry.try(:venue_comment).try(:media_url)
   json.response_media_type entry.try(:bounty).try(:media_type)
 	json.venue_comment_id entry.try(:venue_comment_id)
 
