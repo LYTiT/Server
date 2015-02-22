@@ -6,7 +6,7 @@ json.everything_moments(@surrounding_feed) do |entry|
 	json.lumen_reward entry.try(:lumen_reward)
   json.venue_id entry.try(:venue_id)
 	json.venue_name entry.try(:venue).try(:name)
-  json.details entry.try.(:detail)
+  json.details entry.try(:detail)
 	json.media_type entry.try(:media_type)
 	json.response_received entry.try(:response_received)
 	json.validity entry.try(:validity)
