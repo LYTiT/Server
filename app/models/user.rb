@@ -211,7 +211,13 @@ class User < ActiveRecord::Base
     min_long = long.to_f - 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
     nearby_venues = Venue.where("latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}")
-    venue = nearby_venues.first
+    
+    i = 0
+    begin
+      venue = nearby_venues[i]
+      i += 1
+    end while venue.city == nil  
+
 
     if venue.lyt_sphere != nil
       current_sphere = venue.lyt_sphere
