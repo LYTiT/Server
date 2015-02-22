@@ -394,7 +394,7 @@ class Api::V1::VenuesController < ApiBaseController
       @user.update_lumens_after_vote(v.id)
 
       if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
-        lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.lyt_sphere)
+        lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
         lyt_sphere.save
       end
 

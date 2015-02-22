@@ -219,11 +219,11 @@ class User < ActiveRecord::Base
       end
     end
 
-    if venue.lyt_sphere != nil
-      current_sphere = venue.lyt_sphere
+    if venue.l_sphere != nil
+      current_sphere = venue.l_sphere
     else
       current_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
-      venue.lyt_sphere = current_sphere
+      venue.l_sphere = current_sphere
       venue.save
     end
 
