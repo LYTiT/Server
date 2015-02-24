@@ -206,12 +206,9 @@ class User < ActiveRecord::Base
   end
 
   def surrounding_feed(lat, long)
-    min_lat = lat.to_f - (2 * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + (2 * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + 2 / (113.2 * 1000.0 * Math.cos(lat.to_f * Math::PI / 180))
-    nearby_venues = Venue.where("latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}")
-    
+    meter_radius = 1000
+    nearby_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
+
     for v in nearby_venues
       if v.city != nil
         venue = v
