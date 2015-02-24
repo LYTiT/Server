@@ -38,6 +38,7 @@ LytitServer::Application.routes.draw do
         get 'get_venue_comments_from_venue'
         get 'get_a_users_profile'
         get 'get_surrounding_feed'
+        get 'get_map_details'
       end
 
       resources :featured do

@@ -13,6 +13,11 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def get_map_details
+    @user = User.find_by_id(params[:user_id])
+    render 'get_map_details.json.jbuilder'
+  end
+
   def set_version
     @user = User.find_by_id(params[:user_id])
     @user.set_version(params[:version])
