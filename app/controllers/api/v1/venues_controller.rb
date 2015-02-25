@@ -202,7 +202,7 @@ class Api::V1::VenuesController < ApiBaseController
           else
             if params[:at_names] != nil
               for gname in params[:at_names]
-                receiving_group = Group.find_by_name(gname["group_name"])
+                receiving_group = Group.where("LOWER(name) like ? ", '%' + gname["group_name"].to_s.downcase + '%')
                 if receiving_group.is_user_member?(@user.id)
                   receiving_group.at_group!(@comment)
                 end
