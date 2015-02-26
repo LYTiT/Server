@@ -42,5 +42,9 @@ class Bounty < ActiveRecord::Base
 		(self.expiration - Time.now)
 	end
 
+	def total_valid_claims
+		claims_count = BountyClaim.where("bounty_id = #{self.id} AND rejected = false").count
+	end
+
 
 end
