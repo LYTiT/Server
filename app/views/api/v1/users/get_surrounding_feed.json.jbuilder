@@ -16,6 +16,7 @@ json.everything_moments(@surrounding_feed) do |entry|
 	json.bounty_id entry.try(:bounty_id)
   json.request_details entry.try(:bounty).try(:detail)
   json.request_lumen_reward entry.try(:bounty).try(:lumen_reward)
+  json.response_minutes_left entry.try(:bounty).try(:minutes_left)
   json.response_comment entry.try(:venue_comment).try(:comment)
   json.response_venue_name entry.try(:bounty).try(:venue).try(:name)
   json.response_media_url entry.try(:venue_comment).try(:media_url)

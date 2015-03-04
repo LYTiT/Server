@@ -11,7 +11,7 @@ class Bounty < ActiveRecord::Base
 			venue.outstanding_bounties = venue.outstanding_bounties - 1
 			venue.save
 
-			wrap_around_claim_time = self.last_viewed_claim_time || Time.now - 121.minutes
+			wrap_around_claim_time = self.last_viewed_claim_time || Time.now - 121.minutes #a Bounty is still valid 2 hours after the last response to it is viewed even if it expires
 
 			if bounty_claims.count == 0 || wrap_around_claim_time < (Time.now - 120.minutes) #cleanup
 				self.validity = false
