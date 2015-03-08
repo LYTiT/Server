@@ -15,6 +15,8 @@ class LumenConstants < ActiveRecord::Base
 
 	VIEWS_WEIGHT_ADJ_DAMPING = 10.0 #damper of unique viewers percentage effect on view discount
 
+	VIEW_DISCOUNT_CALIBRATION_DELTA = 5 #how often should a users view discount be calibrated (every 'x' lumens)
+
 	def self.text_media_weight
 		LumenConstants.where(:constant_name => 'text_media_weight').first.try(:constant_value) || TEXT_MEDIA_WEIGHT
 	end
@@ -49,5 +51,9 @@ class LumenConstants < ActiveRecord::Base
 	
 	def self.views_weight_adj_damping
 		LumenConstants.where(:constant_name => 'views_weight_adj_damping').first.try(:constant_value) || VIEWS_WEIGHT_ADJ_DAMPING
+	end
+
+	def self.views_weight_adj_damping
+		LumenConstants.where(:constant_name => 'view_discount_calibration_delta').first.try(:constant_value) || VIEW_DISCOUNT_CALIBRATION_DELTA
 	end
 end
