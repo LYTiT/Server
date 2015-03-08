@@ -3,6 +3,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def create
     @user = User.new(user_params)
+    @user.adjusted_view_discount = LumenConstants.views_weight_adj
 
     if @user.save
       sign_in @user

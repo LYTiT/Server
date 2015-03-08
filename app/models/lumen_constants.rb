@@ -13,6 +13,8 @@ class LumenConstants < ActiveRecord::Base
 
 	NOTIFICATION_DELTA = 10.0 #the amount of lumens a users needs to receive to be sent a new lumens push notification
 
+	VIEWS_WEIGHT_ADJ_DAMPING = 10.0 #damper of unique viewers percentage effect on view discount
+
 	def self.text_media_weight
 		LumenConstants.where(:constant_name => 'text_media_weight').first.try(:constant_value) || TEXT_MEDIA_WEIGHT
 	end
@@ -45,4 +47,7 @@ class LumenConstants < ActiveRecord::Base
 		LumenConstants.where(:constant_name => 'notification_delta').first.try(:constant_value) || NOTIFICATION_DELTA
 	end
 	
+	def self.views_weight_adj_damping
+		LumenConstants.where(:constant_name => 'views_weight_adj_damping').first.try(:constant_value) || VIEWS_WEIGHT_ADJ_DAMPING
+	end
 end

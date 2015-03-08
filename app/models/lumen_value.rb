@@ -5,14 +5,15 @@ class LumenValue < ActiveRecord::Base
 	belongs_to :bounty
 
 	after_create :new_lumens_notification
+	after_create :calibrate_viewing_discount
 
 
 	def new_lumens_notification
 		if ( (user.lumens - user.lumen_notification) >= LumenConstants.notification_delta ) && user.version_compatible?("3.1.0") == true
 			self.delay.send_new_lumens_notification
-			user.lumen_notification = user.lumens
+			user.lumen_notification = (user.lumens/LumenConstants.notification_delta).floor*LumenConstants.notification_delta
 			user.save
-			user.update_lumen_percentile
+			#user.update_lumen_percentile
 		end
 	end
 
@@ -67,6 +68,19 @@ class LumenValue < ActiveRecord::Base
 	    }
 	    
 	  }
+	end
+
+	#Calibrate user viewing discount based for Lumen calculation based on unique viewers percentage. We calibrate after every 5 Lumens
+	def calibrate_viewing_discount
+		if ((user.lumens.floor % LumenConstants.view_discount_calibration_delta.to_i) == 0)
+			unique_viewers = CommentView.joins(:venue_comment).where('venue_comments.user_id = ?', user.id).uniq.pluck(:user_id)
+			total_viewers = CommentView.joins(:venue_comment).where('venue_comments.user_id = ?', user.id).pluck(:user_id)
+			unique_viewers_percentage = unique_viewers/total_viewers
+
+			user.view_discount = LumenConstants.views_weight_adj*(unique_viewers_percentage)**(1/LumenConstants.views_weight_adj_damping)
+			user.save
+		end
+
 	end
 
 end

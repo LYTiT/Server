@@ -173,7 +173,9 @@ class Api::V1::VenuesController < ApiBaseController
         @comment.save  
 
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
-          @user.update_lumens_after_text(@comment.id)
+          if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
+            @user.update_lumens_after_text(@comment.id)
+          end
         end
 
         #If the Venue Comment is a Bounty response we must create a Bounty Response Object

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150222180911) do
+ActiveRecord::Schema.define(version: 20150308015831) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -361,6 +361,7 @@ ActiveRecord::Schema.define(version: 20150222180911) do
     t.float    "bounty_lumens",                               default: 0.0
     t.boolean  "can_claim_bounty",                            default: true
     t.datetime "latest_rejection_time"
+    t.float    "adjusted_view_discount"
   end
 
   add_index "users", ["email"], name: "index_users_on_email", using: :btree

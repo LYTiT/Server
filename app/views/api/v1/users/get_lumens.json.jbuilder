@@ -22,4 +22,4 @@ json.text_radius @user.text_radius
 json.vote_radius @user.votes_radius
 json.view_radius @user.views_radius
 json.bounty_radius @user.bounty_radius
-json.percentile @user.lumen_percentile
+json.rank @user.lumen_rank

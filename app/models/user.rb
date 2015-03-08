@@ -43,6 +43,21 @@ class User < ActiveRecord::Base
   before_save :generate_confirmation_token_for_venue_manager
   after_save :notify_venue_managers
   
+  #clear all outstanding user lumens
+  def self.global_lumen_recalibration
+    LumenValue.delete_all
+    all = User.all
+    for person in all
+      person.lumens = 0.0
+      person.video_lumens = 0.0
+      person.image_lumens = 0.0
+      person.text_lumens = 0.0
+      person.vote_lumens = 0.0
+      person.lumen_percentile = 0.0
+      person.save
+    end
+  end
+
   # This is to deal with S3.
   def email_with_id
     "#{email}-#{id}"
@@ -283,6 +298,11 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_view(comment)
+    if self.view_discount == nil
+      self.adjusted_view_discount = LumenConstants.views_weight_adj_damping
+      save
+    end
+
     id = comment.id
     time = Time.now
     comment_time = comment.created_at
@@ -441,6 +461,9 @@ class User < ActiveRecord::Base
     end
   end
 
+  def lumen_rank
+    User.all.order('lumens desc').index(self)
+  end
 
   def total_votes
     LytitVote.where(user_id: self.id).count
