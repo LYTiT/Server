@@ -357,11 +357,10 @@ class Venue < ActiveRecord::Base
     return recommendations.compact
   end
 
-  def last_image_url
-    images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image")
-    images = images.sort_by{|x,y| x.created_at}.reverse
+  def last_image
+    images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image").order('id desc')
     if images.first != nil
-      return images.first.media_url
+      return images.first
     end
   end
 
