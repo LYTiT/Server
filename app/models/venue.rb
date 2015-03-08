@@ -361,7 +361,7 @@ class Venue < ActiveRecord::Base
   end
 
   def last_image
-    images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image").order('id desc')
+    images = VenueComment.where("venue_id = ? AND NOT media_type = ?", self.id, "text").order('id desc')
     if images.first != nil
       return images.first
     end
