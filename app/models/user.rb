@@ -298,7 +298,7 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_view(comment)
-    if self.view_discount == nil
+    if self.adjusted_view_discount == nil
       self.adjusted_view_discount = LumenConstants.views_weight_adj_damping
       save
     end
