@@ -125,7 +125,7 @@ class Api::V1::UsersController < ApiBaseController
     else
 
     feed = @user.totalfeed
-    @news = Kaminari.paginate_array(feed).page(params[:page]).per(5)
+    @news = Kaminari.paginate_array(feed).page(params[:page]).per(10)
     end
   end
 
