@@ -466,6 +466,7 @@ class User < ActiveRecord::Base
     total_number = users.count
     rank = users.index(self)
     self.lumen_percentile = (rank.to_f+1.0)/(total_number.to_f+1.0)
+    self.save
     return everybody.index(self)
   end
 
