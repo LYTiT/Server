@@ -461,8 +461,12 @@ class User < ActiveRecord::Base
     end
   end
 
-  def lumen_rank
-    User.all.order('lumens desc').index(self)
+  def lumen_rank #we update the percentile everytime we check rank
+    everybody = User.all.order('lumens desc')
+    total_number = users.count
+    rank = users.index(self)
+    self.lumen_percentile = (rank.to_f+1.0)/(total_number.to_f+1.0)
+    return everybody.index(self)
   end
 
   def total_votes
@@ -529,7 +533,8 @@ class User < ActiveRecord::Base
       radii["bounty"] = 0.0
       return radii
     else
-      perc = lumen_percentile
+      perc = lumen_percentile || 91
+
       if perc.between?(0, 10)
         span = 100
       elsif perc.between?(11, 20)
