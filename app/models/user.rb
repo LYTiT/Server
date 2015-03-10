@@ -463,9 +463,9 @@ class User < ActiveRecord::Base
 
   def lumen_rank #we update the percentile everytime we check rank
     everybody = User.all.order('lumens desc')
-    total_number = users.count
-    rank = users.index(self)
-    self.lumen_percentile = (rank.to_f+1.0)/(total_number.to_f+1.0)
+    total_number = everybody.count
+    rank = everybody.index(self)
+    self.lumen_percentile = ((rank.to_f+1.0)/(total_number.to_f+1.0))*100.0
     self.save
     return everybody.index(self)
   end
