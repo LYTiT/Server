@@ -53,7 +53,7 @@ class LumenConstants < ActiveRecord::Base
 		LumenConstants.where(:constant_name => 'views_weight_adj_damping').first.try(:constant_value) || VIEWS_WEIGHT_ADJ_DAMPING
 	end
 
-	def self.views_weight_adj_damping
+	def self.view_discount_calibration_delta
 		LumenConstants.where(:constant_name => 'view_discount_calibration_delta').first.try(:constant_value) || VIEW_DISCOUNT_CALIBRATION_DELTA
 	end
 end
