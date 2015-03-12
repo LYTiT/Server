@@ -534,7 +534,7 @@ class User < ActiveRecord::Base
       radii["bounty"] = 0.0
       return radii
     else
-      perc = lumen_percentile || 91
+      perc = (100-lumen_percentile) || 91
 
       if perc.between?(0, 10)
         span = 100
