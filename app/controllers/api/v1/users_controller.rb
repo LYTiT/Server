@@ -156,7 +156,8 @@ class Api::V1::UsersController < ApiBaseController
       @person = User.where("name = ?", params[:q].to_s)
     else
       @person = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
-    end  
+    end
+    @person = @person[0...10]  
   end  
 
   def update
