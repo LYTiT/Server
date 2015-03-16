@@ -340,7 +340,7 @@ class Venue < ActiveRecord::Base
 
   #Active venue's nearby to follow
   def self.recommended_venues(user, lat, long)
-    meter_radius = 1000
+    meter_radius = 500
     surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
     recommendations = []
     count = 0
