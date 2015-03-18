@@ -8,4 +8,4 @@ json.num_group_members @group.users.count
 json.num_group_venues @group.venues.count
 json.can_link_events @group.can_link_events
 json.can_link_venues @group.can_link_venues
-json.num_outstanding_events @group.outstanding_events.count
+json.num_upcoming_events @group.upcoming_events.count
