@@ -159,6 +159,16 @@ class Api::V1::GroupsController < ApiBaseController
     render json: flagged_group
   end
 
+  def get_upcoming_events
+    group = Group.find(params[:group_id])
+    @events = group.upcoming_events
+  end
+
+  def get_past_events
+    group = Group.find(params[:group_id])
+    @events = group.past_events
+  end
+
   private
 
   def group_params

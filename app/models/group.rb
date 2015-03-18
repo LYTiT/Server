@@ -96,6 +96,14 @@ class Group < ActiveRecord::Base
     venues
   end
 
+  def past_events
+    past_events = self.events.where("end_date < ?", Time.now).order('end_date ASC')
+  end
+
+  def upcoming_events
+    past_events = self.events.where("end_date >= ?", Time.now).order('end_date ASC')
+  end
+
   def at_group!(venue_comment)
     at_group_relationships.create!(venue_comment_id: venue_comment.id)
   end

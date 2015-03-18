@@ -157,6 +157,8 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_popular_groups'
         end
+        get 'get_past_events'
+        get 'get_upcoming_events'
         post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
       end

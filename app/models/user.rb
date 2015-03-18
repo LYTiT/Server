@@ -221,7 +221,7 @@ class User < ActiveRecord::Base
   end
 
   def surrounding_feed(lat, long)
-    meter_radius = 1000
+    meter_radius = 500
     nearby_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
 
     for v in nearby_venues
