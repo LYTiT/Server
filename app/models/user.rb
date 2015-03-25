@@ -215,13 +215,13 @@ class User < ActiveRecord::Base
   end
 
   #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
-  def totalfeed
+  def old_totalfeed
     feed = (userfeed + venuefeed + groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
 
-  def new_totalfeed
+  def totalfeed
     ids_of_followed_users = "SELECT followed_id FROM relationships WHERE follower_id = #{self.id}"
     ids_of_followed_venues = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{self.id}"
     ids_of_subscribed_groups = "SELECT group_id FROM groups_users WHERE (user_id = #{self.id} AND notification_flag = 'true')"
@@ -229,10 +229,10 @@ class User < ActiveRecord::Base
 
     at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id IN (#{ids_of_subscribed_groups})"
 
-    feed = VenueComment.where("(user_id IN (#{ids_of_followed_users}) AND username_private = 'false') 
-      OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}))
-      OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}))
-      OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}))").order("Id DESC")
+    feed = VenueComment.where("(user_id IN (#{ids_of_followed_users}) AND username_private = 'false')
+      OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users})) AND user_id != #{self.id}
+      OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})
+      OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC")
 
   end
 
