@@ -230,9 +230,9 @@ class User < ActiveRecord::Base
     max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
 
-    surrounding_moments = VenueComment.where("venue_id in (#{venue_ids})")
-    surrounding_moment_requests = Bounty.joins(:venue).where('id IN (?)', venue_ids)
-    surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('id IN (?)', venue_ids)
+    surrounding_moments = VenueComment.where("venue_id IN (#{venue_ids})")
+    surrounding_moment_requests = Bounty.where("venue_id IN (#{venue_ids})")
+    surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_id IN (#{venue_ids})")
 
 =begin    
     for v in nearby_venues
