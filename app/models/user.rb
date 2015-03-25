@@ -145,6 +145,7 @@ class User < ActiveRecord::Base
     venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
   end
 
+=begin THIS IS THE OLD FEED IMPLEMENTATOIN THAT WAS ABANDONDED DUE TO MEMORY INEFFICIENCY
   def groupfeed
     #List of the ids of Groups user is part of
     group_ids = self.groups.flatten.map(&:id)
@@ -219,6 +220,7 @@ class User < ActiveRecord::Base
     feed = (userfeed + venuefeed + groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
+=end
 
 
   def totalfeed
@@ -233,11 +235,7 @@ class User < ActiveRecord::Base
       OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users})) AND user_id != #{self.id}
       OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})
       OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC").uniq
-
   end
-
-
-
 
   def surrounding_feed(lat, long)
     meter_radius = 750
