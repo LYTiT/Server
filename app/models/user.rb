@@ -232,7 +232,7 @@ class User < ActiveRecord::Base
     feed = VenueComment.where("(user_id IN (#{ids_of_followed_users}) AND username_private = 'false')
       OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users})) AND user_id != #{self.id}
       OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})
-      OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC")
+      OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC").uniq
 
   end
 
