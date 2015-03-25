@@ -221,9 +221,20 @@ class User < ActiveRecord::Base
   end
 
   def surrounding_feed(lat, long)
-    meter_radius = 500
+    meter_radius = 750
     nearby_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
 
+    min_lat = lat.to_f - ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
+    max_lat = lat.to_f + ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
+    min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
+
+    surrounding_moments = VenueComment.where("venue_id in (#{venue_ids})")
+    surrounding_moment_requests = Bounty.joins(:venue).where('id IN (?)', venue_ids)
+    surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('id IN (?)', venue_ids)
+
+=begin    
     for v in nearby_venues
       if v.city != nil
         venue = v
@@ -242,6 +253,7 @@ class User < ActiveRecord::Base
     surrounding_moment_requests = Bounty.joins(:venue).where('l_sphere = ?', current_sphere)
     surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('l_sphere = ?', current_sphere)
     surrounding_moments = VenueComment.joins(:venue).where('l_sphere = ?', current_sphere).where('bounty_claim_id IS NULL')
+=end
 
     feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
