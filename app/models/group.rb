@@ -119,7 +119,7 @@ class Group < ActiveRecord::Base
   end
 
   def self.popular_groups
-    top_20_popular_groups = GroupsUser.group(:group_id).count.sort_by{|k, v| v}.reverse[0...19]
+    top_20 = GroupsUser.group(:group_id).order("count_id DESC limit 20").count(:id).to_a
     random_top_10_popular_groups_id = top_20_popular_groups.sample(10).collect {|index| index[0]}
     top_10_groups = Group.where("id IN (?)", random_top_10_popular_groups_id)
   end
