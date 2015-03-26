@@ -21,6 +21,7 @@ class Api::V1::BountiesController < ApiBaseController
   def viewed_claim
     @bounty = Bounty.find_by_id(params[:bounty_id])
     @bounty.viewed_claim
+    render json: { success: true }
   end
 
   def accept_bounty_claim

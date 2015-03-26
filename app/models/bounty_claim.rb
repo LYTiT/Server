@@ -24,7 +24,7 @@ class BountyClaim < ActiveRecord::Base
 		    :type => 'bounty_claim', 
 		    :user_id => bounty.user_id
 		}
-		message = "Someone responded to your Bounty at #{bounty.venue.name}"
+		message = "Someone responded to your Request at #{bounty.venue.name}"
 		notification = self.store_new_bounty_claim_notification(payload, bounty.user, message)
 		payload[:notification_id] = notification.id
 
@@ -98,7 +98,7 @@ class BountyClaim < ActiveRecord::Base
 		    :type => 'bounty_claim_acceptance', 
 		    :user_id => user_id
 		}
-		message = "Congratulations! Your Bounty Claim at #{bounty.venue.name} has been accepted"
+		message = "Congratulations! Your Moment Response at #{bounty.venue.name} has been accepted"
 		notification = self.store_new_bounty_claim_acceptance_notification(payload, user, message)
 		payload[:notification_id] = notification.id
 
