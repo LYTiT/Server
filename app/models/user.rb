@@ -715,7 +715,7 @@ class User < ActiveRecord::Base
 
   #Returns 10 random users out of the top 20 most frequent venue comment posters
   def self.top_posting_users
-    top_20_users = User.order("lumens DESC limit 20")
+    top_20_users = User.where("id != #{self.id}").order("lumens DESC limit 20")
     top_10_random_users = top_20_users.sample(10)
   end
 
