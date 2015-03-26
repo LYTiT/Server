@@ -142,7 +142,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def get_recommended_users
     @user = User.find_by_id(params[:user_id])
-    @top_users = User.top_posting_users
+    @top_users = @user.top_posting_users
   end
 
   def posting_kill_request #no longer valid
