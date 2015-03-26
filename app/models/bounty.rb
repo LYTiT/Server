@@ -28,6 +28,10 @@ class Bounty < ActiveRecord::Base
 		save
 	end
 
+	def new_claims
+		self.bounty_claims.where("created_at > ?", self.last_viewed_claim_time).count
+	end
+
 	def valid_bounty_claim_venue_comments
 		VenueComment.from_valid_bounty_claims(self)
 	end

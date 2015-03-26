@@ -10,6 +10,7 @@ json.array! @bounty_feed do |entry|
   	json.response_received entry.try(:response_received)
   	json.validity entry.try(:validity)
   	json.claims_count entry.try(:bounty_claims).count
+    json.new_claims entry.try(:new_claims)
 
   	json.user_id entry.try(:user_id)
   	json.bounty_id entry.try(:bounty_id)
