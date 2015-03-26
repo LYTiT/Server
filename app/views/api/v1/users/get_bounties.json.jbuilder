@@ -10,4 +10,5 @@ json.array! @bounties do |bounty|
   	json.response_received bounty.response_received
   	json.validity bounty.validity
   	json.claims_count bounty.total_valid_claims
+  	json.new_claims bounty.new_claims
 end
