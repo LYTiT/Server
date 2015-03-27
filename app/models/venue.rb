@@ -1,4 +1,4 @@
-0class Venue < ActiveRecord::Base
+class Venue < ActiveRecord::Base
 
   acts_as_mappable :default_units => :miles,
                      :default_formula => :sphere,
