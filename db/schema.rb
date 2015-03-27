@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150308062507) do
+ActiveRecord::Schema.define(version: 20150327044758) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -81,6 +81,7 @@ ActiveRecord::Schema.define(version: 20150308062507) do
     t.datetime "updated_at"
     t.boolean  "rejected",         default: false
     t.string   "rejection_reason"
+    t.boolean  "accepted"
   end
 
   add_index "bounty_claims", ["bounty_id"], name: "index_bounty_claims_on_bounty_id", using: :btree

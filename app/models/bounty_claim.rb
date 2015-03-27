@@ -68,6 +68,8 @@ class BountyClaim < ActiveRecord::Base
 
 	#If a Bounty Claim is accepted lumens are transfered and notification to the responder is sent
 	def acceptance
+		self.accepted = true
+		self.save
 		reward = bounty.lumen_reward
 		bounty_lumen_value = LumenValue.new(:value => reward*(0.9), :user_id => user.id, :bounty_id => bounty.id)
 		user.bounty_lumens = (reward*(0.9)).round(4)
@@ -211,6 +213,16 @@ class BountyClaim < ActiveRecord::Base
 			:reason => self.rejection_reason
 		}
 	  }
+	end
+
+	def status
+		if rejected == true
+			return 0
+		elsif accepted == true
+			return 2
+		else
+			return 1
+		end
 	end
 
 end
