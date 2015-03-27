@@ -1,4 +1,4 @@
-class Venue < ActiveRecord::Base
+0class Venue < ActiveRecord::Base
 
   acts_as_mappable :default_units => :miles,
                      :default_formula => :sphere,
@@ -34,10 +34,6 @@ class Venue < ActiveRecord::Base
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
 
   MILE_RADIUS = 2
-
-  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
-
-  GOOGLE_PLACE_VOTING_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
 
   has_many :lytit_votes, :dependent => :destroy
 
