@@ -29,7 +29,11 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def new_claims
-		self.bounty_claims.where("created_at > ?", self.last_viewed_claim_time).count
+		if self.last_viewed_claim_time == nil
+			return bounty_claims.count
+		else
+			return self.bounty_claims.where("created_at > ?", self.last_viewed_claim_time).count
+		end
 	end
 
 	def valid_bounty_claim_venue_comments
