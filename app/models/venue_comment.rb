@@ -120,17 +120,12 @@ class VenueComment < ActiveRecord::Base
 
   def consider?
     consider = 1
-    user = User.find_by(id: self.user_id)
-    comments = user.venue_comments.order("created_at desc")
-    hash = Hash[comments.map.with_index.to_a]
-    index = hash[self]
-
-    if index == 0 
-      consider = 1
-
-    else  
-      previous = comments[(index-1)]
-
+    previous_comment = user.venue_comments.order("created_at desc limit 2")[1]
+    
+    if previous_comment == nil
+      update_columns(consider: consider)
+      return consider
+    else
       if (self.venue_id == previous.venue_id) && ((self.created_at - previous.created_at) >= (LumenConstants.posting_pause*60))
         consider = 1
       elsif self.venue_id != previous.venue_id
@@ -138,10 +133,9 @@ class VenueComment < ActiveRecord::Base
       else
         consider = 0
       end
-
     end
     update_columns(consider: consider)
-    consider
+    return consider
   end
 
 
