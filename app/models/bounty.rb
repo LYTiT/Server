@@ -18,6 +18,12 @@ class Bounty < ActiveRecord::Base
 				result = false
 				self.save
 			end
+
+			if bounty_claims.count == 0 #if no responses received we return the deposited lumens for the request back to the user
+				user_lumens = user.lumens 
+				user.update_columns(lumens: user_lumens+self.lumen_reward)
+			end
+
 		end
 		return result
 	end
