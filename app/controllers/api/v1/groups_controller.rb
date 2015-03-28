@@ -29,6 +29,13 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
 
+  def add_cover
+    @group = Group.find(params[:id])
+    @group.cover_media_url = params[:cover_media_url]
+    @group.save
+    render json: { success: true }
+  end
+
   def join
     @group = Group.find(params[:group_id])
     status, message = @group.join(@user.id, params[:password])

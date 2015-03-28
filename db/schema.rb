@@ -221,7 +221,7 @@ ActiveRecord::Schema.define(version: 20150328154834) do
     t.datetime "deleted_at"
     t.boolean  "can_link_events", default: true
     t.boolean  "can_link_venues", default: true
-    t.string   "media_url"
+    t.string   "cover_media_url"
   end
 
   add_index "groups", ["deleted_at"], name: "index_groups_on_deleted_at", using: :btree
