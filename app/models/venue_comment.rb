@@ -121,14 +121,14 @@ class VenueComment < ActiveRecord::Base
   def consider?
     consider = 1
     previous_comment = user.venue_comments.order("created_at desc limit 2")[1]
-    
+
     if previous_comment == nil
       update_columns(consider: consider)
       return consider
     else
-      if (self.venue_id == previous.venue_id) && ((self.created_at - previous.created_at) >= (LumenConstants.posting_pause*60))
+      if (self.venue_id == previous_comment.venue_id) && ((self.created_at - previous_comment.created_at) >= (LumenConstants.posting_pause*60))
         consider = 1
-      elsif self.venue_id != previous.venue_id
+      elsif self.venue_id != previous_comment.venue_id
         consider = 1
       else
         consider = 0
