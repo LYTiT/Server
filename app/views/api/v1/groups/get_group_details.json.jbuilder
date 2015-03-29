@@ -9,4 +9,4 @@ json.num_group_venues @group.venues.count
 json.can_link_events @group.can_link_events
 json.can_link_venues @group.can_link_venues
 json.num_upcoming_events @group.upcoming_events.count
-json.cover_media_url @goup.cover_media_url
+json.cover_media_url @group.cover_media_url
