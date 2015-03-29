@@ -30,7 +30,7 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def add_cover
-    @group = Group.find(params[:id])
+    @group = Group.find(params[:group_id])
     @group.cover_media_url = params[:cover_media_url]
     @group.save
     render json: { success: true }
