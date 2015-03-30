@@ -4,6 +4,7 @@ json.array! @user.groups.order("groups.name ASC") do |group|
   json.description group.description
   json.num_group_members group.users.count
   json.num_group_venues group.venues.count
+  json.num_events group.events.count
   json.can_link_events group.can_link_events
   json.can_link_venues group.can_link_venues
   json.is_public group.is_public
