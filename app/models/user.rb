@@ -274,7 +274,7 @@ class User < ActiveRecord::Base
     surrounding_moments = VenueComment.joins(:venue).where('l_sphere = ?', current_sphere).where('bounty_claim_id IS NULL')
 =end
 
-    feed = (surrounding_moment_requests + surrounding_moment_request_responses.compact! + surrounding_moments)
+    feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments).compact!
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
