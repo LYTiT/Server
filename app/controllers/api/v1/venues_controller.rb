@@ -58,7 +58,7 @@ class Api::V1::VenuesController < ApiBaseController
           completion = true
           render json: { success: true }
         else
-          for part in posting_parts #iterate through posting parts to find matching part (equivalen session id) of incoming Venue Comment part
+          for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
 
             if part.session != nil and part.session == session
               @comment = VenueComment.new(venue_comment_params)

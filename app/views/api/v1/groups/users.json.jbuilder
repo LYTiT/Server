@@ -9,6 +9,6 @@ json.array! @users do |user|
   json.notify_venue_added_to_groups user.notify_venue_added_to_groups
   json.is_group_admin @group.is_user_admin?(user.id)
   json.send_notification GroupsUser.send_notification?(@group.id, user.id)
-  json.media_url (user.last_three_comments[0]).try(:media_url)
-  json.media_type (user.last_three_comments[0]).try(:media_type)
+  json.media_url (user.last_media_comment).try(:media_url)
+  json.media_type (user.last_media_comment).try(:media_type)
 end

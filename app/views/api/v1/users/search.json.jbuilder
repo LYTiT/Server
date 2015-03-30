@@ -8,6 +8,6 @@ json.array! @person do |u|
   json.updated_at u.updated_at
   json.followers_count u.followers.count
   json.following_count (u.followed_users.count + u.followed_venues.count)
-  json.media_url (u.last_three_comments[0]).try(:media_url)
-  json.media_type (u.last_three_comments[0]).try(:media_type)
+  json.media_url (u.last_media_comment).try(:media_url)
+  json.media_type (u.last_media_comment).try(:media_type)
 end

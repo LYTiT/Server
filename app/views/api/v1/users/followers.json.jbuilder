@@ -7,6 +7,6 @@ json.array! @followers do |follower|
   	json.followers_count follower.followers.count
   	json.following_count (follower.followed_users.count + follower.followed_venues.count)
   	json.is_following @user.following?(follower)
-  	json.media_url (follower.last_three_comments[0]).try(:media_url)
-	json.media_type (follower.last_three_comments[0]).try(:media_type)
+  	json.media_url (follower.last_media_comment).try(:media_url)
+	json.media_type (follower.last_media_comment).try(:media_type)
 end
