@@ -253,7 +253,6 @@ class User < ActiveRecord::Base
     #surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_id IN (#{venue_ids})")
     surrounding_moment_request_responses = []
     surrounding_moment_requests.each{|request| surrounding_moment_request_responses << request.bounty_claims}
-
 =begin    
     for v in nearby_venues
       if v.city != nil
@@ -275,7 +274,7 @@ class User < ActiveRecord::Base
     surrounding_moments = VenueComment.joins(:venue).where('l_sphere = ?', current_sphere).where('bounty_claim_id IS NULL')
 =end
 
-    feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
+    feed = (surrounding_moment_requests + surrounding_moment_request_responses.compact! + surrounding_moments)
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
