@@ -254,7 +254,7 @@ class User < ActiveRecord::Base
     #surrounding_moment_request_responses = []
     #surrounding_moment_requests.each{|request| surrounding_moment_request_responses << request.bounty_claims}
 
-    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments)
+    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
 
