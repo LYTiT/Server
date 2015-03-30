@@ -168,13 +168,18 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def get_upcoming_events
-    group = Group.find(params[:group_id])
-    @events = group.upcoming_events
+    @group = Group.find(params[:group_id])
+    @events = @group.upcoming_events
   end
 
   def get_past_events
-    group = Group.find(params[:group_id])
-    @events = group.past_events
+    @group = Group.find(params[:group_id])
+    @events = @group.past_events
+  end
+
+  def get_all_events
+    @group = Group.find(params[:group_id])
+    @events = @group.events.order("id desc") 
   end
 
   private

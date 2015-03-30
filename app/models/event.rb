@@ -30,6 +30,14 @@ class Event < ActiveRecord::Base
     end
   end
 
+  def expiration_check
+    if self.end_date < Time.now
+      return 1
+    else
+      return 0
+    end
+  end
+
   def add_gps_venue
     return if self.venue_id.present?
     v = Venue.new

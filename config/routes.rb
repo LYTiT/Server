@@ -159,6 +159,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_past_events'
         get 'get_upcoming_events'
+        get 'get_all_events'
         post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
         post 'add_cover'
