@@ -71,7 +71,7 @@ class BountyClaim < ActiveRecord::Base
 		self.accepted = true
 		self.save
 		
-		BountyClaim.where("bounty_id = #{self.bounty_id} AND id != #{self.id}").update_columns(rejected: true)
+		BountyClaim.where("bounty_id = #{self.bounty_id} AND id != #{self.id}").update_all(rejected: true)
 
 		reward = bounty.lumen_reward
 		bounty_lumen_value = LumenValue.new(:value => reward*(0.9), :user_id => user.id, :bounty_id => bounty.id)
