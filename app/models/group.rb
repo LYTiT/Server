@@ -4,7 +4,7 @@ class Group < ActiveRecord::Base
   validates_length_of :name, :within => 1..30
   validates_uniqueness_of :name, :message => "Name already exists"
 
-  validates :name, presence: true
+  validates :name, presence: true, format: { with: /^[a-zA-Z\d\s]*$/i }
   validates_uniqueness_of :name, case_sensitive: false
 
   validates_inclusion_of :is_public, in: [true, false]
