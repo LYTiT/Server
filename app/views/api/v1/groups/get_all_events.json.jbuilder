@@ -9,5 +9,5 @@ json.array! @events do |event|
 	json.venue_address event.venue.address
 	json.latitude event.latitude
 	json.longitude event.longitude
-	json.expirated event.expiration_check
+	json.expired event.expiration_check
 end
