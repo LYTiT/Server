@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   attr_accessor :password_confirmation
 
   validates_uniqueness_of :name, :case_sensitive => false
-  validates :name, presence: true, format: { with: /^@?(\w){1,15}$/i}
+  validates :name, presence: true, format: { with: /\A(^@?(\w){1,15}$)\Z/i}
   validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
   validates :venues, absence: true, if: Proc.new {|user| user.role.try(:name) != "Venue Manager"}
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
