@@ -46,6 +46,7 @@ gem 'geocoder'
 gem 'pr_geohash'
 gem 'timezone'
 gem 'tzinfo'
+gem 'skylight'
 
 group :development do
   gem 'better_errors'
