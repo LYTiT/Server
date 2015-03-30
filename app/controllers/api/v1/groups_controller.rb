@@ -179,7 +179,10 @@ class Api::V1::GroupsController < ApiBaseController
 
   def get_all_events
     @group = Group.find(params[:group_id])
-    @events = @group.events.order("id desc") 
+    @events = @group.events.order("id desc")
+    if @events.count == 0
+      render json: { joined: true }
+    end
   end
 
   private
