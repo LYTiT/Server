@@ -249,7 +249,7 @@ class User < ActiveRecord::Base
 
     surrounding_moments = VenueComment.where("venue_id IN (#{venue_ids}) AND bounty_claim_id IS NULL AND created_at >= ?", (Time.now - 2.days))
     surrounding_moment_requests = Bounty.where("venue_id IN (#{venue_ids}) AND created_at >= ?", (Time.now - 2.days))
-    surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_id IN (#{venue_ids}) AND created_at >= ?", (Time.now - 2.days))
+    surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_id IN (#{venue_ids})")
 
 =begin    
     for v in nearby_venues
