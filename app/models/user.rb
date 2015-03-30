@@ -713,7 +713,7 @@ class User < ActiveRecord::Base
   end
 
   def last_media_comment
-    VenueComment.where("user_id = #{self.id} AND media_type != 'text'").order("Id DESC limit 1")
+    VenueComment.where("user_id = #{self.id} AND media_type != 'text'").order("Id DESC limit 1")[0]
   end
 
   #Returns 10 random users out of the top 20 most frequent venue comment posters
