@@ -257,8 +257,10 @@ class Venue < ActiveRecord::Base
   end
 
   def set_is_address_and_votes_received
-    if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
-      update_columns(is_address: true)
+    if address != nil and name != nil
+      if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
+        update_columns(is_address: true)
+      end
     end
 
     if self.lytit_votes.count > 0
