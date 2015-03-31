@@ -236,7 +236,7 @@ class Venue < ActiveRecord::Base
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
 
-      if address.gsub(" ","").gsub(",", "") = name.gsub(" ","").gsub(",", "")
+      if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
         is_address = true
       end
 
