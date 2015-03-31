@@ -264,7 +264,7 @@ class Venue < ActiveRecord::Base
     end
 
     if self.lytit_votes.count > 0
-      update_columns(has_been_votes_at: true)
+      update_columns(has_been_voted_at: true)
     end
   end
 
