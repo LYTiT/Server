@@ -237,7 +237,7 @@ class Venue < ActiveRecord::Base
       venue.fetched_at = Time.now
 
       if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
-        is_address = true
+        venue.is_address = true
       end
 
       venue.save
@@ -256,9 +256,13 @@ class Venue < ActiveRecord::Base
     self.save
   end
 
-  def set_is_address
+  def set_is_address_and_votes_received
     if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
       update_columns(is_address: true)
+    end
+
+    if self.lytit_votes.count > 0
+      update_columns(has_been_votes_at: true)
     end
   end
 
