@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150328154834) do
+ActiveRecord::Schema.define(version: 20150331050353) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -477,6 +477,8 @@ ActiveRecord::Schema.define(version: 20150328154834) do
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
   add_index "venues", ["l_sphere"], name: "index_venues_on_l_sphere", using: :btree
+  add_index "venues", ["latitude"], name: "index_venues_on_latitude", using: :btree
+  add_index "venues", ["longitude"], name: "index_venues_on_longitude", using: :btree
   add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
 
 end
