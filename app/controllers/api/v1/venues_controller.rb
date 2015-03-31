@@ -46,118 +46,58 @@ class Api::V1::VenuesController < ApiBaseController
 
     completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
     
-    if session != nil #posting by parts algorithm for versions >= 3.1.0 have session ids assigned to all Venue Comments and their parts
 
-      if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
-        posting_parts = @user.temp_posting_housings.order('id ASC')
+    if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
+      posting_parts = @user.temp_posting_housings.order('id ASC')
 
-        if posting_parts.count == 0 #if no parts are housed there is nothing to link
+      if posting_parts.count == 0 #if no parts are housed there is nothing to link
+        vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
+                                      :session => session, :username_private => @user.username_private)
+        vc_part.save
+        completion = true
+        render json: { success: true }
+      else
+        for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
+          
+          if part.session != nil and part.session == session
+            @comment = VenueComment.new(venue_comment_params)
+            @comment.user = @user
+            @comment.venue = venue
+            @comment.username_private = @user.username_private
+            if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
+              @comment.venue = part.venue
+              @comment.comment = part.comment
+              @comment.username_private = part.username_private
+            else #pull media data as the incoming part is the text
+              @comment.media_type = part.media_type
+              @comment.media_url = part.media_url
+            end
+            part.delete
+            parts_linked = true
+            break  
+          else #if a part has been housed for over a reasonable period of time we can assume that it is no longer needed.
+            if (((Time.now - part.created_at) / 1.minute) >= 30.0)
+              part.delete
+            end
+          end
+
+        end
+
+        if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
           vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                        :session => session, :username_private => @user.username_private)
+                                        :session => session, :username_private => @user.username_private)          
           vc_part.save
           completion = true
           render json: { success: true }
-        else
-          for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
-
-            if part.session != nil and part.session == session
-              @comment = VenueComment.new(venue_comment_params)
-              @comment.user = @user
-              @comment.venue = venue
-              @comment.username_private = @user.username_private
-              if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
-                @comment.venue = part.venue
-                @comment.comment = part.comment
-                @comment.username_private = part.username_private
-              else #pull media data as the incoming part is the text
-                @comment.media_type = part.media_type
-                @comment.media_url = part.media_url
-              end
-              part.delete
-              parts_linked = true
-              break  
-            else #if a part has been housed for over a reasonable period of time we can assume that it is no longer needed.
-              if (((Time.now - part.created_at) / 1.minute) >= 30.0)
-                part.delete
-              end
-            end
-
-          end
-
-          if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
-            vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                          :session => session, :username_private => @user.username_private)          
-            vc_part.save
-            completion = true
-            render json: { success: true }
-          end
         end
-
-      else #dealing with a simple text comment
-        assign_lumens = true
-        @comment = VenueComment.new(venue_comment_params)
-        @comment.venue = venue
-        @comment.user = @user
-        @comment.username_private = @user.username_private
       end
 
-
-#V3.0.0 Posting by Parts for Backward Compatability >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-    else 
+    else #dealing with a simple text comment
+      assign_lumens = true
       @comment = VenueComment.new(venue_comment_params)
       @comment.venue = venue
       @comment.user = @user
       @comment.username_private = @user.username_private
-      if @user.venue_comments.count > 0
-        last_post = @user.venue_comments.order('id ASC').to_a.pop
-      end
-      #To prevent posting pieces being pulled into the following feed we make part i posted invisibly. 
-      #This is a temp solution to handle the instance of the text uploading before the media (occurs under poor service conditions).
-      #Note: this is flawed!
-      if @comment.venue_id == 14002
-        @comment.username_private = true
-        if last_post != nil
-          if ((Time.now - last_post.created_at) / 1.minute).abs <= 1 && last_post.media_type == 'text'
-            if last_post.venue_id == 14002 && last_post.comment == 'temp'
-              last_post.venue_id = last_post.views
-              last_post.views = 0
-              last_post.comment = nil
-              last_post.media_type = @comment.media_type
-              last_post.media_url = @comment.media_url
-              last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
-              @comment = last_post
-
-            else
-              last_post.media_type = @comment.media_type
-              last_post.media_url = @comment.media_url
-              last_post.lumen_values.to_a.pop.delete #deleting lumen values for text since it's not a standalone text comment.
-              @comment = last_post
-
-              @user.adjust_lumens #removing text lumens since posting is not a text
-            end
-          end
-        end
-      else #regular text comment not part of posting by parts thus should receive lumens
-        assign_lumens = true
-      end
-
-      #Regular posting by parts, text is uploaded after media part.
-      if last_post != nil and last_post.venue_id == 14002
-        if not last_post.media_url.blank?
-          last_post.comment = @comment.comment
-          last_post.venue_id = @comment.venue_id
-          last_post.username_private = @comment.username_private
-          @comment = last_post
-          #last_post.delete
-        end
-      end
-      #Handles the case when blank text is uploaded before media part of comment.
-      if @comment.comment.blank? && @comment.media_url.blank?
-        @comment.views = @comment.venue_id
-        @comment.venue_id = 14002
-        @comment.comment = "temp"
-      end
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     end
 
 
@@ -170,7 +110,11 @@ class Api::V1::VenuesController < ApiBaseController
         offset = @comment.created_at.in_time_zone(@comment.venue.time_zone).utc_offset
         offset_time = @comment.created_at + offset
         @comment.offset_created_at = offset_time
-        @comment.save  
+        @comment.save
+
+        venue.latest_posted_comment_time = Time.now
+        venue.last_image_id = @comment.id
+        venue.save
 
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
           if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
@@ -393,7 +337,13 @@ class Api::V1::VenuesController < ApiBaseController
 
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)
-      @user.delay.update_lumens_after_vote(v.id)
+      
+      if v.has_been_voted_at == false
+        v.has_been_voted_at == true
+        v.save
+      end
+
+      @user.update_lumens_after_vote(v.id)
 
       if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
         lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)

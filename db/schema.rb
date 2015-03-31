@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150331050353) do
+ActiveRecord::Schema.define(version: 20150331193942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -462,17 +462,21 @@ ActiveRecord::Schema.define(version: 20150331050353) do
     t.text     "formatted_address"
     t.text     "google_place_reference"
     t.datetime "fetched_at"
-    t.float    "r_up_votes",                       default: 1.0
-    t.float    "r_down_votes",                     default: 1.0
+    t.float    "r_up_votes",                           default: 1.0
+    t.float    "r_down_votes",                         default: 1.0
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer  "user_id"
     t.string   "menu_link"
-    t.float    "color_rating",                     default: -1.0
-    t.integer  "key",                    limit: 8
+    t.float    "color_rating",                         default: -1.0
+    t.integer  "key",                        limit: 8
     t.string   "time_zone"
-    t.integer  "outstanding_bounties",             default: 0
+    t.integer  "outstanding_bounties",                 default: 0
     t.string   "l_sphere"
+    t.datetime "latest_posted_comment_time"
+    t.integer  "last_media_comment_id"
+    t.boolean  "is_address",                           default: false
+    t.boolean  "has_been_voted_at",                    default: false
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree

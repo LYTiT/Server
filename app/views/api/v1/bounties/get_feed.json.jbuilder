@@ -6,15 +6,15 @@ json.array! @bounty_feed do |entry|
 	json.lumen_reward entry.try(:lumen_reward)
 	json.venue_name entry.try(:venue).name
 	json.comment entry.try(:comment)
-  	json.media_type entry.try(:media_type)
-  	json.response_received entry.try(:response_received)
-  	json.validity entry.try(:validity)
-  	json.claims_count entry.try(:bounty_claims).count
-    json.new_claims entry.try(:new_claims)
+  json.media_type entry.try(:media_type)
+  json.response_received entry.try(:response_received)
+  json.validity entry.try(:validity)
+  json.claims_count entry.try(:bounty_claims).count
+  json.new_claims entry.try(:new_claims)
 
-  	json.user_id entry.try(:user_id)
-  	json.bounty_id entry.try(:bounty_id)
-  	json.venue_comment_id entry.try(:venue_comment_id)
+  json.user_id entry.try(:user_id)
+  json.bounty_id entry.try(:bounty_id)
+  json.venue_comment_id entry.try(:venue_comment_id)
 end
 json.pagination do
   json.current_page @bounty_feed.current_page

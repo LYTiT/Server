@@ -235,6 +235,11 @@ class Venue < ActiveRecord::Base
       venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
+
+      if address.gsub(" ","").gsub(",", "") = name.gsub(" ","").gsub(",", "")
+        is_address = true
+      end
+
       venue.save
       return venue
     end
@@ -249,6 +254,12 @@ class Venue < ActiveRecord::Base
     timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
     self.time_zone = timezone.active_support_time_zone rescue nil
     self.save
+  end
+
+  def set_is_address
+    if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
+      update_columns(is_address: true)
+    end
   end
 
   #Bounding area in which to search for a venue as determined by target lat and long.

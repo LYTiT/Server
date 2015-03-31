@@ -220,9 +220,8 @@ class User < ActiveRecord::Base
     feed = (userfeed + venuefeed + groupfeed)
     feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
   end
-=end
 
-
+  #This is the optimized feed that pulls all moments of viewed places, people, and placelist groups into one place
   def totalfeed
     ids_of_followed_users = "SELECT followed_id FROM relationships WHERE follower_id = #{self.id}"
     ids_of_followed_venues = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{self.id}"
@@ -235,6 +234,11 @@ class User < ActiveRecord::Base
       OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users})) AND user_id != #{self.id}
       OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})
       OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC").uniq
+  end
+=end
+
+  def viewing_feed
+    feed = VenueComment.from_venues_followed_by(self).order("id asc")
   end
 
   def surrounding_feed(lat, long)
@@ -379,8 +383,7 @@ class User < ActiveRecord::Base
 
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
-   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day)
-   lumens_of_date.inject(0) { |sum, l| sum + l.value}
+   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", s.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
   end
 
   def weekly_lumens
@@ -461,7 +464,7 @@ class User < ActiveRecord::Base
     percentile = all_lumens.percentile_rank(self.lumens)
   end
 
-  ############################################################################################################################################################
+  
   def update_lumen_percentile
     if self.lumens == 0
       update_columns(lumen_percentile: 0)
