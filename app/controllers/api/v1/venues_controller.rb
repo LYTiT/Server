@@ -182,7 +182,8 @@ class Api::V1::VenuesController < ApiBaseController
     if not @venue
       render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
     else
-      @comments = @venue.visible_venue_comments.page(params[:page]).per(5).order("created_at desc")
+      live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY'").order('id desc')
+      @comments = live_comments.page(params[:page]).per(5)
     end
   end
 
