@@ -295,18 +295,19 @@ class Venue < ActiveRecord::Base
   def self.set_last_media_time_and_url
     target_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
     for v in target_venues
-      last_vc = v.venue_comments.order("id desc").first
+      last_vc = v.venue_comments.order("id desc")[0]
       v.update_columns(latest_posted_comment_time: last_vc.created_at)
-      last_media = v.last_image
-      if last_image != nil
-        v.update_columns(last_media_comment_url: target_vc.media_url)
+
+      last_media = VenueComment.where("venue_id = ? AND NOT media_type = ?", v.id, "text").order('id desc').first
+      if last_media != nil
+        v.update_columns(last_media_comment_url: last_media.media_url)
       end
     end
   end
 
   def self.set_latest_placed_bounty_time
-    v_ids = "SELECT DISTINCT venue_id FROM bounties"
-    target_venues = Venue.where("id IN (#{v_ids}")
+    v_ids = "SELECT venue_id FROM bounties WHERE user_id != NULL"
+    target_venues = Venue.where("id IN (#{v_ids})")
     for v in target_venues
       target_bounty = v.bounties.order("id desc").first
       v.update_columns(latest_placed_bounty_time: target_bounty.created_at)
@@ -404,13 +405,6 @@ class Venue < ActiveRecord::Base
       end
     end
     return recommendations.compact
-  end
-
-  def last_image
-    images = VenueComment.where("venue_id = ? AND NOT media_type = ?", self.id, "text").order('id desc')
-    if images.first != nil
-      return images.first
-    end
   end
 
   def cord_to_city
