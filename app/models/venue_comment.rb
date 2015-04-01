@@ -86,8 +86,7 @@ class VenueComment < ActiveRecord::Base
 
   #returns comments of venues followed
   def VenueComment.from_venues_followed_by(user)
-    #followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
-    ids_followed_by_user = "SELECT followed_id FROM relationships WHERE follower_id = #{user.id}" #user.followed_users.map(&:id).join(', ')
+    ids_followed_by_user = "SELECT followed_id FROM relationships WHERE follower_id = #{user.id}" 
 
     if ids_followed_by_user.length > 0
       followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"
@@ -96,6 +95,11 @@ class VenueComment < ActiveRecord::Base
       followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
       where("venue_id IN (#{followed_venues_ids})", user_id: user)
     end
+  end
+
+  def VenueComment.live_from_venues_followed_by(user)
+    followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{user.id}"
+    where("venue_id IN (#{followed_venues_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
   end
 
   def VenueComment.from_valid_bounty_claims(bounty)
