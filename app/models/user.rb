@@ -153,8 +153,8 @@ class User < ActiveRecord::Base
     meter_radius = 1000
     commencement = (Time.now - 5.days)
 
-    min_lat = lat.to_f - ((meter_radius.to_i) / (109.0 * 1000)
-    max_lat = lat.to_f + ((meter_radius.to_i) / (109.0 * 1000)
+    min_lat = lat.to_f - ((meter_radius.to_i) / (109.0 * 1000))
+    max_lat = lat.to_f + ((meter_radius.to_i) / (109.0 * 1000))
     min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} 
@@ -166,7 +166,6 @@ class User < ActiveRecord::Base
 
     feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
-
 
 =begin
     #pulling based on lsphere and not on radius
