@@ -4,7 +4,7 @@ class Relationship < ActiveRecord::Base
 	validates :follower_id, presence: true
 	validates :followed_id, presence: true
 
-	after_create :new_follower_notification
+	#after_create :new_follower_notification
 
 
 	def new_follower_notification

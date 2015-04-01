@@ -10,7 +10,7 @@ class BountyClaim < ActiveRecord::Base
 
 	def proper_media_type
 		if self.venue_comment.media_type != self.bounty.media_type
-			errors.add(:media_type, 'does not match Bounty request. Please try again')
+			errors.add(:media_type, 'does not match Moment Request. Please try again')
 		end
 	end
 

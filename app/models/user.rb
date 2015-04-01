@@ -145,98 +145,6 @@ class User < ActiveRecord::Base
     venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
   end
 
-=begin THIS IS THE OLD FEED IMPLEMENTATOIN THAT WAS ABANDONDED DUE TO MEMORY INEFFICIENCY
-  def groupfeed
-    #List of the ids of Groups user is part of
-    group_ids = self.groups.flatten.map(&:id)
-    #User not part of any Group thus there can be no feed
-    if group_ids.length == 0
-      return nil
-    else
-      #To prevent redundent entries in the Moments feed will omit Venue Comments pulled from places and people the user follows
-      excluded_ids = (VenueComment.from_users_followed_by(self)<<VenueComment.from_venues_followed_by(self)).flatten.map(&:id).join(', ')
-      valid_ids = ''
-      for g_id in group_ids
-        #We check to make sure the user is subscribed to the Group before pullings its associated Venue Comments
-        if GroupsUser.where("user_id = #{id} AND group_id = #{g_id}").first.notification_flag == false
-          next
-        else
-          considered_group = Group.find_by_id(g_id)
-          if excluded_ids.length > 0
-            at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id} AND venue_comment_id NOT IN (#{excluded_ids})"
-            mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
-          else
-            at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{g_id}"
-            mapped_at_group_valid_venue_comment_ids = VenueComment.where("id IN (#{at_group_valid_venue_comment_ids})").map(&:id).join(', ')
-          end
-          valid_ids << mapped_at_group_valid_venue_comment_ids #these Venue Comments are the @Group comments of the Group that are not part of the followed people or places feed
-          
-          #We pull in the associated Venue Comments of a Group (Venue Comments posted at Venues belonging to the Group)
-          if excluded_ids.length > 0
-            group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{g_id}"
-            gfeed_vc_ids = VenueComment.where("venue_id IN (#{group_venue_ids}) AND user_id != #{self.id} AND id NOT IN (#{excluded_ids})").flatten.map(&:id).join(', ')
-          else
-            group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{g_id}"
-            gfeed_vc_ids = VenueComment.where("venue_id IN (#{group_venue_ids}) AND user_id != #{self.id}").flatten.map(&:id).join(', ')
-          end
-
-          #Prevent double pulling of Venue Comments that belong to more than one Group (if for example the Venue Comment's venue belongs to both Groups)
-          if gfeed_vc_ids.length > 0
-            if valid_ids.length >0
-              valid_ids = valid_ids + ', ' + gfeed_vc_ids
-              exlcuded_ids = excluded_ids + ', ' + valid_ids
-            else
-              valid_ids = gfeed_vc_ids
-              exlcuded_ids = valid_ids
-            end
-          end
-        end
-      end
-      #Return the final list of Venue Comments if there is something new to return
-      if valid_ids.length > 0 
-        gfeed = VenueComment.where("id IN (#{valid_ids})")
-        type = Array.new(gfeed.count, 2)
-        return gfeed.zip(type.to_a)
-      else
-        return nil
-      end
-    end
-  end
-
-  def userfeed
-    ufeed = VenueComment.from_users_followed_by(self)
-    type = Array.new(ufeed.count, 1)
-    ufeed.zip(type.to_a)
-  end
-
-  def venuefeed
-    vfeed = VenueComment.from_venues_followed_by(self)
-    type = Array.new(vfeed.count, 0)
-    vfeed.zip(type.to_a)
-  end
-
-  #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
-  def old_totalfeed
-    feed = (userfeed + venuefeed + groupfeed)
-    feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
-  end
-
-  #This is the optimized feed that pulls all moments of viewed places, people, and placelist groups into one place
-  def totalfeed
-    ids_of_followed_users = "SELECT followed_id FROM relationships WHERE follower_id = #{self.id}"
-    ids_of_followed_venues = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{self.id}"
-    ids_of_subscribed_groups = "SELECT group_id FROM groups_users WHERE (user_id = #{self.id} AND notification_flag = 'true')"
-    ids_of_groups_venues = "SELECT venue_id FROM groups_venues WHERE group_id IN (#{ids_of_subscribed_groups})"
-
-    at_group_valid_venue_comment_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id IN (#{ids_of_subscribed_groups})"
-
-    feed = VenueComment.where("(user_id IN (#{ids_of_followed_users}) AND username_private = 'false')
-      OR (venue_id IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users})) AND user_id != #{self.id}
-      OR (venue_id IN (#{ids_of_groups_venues}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})
-      OR (id IN (#{at_group_valid_venue_comment_ids}) AND venue_id NOT IN (#{ids_of_followed_venues}) AND venue_id NOT IN (#{ids_of_groups_venues}) AND user_id NOT IN (#{ids_of_followed_users}) AND user_id != #{self.id})").order("Id DESC").uniq
-  end
-=end
-
   def viewing_feed
     feed = VenueComment.from_venues_followed_by(self).order("id desc")
   end
@@ -245,8 +153,8 @@ class User < ActiveRecord::Base
     meter_radius = 1000
     commencement = (Time.now - 5.days)
 
-    min_lat = lat.to_f - ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
+    min_lat = lat.to_f - ((meter_radius.to_i) / (109.0 * 1000)
+    max_lat = lat.to_f + ((meter_radius.to_i) / (109.0 * 1000)
     min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} 
@@ -258,6 +166,8 @@ class User < ActiveRecord::Base
 
     feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+
+
 =begin
     #pulling based on lsphere and not on radius
     user_sphere = city.delete(" ")+(lat.round(0).abs).to_s+(long.round(0).abs).to_s

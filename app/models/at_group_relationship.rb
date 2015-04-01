@@ -24,7 +24,7 @@ class AtGroupRelationship < ActiveRecord::Base
        :venue_comment_id => self.venue_comment.id, 
        :user_id => user.id
      }
-     message = "A Moment @#{self.group.name} has been mapped"
+     message = "#{self.group.name} was hashtagged"
      notification = self.store_notification(payload, user, message)
      payload[:notification_id] = notification.id
 

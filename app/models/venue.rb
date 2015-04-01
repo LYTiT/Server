@@ -82,9 +82,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  #1 degree of latitude is ~110.54km while 1 degree of longitude is ~113.20*cos(latitude)km. This does not account for flattening at the earth's poles but in our 
-  #case it is sufficiently accurate (Santa, dealt with it!)
-  #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
+  #Note we adjust for aspect ratio of iPhone screen
   def self.venues_in_view(radius, lat, long)
     min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
@@ -99,7 +97,7 @@ class Venue < ActiveRecord::Base
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
+    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} AND latest_posted_comment_time IS NOT NULL"
     spotlyts = VenueComment.where("(media_type = 'image' OR media_type = 'video') AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t).order("Views DESC limit 10")
   end
 
@@ -107,17 +105,6 @@ class Venue < ActiveRecord::Base
     if vname == nil && vcountry == nil
       return
     end
-
-    #Lookup up by unique key. Perhaps may have to resort to in the future.
-
-    #lookup_key = createKey(vlatitude, vlongitude, vaddress)
-    #venues = Venue.where("key = ?", lookup_key)
-    # 3 is the allowed deviation allowed in lat and long in the 1/1000 place
-    
-    #lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
-    #long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
-    #venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
-    #--------------------------------
 
     #We need to determine the type of search being conducted whether it is venue specific or geographic
     if vaddress == nil
@@ -361,50 +348,14 @@ class Venue < ActiveRecord::Base
   end
 
   def self.near_locations(lat, long)
-=begin    
-    boundry = GeoHash.neighbors(self.geohash)
-    adj_boundry = []
-    boundry.each {|bound| adj_boundry << bound[0,7]}
-    adj_boundry
-    #neighbors = "SELECT venue FROM venues WHERE LEFT(geohash,7) IN (#{boundry})"
-    neighbors = Venue.where("LEFT(geohash, 7) IN (?)", adj_boundry)
-    neighbors = neighbors.order('distance ASC')
-=end
     meter_radius = 400
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
-    suggestions = []
-    count = 0
-
-    #Must ommit custom locations (addresses) from being pulled into the surrounding venues display that is the reason for the second part of the if block
-    for location in surroundings
-      if (LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", "")) 
-        suggestions << location
-        count += 1
-        if count == 10
-          break
-        end
-      end
-    end 
-    return suggestions.compact
+    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
 
   #Active venue's nearby to follow
   def self.recommended_venues(user, lat, long)
     meter_radius = 500
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
-    recommendations = []
-    count = 0
-
-    for location in surroundings
-      if (VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", ""))
-        recommendations << location
-        count += 1
-        if count == 10
-          break
-        end
-      end
-    end
-    return recommendations.compact
+    recommendations = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("last_media_comment_url IS NOT NULL AND is_address = FALSE").order('distance ASC limit 10')
   end
 
   def cord_to_city
