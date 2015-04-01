@@ -6,6 +6,7 @@ class Api::V1::BountiesController < ApiBaseController
   	@venue = Venue.find_by_id(params[:venue_id])
   	@user = User.find_by_id(params[:user_id])
   	@venue.outstanding_bounties = @venue.outstanding_bounties + 1
+    @venue.latest_placed_bounty_time = Time.now
   	@user.lumens = @user.lumens - params[:lumen_reward]
     bounty.save
   	@venue.save

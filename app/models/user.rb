@@ -244,21 +244,19 @@ class User < ActiveRecord::Base
   def surrounding_feed(lat, long)
     meter_radius = 750
     commencement = (Time.now - 2.days)
-    #nearby_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
 
     min_lat = lat.to_f - ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
+    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} 
+    AND (latest_placed_bounty_time >= (NOW() - INTERVAL '2 DAY') OR latest_posted_comment_time >= (NOW() - INTERVAL '2 DAY'))"
 
     surrounding_moments = VenueComment.where("venue_id IN (#{venue_ids}) AND bounty_claim_id IS NULL AND created_at >= ?", commencement)
     surrounding_moment_requests = Bounty.where("venue_id IN (#{venue_ids}) AND created_at >= ?", commencement)
-    #surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_id IN (#{venue_ids})")
-    surrounding_moment_request_responses = []
-    surrounding_moment_requests.each{|request| surrounding_moment_request_responses << request.bounty_claims}
+    surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_comments.venue_id IN (#{venue_ids}) AND venue_comments.created_at >= ?", commencement)
 
-    feed = (surrounding_moment_requests << surrounding_moment_request_responses.flatten << surrounding_moments).flatten
+    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
 

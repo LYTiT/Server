@@ -99,7 +99,6 @@ class Venue < ActiveRecord::Base
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    #venue_ids = Venue.where("latitude >= ? AND latitude <= ? AND longitude >= ? AND longitude <= ?", min_lat, max_lat, min_long, max_long).flatten.map(&:id).join(', ')
     venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long}"
     spotlyts = VenueComment.where("(media_type = 'image' OR media_type = 'video') AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t).order("Views DESC limit 10")
   end
@@ -245,6 +244,26 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  #Bounding area in which to search for a venue as determined by target lat and long.
+  def self.bounding_box(radius, lat, long)
+    box = Hash.new()
+    box["min_lat"] = lat.to_f - radius.to_i / (109.0 * 1000)
+    box["max_lat"] = lat.to_f + radius.to_i / (109.0 * 1000)
+    box["min_long"] = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    box["max_long"] = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
+    return box
+  end
+
+  def last_media_comment_type
+    if last_media_comment_url == nil
+      return nil
+    elsif last_media_comment_url.last(3) == 'jpg'
+      return "image"
+    else
+      return "video"
+    end
+  end
+
   def set_time_zone
     Timezone::Configure.begin do |c|
       c.username = 'LYTiT'
@@ -256,27 +275,41 @@ class Venue < ActiveRecord::Base
     self.save
   end
 
-  def set_is_address_and_votes_received
-    if address != nil and name != nil
-      if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
-        update_columns(is_address: true)
+  #RUN THIS ON BOLT BEFORE RELEASE 1.0
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  def self.set_is_address_and_votes_received
+    target_venues = Venue.all
+    for v in target_venues
+      if v.address != nil and v.name != nil
+        if v.address.gsub(" ","").gsub(",", "") == v.name.gsub(" ","").gsub(",", "")
+          v.update_columns(is_address: true)
+        end
+      end
+
+      if v.lytit_votes.count > 0
+        v.update_columns(has_been_voted_at: true)
       end
     end
+  end
 
-    if self.lytit_votes.count > 0
-      update_columns(has_been_voted_at: true)
+  def self.set_last_media_time_and_url
+    target_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
+    for v in target_venues 
+      target_vc = v.last_image
+      v.update_columns(latest_posted_comment_time: target_vc.created_at)
+      v.update_columns(last_media_comment_url: target_vc.media_url)
     end
   end
 
-  #Bounding area in which to search for a venue as determined by target lat and long.
-  def self.bounding_box(radius, lat, long)
-    box = Hash.new()
-    box["min_lat"] = lat.to_f - radius.to_i / (109.0 * 1000)
-    box["max_lat"] = lat.to_f + radius.to_i / (109.0 * 1000)
-    box["min_long"] = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    box["max_long"] = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    return box
+  def self.set_latest_placed_bounty_time
+    v_ids = "SELECT DISTINCT venue_id FROM bounties"
+    target_venues = Venue.where("id IN (#{v_ids}")
+    for v in target_venues
+      target_bounty = v.bounties.order("id desc").first
+      v.update_columns(latest_placed_bounty_time: target_bounty.created_at)
+    end
   end
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
   def self.formatTelephone(number)
