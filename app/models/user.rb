@@ -242,15 +242,15 @@ class User < ActiveRecord::Base
   end
 
   def surrounding_feed(lat, long)
-    meter_radius = 750
-    commencement = (Time.now - 2.days)
+    meter_radius = 1000
+    commencement = (Time.now - 5.days)
 
     min_lat = lat.to_f - ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((meter_radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} 
-    AND (latest_placed_bounty_time >= (NOW() - INTERVAL '2 DAY') OR latest_posted_comment_time >= (NOW() - INTERVAL '2 DAY'))"
+    AND (latest_placed_bounty_time >= (NOW() - INTERVAL '5 DAY') OR latest_posted_comment_time >= (NOW() - INTERVAL '5 DAY'))"
 
     surrounding_moments = VenueComment.where("venue_id IN (#{venue_ids}) AND bounty_claim_id IS NULL AND created_at >= ?", commencement)
     surrounding_moment_requests = Bounty.where("venue_id IN (#{venue_ids}) AND created_at >= ?", commencement)
