@@ -306,7 +306,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.set_latest_placed_bounty_time
-    v_ids = "SELECT venue_id FROM bounties WHERE user_id != NULL"
+    v_ids = "SELECT venue_id FROM bounties WHERE user_id > 0"
     target_venues = Venue.where("id IN (#{v_ids})")
     for v in target_venues
       target_bounty = v.bounties.order("id desc").first
