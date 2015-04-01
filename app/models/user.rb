@@ -238,7 +238,7 @@ class User < ActiveRecord::Base
 =end
 
   def viewing_feed
-    feed = VenueComment.from_venues_followed_by(self).order("id asc")
+    feed = VenueComment.from_venues_followed_by(self).order("id desc")
   end
 
   def surrounding_feed(lat, long)

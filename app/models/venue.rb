@@ -294,10 +294,13 @@ class Venue < ActiveRecord::Base
 
   def self.set_last_media_time_and_url
     target_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
-    for v in target_venues 
-      target_vc = v.last_image
-      v.update_columns(latest_posted_comment_time: target_vc.created_at)
-      v.update_columns(last_media_comment_url: target_vc.media_url)
+    for v in target_venues
+      last_vc = v.venue_comments.order("id desc").first
+      v.update_columns(latest_posted_comment_time: last_vc.created_at)
+      last_media = v.last_image
+      if last_image != nil
+        v.update_columns(last_media_comment_url: target_vc.media_url)
+      end
     end
   end
 
