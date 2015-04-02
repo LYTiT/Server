@@ -222,8 +222,10 @@ class Venue < ActiveRecord::Base
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
 
-      if vaddress.gsub(" ","").gsub(",", "") == vname.gsub(" ","").gsub(",", "")
-        venue.is_address = true
+      if v.address != nil && v.name != nil
+        if vaddress.gsub(" ","").gsub(",", "") == vname.gsub(" ","").gsub(",", "")
+          venue.is_address = true
+        end
       end
 
       venue.save
@@ -267,7 +269,7 @@ class Venue < ActiveRecord::Base
   def self.set_is_address_and_votes_received
     target_venues = Venue.all
     for v in target_venues
-      if v.address != nil and v.name != nil
+      if v.address != nil && v.name != nil
         if v.address.gsub(" ","").gsub(",", "") == v.name.gsub(" ","").gsub(",", "")
           v.update_columns(is_address: true)
         end
