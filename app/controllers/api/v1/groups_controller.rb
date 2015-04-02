@@ -55,8 +55,7 @@ class Api::V1::GroupsController < ApiBaseController
 
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
-    user_group_ids = "SELECT id from groups_users WHERE user_id = #{@user.id}"
-    @groups = Group.where("LOWER(name) like ? OR LOWER(description) like ? AND id NOT IN (#{user_group_ids})", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
+    @groups = Group.where("LOWER(name) like ? OR LOWER(description) like ?", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
   end
 
   def users

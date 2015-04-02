@@ -7,7 +7,8 @@ class Bounty < ActiveRecord::Base
 
 	def check_validity
 		result = true
-		if self.expiration.to_time < Time.now
+
+		if self.expiration.to_time < Time.now && self.validity == true
 			venue.outstanding_bounties = venue.outstanding_bounties - 1
 			venue.save
 
@@ -19,9 +20,10 @@ class Bounty < ActiveRecord::Base
 				self.save
 			end
 
-			if bounty_claims.count == 0 #if no responses received we return the deposited lumens for the request back to the user
+			if bounty_claims.count == 0 && self.lumen_reward > 0#if no responses received we return the deposited lumens for the request back to the user
 				user_lumens = user.lumens 
 				user.update_columns(lumens: user_lumens+self.lumen_reward)
+				self.update_columns(lumen_reward: 0)
 			end
 
 		end
