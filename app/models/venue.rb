@@ -182,7 +182,7 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
-      if lookup.l_sphere == nil #Add LYT Sphere if not present
+      if lookup.l_sphere == nil && city != nil #Add LYT Sphere if not present
         lookup.l_sphere = lookup.city.delete(" ")+(lookup.latitude.round(0).abs).to_s+(lookup.longitude.round(0).abs).to_s
         lookup.save
       end
@@ -218,7 +218,9 @@ class Venue < ActiveRecord::Base
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
-      venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+      if vcity != nil
+        venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+      end
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
 
