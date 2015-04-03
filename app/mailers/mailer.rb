@@ -1,5 +1,4 @@
 class Mailer < ActionMailer::Base
-  default from: 'lux@lytit.com'
   layout 'mailer'
 
   def welcome_venue_manager(user)
