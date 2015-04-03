@@ -12,16 +12,16 @@ json.comments(@news) do |entry|
 	json.total_views entry.views
 	json.created_at entry.created_at
 	json.updated_at entry.updated_at
-	json.group_1_name entry.groups[0].try(:name)
-	json.group_1_id entry.groups[0].try(:id)
-	json.group_2_name entry.groups[1].try(:name)
-	json.group_2_id entry.groups[1].try(:id)
-	json.group_3_name entry.groups[2].try(:name)
-	json.group_3_id entry.groups[2].try(:id)
-	json.group_4_name entry.groups[3].try(:name)
-	json.group_4_id entry.groups[3].try(:id)
-	json.group_5_name entry.groups[4].try(:name)
-	json.group_5_id entry.groups[4].try(:id)
+	json.group_1_name entry.hashtags[0].try(:name)
+	json.group_1_id entry.hashtags[0].try(:id)
+	json.group_2_name entry.hashtags[1].try(:name)
+	json.group_2_id entry.hashtags[1].try(:id)
+	json.group_3_name entry.hashtags[2].try(:name)
+	json.group_3_id entry.hashtags[2].try(:id)
+	json.group_4_name entry.hashtags[3].try(:name)
+	json.group_4_id entry.hashtags[3].try(:id)
+	json.group_5_name entry.hashtags[4].try(:name)
+	json.group_5_id entry.hashtags[4].try(:id)
 	json.from_user 0
 end
 json.pagination do

@@ -81,8 +81,9 @@ class Group < ActiveRecord::Base
   end
 
   def remove_venue(venue_id, user_id)
-    GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all #removes Venue from Placeslist
-    GroupsVenueComment.where("venue_id = ?", venue_id).destroy_all #removes Venue Comments from removed Venue from Placelist Feed
+    GroupsVenue.where("group_id = ? AND venue_id = ?", self.id, venue_id).destroy_all #removes Venue from Placeslist
+    removed_venues_comments = "SELECT id FROM venue_comments WHERE venue_id = #{venue_id}"
+    GroupsVenueComment.where("group_id = ? AND venue_comment_id IN (?) AND is_hashtag = FALSE", self.id, removed_venues_comments).destroy_all #removes Venue Comments from removed Venue from Placelist Feed
     return true
   end
 

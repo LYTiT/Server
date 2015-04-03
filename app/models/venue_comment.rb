@@ -19,6 +19,11 @@ class VenueComment < ActiveRecord::Base
     g_ids.map{|target_group_id| GroupsVenueComment.create(venue_comment_id: self.id, group_id: target_group_id)}
   end
 
+  def hashtags
+    hashtags = "SELECT groups_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
+    hashtag_groups = Group.where("id IN (#{hastag})").to_a
+  end
+
   def comment_or_media
     if self.comment.blank? and self.media_url.blank?
       errors.add(:comment, 'or image is required')

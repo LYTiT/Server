@@ -12,16 +12,16 @@ json.comments(@comments) do |comment|
 	json.total_views comment.first.views
 	json.created_at comment.first.created_at
 	json.updated_at comment.first.updated_at
-	json.group_1_name comment.first.groups[0].try(:name)
-	json.group_1_id comment.first.groups[0].try(:id)
-	json.group_2_name comment.first.groups[1].try(:name)
-	json.group_2_id comment.first.groups[1].try(:id)
-	json.group_3_name comment.first.groups[2].try(:name)
-	json.group_3_id comment.first.groups[2].try(:id)
-	json.group_4_name comment.first.groups[3].try(:name)
-	json.group_4_id comment.first.groups[3].try(:id)
-	json.group_5_name comment.first.groups[4].try(:name)
-	json.group_5_id comment.first.groups[4].try(:id)
+	json.group_1_name comment.first.hashtags[0].try(:name)
+	json.group_1_id comment.first.hashtags[0].try(:id)
+	json.group_2_name comment.first.hashtags[1].try(:name)
+	json.group_2_id comment.first.hashtags[1].try(:id)
+	json.group_3_name comment.first.hashtags[2].try(:name)
+	json.group_3_id comment.first.hashtags[2].try(:id)
+	json.group_4_name comment.first.hashtags[3].try(:name)
+	json.group_4_id comment.first.hashtags[3].try(:id)
+	json.group_5_name comment.first.hashtags[4].try(:name)
+	json.group_5_id comment.first.hashtags[4].try(:id)
 	json.from_user comment.last
 end
 json.pagination do
