@@ -11,16 +11,16 @@ json.set! :venue_comment do
   json.set! :total_views, @venue_comment.total_views
   json.set! :created_at, @venue_comment.created_at
   json.set! :updated_at, @venue_comment.updated_at
-  json.set! :group_1_name, @venue_comment.groups[0].try(:name)
-  json.set! :group_1_id, @venue_comment.groups[0].try(:id)
-  json.set! :group_2_name, @venue_comment.groups[1].try(:name)
-  json.set! :group_2_id, @venue_comment.groups[1].try(:id)
-  json.set! :group_3_name, @venue_comment.groups[2].try(:name)
-  json.set! :group_3_id, @venue_comment.groups[2].try(:id)
-  json.set! :group_4_name, @venue_comment.groups[3].try(:name)
-  json.set! :group_4_id, @venue_comment.groups[3].try(:id)
-  json.set! :group_5_name, @venue_comment.groups[4].try(:name)
-  json.set! :group_5_id, @venue_comment.groups[4].try(:id)
+  json.set! :group_1_name, @venue_comment.hashtags[0].try(:name)
+  json.set! :group_1_id, @venue_comment.hashtags[0].try(:id)
+  json.set! :group_2_name, @venue_comment.hashtags[1].try(:name)
+  json.set! :group_2_id, @venue_comment.hashtags[1].try(:id)
+  json.set! :group_3_name, @venue_comment.hashtags[2].try(:name)
+  json.set! :group_3_id, @venue_comment.hashtags[2].try(:id)
+  json.set! :group_4_name, @venue_comment.hashtags[3].try(:name)
+  json.set! :group_4_id, @venue_comment.hashtags[3].try(:id)
+  json.set! :group_5_name, @venue_comment.hashtags[4].try(:name)
+  json.set! :group_5_id, @venue_comment.hashtags[4].try(:id)
 end
 
 json.set! :group do
