@@ -142,6 +142,7 @@ class BountyClaim < ActiveRecord::Base
     	:bounty => {
 			:id => self.bounty.id,
 			:lumen_reward => (self.bounty.lumen_reward)*0.9,
+			:venue_comment_id => self.bounty.venue_comment_id,
 			:venue_name => self.bounty.venue.name
 		}
 	  }
@@ -213,7 +214,9 @@ class BountyClaim < ActiveRecord::Base
 	  {
     	:bounty => {
 			:id => self.bounty.id,
-			:reason => self.rejection_reason
+			:reason => self.rejection_reason,
+			:venue_name => self.bounty.venue.name,
+			:venue_comment_id => self.bounty.venue_comment_id
 		}
 	  }
 	end
