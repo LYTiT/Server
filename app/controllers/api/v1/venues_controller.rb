@@ -136,13 +136,15 @@ class Api::V1::VenuesController < ApiBaseController
           end
         end
 
+        @comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
+
         #check to see if there is @Group link present in text (introduced in v3.2.0)
         if @user.version_compatible?("3.2.0")
           if params[:at_ids] != nil
             for gid in params[:at_ids]
               receiving_group = Group.find_by_id(gid["group_id"])
               if receiving_group.is_user_member?(@user.id)
-                receiving_group.at_group!(@comment)
+                receiving_group.delay.hashtag_group!(@comment.id, @comment.venue_id)
               end
             end
           else
@@ -150,7 +152,7 @@ class Api::V1::VenuesController < ApiBaseController
               for gname in params[:at_names]
                 receiving_group = Group.where("LOWER(name) like ?", gname["group_name"].to_s.downcase).first
                 if receiving_group.is_user_member?(@user.id)
-                  receiving_group.at_group!(@comment)
+                  receiving_group.delay.hashtag_group!(@comment.id, @comment.venue_id)
                 end
               end
             end

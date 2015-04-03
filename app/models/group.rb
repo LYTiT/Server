@@ -26,8 +26,8 @@ class Group < ActiveRecord::Base
   has_many :events_groups
   has_many :events, through: :events_groups
 
-  has_many :at_group_relationships, :dependent => :destroy
-  has_many :venue_comments, through: :at_group_relationships
+  has_many :groups_venue_comments, :dependent => :destroy
+  has_many :venue_comments, through: :groups_venue_comments
 
   def should_validate_password?
   	not is_public
@@ -81,7 +81,8 @@ class Group < ActiveRecord::Base
   end
 
   def remove_venue(venue_id, user_id)
-    GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all
+    GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue_id).destroy_all #removes Venue from Placeslist
+    GroupsVenueComment.where("venue_id = ?", venue_id).destroy_all #removes Venue Comments from removed Venue from Placelist Feed
     return true
   end
 
@@ -104,18 +105,14 @@ class Group < ActiveRecord::Base
     past_events = self.events.where("end_date >= ?", Time.now).order('end_date ASC')
   end
 
-  def at_group!(venue_comment)
-    at_group_relationships.create!(venue_comment_id: venue_comment.id)
+  def hashtag_group!(vc_id, v_id)
+    if GroupsVenue.where("venue_id = ? and group_id = ?", v_id, self.id).first != nil
+      GroupsVenueComment.create(venue_comment_id: vc_id, is_hashtag: true)
+    end
   end
 
   def groupfeed
-    at_vc_ids = "SELECT venue_comment_id FROM at_group_relationships WHERE group_id = #{self.id}"
-    group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = #{self.id}"
-    if at_vc_ids.length > 0
-      VenueComment.where("(venue_id in (#{group_venue_ids}) AND id NOT IN (#{at_vc_ids})) OR id IN (#{at_vc_ids})", group_id: id).order("Id DESC")
-    else
-      VenueComment.where("venue_id in (#{group_venue_ids})", group_id: id).order("Id DESC")
-    end
+    self.venue_comments.order('id desc')
   end
 
   def self.popular_groups

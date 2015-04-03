@@ -8,11 +8,16 @@ class VenueComment < ActiveRecord::Base
   has_many :flagged_comments, :dependent => :destroy
   has_many :comment_views, :dependent => :destroy
   has_many :lumen_values
-  has_many :at_group_relationships, :dependent => :destroy
-  has_many :groups, through: :at_group_relationships
+  has_many :groups_venue_comments, :dependent => :destroy
+  has_many :groups, through: :groups_venue_comments
 
   validate :comment_or_media
 
+
+  def link_to_groups!
+    g_ids = GroupsVenue.where("venue_id = #{self.venue_id}").pluck(:group_id)
+    g_ids.map{|target_group_id| GroupsVenueComment.create(venue_comment_id: self.id, group_id: target_group_id)}
+  end
 
   def comment_or_media
     if self.comment.blank? and self.media_url.blank?
