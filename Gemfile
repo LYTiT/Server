@@ -47,7 +47,6 @@ gem 'pr_geohash'
 gem 'timezone'
 gem 'tzinfo'
 gem 'skylight'
-gem 'sendgrid-rails', '~> 2.0'
 
 group :development do
   gem 'better_errors'
