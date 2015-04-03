@@ -43,7 +43,7 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def get_bounty_claims
-    @bounty_claims = BountyClaim.where("usre_id = #{params[:user_id]} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND created_at = updated_at").order('id DESC')
+    @bounty_claims = BountyClaim.where("user_id = #{params[:user_id]} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND created_at = updated_at").order('id DESC')
   end
 
   def get_venue_comment
