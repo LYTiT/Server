@@ -316,6 +316,9 @@ GEM
       sass (~> 3.2.2)
       sprockets (~> 2.8, < 3.0)
       sprockets-rails (~> 2.0)
+    sendgrid-rails (2.0.4)
+      actionmailer (>= 3.0.0)
+      activesupport (>= 2.1.0)
     sexp_processor (4.4.4)
     shoulda-matchers (2.7.0)
       activesupport (>= 3.0.0)
@@ -425,6 +428,7 @@ DEPENDENCIES
   rubypython (= 0.6.3)
   rufus-scheduler
   sass-rails (~> 4.0.0)
+  sendgrid-rails (~> 2.0)
   shoulda-matchers
   simple_form
   simplecov
