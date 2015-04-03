@@ -7,7 +7,7 @@ class Api::V1::UsersController < ApiBaseController
 
     if @user.save
       sign_in @user
-      Mailer.delay.welcome_user(@user)
+      Mailer.welcome_user(@user).deliver
       render 'created.json.jbuilder'
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
