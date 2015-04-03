@@ -472,25 +472,25 @@ class User < ActiveRecord::Base
       radii["bounty"] = 0.0
       return radii
     else
-      perc = (100-lumen_percentile) || 91
+      perc = lumen_percentile || 91.0
 
       if perc.between?(0, 10)
         span = 100
-      elsif perc.between?(11, 20)
+      elsif perc.between?(11.0, 20.0)
         span = 105
-      elsif perc.between?(21, 30)
+      elsif perc.between?(21.0, 30.0)
         span = 110
-      elsif perc.between?(31, 40)
+      elsif perc.between?(31.0, 40.0)
         span = 115
-      elsif perc.between?(41, 50)
+      elsif perc.between?(41.0, 50.0)
         span = 120
-      elsif perc.between?(51, 60)
+      elsif perc.between?(51.0, 60.0)
         span = 125
-      elsif perc.between?(61, 70)
+      elsif perc.between?(61.0, 70.0)
         span = 135
-      elsif perc.between?(71, 80)
+      elsif perc.between?(71.0, 80.0)
         span = 140 
-      elsif perc.between?(81, 90)
+      elsif perc.between?(81.0, 90.0)
         span = 145
       else
         span = 150
