@@ -20,7 +20,7 @@ class VenueComment < ActiveRecord::Base
   end
 
   def hashtags
-    hashtags = "SELECT groups_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
+    hashtags = "SELECT group_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
     hashtag_groups = Group.where("id IN (#{hashtags})").to_a
   end
 
