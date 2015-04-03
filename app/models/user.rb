@@ -308,7 +308,7 @@ class User < ActiveRecord::Base
 
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
-   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", s.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
+   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
   end
 
   def weekly_lumens
@@ -324,9 +324,9 @@ class User < ActiveRecord::Base
   end
 
   #Constructs array of color values which determine which coloor to assign to particular weekly Lumen value on the front-end.
-  def weekly_lumen_color_values(weekly_lumens)
+  def weekly_lumen_color_values(weekly_lumens_entries)
     color_values = [] 
-    weekly_lumens.each {|l| color_values << color_value_assignment(l)}
+    weekly_lumens_entries.each {|l| color_values << color_value_assignment(l)}
     color_values
   end
 
