@@ -40,6 +40,8 @@ LytitServer::Application.routes.draw do
         get 'get_surrounding_feed'
         get 'get_map_details'
         get 'confirm_email'
+        get 'get_bounty_claims'
+        get 'get_venue_comment'
       end
 
       resources :featured do

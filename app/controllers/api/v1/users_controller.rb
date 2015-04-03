@@ -33,14 +33,21 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def get_bounties
-    @user = User.find_by_id(params[:user_id])
-    raw_bounties = Bounty.where("user_id = ? AND validity = true", @user.id).order('id DESC')
+    raw_bounties = Bounty.where("user_id = ? AND validity = true", params[:user_id]).order('id DESC')
     @bounties = []
     for bounty in raw_bounties
       if bounty.check_validity == true
         @bounties << bounty
       end
     end
+  end
+
+  def get_bounty_claims
+    @bounty_claims = BountyClaim.where("usre_id = #{params[:user_id]} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND created_at = updated_at").order('id DESC')
+  end
+
+  def get_venue_comment
+    @venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
   end
 
   def get_comments
