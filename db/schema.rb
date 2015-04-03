@@ -381,7 +381,7 @@ ActiveRecord::Schema.define(version: 20150403003742) do
     t.boolean  "can_claim_bounty",                            default: true
     t.datetime "latest_rejection_time"
     t.float    "adjusted_view_discount"
-    t.boolean  "email_confirmed"
+    t.boolean  "email_confirmed",                             default: false
     t.string   "confirm_token"
   end
 
