@@ -3,6 +3,8 @@ class User < ActiveRecord::Base
 
   attr_accessor :password_confirmation
 
+  before_create :confirmation_token
+
   validates_uniqueness_of :name, :case_sensitive => false
   validates :name, presence: true, format: { with: /\A(^@?(\w){1,15}$)\Z/i}
   validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
@@ -42,6 +44,7 @@ class User < ActiveRecord::Base
   before_save :ensure_authentication_token
   before_save :generate_confirmation_token_for_venue_manager
   after_save :notify_venue_managers
+
   
   #clear all outstanding user lumens
   def self.global_lumen_recalibration
@@ -66,6 +69,12 @@ class User < ActiveRecord::Base
   def set_version(v)
     update_columns(version: v)
   end
+
+  def email_activate
+    self.email_confirmed = true
+    self.confirm_token = nil
+    save
+  end 
 
   def toggle_group_notification(group_id, enabled)
     group_user = GroupsUser.where("group_id = ? and user_id = ?", group_id, self.id).first
@@ -631,6 +640,12 @@ class User < ActiveRecord::Base
       if role.try(:name) == "Venue Manager"
         self.confirmation_token = SecureRandom.hex
       end    
+    end
+  end
+
+  def generate_email_confirmation_token
+    if self.confirm_token.blank?
+      self.confirm_token = SecureRandom.urlsafe_base64.to_s
     end
   end
 

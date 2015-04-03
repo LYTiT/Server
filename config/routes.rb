@@ -39,6 +39,7 @@ LytitServer::Application.routes.draw do
         get 'get_a_users_profile'
         get 'get_surrounding_feed'
         get 'get_map_details'
+        get 'confirm_email'
       end
 
       resources :featured do

@@ -14,6 +14,13 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def confirm_email
+    user = User.find_by_confirm_token(params[:id])
+    if user
+      user.email_activate
+    end
+  end
+
   def get_map_details
     @user = User.find_by_id(params[:user_id])
     render 'get_map_details.json.jbuilder'
