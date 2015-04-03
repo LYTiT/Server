@@ -340,7 +340,7 @@ class Api::V1::VenuesController < ApiBaseController
       venue.delay.account_new_vote(vote_value, v.id)
       
       if v.has_been_voted_at == false
-        v.has_been_voted_at == true
+        v.has_been_voted_at = true
         v.save
       end
 
