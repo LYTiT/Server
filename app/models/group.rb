@@ -108,7 +108,7 @@ class Group < ActiveRecord::Base
 
   def hashtag_group!(vc_id, v_id)
     if GroupsVenue.where("venue_id = ? and group_id = ?", v_id, self.id).first != nil
-      GroupsVenueComment.create(venue_comment_id: vc_id, is_hashtag: true)
+      GroupsVenueComment.new(:venue_comment_id => vc_id, :group_id => self.id, :is_hashtag => true)
     end
   end
 

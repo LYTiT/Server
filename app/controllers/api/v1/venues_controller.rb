@@ -144,7 +144,7 @@ class Api::V1::VenuesController < ApiBaseController
             for gid in params[:at_ids]
               receiving_group = Group.find_by_id(gid["group_id"])
               if receiving_group.is_user_member?(@user.id)
-                receiving_group.delay.hashtag_group!(@comment.id, @comment.venue_id)
+                receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
               end
             end
           else
@@ -152,7 +152,7 @@ class Api::V1::VenuesController < ApiBaseController
               for gname in params[:at_names]
                 receiving_group = Group.where("LOWER(name) like ?", gname["group_name"].to_s.downcase).first
                 if receiving_group.is_user_member?(@user.id)
-                  receiving_group.delay.hashtag_group!(@comment.id, @comment.venue_id)
+                  receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
                 end
               end
             end
