@@ -4,5 +4,5 @@ json.array! @bounty_claims do |bounty_claim|
 	json.media_type bounty_claim.bounty.media_type
 	json.lumen_reward bounty_claim.bounty.lumen_reward
 	json.created_at bounty_claim.created_at
-	json.minutes_left bounty.bounty.try(:minutes_left)
+	json.minutes_left bounty_claim.bounty.try(:minutes_left)
 end
