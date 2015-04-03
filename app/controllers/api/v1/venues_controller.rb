@@ -339,9 +339,9 @@ class Api::V1::VenuesController < ApiBaseController
     if v.save
       venue.delay.account_new_vote(vote_value, v.id)
       
-      if v.has_been_voted_at == false
-        v.has_been_voted_at = true
-        v.save
+      if venue.has_been_voted_at == false
+        venue.has_been_voted_at = true
+        venue.save
       end
 
       @user.update_lumens_after_vote(v.id)
