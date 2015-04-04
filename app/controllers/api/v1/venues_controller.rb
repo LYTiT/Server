@@ -136,8 +136,6 @@ class Api::V1::VenuesController < ApiBaseController
           end
         end
 
-        @comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
-
         #check to see if there is @Group link present in text (introduced in v3.2.0)
         if @user.version_compatible?("3.2.0")
           if params[:at_ids] != nil
@@ -158,6 +156,8 @@ class Api::V1::VenuesController < ApiBaseController
             end
           end
         end
+
+        @comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
 
       end
 

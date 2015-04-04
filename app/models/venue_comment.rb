@@ -16,12 +16,13 @@ class VenueComment < ActiveRecord::Base
 
   def link_to_groups!
     g_ids = GroupsVenue.where("venue_id = #{self.venue_id}").pluck(:group_id)
-    g_ids.map{|target_group_id| GroupsVenueComment.new(:venue_comment_id => self.id, :group_id => target_group_id, :is_hashtag => false)}
+    g_ids.map{|target_group_id| GroupsVenueComment.create!(venue_comment_id: self.id, group_id: target_group_id, is_hashtag: false) 
+      if (GroupsVenueComment.find_by_venue_comment_id_and_group_id(self.id, target_group_id).count = 0)}
   end
 
   def hashtags
-    hashtags = "SELECT group_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
-    hashtag_groups = Group.where("id IN (#{hashtags})").to_a
+    hashtags = "SELECT groups_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
+    hashtag_groups = Group.where("id IN (#{hashtag})").to_a
   end
 
   def comment_or_media
