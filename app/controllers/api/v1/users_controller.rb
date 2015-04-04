@@ -5,6 +5,11 @@ class Api::V1::UsersController < ApiBaseController
     @user = User.new(user_params)
     @user.adjusted_view_discount = LumenConstants.views_weight_adj
 
+    if @user.name[10] == @user.email[10] &&  @user.email.last(8) == "temp.com"
+      @user.vendor_id = @user.name
+      @user.name = "lyt "+@user.id.to_s
+    end
+
     if @user.save
       sign_in @user
       Mailer.delay.welcome_user(@user)
