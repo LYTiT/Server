@@ -158,7 +158,8 @@ class User < ActiveRecord::Base
     feed = VenueComment.live_from_venues_followed_by(self)
   end
 
-  def surrounding_feed(lat, long)
+  #by radius
+  def surrounding_feed_by_radius(lat, long)
     meter_radius = 1000
     commencement = (Time.now - 5.days)
 
@@ -175,8 +176,10 @@ class User < ActiveRecord::Base
 
     feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+  end
 
-=begin
+  #by lsphere(city)
+  def surrounding_feed_by_lsphere(city)
     #pulling based on lsphere and not on radius
     user_sphere = city.delete(" ")+(lat.round(0).abs).to_s+(long.round(0).abs).to_s
     surrounding_moments = VenueComment.joins(:venue).where('l_sphere = ?', user_sphere).where("bounty_claim_id IS NULL AND venue_comments.created_at >= ?", commencement)
@@ -184,8 +187,19 @@ class User < ActiveRecord::Base
     surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('l_sphere = ?', user_sphere).where("bounty_claims.created_at >= ?", commencement)
 
     feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
-=end
+    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
+
+  def global_feed
+    days_back = 5
+    surrounding_moments = VenueComment.where('created_at >= ? AND bounty_claim_id IS NULL', (Time.now - days_back.days))
+    surrounding_moment_requests = Bounty.where('created_at >= ?', (Time.now - days_back.days))
+    surrounding_moment_request_responses = BountyClaimy.where('created_at >= ?', (Time.now - days_back.days))
+
+    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
+    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
+  end
+  
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
   def followers_not_in_group(group_id)
