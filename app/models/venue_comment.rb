@@ -16,7 +16,7 @@ class VenueComment < ActiveRecord::Base
 
   def link_to_groups!
     g_ids = GroupsVenue.where("venue_id = #{self.venue_id}").pluck(:group_id)
-    g_ids.map{|target_group_id| GroupsVenueComment.create!(venue_comment_id: self.id, group_id: target_group_id, is_hashtag: false) if (GroupsVenueComment.find_by_venue_comment_id_and_group_id(self.id, target_group_id).count = 0)}
+    g_ids.map{|target_group_id| GroupsVenueComment.create!(venue_comment_id: self.id, group_id: target_group_id, is_hashtag: false) if (GroupsVenueComment.find_by_venue_comment_id_and_group_id(self.id, target_group_id) == nil}
   end
 
   def hashtags
