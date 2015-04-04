@@ -7,7 +7,7 @@ class Api::V1::UsersController < ApiBaseController
 
     if @user.name[10] == @user.email[10] && @user.email.last(8) == "temp.com"
       @user.vendor_id = @user.name
-      @user.name = "lyt "+@user.id.to_s
+      @user.name = "lyt_"+@user.id.to_s
     end
 
     if @user.save
