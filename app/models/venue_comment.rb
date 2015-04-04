@@ -21,7 +21,7 @@ class VenueComment < ActiveRecord::Base
 
   def hashtags
     hashtags = "SELECT groups_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
-    hashtag_groups = Group.where("id IN (#{hashtag})").to_a
+    hashtag_groups = Group.where("id IN (#{hashtags})").to_a
   end
 
   def comment_or_media
