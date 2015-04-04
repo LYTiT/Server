@@ -52,7 +52,7 @@ class Api::V1::VenuesController < ApiBaseController
 
       if posting_parts.count == 0 #if no parts are housed there is nothing to link
         vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                      :session => session, :username_private => @user.username_private)
+                                      :session => session, :comment => params[:comment], :username_private => params[:username_private])
         vc_part.save
         completion = true
         render json: { success: true }
@@ -85,7 +85,7 @@ class Api::V1::VenuesController < ApiBaseController
 
         if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
           vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                        :session => session, :username_private => @user.username_private)          
+                                        :session => session, :comment => params[:comment], :username_private => params[:username_private])          
           vc_part.save
           completion = true
           render json: { success: true }
