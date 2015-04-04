@@ -11,3 +11,4 @@ json.followers_count @user.followers.count
 json.following_count (@user.followed_users.count + @user.followed_venues.count)
 json.lumen_value @user.lumens
 json.num_placelists @user.groups.count
+json.registered @user.registered

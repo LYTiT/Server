@@ -14,6 +14,14 @@ class Api::V1::UsersController < ApiBaseController
     end
   end
 
+  def register
+    @user.username = params[:username]
+    @user.email = params[:email]
+    @user.password = params[:password]
+    @user.registered = true
+    @user.save
+  end
+
   def confirm_email
     user = User.find_by_confirm_token(params[:id])
     if user
