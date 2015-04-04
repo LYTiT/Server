@@ -166,6 +166,7 @@ LytitServer::Application.routes.draw do
         post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
         delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
         post 'add_cover'
+        get 'get_hashtag_notification_details'
       end
 
       #we don't need to put an end here because there is no "do" we 

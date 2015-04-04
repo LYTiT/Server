@@ -5,9 +5,9 @@ class GroupsVenueComment < ActiveRecord::Base
   validates :venue_comment_id, presence: true
   validates :group_id, presence: true
 
-  after_create :at_group_notification
+  after_create :hashtag_notification
 
-  def at_group_notification
+  def hashtag_notification
   	if self.is_hashtag != nil and self.is_hashtag == true
     	self.delay.send_hashtag_group_notification
 	end
