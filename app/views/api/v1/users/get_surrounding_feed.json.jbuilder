@@ -31,6 +31,17 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.username_private entry.try(:username_private)
   json.comment entry.try(:comment)
   json.views entry.try(:views)
+  json.group_1_name entry.try(:hashtags[0]).try(:name)
+  json.group_1_id entry.try(:hashtags[0]).try(:id)
+  json.group_2_name entry.try(:hashtags[1]).try(:name)
+  json.group_2_id entry.try(:hashtags[1]).try(:id)
+  json.group_3_name entry.try(:hashtags[2]).try(:name)
+  json.group_3_id entry.try(:hashtags[2]).try(:id)
+  json.group_4_name entry.try(:hashtags[3]).try(:name)
+  json.group_4_id entry.try(:hashtags[3]).try(:id)
+  json.group_5_name entry.try(:hashtags[4]).try(:name)
+  json.group_5_id entry.try(:hashtags[4]).try(:id)
+
 end
 json.pagination do
   json.current_page @surrounding_feed.current_page
