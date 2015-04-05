@@ -11,4 +11,5 @@ json.array! @users do |user|
   json.send_notification GroupsUser.send_notification?(@group.id, user.id)
   json.media_url (user.last_media_comment).try(:media_url)
   json.media_type (user.last_media_comment).try(:media_type)
+  json.is_following @user.following?(user)
 end

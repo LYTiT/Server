@@ -59,6 +59,7 @@ class Api::V1::GroupsController < ApiBaseController
   end
 
   def users
+    @user = User.find_by_authentication_token(params[:auth_token])
     @group = Group.find_by_id(params[:group_id])
 
     if not @group
