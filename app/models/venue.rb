@@ -82,6 +82,12 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def group_venue_created_at(group_id)
+  end
+
+  def group_venue_created_by(group_id)
+  end
+
   #Note we adjust for aspect ratio of iPhone screen
   def self.venues_in_view(radius, lat, long)
     min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
@@ -245,16 +251,6 @@ class Venue < ActiveRecord::Base
     return box
   end
 
-  def last_media_comment_type
-    if last_media_comment_url == nil
-      return nil
-    elsif last_media_comment_url.last(3) == 'jpg'
-      return "image"
-    else
-      return "video"
-    end
-  end
-
   def set_time_zone
     Timezone::Configure.begin do |c|
       c.username = 'LYTiT'
@@ -292,6 +288,18 @@ class Venue < ActiveRecord::Base
       last_media = VenueComment.where("venue_id = ? AND NOT media_type = ?", v.id, "text").order('id desc').first
       if last_media != nil
         v.update_columns(last_media_comment_url: last_media.media_url)
+      end
+    end
+  end
+
+  def self.set_last_media_comment_type
+    all_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
+
+    for v in all_venues
+      last_vc = v.venue_comments.order('id desc').first
+      if last_vc != nil
+        v.last_media_comment_type = last_vc.media_type
+        v.save
       end
     end
   end

@@ -114,6 +114,7 @@ class Api::V1::VenuesController < ApiBaseController
 
         venue.latest_posted_comment_time = Time.now
         venue.last_media_comment_url = @comment.media_url
+        venue.last_media_comment_type = @comment.media_type
         venue.save
 
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true

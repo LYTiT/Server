@@ -4,8 +4,8 @@ json.set! :venue do
   json.set! :latitude, @venue.latitude
   json.set! :longitude, @venue.longitude
   json.set! :rating, @venue.rating
-  json.set! :media_url, @venue.last_media_comment_url
-  json.set! :media_type, @venue.last_media_comment_type
+  json.set! :last_media_comment_url, @venue.last_media_comment_url
+  json.set! :last_media_comment_type, @venue.last_media_comment_type
 end
 
 json.set! :group do

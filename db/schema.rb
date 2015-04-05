@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150404194606) do
+ActiveRecord::Schema.define(version: 20150405061904) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -482,6 +482,7 @@ ActiveRecord::Schema.define(version: 20150404194606) do
     t.boolean  "has_been_voted_at",                    default: false
     t.string   "last_media_comment_url"
     t.datetime "latest_placed_bounty_time"
+    t.string   "last_media_comment_type"
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
