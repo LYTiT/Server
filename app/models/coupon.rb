@@ -1,6 +1,6 @@
 class Coupon < ActiveRecord::Base
 	def Coupon.check_code(code, user)
-		retrieved_coupon = Coupon.where("code = ?", coupon)
+		retrieved_coupon = Coupon.where("code = ?", code)
 		if retrieved_coupon != nil
 			claimers_count = CouponClaimer.where("coupon_id = ?", retrieved_coupon.id).count
 			if claimers_count >= retrieved_coupon.supply
