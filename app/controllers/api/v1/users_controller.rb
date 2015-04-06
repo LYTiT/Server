@@ -10,7 +10,7 @@ class Api::V1::UsersController < ApiBaseController
         @user.vendor_id = @user.name
         @user.name = "lyt_"+(@user.id*2+Time.now.day).to_s(16)
         @user.save
-      end
+      end 
 
       sign_in @user
       Mailer.delay.welcome_user(@user)
@@ -27,7 +27,13 @@ class Api::V1::UsersController < ApiBaseController
     @user.password = params[:password]
     @user.registered = true
     @user.save
-    render json: { bool_response: true }
+    render json: { success: true }
+  end
+
+  def validate_coupon_code
+    @user = User.find_by_authentication_token(params[:auth_token])
+    @validation_message = Coupon.check_code(params[:coupon_code], @user)
+    render json: { success: @validation_message }
   end
 
   def destroy_previous_temp_user

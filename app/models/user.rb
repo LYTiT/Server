@@ -74,7 +74,7 @@ class User < ActiveRecord::Base
     self.email_confirmed = true
     self.confirm_token = nil
     save
-  end 
+  end
 
   def toggle_group_notification(group_id, enabled)
     group_user = GroupsUser.where("group_id = ? and user_id = ?", group_id, self.id).first

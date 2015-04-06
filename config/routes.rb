@@ -43,7 +43,8 @@ LytitServer::Application.routes.draw do
         get 'get_bounty_claims'
         get 'get_venue_comment'
         get 'username_availability'
-        get 'register'
+        post 'register'
+        get 'validate_coupon_code'
       end
 
       resources :featured do
