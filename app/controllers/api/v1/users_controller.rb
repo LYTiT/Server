@@ -27,7 +27,7 @@ class Api::V1::UsersController < ApiBaseController
     @user.password = params[:password]
     @user.registered = true
     @user.save
-    render json: { success: true }
+    render json: { bool_response: true }
   end
 
   def destroy_previous_temp_user
