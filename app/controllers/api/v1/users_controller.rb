@@ -8,7 +8,7 @@ class Api::V1::UsersController < ApiBaseController
     if @user.save
       if @user.name[10] == @user.email[10] && @user.email.last(8) == "temp.com"
         @user.vendor_id = @user.name
-        @user.name = "lyt_"+@user.id.to_s(16)
+        @user.name = "lyt_"+(@user.id*2+Time.now.day).to_s(16)
         @user.save
       end
 
@@ -21,11 +21,19 @@ class Api::V1::UsersController < ApiBaseController
   end
 
   def register
+    @user = User.find_by_authentication_token(params[:auth_token])
     @user.username = params[:username]
     @user.email = params[:email]
     @user.password = params[:password]
     @user.registered = true
     @user.save
+    render json: { success: true }
+  end
+
+  def destroy_previous_temp_user
+    previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id])
+    prevous_user.destroy_all
+    render json: { success: true }
   end
 
   def confirm_email
@@ -180,7 +188,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def username_availability
     @response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
-    render json: { username_valid: @response }
+    render json: { bool_response: @response }
   end
 
   def search
