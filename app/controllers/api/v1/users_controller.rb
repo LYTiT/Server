@@ -22,7 +22,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def register
     @user = User.find_by_authentication_token(params[:auth_token])
-    @user.username = params[:username]
+    @user.name = params[:username]
     @user.email = params[:email]
     @user.password = params[:password]
     @user.registered = true
