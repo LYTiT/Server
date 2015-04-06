@@ -178,6 +178,11 @@ class Api::V1::UsersController < ApiBaseController
     render json: { success: true }
   end
 
+  def username_availability
+    @response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
+    render json: { username_valid: @response }
+  end
+
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if User.where("name = ?", params[:q].to_s).any?
