@@ -33,7 +33,7 @@ class Api::V1::UsersController < ApiBaseController
   def validate_coupon_code
     @user = User.find_by_authentication_token(params[:auth_token])
     @validation_message = Coupon.check_code(params[:coupon_code], @user)
-    render json: { success: @validation_message }
+    render json: { validation_message: @validation_message }
   end
 
   def destroy_previous_temp_user
