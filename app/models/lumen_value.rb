@@ -17,6 +17,39 @@ class LumenValue < ActiveRecord::Base
 		end
 	end
 
+	#for the Lumen games we check if the user receiving the Lumens has become a winner
+	def is_a_winner?
+		today = Time.now	
+		if today.month != (today + 1.day).month
+			if user.lumens >= 100.0 and user.email.last(3) == "edu"
+				if Winner.where("user_id = ?", self.user_id).any? == false and Winner.where("created_at > ?", today-1.month).count < 50
+					winner_code = self.generate_winning_code
+					Winner.create!(user_id: user_id, winning_validation_code: winner_code)
+				end
+			end
+		end
+	end
+
+	def self.generate_winning_code
+		key_hash = { "N" => 0, "E" => 1, "W" => 7, "Y" => 6, "O" => 2, "R" => 4, "K" =>0}
+		encrypt = [1, 7, 3]
+
+		value_1 = rand(0..9)
+		value_2 = rand(0..9)
+		value_3 = rand(0..9)
+		value_4 = "NEWYORK"[rand(0..6)]
+		basis = value_1*value_2*value_3*key_hash[value_4] 
+		if basis == 0
+			value_5= encrypt.sample(1).first
+		elsif basis <= 21
+			value_5 = 21 - basis
+		else
+			value_5 = 21*(basis.to_f/21.0).ceil-basis
+		end
+
+		return value_1.to_s+value_2.to_s+value_3.to_s+value_4.to_s+value_5.to_s
+	end
+
 
 	def send_new_lumens_notification
 		payload = {
