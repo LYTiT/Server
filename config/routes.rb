@@ -209,7 +209,7 @@ LytitServer::Application.routes.draw do
   resources :users, only: [] do 
     get 'confirm_account/:token' => 'users#set_password', as: 'venue_manager_set_password'
     #put 'confirm_account/:token' => 'users#confirm_account', as: 'venue_manager_confirm_account'
-    put 'validate_email/:token' => 'users#validate_email', as: 'validate_email'
+    get 'validate_email/:token' => 'users#validate_email', as: 'validate_email'
     resource :password, controller: 'passwords', only: [:create, :edit, :update]
   end
 

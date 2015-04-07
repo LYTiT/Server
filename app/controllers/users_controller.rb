@@ -21,9 +21,9 @@ class UsersController < ApplicationController
   end
 
   def validate_email
-    user = User.find_by_id_and_confirmation_token!(params[:user_id], params[:token])
+    @user = User.find_by_id_and_confirmation_token!(params[:user_id], params[:token])
     if user
-      user.validate_email
+      @user.validate_email
       flash[:success] = "Email confirmed! You are entitled to the Lumen Game prize."
       redirect_to "www.lytit.com"
     else
