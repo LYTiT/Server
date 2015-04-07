@@ -76,7 +76,7 @@ class User < ActiveRecord::Base
   def validate_email
     self.email_confirmed = true
     self.confirmation_token = nil
-    save!(:validate => false)
+    self.save
   end
 
   def toggle_group_notification(group_id, enabled)
