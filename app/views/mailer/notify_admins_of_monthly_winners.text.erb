@@ -1,5 +1,9 @@
-<%= @user.name %>,
-
-This month's Lumen Game Winner's have been seleceted. Make sure to confirm and check admin page.
-
-
+<p><%= @user.name %>,<p>
+<p>This month's Lumen Game Winners have been seleceted. Please make sure to evaluate and confirm.<p>
+<p>
+  <ul>
+    <% @winners do |champ| %>
+      <li><%= champ.user.email %></li>
+    <% end %>
+  </ul>
+</p>

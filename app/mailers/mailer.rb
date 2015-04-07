@@ -27,6 +27,7 @@ class Mailer < ActionMailer::Base
 
   def notify_admins_of_monthly_winners(user)
     @user = user
+    @winners = LumenGameWinner.where("email_sent = TRUE AND created_at >= ?", (Time.now-1.day).beginning_of_month)
     mail(
       to: @user.email, 
       subject: 'Monthly Lumen Game Winners Have Been Selected'
