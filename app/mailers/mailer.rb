@@ -25,4 +25,12 @@ class Mailer < ActionMailer::Base
     )
   end
 
+  def notify_admins_of_monthly_winners(user)
+    @user = user
+    mail(
+      to: @user.email, 
+      subject: 'Monthly Lumen Game Winners Have Been Selected'
+    )
+  end
+
 end

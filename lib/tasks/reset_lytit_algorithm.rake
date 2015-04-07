@@ -20,6 +20,22 @@ namespace :lytit do
       bounty.check_validity
     end
 
+    yesterday = Time.now - 1.day
+    if yesterday.month != (today).month
+      final_winners = LumenGameWinner.joins(:user).where("email_confirmed = TRUE").where("lumen_game_winners.created_at >= ?", yesterday.beginning_of_month).sample(50)
+      for champ in final_winners
+        puts "#{champ.user.name}-#{champ.user.email}"
+        champ.user.send_email_validation
+        champ.email_sent = true
+        champ.save
+      end
+      founder_1 = User.find_by_email("leonid@lytit.com")
+      founder_2 = User.find_by_name("tim@lytit.com")
+      Mailer.delay.notify_admins_of_monthly_winners(founder_1)
+      Mailer.delay.notify_admins_of_monthly_winners(founder_2)
+      puts "Until next month."
+    end
+
     puts "done."
   end
 

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150407065950) do
+ActiveRecord::Schema.define(version: 20150407203957) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -257,7 +257,7 @@ ActiveRecord::Schema.define(version: 20150407065950) do
     t.integer  "winning_validation_code"
     t.string   "paypal_info"
     t.boolean  "payment_made"
-    t.boolean  "validated"
+    t.boolean  "email_sent"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
