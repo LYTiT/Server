@@ -75,7 +75,7 @@ class User < ActiveRecord::Base
 
   def validate_email
     self.email_confirmed = true
-    self.confirmation_token = nil
+    self.confirmation_token = ""
     save!(:validate => false)
   end
 
