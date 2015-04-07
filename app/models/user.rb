@@ -3,8 +3,6 @@ class User < ActiveRecord::Base
 
   attr_accessor :password_confirmation
 
-  before_create :confirmation_token
-
   validates_uniqueness_of :name, :case_sensitive => false
   validates :name, presence: true, format: { with: /\A(^@?(\w){1,40}$)\Z/i}
   validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
@@ -43,6 +41,7 @@ class User < ActiveRecord::Base
 
   before_save :ensure_authentication_token
   before_save :generate_confirmation_token_for_venue_manager
+  before_save :generate_user_confirmation_token
   after_save :notify_venue_managers
 
   
@@ -662,11 +661,10 @@ class User < ActiveRecord::Base
     end
   end
 
-  def user_confirmation_token
+  def generate_user_confirmation_token
     if self.confirmation_token.blank?
       self.confirmation_token = SecureRandom.hex
     end
-    self.save
   end
 
   def notify_venue_managers
