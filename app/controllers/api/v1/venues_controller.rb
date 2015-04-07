@@ -119,7 +119,7 @@ class Api::V1::VenuesController < ApiBaseController
 
         if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
           if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
-            @user.update_lumens_after_text(@comment.id)
+            @user.delay.update_lumens_after_text(@comment.id)
           end
         end
 
@@ -207,7 +207,7 @@ class Api::V1::VenuesController < ApiBaseController
         @comment.calculate_adj_view
         @comment.save
         if @comment.consider? == 1 
-          poster.update_lumens_after_view(@comment)
+          poster.delay.update_lumens_after_view(@comment)
         end
       end
     end

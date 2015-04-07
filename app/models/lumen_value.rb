@@ -6,6 +6,7 @@ class LumenValue < ActiveRecord::Base
 
 	after_create :new_lumens_notification
 	after_create :calibrate_viewing_discount
+	after_create :is_a_winner?
 
 
 	def new_lumens_notification
