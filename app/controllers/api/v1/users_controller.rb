@@ -197,6 +197,11 @@ class Api::V1::UsersController < ApiBaseController
     render json: { bool_response: @response }
   end
 
+  def email_availability
+    @response = User.where("LOWER(email) = ?", params[:q].to_s.downcase).any?
+    render json: { bool_response: @response }
+  end
+
   def search
     @user = User.find_by_authentication_token(params[:auth_token])
     if User.where("name = ?", params[:q].to_s).any?

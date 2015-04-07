@@ -45,6 +45,7 @@ LytitServer::Application.routes.draw do
         get 'username_availability'
         post 'register'
         get 'validate_coupon_code'
+        get 'email_availability'
       end
 
       resources :featured do

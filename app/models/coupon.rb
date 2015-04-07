@@ -9,6 +9,7 @@ class Coupon < ActiveRecord::Base
 				CouponClaimer.create!(coupon_id: retrieved_coupon.id, user_id: user.id)
 				user.update_columns(lumens: retrieved_coupon.lumen_gift)
 				response = "Nice! +#{retrieved_coupon.lumen_gift} Lumens."
+				LumenValue.create!(value: retrieved_coupon.lumen_gift, user_id: user.id)
 			end
 		else
 			response = "Code not valid."
