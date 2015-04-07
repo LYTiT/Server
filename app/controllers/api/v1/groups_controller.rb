@@ -29,6 +29,11 @@ class Api::V1::GroupsController < ApiBaseController
     end
   end
 
+  def name_availability
+    @response = Group.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
+    render json: { bool_response: @response }
+  end
+
   def add_cover
     @group = Group.find(params[:group_id])
     @group.cover_media_url = params[:cover_media_url]
