@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150407003407) do
+ActiveRecord::Schema.define(version: 20150407065950) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -394,7 +394,6 @@ ActiveRecord::Schema.define(version: 20150407003407) do
     t.datetime "latest_rejection_time"
     t.float    "adjusted_view_discount"
     t.boolean  "email_confirmed",                             default: false
-    t.string   "confirm_token"
     t.boolean  "registered",                                  default: false
     t.string   "vendor_id"
   end

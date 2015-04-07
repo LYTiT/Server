@@ -17,4 +17,12 @@ class Mailer < ActionMailer::Base
     )
   end
 
+  def email_validation(user)
+    @user = user
+    mail(
+      to: @user.email, 
+      subject: 'Congratulations from Team LYTiT!'
+    )
+  end
+
 end

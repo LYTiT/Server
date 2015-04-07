@@ -1,0 +1,8 @@
+<p>Hi <%= @user.name %>,</p>
+<p>You were one of the top 50 users to first reach 100 Lumens this month and so are entitled to your $100 prize! As the Lumen Game is for university students only please confirm your .edu email account by clicking on the link below.</p>
+<% url = validate_email_user_url([@user.id, @user.email.parameterize].join("-"), @user.confirmation_token.html_safe) %>
+<p><%= link_to url, url %></p>
+<p></p>
+<p>Keep on Mapping!</p>
+<p>Sincerely,<p>
+<p>Team LYTiT</p>

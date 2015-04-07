@@ -61,6 +61,10 @@ class User < ActiveRecord::Base
     end
   end
 
+  def send_email_validation
+    Mailer.delay.email_validation(self)
+  end
+
   # This is to deal with S3.
   def email_with_id
     "#{email}-#{id}"
@@ -70,10 +74,10 @@ class User < ActiveRecord::Base
     update_columns(version: v)
   end
 
-  def email_activate
+  def validate_email
     self.email_confirmed = true
     self.confirm_token = nil
-    save
+    save!(:validate => false)
   end
 
   def toggle_group_notification(group_id, enabled)
