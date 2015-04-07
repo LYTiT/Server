@@ -662,10 +662,11 @@ class User < ActiveRecord::Base
     end
   end
 
-  def generate_email_confirmation_token
-    if self.confirm_token.blank?
-      self.confirm_token = SecureRandom.urlsafe_base64.to_s
+  def user_confirmation_token
+    if self.confirmation_token.blank?
+      self.confirmation_token = SecureRandom.hex
     end
+    self.save
   end
 
   def notify_venue_managers

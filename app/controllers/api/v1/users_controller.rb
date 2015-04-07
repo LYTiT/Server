@@ -4,7 +4,6 @@ class Api::V1::UsersController < ApiBaseController
   def create
     @user = User.new(user_params)
     @user.adjusted_view_discount = LumenConstants.views_weight_adj
-    temp_user = false
 
     if @user.save
       if @user.name[10] == @user.email[10] && @user.email.last(8) == "temp.com"
@@ -13,11 +12,8 @@ class Api::V1::UsersController < ApiBaseController
         temp_user = true
         @user.save
       end 
-
       sign_in @user
-      if temp_user == false  
-        Mailer.delay.welcome_user(@user)
-      end
+
       render 'created.json.jbuilder'
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
@@ -31,6 +27,7 @@ class Api::V1::UsersController < ApiBaseController
     @user.password = params[:password]
     @user.registered = true
     @user.save
+    Mailer.delay.welcome_user(@user)
     render json: { success: true }
   end
 
