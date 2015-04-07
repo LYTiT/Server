@@ -25,10 +25,10 @@ class UsersController < ApplicationController
     if @user
       @user.validate_email
       flash[:success] = "Email confirmed! You are entitled to the Lumen Game prize."
-      redirect_to root
+      #redirect_to root
     else
       flash[:error] = "Sorry. User does not exist"
-      redirect_to root
+      #redirect_to root
     end
 
   end
