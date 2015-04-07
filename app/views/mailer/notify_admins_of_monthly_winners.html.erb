@@ -2,7 +2,7 @@
 <p>This month's Lumen Game Winners have been seleceted. Please make sure to evaluate and confirm.<p>
 <p>
   <ul>
-    <% @winners do |champ| %>
+    <% @winners.each do |champ| %>
       <li><%= champ.user.email %></li>
     <% end %>
   </ul>
