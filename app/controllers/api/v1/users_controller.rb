@@ -4,16 +4,20 @@ class Api::V1::UsersController < ApiBaseController
   def create
     @user = User.new(user_params)
     @user.adjusted_view_discount = LumenConstants.views_weight_adj
+    temp_user = false
 
     if @user.save
       if @user.name[10] == @user.email[10] && @user.email.last(8) == "temp.com"
         @user.vendor_id = @user.name
         @user.name = "lyt_"+(@user.id*2+Time.now.day).to_s(16)
+        temp_user = true
         @user.save
       end 
 
       sign_in @user
-      Mailer.delay.welcome_user(@user)
+      if temp_user == false  
+        Mailer.delay.welcome_user(@user)
+      end
       render 'created.json.jbuilder'
     else
       render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
@@ -38,7 +42,7 @@ class Api::V1::UsersController < ApiBaseController
 
   def destroy_previous_temp_user
     previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id])
-    prevous_user.destroy_all
+    previous_user.destroy_all
     render json: { success: true }
   end
 

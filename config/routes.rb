@@ -44,6 +44,7 @@ LytitServer::Application.routes.draw do
         get 'get_venue_comment'
         get 'username_availability'
         post 'register'
+        post 'destroy_previous_temp_user'
         get 'validate_coupon_code'
         get 'email_availability'
       end

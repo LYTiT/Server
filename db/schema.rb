@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150405061904) do
+ActiveRecord::Schema.define(version: 20150407003407) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -251,6 +251,18 @@ ActiveRecord::Schema.define(version: 20150405061904) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "lumen_game_winners", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "winning_validation_code"
+    t.string   "paypal_info"
+    t.boolean  "payment_made"
+    t.boolean  "validated"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "lumen_game_winners", ["user_id"], name: "index_lumen_game_winners_on_user_id", using: :btree
 
   create_table "lumen_values", force: true do |t|
     t.float    "value"
