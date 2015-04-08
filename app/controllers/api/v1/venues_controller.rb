@@ -97,7 +97,7 @@ class Api::V1::VenuesController < ApiBaseController
       @comment = VenueComment.new(venue_comment_params)
       @comment.venue = venue
       @comment.user = @user
-      @comment.username_private = @user.username_private
+      @comment.username_private = params[:username_private]
     end
 
 
