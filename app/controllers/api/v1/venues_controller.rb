@@ -63,7 +63,7 @@ class Api::V1::VenuesController < ApiBaseController
             @comment = VenueComment.new(venue_comment_params)
             @comment.user = @user
             @comment.venue = venue
-            @comment.username_private = @user.username_private
+            @comment.username_private = params[:username_private]
             if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
               @comment.venue = part.venue
               @comment.comment = part.comment
