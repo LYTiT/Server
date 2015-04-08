@@ -212,6 +212,12 @@ class User < ActiveRecord::Base
     User.where("id IN (#{followers_ids}) AND id NOT IN (#{users_in_group})").order("Name ASC")
   end
 
+  def following_not_in_group(gorup_id)
+    users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
+    following_ids = "SELECT followed_id FROM relationships WHERE follower_id = #{self.id}"
+    User.where("id IN (#{following_ids}) AND id NOT IN (#{users_in_group})").order("Name ASC")
+  end
+
   #Returns list of Groups user is a member of which ar linkable to a Venue Page (either linkable xor admin of)
   def linkable_groups
     all_groups_ids = "SELECT group_id FROM groups_users WHERE user_id = #{self.id}"

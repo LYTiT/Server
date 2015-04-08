@@ -26,6 +26,7 @@ LytitServer::Application.routes.draw do
         post 'posting_kill_request'
         get 'get_lumen_notification_details'
         get 'get_followers_for_invite'
+        get 'get_following_for_invite'
         get 'get_linkable_groups'
         get 'is_member'
         get 'get_bounties'

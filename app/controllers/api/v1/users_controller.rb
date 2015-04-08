@@ -146,6 +146,11 @@ class Api::V1::UsersController < ApiBaseController
     @prospects = @user.followers_not_in_group(params[:group_id])
   end
 
+  def get_following_for_invite
+    @user = User.find(params[:user_id])
+    @prospects = @user.followers_not_in_group(params[:group_id])
+  end  
+
   def vfollowing
     user = User.find(params[:user_id])
     @followed_venues = user.followed_venues.order("Name ASC")
