@@ -29,30 +29,28 @@
 
 	def send_new_announcement(members)
 		for member in members
-			if member.version_compatible?("3.1.0") == true #note only account for iPhone users not Android! They will be on a differenet version
-				payload = {
-					:object_id => self.id,
-					:type => 'announcement', 
-					:user_id => member.id
+			payload = {
+				:object_id => self.id,
+				:type => 'announcement', 
+				:user_id => member.id
+			}
+			message = "#{self.news}"
+			notification = self.store_new_announcement(payload, member, message)
+			payload[:notification_id] = notification.id
+
+			if member.push_token
+				count = Notification.where(user_id: member.id, read: false).count
+				APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+			end
+
+			if member.gcm_token
+				gcm_payload = payload.dup
+				gcm_payload[:message] = message
+				options = {
+					:data => gcm_payload
 				}
-				message = "#{self.news}"
-				notification = self.store_new_announcement(payload, member, message)
-				payload[:notification_id] = notification.id
-
-				if member.push_token
-					count = Notification.where(user_id: member.id, read: false).count
-					APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
-				end
-
-				if member.gcm_token
-					gcm_payload = payload.dup
-					gcm_payload[:message] = message
-					options = {
-						:data => gcm_payload
-					}
-					request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-					request.send([member.gcm_token], options)
-				end
+				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
+				request.send([member.gcm_token], options)
 			end
 		end
 	end

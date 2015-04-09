@@ -10,7 +10,7 @@ class GroupsVenueComment < ActiveRecord::Base
   def hashtag_notification
   	if self.is_hashtag != nil and self.is_hashtag == true
     	self.delay.send_hashtag_group_notification
-	end
+	  end
   end
 
   def send_hashtag_group_notification
@@ -18,7 +18,6 @@ class GroupsVenueComment < ActiveRecord::Base
     for user in self.group.users
     
       next if user.id == self_user_id or !user.send_location_added_to_group_notification?(self.group)
-      next if user.version_compatible?("3.2.0") == false
       
       payload = { 
         :object_id => self.id, 

@@ -262,8 +262,8 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_view(comment)
-    if self.adjusted_view_discount == nil
-      self.adjusted_view_discount = LumenConstants.views_weight_adj_damping
+    if self.adjusted_view_discount == nil || self.adjusted_view_discount > LumenConstants.views_weight_adj
+      self.adjusted_view_discount = LumenConstants.views_weight_adj
       save
     end
 
@@ -274,7 +274,7 @@ class User < ActiveRecord::Base
     adjusted_view = 2.0 ** (-time_delta)
     
     previous_lumens = self.lumens
-    new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj).round(4)
+    new_lumens = comment.consider*(comment.weight*adjusted_view*adjusted_view_discount).round(4)
     updated_lumens = previous_lumens + new_lumens
 
     if comment.media_type == 'video'

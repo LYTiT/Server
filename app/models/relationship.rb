@@ -8,9 +8,7 @@ class Relationship < ActiveRecord::Base
 
 
 	def new_follower_notification
-		if followed.version_compatible?("3.1.0") == true
-			self.delay.send_new_follower_notification
-		end
+		#self.delay.send_new_follower_notification
 	end
 
 	def send_new_follower_notification

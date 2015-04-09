@@ -10,7 +10,7 @@ class LumenValue < ActiveRecord::Base
 
 
 	def new_lumens_notification
-		if ( (user.lumens - user.lumen_notification) >= LumenConstants.notification_delta ) && user.version_compatible?("3.1.0") == true
+		if ( (user.lumens - user.lumen_notification) >= LumenConstants.notification_delta )
 			self.delay.send_new_lumens_notification
 			user.lumen_notification = (user.lumens/LumenConstants.notification_delta).floor*LumenConstants.notification_delta
 			user.save
