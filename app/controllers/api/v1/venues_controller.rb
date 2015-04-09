@@ -1,378 +1,378 @@
 class Api::V1::VenuesController < ApiBaseController
 
-  skip_before_filter :set_user, only: [:search, :index]
+	skip_before_filter :set_user, only: [:search, :index]
 
-  def show
-    @user = User.find_by_authentication_token(params[:auth_token])
-    @venue = Venue.find(params[:id])
-    venue = @venue.as_json(include: :venue_messages)
-    venue[:menu] = @venue.menu_sections.as_json(
-      only: [:id, :name], 
-      include: {
-        :menu_section_items => {
-          only: [:id, :name, :price, :description]
-        }
-      }
-    )
+	def show
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@venue = Venue.find(params[:id])
+		venue = @venue.as_json(include: :venue_messages)
+		venue[:menu] = @venue.menu_sections.as_json(
+			only: [:id, :name], 
+			include: {
+				:menu_section_items => {
+					only: [:id, :name, :price, :description]
+				}
+			}
+		)
 
-    venue[:is_following] = @user.vfollowing?(@venue)
-    venue[:followers_count] = @venue.followers.count
-    render json: venue
-  end
+		venue[:is_following] = @user.vfollowing?(@venue)
+		venue[:followers_count] = @venue.followers.count
+		render json: venue
+	end
 
-  def get_menue
-    @venue = Venue.find(params[:id])
-  end
+	def get_menue
+		@venue = Venue.find(params[:id])
+	end
 
-  def get_bounties
-    @venue = Venue.find_by_id(params[:venue_id])
-    raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
-    @bounties = []
-    if raw_bounties.count > 0
-      for bounty in raw_bounties
-        if bounty.check_validity == true
-          @bounties << bounty
-        end
-      end
-    end
-  end
+	def get_bounties
+		@venue = Venue.find_by_id(params[:venue_id])
+		raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
+		@bounties = []
+		if raw_bounties.count > 0
+			for bounty in raw_bounties
+				if bounty.check_validity == true
+					@bounties << bounty
+				end
+			end
+		end
+	end
 
-  def add_comment
-    parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
-    assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
+	def add_comment
+		parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
+		assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
 
-    session = params[:session]
-    incoming_part_type = venue.id == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
+		session = params[:session]
+		incoming_part_type = venue.id == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
 
-    completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
-    
+		completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
+		
 
-    if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
-      posting_parts = @user.temp_posting_housings.order('id ASC')
+		if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
+			posting_parts = @user.temp_posting_housings.order('id ASC')
 
-      if posting_parts.count == 0 #if no parts are housed there is nothing to link
-        vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                      :session => session, :comment => params[:comment], :username_private => params[:username_private])
-        vc_part.save
-        completion = true
-        render json: { success: true }
-      else
-        for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
-          
-          if part.session != nil and part.session == session
-            @comment = VenueComment.new(venue_comment_params)
-            @comment.user = @user
-            @comment.venue = venue
-            @comment.username_private = params[:username_private]
-            if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
-              @comment.venue = part.venue
-              @comment.comment = part.comment
-              @comment.username_private = part.username_private
-            else #pull media data as the incoming part is the text
-              @comment.media_type = part.media_type
-              @comment.media_url = part.media_url
-            end
-            part.delete
-            parts_linked = true
-            break  
-          else #if a part has been housed for over a reasonable period of time we can assume that it is no longer needed.
-            if (((Time.now - part.created_at) / 1.minute) >= 30.0)
-              part.delete
-            end
-          end
+			if posting_parts.count == 0 #if no parts are housed there is nothing to link
+				vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
+																			:session => session, :comment => params[:comment], :username_private => params[:username_private])
+				vc_part.save
+				completion = true
+				render json: { success: true }
+			else
+				for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
+					
+					if part.session != nil and part.session == session
+						@comment = VenueComment.new(venue_comment_params)
+						@comment.user = @user
+						@comment.venue = venue
+						@comment.username_private = params[:username_private]
+						if incoming_part_type == "media" #pull venue, comment and visability data as the incoming part is the media
+							@comment.venue = part.venue
+							@comment.comment = part.comment
+							@comment.username_private = part.username_private
+						else #pull media data as the incoming part is the text
+							@comment.media_type = part.media_type
+							@comment.media_url = part.media_url
+						end
+						part.delete
+						parts_linked = true
+						break  
+					else #if a part has been housed for over a reasonable period of time we can assume that it is no longer needed.
+						if (((Time.now - part.created_at) / 1.minute) >= 30.0)
+							part.delete
+						end
+					end
 
-        end
+				end
 
-        if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
-          vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
-                                        :session => session, :comment => params[:comment], :username_private => params[:username_private])          
-          vc_part.save
-          completion = true
-          render json: { success: true }
-        end
-      end
+				if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
+					vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
+																				:session => session, :comment => params[:comment], :username_private => params[:username_private])          
+					vc_part.save
+					completion = true
+					render json: { success: true }
+				end
+			end
 
-    else #dealing with a simple text comment
-      assign_lumens = true
-      @comment = VenueComment.new(venue_comment_params)
-      @comment.venue = venue
-      @comment.user = @user
-      @comment.username_private = params[:username_private]
-    end
-
-
-    if completion == false #a Venue Comment has been created instead of a Temp Posting Housing object so now it needs to be saved
-
-      if not @comment.save
-        render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
-      else
-        #based off of the position an adjusted hour time is assigned to the venue comment which is used in Spotlyt
-        offset = @comment.created_at.in_time_zone(@comment.venue.time_zone).utc_offset
-        offset_time = @comment.created_at + offset
-        @comment.offset_created_at = offset_time
-        @comment.save
-
-        venue.latest_posted_comment_time = Time.now
-        venue.last_media_comment_url = @comment.media_url
-        venue.last_media_comment_type = @comment.media_type
-        venue.save
-
-        if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
-          if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
-            @user.delay.update_lumens_after_text(@comment.id)
-          end
-        end
-
-        #If the Venue Comment is a Bounty response we must create a Bounty Response Object
-        if params[:is_bounty_response] != nil
-          bc = BountyClaim.new(:venue_comment_id => @comment.id, :user_id => @comment.user_id, :bounty_id => params[:is_bounty_response])
-          if not bc.save
-            render json: { error: { code: ERROR_UNPROCESSABLE, messages: bc.errors.full_messages } }, status: :unprocessable_entity
-          else
-            @comment.bounty_claim_id = bc.id
-            @comment.save
-            b = Bounty.find_by_id(params[:is_bounty_response])
-            b.response_received = true
-            b.save
-          end
-        end
-
-        #check to see if there is @Group link present in text (introduced in v3.2.0)
-
-        if params[:at_ids] != nil
-          for gid in params[:at_ids]
-            receiving_group = Group.find_by_id(gid["group_id"])
-            if receiving_group.is_user_member?(@user.id)
-              receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
-            end
-          end
-        else
-          if params[:at_names] != nil
-            for gname in params[:at_names]
-              receiving_group = Group.where("LOWER(name) like ?", gname["group_name"].to_s.downcase).first
-              if receiving_group.is_user_member?(@user.id)
-                receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
-              end
-            end
-          end
-        end
+		else #dealing with a simple text comment
+			assign_lumens = true
+			@comment = VenueComment.new(venue_comment_params)
+			@comment.venue = venue
+			@comment.user = @user
+			@comment.username_private = params[:username_private]
+		end
 
 
-        @comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
+		if completion == false #a Venue Comment has been created instead of a Temp Posting Housing object so now it needs to be saved
 
-      end
+			if not @comment.save
+				render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
+			else
+				#based off of the position an adjusted hour time is assigned to the venue comment which is used in Spotlyt
+				offset = @comment.created_at.in_time_zone(@comment.venue.time_zone).utc_offset
+				offset_time = @comment.created_at + offset
+				@comment.offset_created_at = offset_time
+				@comment.save
 
-    end
-  end
+				venue.latest_posted_comment_time = Time.now
+				venue.last_media_comment_url = @comment.media_url
+				venue.last_media_comment_type = @comment.media_type
+				venue.save
 
-  def delete_comment
-    VenueComment.where(user_id: @user.id, id: params[:id]).destroy_all
-    render json: { success: true }
-  end
+				if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
+					if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
+						@user.delay.update_lumens_after_text(@comment.id)
+					end
+				end
 
-  def report_comment
-    venue_comment = VenueComment.find(params[:comment_id])
-    fc = FlaggedComment.new
-    fc.user_id = @user.id
-    fc.message = params[:message]
-    fc.venue_comment_id = venue_comment.id
-    fc.save
-    render json: fc
-  end
+				#If the Venue Comment is a Bounty response we must create a Bounty Response Object
+				if params[:is_bounty_response] != nil
+					bc = BountyClaim.new(:venue_comment_id => @comment.id, :user_id => @comment.user_id, :bounty_id => params[:is_bounty_response])
+					if not bc.save
+						render json: { error: { code: ERROR_UNPROCESSABLE, messages: bc.errors.full_messages } }, status: :unprocessable_entity
+					else
+						@comment.bounty_claim_id = bc.id
+						@comment.save
+						b = Bounty.find_by_id(params[:is_bounty_response])
+						b.response_received = true
+						b.save
+					end
+				end
 
-  def get_comments
-    @venue = Venue.find_by_id(params[:venue_id])
-    if not @venue
-      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
-    else
-      live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY'").order('id desc')
-      @comments = live_comments.page(params[:page]).per(5)
-    end
-  end
+				#check to see if there is @Group link present in text (introduced in v3.2.0)
 
-  def mark_comment_as_viewed
-    @comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
-
-    #consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
-    #updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
-    #for Lumen calcuation by default)
-
-    if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
-      poster_id = @comment.user_id
-      poster = User.find_by(id: poster_id)
-      poster.update_total_views
-      @comment.update_views
-      @comment.save
-      if poster_id != @user.id
-        @comment.calculate_adj_view
-        @comment.save
-        if @comment.consider? == 1 
-          poster.delay.update_lumens_after_view(@comment)
-        end
-      end
-    end
-
-    if @comment.present?
-        comment_view = CommentView.new
-        comment_view.user = @user
-        comment_view.venue_comment = @comment
-        comment_view.save
-    else
-      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
-      return
-    end
-  end
+				if params[:at_ids] != nil
+					for gid in params[:at_ids]
+						receiving_group = Group.find_by_id(gid["group_id"])
+						if receiving_group.is_user_member?(@user.id)
+							receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
+						end
+					end
+				else
+					if params[:at_names] != nil
+						for gname in params[:at_names]
+							receiving_group = Group.where("LOWER(name) like ?", gname["group_name"].to_s.downcase).first
+							if receiving_group.is_user_member?(@user.id)
+								receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
+							end
+						end
+					end
+				end
 
 
-  def get_groups
-    @venue = Venue.find_by_id(params[:venue_id])
-    if not @venue
-      render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
-    end
-  end
+				@comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
 
-  def refresh_map_view
-    @user = User.find_by_authentication_token(params[:auth_token])
-    @venues = Venue.venues_in_view(params[:radius], params[:latitude], params[:longitude])
-    render 'display.json.jbuilder'
-  end
+			end
 
-  #Top viewed comments of a geographical area based on zoom level.
-  def get_geo_spotlyt
-    selected_date = params[:spotlyt_date]
-    selection = Time.parse(selected_date)
+		end
+	end
 
-    start_t = selection
-    end_t = selection + 24.hour
+	def delete_comment
+		VenueComment.where(user_id: @user.id, id: params[:id]).destroy_all
+		render json: { success: true }
+	end
 
-    @spotlyts = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t)
+	def report_comment
+		venue_comment = VenueComment.find(params[:comment_id])
+		fc = FlaggedComment.new
+		fc.user_id = @user.id
+		fc.message = params[:message]
+		fc.venue_comment_id = venue_comment.id
+		fc.save
+		render json: fc
+	end
 
-    render 'get_geo_spotlyt.json.jbuilder'
-  end
+	def get_comments
+		@venue = Venue.find_by_id(params[:venue_id])
+		if not @venue
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
+		else
+			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY'").order('id desc')
+			@comments = live_comments.page(params[:page]).per(5)
+		end
+	end
 
-  def search
-    @user = User.find_by_authentication_token(params[:auth_token])
-    if params[:group_id].present? and not params[:q].present?
-      @group = Group.find_by_id(params[:group_id])
-      if @group
-        render json: @group.venues_with_user_who_added
-      else
-        render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
-      end
-    else
+	def mark_comment_as_viewed
+		@comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
 
-      #I am aware this approach is Muppet, need to update later 
-      venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+		#consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
+		#updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
+		#for Lumen calcuation by default)
 
-      venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
-      venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
-      venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
-      venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
-      venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
-      venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
-      venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
-      venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
-      venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
-      venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
+		if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
+			poster_id = @comment.user_id
+			poster = User.find_by(id: poster_id)
+			poster.update_total_views
+			@comment.update_views
+			@comment.save
+			if poster_id != @user.id
+				@comment.calculate_adj_view
+				@comment.save
+				if @comment.consider? == 1 
+					poster.delay.update_lumens_after_view(@comment)
+				end
+			end
+		end
 
-      @venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
-
-      #for the search of a place to add to a Placelist we check if the place is already in the place list
-      @group_id = params[:g_id]
-      #@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
-      render 'search.json.jbuilder'
-    end
-  end
-  
-  def search_to_follow
-    @user = User.find_by_authentication_token(params[:auth_token])
-
-    #I am aware this approach is Muppet, need to update later 
-    venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
-
-    venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
-    venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
-    venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
-    venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
-    venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
-    venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
-    venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
-    venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
-    venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
-    venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
-
-    venues_crude = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
-    @venues = venues_crude.uniq
-    render 'search_to_follow.json.jbuilder'
-  end  
-
-  def get_suggested_venues
-    @user = User.find_by_authentication_token(params[:auth_token])
-    @suggestions = Venue.near_locations(params[:latitude], params[:longitude])
-    render 'get_suggested_venues.json.jbuilder'
-  end
-
-  def get_recommendations
-    @user = User.find_by_authentication_token(params[:auth_token])
-    @recommendations = Venue.recommended_venues(@user, params[:latitude], params[:longitude])
-    render 'get_recommendations.json.jbuilder'
-  end
-
-  def rate_venue
-    venue = Venue.find(params[:venue_id])
-    @venue_rating = VenueRating.new(params.permit(:rating))
-    @venue_rating.venue = venue
-    @venue_rating.user = @user
-
-    if @venue_rating.save
-      render json: venue
-    else
-      render json: { error: { code: ERROR_UNPROCESSABLE, messages: @venue_rating.errors.full_messages } }, status: :unprocessable_entity
-    end
-  end
-
-  def vote
-    vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
-
-    venue = Venue.find(params[:venue_id])
-    rating = venue.rating
-    v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
-                      :prime => venue.get_k, :raw_value => params[:rating])
-
-    if v.save
-      venue.delay.account_new_vote(vote_value, v.id)
-      
-      if venue.has_been_voted_at == false
-        venue.has_been_voted_at = true
-        venue.save
-      end
-
-      @user.update_lumens_after_vote(v.id)
-
-      if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
-        lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
-        lyt_sphere.save
-      end
-
-      render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
-    else
-      render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
-    end
-  end
-
-  def followers
-    @venue = Venue.find(params[:venue_id])
-    @followers = @venue.followers
-  end
+		if @comment.present?
+				comment_view = CommentView.new
+				comment_view.user = @user
+				comment_view.venue_comment = @comment
+				comment_view.save
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
+			return
+		end
+	end
 
 
-  private
+	def get_groups
+		@venue = Venue.find_by_id(params[:venue_id])
+		if not @venue
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
+		end
+	end
 
-  def venue
-    @venue ||= Venue.find(params[:venue_id])
-  end
+	def refresh_map_view
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@venues = Venue.venues_in_view(params[:radius], params[:latitude], params[:longitude])
+		render 'display.json.jbuilder'
+	end
 
-  def venue_comment_params
-    params.permit(:comment, :media_type, :media_url, :session)
-  end
+	#Top viewed comments of a geographical area based on zoom level.
+	def get_geo_spotlyt
+		selected_date = params[:spotlyt_date]
+		selection = Time.parse(selected_date)
+
+		start_t = selection
+		end_t = selection + 24.hour
+
+		@spotlyts = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t)
+
+		render 'get_geo_spotlyt.json.jbuilder'
+	end
+
+	def search
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if params[:group_id].present? and not params[:q].present?
+			@group = Group.find_by_id(params[:group_id])
+			if @group
+				render json: @group.venues_with_user_who_added
+			else
+				render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
+			end
+		else
+
+			#I am aware this approach is Muppet, need to update later 
+			venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+
+			venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
+			venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
+			venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
+			venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
+			venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
+			venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
+			venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
+			venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
+			venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
+			venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
+
+			@venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+
+			#for the search of a place to add to a Placelist we check if the place is already in the place list
+			@group_id = params[:g_id]
+			#@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
+			render 'search.json.jbuilder'
+		end
+	end
+	
+	def search_to_follow
+		@user = User.find_by_authentication_token(params[:auth_token])
+
+		#I am aware this approach is Muppet, need to update later 
+		venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+
+		venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
+		venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
+		venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
+		venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
+		venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
+		venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
+		venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
+		venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
+		venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
+		venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
+
+		venues_crude = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+		@venues = venues_crude.uniq
+		render 'search_to_follow.json.jbuilder'
+	end  
+
+	def get_suggested_venues
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
+		render 'get_suggested_venues.json.jbuilder'
+	end
+
+	def get_recommendations
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@recommendations = Venue.recommended_venues(@user, params[:latitude], params[:longitude])
+		render 'get_recommendations.json.jbuilder'
+	end
+
+	def rate_venue
+		venue = Venue.find(params[:venue_id])
+		@venue_rating = VenueRating.new(params.permit(:rating))
+		@venue_rating.venue = venue
+		@venue_rating.user = @user
+
+		if @venue_rating.save
+			render json: venue
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @venue_rating.errors.full_messages } }, status: :unprocessable_entity
+		end
+	end
+
+	def vote
+		vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
+
+		venue = Venue.find(params[:venue_id])
+		rating = venue.rating
+		v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
+											:prime => venue.get_k, :raw_value => params[:rating])
+
+		if v.save
+			venue.delay.account_new_vote(vote_value, v.id)
+			
+			if venue.has_been_voted_at == false
+				venue.has_been_voted_at = true
+				venue.save
+			end
+
+			@user.update_lumens_after_vote(v.id)
+
+			if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
+				lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
+				lyt_sphere.save
+			end
+
+			render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
+		end
+	end
+
+	def followers
+		@venue = Venue.find(params[:venue_id])
+		@followers = @venue.followers
+	end
+
+
+	private
+
+	def venue
+		@venue ||= Venue.find(params[:venue_id])
+	end
+
+	def venue_comment_params
+		params.permit(:comment, :media_type, :media_url, :session)
+	end
 end

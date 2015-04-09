@@ -1,4 +1,4 @@
- class Announcement < ActiveRecord::Base
+class Announcement < ActiveRecord::Base
 	validates :news, presence: true
 	#validates_inclusion_of :send_to_all?, in: [true, false]
 
