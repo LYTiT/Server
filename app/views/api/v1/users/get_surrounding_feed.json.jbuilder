@@ -31,6 +31,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.username_private entry.try(:username_private)
   json.comment entry.try(:comment)
   json.views entry.try(:views)
+  json.city entry.try(:city)
   json.group_1_name entry.try(:hashtags[0]).try(:name)
   json.group_1_id entry.try(:hashtags[0]).try(:id)
   json.group_2_name entry.try(:hashtags[1]).try(:name)

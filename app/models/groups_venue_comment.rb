@@ -26,7 +26,7 @@ class GroupsVenueComment < ActiveRecord::Base
         :venue_comment_id => self.venue_comment.id, 
         :user_id => user.id
       }
-      message = "#{self.group.name} was hashtagged"
+      message = "#{self.group.name} was mentioned in a Moment"
       notification = self.store_notification(payload, user, message)
       payload[:notification_id] = notification.id
 
