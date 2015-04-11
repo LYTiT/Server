@@ -12,7 +12,7 @@ class Api::V1::GroupsController < ApiBaseController
 	end
 
 	def update
-		@group = Group.find(params[:id])
+		@group = Group.find(params[:group_id])
 		if @group.is_user_admin?(@user)
 			permitted_params = group_params
 			# permitted_params.delete(:name)
