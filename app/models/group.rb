@@ -29,7 +29,7 @@ class Group < ActiveRecord::Base
   has_many :groups_venue_comments, :dependent => :destroy
   has_many :venue_comments, through: :groups_venue_comments
 
-  def calibrate_venues_and_users_counts
+  def self.calibrate_venues_and_users_counts
     self.update_columns(venues_count: self.venues.count)
     self.update_columns(users_count: self.users.count)
   end
