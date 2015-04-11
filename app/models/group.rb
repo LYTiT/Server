@@ -29,6 +29,11 @@ class Group < ActiveRecord::Base
   has_many :groups_venue_comments, :dependent => :destroy
   has_many :venue_comments, through: :groups_venue_comments
 
+  def calibrate_venues_and_users_counts
+    self.update_columns(venues_count: self.venues.count)
+    self.update_columns(users_count: self.users.count)
+  end
+
   def should_validate_password?
   	not is_public
   end
@@ -41,12 +46,14 @@ class Group < ActiveRecord::Base
     if !self.is_user_member?(user_id)
       # do nothing if user is already a member
       GroupsUser.create(group_id: self.id, user_id: user_id)
+      self.increment!(:users_count)
     end
     true
   end
 
   def remove(user_id)
     GroupsUser.where("group_id = ? and user_id = ?", self.id, user_id).destroy_all
+    self.decrement!(:users_count)
   end
 
   def is_user_admin?(user_id)
@@ -74,6 +81,7 @@ class Group < ActiveRecord::Base
   def add_venue(venue_id, user_id)
     if self.is_user_member?(user_id)
       GroupsVenue.create(group_id: self.id, venue_id: venue_id, user_id: user_id)
+      self.increment!(:venues_count)
       return true
     else
       return false, 'You are not member of this group'
@@ -83,6 +91,7 @@ class Group < ActiveRecord::Base
   def remove_venue(v_id, u_id)
     GroupsVenue.where("group_id = ? AND venue_id = ?", self.id, v_id).destroy_all #removes Venue from Placeslist
     GroupsVenueComment.where("group_id = ? AND is_hashtag = FALSE", self.id).joins(venue_comment: :venue).where("venues.id = ?", v_id).destroy_all
+    self.decrement!(:venues_count)
     return true
   end
 

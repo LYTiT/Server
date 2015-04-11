@@ -147,10 +147,11 @@ LytitServer::Application.routes.draw do
       #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
 
-      resources :groups, only: [:create, :update] do
+      resources :groups, only: [:create] do
         post 'join', :action => :join
         delete 'leave', :action => :leave
         post 'toggle_admin', :action => :toggle_admin
+        post 'update'
         delete 'remove_user'
         get 'users'
         get 'venues'

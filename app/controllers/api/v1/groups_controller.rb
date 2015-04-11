@@ -20,7 +20,7 @@ class Api::V1::GroupsController < ApiBaseController
 				group = @group.as_json
 				group.delete("password")
 				group["group_password"] = @group.password
-				render json: group
+				render json: { success: true }
 			else
 				render json: { error: { code: ERROR_UNPROCESSABLE, messages: @group.errors.full_messages } } , status: :unprocessable_entity
 			end
