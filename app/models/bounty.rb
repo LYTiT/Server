@@ -37,20 +37,10 @@ class Bounty < ActiveRecord::Base
 
 	def new_claims
 		if self.last_viewed_claim_time == nil
-			return bounty_claims.count
+			return self.venue_comments.where("user_id IS NOT NULL").count
 		else
-			return self.bounty_claims.where("created_at > ?", self.last_viewed_claim_time).count
+			return self.venue_comments.where("user_id IS NOT NULL AND created_at > ?", self.last_viewed_claim_time).count
 		end
-	end
-
-	def valid_bounty_claim_venue_comments
-		VenueComment.from_valid_bounty_claims(self)
-	end
-
-	def self.bounty_feed
-		feed = Bounty.all.order('Id DESC')
-		feed << BountyClaim.where("rejected = false")
-		feed.sort_by{|x,y| x.created_at}.reverse
 	end
 
 	def minutes_left
@@ -58,7 +48,7 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def total_valid_claims
-		claims_count = BountyClaim.where("bounty_id = #{self.id} AND rejected = false").count
+		claims_count = self.venue_comments.where("user_id IS NOT NULL AND is_claim_accepted != false").count
 	end
 
 

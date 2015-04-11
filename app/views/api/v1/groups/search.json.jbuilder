@@ -12,6 +12,5 @@ json.array! @groups do |group|
   json.is_member group.is_user_member?(@user.id)
   json.is_group_admin group.is_user_admin?(@user.id)
   json.group_password group.return_password_if_admin(@user.id)
-  json.send_notification GroupsUser.send_notification?(group.id, @user.id)
   json.cover_media_url group.cover_media_url
 end

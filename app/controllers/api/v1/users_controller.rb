@@ -194,11 +194,6 @@ class Api::V1::UsersController < ApiBaseController
 		@top_users = @user.top_posting_users
 	end
 
-	def posting_kill_request #no longer valid
-		@user = User.find_by_id(params[:user_id])
-		render json: { success: true }
-	end
-
 	def username_availability
 		@response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
 		render json: { bool_response: @response }

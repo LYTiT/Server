@@ -18,7 +18,7 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def get_claims
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		@comments = @bounty.valid_bounty_claim_venue_comments.page(params[:page]).per(12).order("created_at desc")
+		@comments = @bounty.venue_comments.where("user_id IS NOT NULL AND is_claim_accepted != false").includes(:venues, :users).page(params[:page]).per(12).order("created_at desc")
 	end
 
 	def viewed_claim
@@ -61,9 +61,5 @@ class Api::V1::BountiesController < ApiBaseController
 		render 'bounty_pricing_constants.json.jbuilder'
 	end
 
-	def get_feed
-		feed = Bounty.bounty_feed
-		@bounty_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
-	end
 
 end

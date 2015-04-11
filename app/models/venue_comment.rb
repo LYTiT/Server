@@ -32,8 +32,10 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def proper_media_type_for_response
-		if self.media_type != self.bounty.media_type
-			errors.add(:media_type, 'does not match Moment Request. Please try again.')
+		if bounty_id != nil
+			if self.media_type != self.bounty.media_type
+				errors.add(:media_type, 'does not match Moment Request. Please try again.')
+			end
 		end
 	end
 
@@ -107,22 +109,16 @@ class VenueComment < ActiveRecord::Base
 
 		if ids_followed_by_user.length > 0
 			followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"
-			where("venue_id IN (#{followed_venues_ids})", user_id: user)
+			where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL", user_id: user)
 		else
 			followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
-			where("venue_id IN (#{followed_venues_ids})", user_id: user)
+			where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL", user_id: user)
 		end
 	end
 
 	def VenueComment.live_from_venues_followed_by(user)
 		followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{user.id}"
-		where("venue_id IN (#{followed_venues_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
-	end
-
-	def VenueComment.from_valid_bounty_claims(bounty)
-		b_id = bounty.id
-		valid_bounty_claim_ids = "SELECT id FROM bounty_claims WHERE bounty_id = #{b_id} AND rejected = false"
-		where("bounty_claim_id IN (#{valid_bounty_claim_ids})").order("created_at desc")
+		where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
 	end
 
 	def VenueComment.from_group_venues(group)

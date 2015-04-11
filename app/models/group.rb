@@ -119,7 +119,7 @@ class Group < ActiveRecord::Base
   end
 
   def groupfeed
-    self.venue_comments.order('id desc')
+    self.venue_comments.where("user_id IS NOT NULL").includes(:venues, :users).order('id desc')
   end
 
   def self.popular_groups
