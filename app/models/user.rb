@@ -200,7 +200,7 @@ class User < ActiveRecord::Base
     surrounding_moment_requests = Bounty.where('created_at >= ?', (Time.now - days_back.days))
     surrounding_moment_request_responses = BountyClaim.where('created_at >= ?', (Time.now - days_back.days))
 
-    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
+    feed = (surrounding_moment_requests + surrounding_moment_request_responses + surrounding_moments)
     surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
   end
   
