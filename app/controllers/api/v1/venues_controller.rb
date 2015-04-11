@@ -123,18 +123,15 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 				end
 
-				#If the Venue Comment is a Bounty response we must create a Bounty Response Object
+				#If the Venue Comment is a Bounty response we update bounty_id field
 				if params[:is_bounty_response] != nil
-					bc = BountyClaim.new(:venue_comment_id => @comment.id, :user_id => @comment.user_id, :bounty_id => params[:is_bounty_response])
-					if not bc.save
-						render json: { error: { code: ERROR_UNPROCESSABLE, messages: bc.errors.full_messages } }, status: :unprocessable_entity
-					else
-						@comment.bounty_claim_id = bc.id
-						@comment.save
-						b = Bounty.find_by_id(params[:is_bounty_response])
-						b.response_received = true
-						b.save
-					end
+					@comment.is_claim = true
+					@comment.bounty_id = params[:is_bounty_response]
+					b = Bounty.find_by_id(params[:is_bounty_response])
+					b.response_received = true
+					@comment.save
+					b.save
+					@comment.delay.send_bounty_claim_notification
 				end
 
 				#check to see if there is @Group link present in text (introduced in v3.2.0)

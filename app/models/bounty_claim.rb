@@ -216,7 +216,7 @@ class BountyClaim < ActiveRecord::Base
 			:id => self.bounty.id,
 			:reason => self.rejection_reason,
 			:venue_name => self.bounty.venue.name,
-			:venue_comment_id => self.bounty.venue_comment_id
+			:venue_comment_id => self.venue_comment_id
 		}
 	  }
 	end

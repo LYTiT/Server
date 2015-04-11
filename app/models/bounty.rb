@@ -2,8 +2,7 @@ class Bounty < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	has_many :bounty_claims, :dependent => :destroy
-	has_many :venue_comments, through: :bounty_claims, source: :venue_comment
+	has_many :venue_comments
 
 	def check_validity
 		result = true

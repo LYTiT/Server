@@ -93,6 +93,7 @@ class Api::V1::UsersController < ApiBaseController
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		end
+		@groups = @user.groups.includes(:groups_users).order("name ASC")
 	end
 
 	def get_a_users_profile

@@ -11,6 +11,8 @@ class Api::V1::BountiesController < ApiBaseController
 		bounty.save
 		@venue.save
 		@user.save
+		response_venue_comment_housing = VenueComment.new(:venue_id => params[:venue_id], :bounty_id => bounty.id) #if a response comes in it will be loaded into this venue commment object.
+		response_venue_comment_housing.save
 		render json: { success: true }
 	end
 
@@ -27,34 +29,30 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def accept_bounty_claim
 		@venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
-		@bounty_claim = @venue_comment.bounty_claim
-		@bounty_claim.acceptance
+		@venue_comment.claim_acceptance
 		render json: { success: true }
 	end
 
 	def reject_bounty_claim
 		@venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
-		@bounty_claim = @venue_comment.bounty_claim
-		reason = params[:reason]
-		@bounty_claim.rejection(reason)
-		@bounty_claim.save
+		@venue_comment.claim_rejection(params[:reason])
 		render json: { success: true }
 	end
 
 	def get_bounty_claim_notification_details
-		@bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
+		@bounty_claim = VenueComment.find_by_id(params[:bounty_claim_id])
 		@bounty = @bounty_claim.bounty
 		@venue = @bounty_claim.bounty.venue
 	end
 
 	def get_bounty_claim_acceptance_notification_details
-		@bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
+		@bounty_claim = VenueComment.find_by_id(params[:bounty_claim_id])
 		@bounty = @bounty_claim.bounty
 		@venue = @bounty_claim.bounty.venue
 	end
 
 	def get_bounty_claim_rejection_notificaion_details
-		@bounty_claim = BountyClaim.find_by_id(params[:bounty_claim_id])
+		@bounty_claim = VenueComment.find_by_id(params[:bounty_claim_id])
 		@bounty = @bounty_claim.bounty
 		@venue = @bounty_claim.bounty.venue
 	end
