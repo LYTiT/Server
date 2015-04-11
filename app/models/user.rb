@@ -158,7 +158,7 @@ class User < ActiveRecord::Base
   end
 
   def viewing_feed
-    feed = VenueComment.live_from_venues_followed_by(self)
+    feed = VenueComment.live_from_venues_followed_by(self).includes(:venues)
   end
 
   #by radius
@@ -196,7 +196,7 @@ class User < ActiveRecord::Base
   #global feed
   def global_feed
     days_back = 5
-    surrounding_moments = VenueComment.where('created_at >= ? AND bounty_claim_id IS NULL', (Time.now - days_back.days))
+    surrounding_moments = VenueComment.where('created_at >= ? AND bounty_claim_id IS NULL', (Time.now - days_back.days)).includes(:venues)
     surrounding_moment_requests = Bounty.where('created_at >= ?', (Time.now - days_back.days))
     surrounding_moment_request_responses = BountyClaim.where('created_at >= ?', (Time.now - days_back.days))
 
