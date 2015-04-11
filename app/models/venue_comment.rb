@@ -212,7 +212,7 @@ class VenueComment < ActiveRecord::Base
 	def type
 		if bounty_id == nil
 			0
-		elsif bounty_id != nil & username == nil
+		elsif bounty_id != nil && user_id == nil
 			1
 		else
 			2
