@@ -101,7 +101,7 @@ class Group < ActiveRecord::Base
       gv = GroupsVenue.where("group_id = ? and venue_id = ?", self.id, venue["id"]).first
       info = gv.as_json.slice("created_at", "user_id")
       user = User.find(info["user_id"])
-      venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name})
+      venue.update({"venue_added_at" => info["created_at"], "user_adding_venue" => user.name}, "is_linked_to_group" => true)
     end
     venues
   end
@@ -119,7 +119,7 @@ class Group < ActiveRecord::Base
   end
 
   def groupfeed
-    self.venue_comments.where("user_id IS NOT NULL").includes(:venues, :users).order('id desc')
+    self.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user).order('id desc')
   end
 
   def self.popular_groups

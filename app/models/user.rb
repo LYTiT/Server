@@ -158,7 +158,7 @@ class User < ActiveRecord::Base
   end
 
   def viewing_feed
-    feed = VenueComment.live_from_venues_followed_by(self).includes(:venues, :users)
+    feed = VenueComment.live_from_venues_followed_by(self).includes(:venue, :user)
   end
 
   #by radius
@@ -195,7 +195,7 @@ class User < ActiveRecord::Base
 
   def global_feed
     days_back = 5
-    feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venues, :bounties).order("id desc")
+    feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty).order("id desc")
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
