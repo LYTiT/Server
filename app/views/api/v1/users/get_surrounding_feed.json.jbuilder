@@ -13,7 +13,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.views entry.views
 
   json.request_media_type entry.bounty.try(:media_type)
-  json.lumen_rewared entry.bounty.try(:lumen_reward)
+  json.lumen_reward entry.bounty.try(:lumen_reward)
   json.minutes_left entry.bounty.try(:minutes_left)
   json.details entry.bounty.try(:detail)
   json.validity entry.bounty.try(:validity)
