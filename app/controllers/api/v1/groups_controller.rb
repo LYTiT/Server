@@ -70,16 +70,16 @@ class Api::V1::GroupsController < ApiBaseController
 		if not @group
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
 		end
-		@users = @group.users.(includes :groups_users).order("name asc")
+		@users = @group.users.includes(:groups_users).order("name asc")
 	end
 
 	def venues
 		@group = Group.find_by_id(params[:group_id])
-		if @group
-			render json: @group.venues_with_user_who_added
-		else
+		if not @group
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Group with id #{params[:group_id]} not found"] } }, status: :not_found
 		end
+
+		@venues = @group.venues
 	end
 
 	def delete
