@@ -161,38 +161,7 @@ class User < ActiveRecord::Base
     feed = VenueComment.live_from_venues_followed_by(self).includes(:venue, :user)
   end
 
-  #by radius
-  def surrounding_feed_by_radius(lat, long)
-    meter_radius = 1000
-    commencement = (Time.now - 5.days)
-
-    min_lat = lat.to_f - ((meter_radius.to_i) / (109.0 * 1000))
-    max_lat = lat.to_f + ((meter_radius.to_i) / (109.0 * 1000))
-    min_long = long.to_f - meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + meter_radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} 
-    AND (latest_placed_bounty_time >= (NOW() - INTERVAL '5 DAY') OR latest_posted_comment_time >= (NOW() - INTERVAL '5 DAY'))"
-
-    surrounding_moments = VenueComment.where("venue_id IN (#{venue_ids}) AND bounty_claim_id IS NULL AND created_at >= ?", commencement)
-    surrounding_moment_requests = Bounty.where("venue_id IN (#{venue_ids}) AND created_at >= ?", commencement)
-    surrounding_moment_request_responses = BountyClaim.joins(:venue_comment).where("venue_comments.venue_id IN (#{venue_ids}) AND venue_comments.created_at >= ?", commencement)
-
-    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
-    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
-  end
-
-  #by lsphere(city)
-  def surrounding_feed_by_lsphere(city)
-    #pulling based on lsphere and not on radius
-    user_sphere = city.delete(" ")+(lat.round(0).abs).to_s+(long.round(0).abs).to_s
-    surrounding_moments = VenueComment.joins(:venue).where('l_sphere = ?', user_sphere).where("bounty_claim_id IS NULL AND venue_comments.created_at >= ?", commencement)
-    surrounding_moment_requests = Bounty.joins(:venue).where('l_sphere = ?', user_sphere).where("bounties.created_at >= ?", commencement)
-    surrounding_moment_request_responses = BountyClaim.joins(venue_comment: :venue).where('l_sphere = ?', user_sphere).where("bounty_claims.created_at >= ?", commencement)
-
-    feed = (surrounding_moment_requests << surrounding_moment_request_responses << surrounding_moments).flatten
-    surrounding_feed = feed.sort_by{|x,y| x.created_at}.reverse
-  end
-
+  #Global activity feed (venue comments, bounties, bounty responses)
   def global_feed
     days_back = 5
     feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty).order("id desc")
@@ -340,7 +309,7 @@ class User < ActiveRecord::Base
     weekly_lumens = [lumens_on_date(t_1).round(4), lumens_on_date(t_2).round(4), lumens_on_date(t_3).round(4), lumens_on_date(t_4).round(4), lumens_on_date(t_5).round(4), lumens_on_date(t_6).round(4), lumens_on_date(t_7).round(4)]
   end
 
-  #Constructs array of color values which determine which coloor to assign to particular weekly Lumen value on the front-end.
+  #Constructs array of color values which determine which color to assign to particular weekly Lumen value on the front-end.
   def weekly_lumen_color_values(weekly_lumens_entries)
     color_values = [] 
     weekly_lumens_entries.each {|l| color_values << color_value_assignment(l)}
@@ -354,15 +323,15 @@ class User < ActiveRecord::Base
       0
     elsif rvalue.between?(0.00001, 2.0)
       1
-    elsif rvalue.between?(2.00001, 7.0)
+    elsif rvalue.between?(2.00001, 3.0)
       2
-    elsif rvalue.between?(7.00001, 16.0)
+    elsif rvalue.between?(3.00001, 4.0)
       3
-    elsif rvalue.between?(16.00001, 32.0)
+    elsif rvalue.between?(4.00001, 5.0)
       4
-    elsif rvalue.between?(32.00001, 64.0)
+    elsif rvalue.between?(5.00001, 6.0)
       5
-    elsif rvalue.between?(64.00001, 128.0)
+    elsif rvalue.between?(6.00001, 7.0)
       6
     else 
       7
@@ -612,7 +581,7 @@ class User < ActiveRecord::Base
       return false
     else
       total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
-      total_bounty_claims = BountyClaim.where("user_id = ? AND created_at <= ? AND created_at >= ?", id, Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND bounty_id IS NOT NULL AND created_at <= ? AND created_at >= ?", id, Time.now, (Time.now - 7.days)).count
 
       if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
         self.can_claim_bounty = false

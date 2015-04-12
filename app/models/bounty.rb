@@ -13,13 +13,13 @@ class Bounty < ActiveRecord::Base
 
 			wrap_around_claim_time = self.last_viewed_claim_time || Time.now - 121.minutes #a Bounty is still valid 2 hours after the last response to it is viewed even if it expires
 
-			if bounty_claims.count == 0 || wrap_around_claim_time < (Time.now - 120.minutes) #cleanup
+			if self.venue_comments.where("user_id IS NOT NULL").count == 0 || wrap_around_claim_time < (Time.now - 120.minutes) #cleanup
 				self.validity = false
 				result = false
 				self.save
 			end
 
-			if bounty_claims.count == 0 && self.lumen_reward > 0.0#if no responses received we return the deposited lumens for the request back to the user
+			if self.venue_comments.where("user_id IS NOT NULL").count  == 0 && self.lumen_reward > 0.0#if no responses received we return the deposited lumens for the request back to the user
 				user_lumens = user.lumens 
 				user.update_columns(lumens: user_lumens+self.lumen_reward)
 				self.update_columns(lumen_reward: 0.0)

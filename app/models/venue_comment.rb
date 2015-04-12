@@ -189,7 +189,7 @@ class VenueComment < ActiveRecord::Base
 		self.bounty.response_received = false
 		self.bounty.save
 		
-		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :bounty_claim_id => self.id)
+		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :venue_comment_id => self.id)
 		new_rejection_entry.save
 
 		user.latest_rejection_time = Time.now
