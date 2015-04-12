@@ -157,10 +157,10 @@ class VenueComment < ActiveRecord::Base
 
 	#Bounty Responses Methods ----------------------------------------------------------------------------------------
 	def claim_acceptance
-		self.is_claim_accepted = true
+		self.is_response_accepted = true
 		save
 		
-		VenueComment.where("bounty_id = #{self.bounty_id} AND id != #{self.id}").update_all(is_claim_accepted: false)
+		VenueComment.where("bounty_id = #{self.bounty_id} AND id != #{self.id}").update_all(is_response_accepted: false)
 
 		reward = bounty.lumen_reward
 		bounty_lumen_value = LumenValue.new(:value => reward*(0.9), :user_id => user.id, :bounty_id => bounty.id)
@@ -182,7 +182,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def rejection(reasoning)
-		self.is_claim_accepted = false
+		self.is_response_accepted = false
 		self.rejection_reason = reasoning
 		save
 
@@ -199,9 +199,9 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def status
-		if is_claim_accepted == false
+		if is_response_accepted == false
 			return 0
-		elsif is_claim_accepted == true
+		elsif is_response_accepted == true
 			return 2
 		else
 			return 1

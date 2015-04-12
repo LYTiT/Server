@@ -48,7 +48,7 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def total_valid_claims
-		claims_count = self.venue_comments.where("user_id IS NOT NULL AND is_claim_accepted != false").count
+		claims_count = self.venue_comments.where("user_id IS NOT NULL AND is_response_accepted != false").count
 	end
 
 
