@@ -163,11 +163,6 @@ LytitServer::Application.routes.draw do
         get 'name_availability'
       end
 
-      resources :venue_comments do
-        get 'get_details'
-      end
-
-
 
       #we don't need to put an end here because there is no "do" we 
       #put end on "do"
