@@ -50,16 +50,6 @@ LytitServer::Application.routes.draw do
         get 'email_availability'
       end
 
-      resources :featured do
-        get '/today', :action => :today
-        get '/allTime', :action => :allTime
-        get '/profile_comments', :action => :profile_comments
-        get '/allUsers', :action => :allUsers
-        collection do
-          get 'search'
-        end
-      end
-
       resources :announcement do
         get 'get_announcement_details'
       end
@@ -91,9 +81,6 @@ LytitServer::Application.routes.draw do
 
       resources :at_group_relationships do
         get 'get_at_group_notification_details'
-      end
-
-      resources :accesscodes, only: [:show] do #accesscodes call to show made here
       end
 
       post '/register_push_token' => 'users#register_push_token'
@@ -175,6 +162,12 @@ LytitServer::Application.routes.draw do
         get 'get_hashtag_notification_details'
         get 'name_availability'
       end
+
+      resources :venue_comments do
+        get 'get_details'
+      end
+
+
 
       #we don't need to put an end here because there is no "do" we 
       #put end on "do"

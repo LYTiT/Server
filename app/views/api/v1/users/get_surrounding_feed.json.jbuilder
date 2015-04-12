@@ -7,15 +7,15 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.venue_name entry.venue.name
   json.city entry.venue.city
   json.username_private entry.username_private
+  json.media_type entry.media_type
   json.media_url entry.media_url
   json.comment entry.comment
   json.views entry.views
 
-  json.media_type entry.bounty.try(:media_type)
+  json.request_media_type entry.bounty.try(:media_type)
   json.lumen_rewared entry.bounty.try(:lumen_reward)
   json.minutes_left entry.bounty.try(:minutes_left)
   json.details entry.bounty.try(:detail)
-  json.response_received entry.bounty.try(:response_received)
   json.validity entry.bounty.try(:validity)
 
   json.status entry.status
