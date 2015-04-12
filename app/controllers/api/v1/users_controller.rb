@@ -234,7 +234,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_lumens
-		@user = User.find(params[:user_id]).includes(:venue_comments)
+		@user = User.find(params[:user_id])
 	end
 
 	def get_daily_lumens
