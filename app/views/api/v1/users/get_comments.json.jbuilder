@@ -8,7 +8,7 @@ json.comments(@comments) do |comment|
   json.username_private comment.username_private
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
-  json.city comment.city
+  json.city comment.venue.city
   json.total_views comment.views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
