@@ -11,7 +11,7 @@ class Api::V1::BountiesController < ApiBaseController
 		bounty.save
 		@venue.save
 		@user.save
-		response_venue_comment_housing = VenueComment.new(:comment => "This is a Moment Request", :media_type => "text", :venue_id => params[:venue_id], :bounty_id => bounty.id) #if a response comes in it will be loaded into this venue commment object.
+		response_venue_comment_housing = VenueComment.new(:comment => "This is a Moment Request", :media_type => params[:media_type], :venue_id => params[:venue_id], :bounty_id => bounty.id) #if a response comes in it will be loaded into this venue commment object.
 		response_venue_comment_housing.save
 		render json: { success: true }
 	end
