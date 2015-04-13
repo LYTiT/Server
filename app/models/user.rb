@@ -581,7 +581,7 @@ class User < ActiveRecord::Base
       return false
     else
       total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
-      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", id, Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", Time.now, (Time.now - 7.days)).count
 
       if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
         self.can_claim_bounty = false
