@@ -125,7 +125,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 				#If the Venue Comment is a Bounty response we update bounty_id field
 				if params[:is_bounty_response] != nil
-					@comment.is_claim = true
+					@comment.is_response = true
 					@comment.bounty_id = params[:is_bounty_response]
 					b = Bounty.find_by_id(params[:is_bounty_response])
 					b.response_received = true
