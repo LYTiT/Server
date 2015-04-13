@@ -208,9 +208,9 @@ class Api::V1::UsersController < ApiBaseController
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if User.where("name = ?", params[:q].to_s).any?
-			@person = User.where("name = ?", params[:q].to_s)
+			@person = User.where("name = ?", params[:q].to_s).includes(:relationships)
 		else
-			@person = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%')
+			@person = User.where("name = ? OR LOWER(name) like ?", params[:q].to_s, '%' + params[:q].to_s.downcase + '%').includes(:relationships)
 		end
 		@person = @person[0...10]  
 	end  
