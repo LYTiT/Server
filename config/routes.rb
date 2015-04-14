@@ -49,6 +49,7 @@ LytitServer::Application.routes.draw do
         post 'destroy_previous_temp_user'
         get 'validate_coupon_code'
         get 'email_availability'
+        get 'is_user_confirmed'
       end
 
       resources :announcement do
