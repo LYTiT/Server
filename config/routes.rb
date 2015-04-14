@@ -54,6 +54,10 @@ LytitServer::Application.routes.draw do
         get 'get_announcement_details'
       end
 
+      resources :lumen_game_winners do
+        post 'update_winner_paypal_info'
+      end
+
       resources :relationships do
         post 'create'
         delete 'destroy'

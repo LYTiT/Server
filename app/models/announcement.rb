@@ -15,7 +15,7 @@ class Announcement < ActiveRecord::Base
 	end
 
 
-	def new_announcement
+	def new_announcement(misc)
 		if self.send_to_all == true
 			audience = User.all
 		else
@@ -23,16 +23,17 @@ class Announcement < ActiveRecord::Base
 		end
 
 		if audience.count > 0
-			self.delay.send_new_announcement(audience.to_a)
+			self.delay.send_new_announcement(audience.to_a, misc)
 		end
 	end
 
-	def send_new_announcement(members)
+	def send_new_announcement(members, misc)
 		for member in members
 			payload = {
 				:object_id => self.id,
 				:type => 'announcement', 
-				:user_id => member.id
+				:user_id => member.id,
+				:additional => misc
 			}
 			message = "#{self.news}"
 			notification = self.store_new_announcement(payload, member, message)
@@ -71,7 +72,8 @@ class Announcement < ActiveRecord::Base
 
 	def notification_payload
 		{
-			:announcement_news => self.news 
+			:announcement_news => self.news,
+			:announcement_title => self.title 
 		}
 	end
 
