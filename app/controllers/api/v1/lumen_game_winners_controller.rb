@@ -1,4 +1,5 @@
-class Api::V1::LumenGameWinners < ApiBaseController
+class Api::V1::LumenGameWinnersController < ApiBaseController
+
 	def update_winner_paypal_info
 		@winner = LumenGameWinner.find_by_id(params[:lumen_game_winner_id])
 		@winner.paypal_info = params[:update_paypal_info]
