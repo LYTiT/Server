@@ -34,12 +34,12 @@ class Mailer < ActionMailer::Base
     )
   end
 
-  def notify_admins_of_user_paypal_details(admin, target)
+  def notify_admins_of_user_paypal_details(admin, winner)
     @user = admin
-    @about = target
+    @winner = winner
     mail(
       to: @user.email, 
-      subject: "#{@about .name}, user id: #{@about .id}, has provided paypal information for the month of (#{Time.now.month})."
+      subject: 'A winner has submitted Paypal details'
     )
   end
 end

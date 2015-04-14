@@ -66,7 +66,8 @@ class Announcement < ActiveRecord::Base
 			:user_id => receiver.id,
 			:read => false,
 			:message => message,
-			:deleted => false
+			:deleted => false,
+			:responded_to => false
 		}
 		Notification.create(notification)
 	end
