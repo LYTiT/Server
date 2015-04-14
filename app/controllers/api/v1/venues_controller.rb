@@ -134,8 +134,7 @@ class Api::V1::VenuesController < ApiBaseController
 					@comment.delay.send_bounty_claim_notification
 				end
 
-				#check to see if there is @Group link present in text (introduced in v3.2.0)
-
+				#check for hashtags
 				if params[:at_ids] != nil
 					for gid in params[:at_ids]
 						receiving_group = Group.find_by_id(gid["group_id"])
