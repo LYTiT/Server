@@ -15,7 +15,7 @@ class Announcement < ActiveRecord::Base
 	end
 
 
-	def new_announcement(misc)
+	def new_announcement
 		if self.send_to_all == true
 			audience = User.all
 		else
@@ -23,9 +23,10 @@ class Announcement < ActiveRecord::Base
 		end
 
 		if audience.count > 0
-			self.delay.send_new_announcement(audience.to_a, misc)
+			self.delay.send_new_announcement(audience.to_a, nil)
 		end
 	end
+
 
 	def send_new_announcement(members, misc)
 		for member in members
