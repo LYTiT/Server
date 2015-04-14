@@ -39,7 +39,7 @@ class Mailer < ActionMailer::Base
     @winner = winner
     mail(
       to: @user.email, 
-      subject: 'A winner has submitted Paypal details'
+      subject: 'A Winner Has Submitted Paypal Details'
     )
   end
 end
