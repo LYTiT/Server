@@ -1,7 +1,7 @@
 class Api::V1::LumenGameWinners < ApiBaseController
 	def update_winner_paypal_info
 		@winner = LumenGameWinner.find_by_id(params[:lumen_game_winner_id])
-		@winner.paypal_info = params[:lumen_game_winner_id]
+		@winner.paypal_info = params[:update_paypal_info]
 		@winner.save
 		founder_1 = User.find_by_email("leonid@lytit.com")
       	founder_2 = User.find_by_name("tim@lytit.com")
