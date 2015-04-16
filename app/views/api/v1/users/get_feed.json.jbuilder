@@ -22,8 +22,10 @@ json.comments(@news) do |entry|
 	json.group_4_id entry.hashtags[3].try(:id)
 	json.group_5_name entry.hashtags[4].try(:name)
 	json.group_5_id entry.hashtags[4].try(:id)
-
 end
+
+json.viewing_places @viewing_places
+
 json.pagination do
   json.current_page @news.current_page
   json.total_pages @news.total_pages
