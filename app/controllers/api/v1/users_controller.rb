@@ -185,7 +185,7 @@ class Api::V1::UsersController < ApiBaseController
 		else
 
 		feed = @user.viewing_feed
-		if viewing_feed = 0
+		if viewing_feed == 0
 			@viewing_places = 0
 			@news = []
 		else
