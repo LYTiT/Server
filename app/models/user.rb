@@ -264,34 +264,7 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: adjusted_text_lumens)
   end
 
-   #Lumen Calculation########################################################################################
-  def populate_lumens()
-    comments = self.venue_comments
-    v_lumens = 0
-    i_lumens = 0
-    t_lumens = 0
-    vt_lumens = self.total_votes*LumenConstants.votes_weight_adj
-    
-    lumens = vt_lumens 
-
-    comments.each do |comment|
-      if comment.media_type == 'video'
-        v_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      elsif comment.media_type == 'image'
-        i_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      else
-        t_lumens += comment.consider*(comment.weight)
-      end
-    end
-
-      update_columns(video_lumens: v_lumens.round(4))
-      update_columns(image_lumens: i_lumens.round(4))
-      update_columns(text_lumens: t_lumens.round(4))
-      update_columns(vote_lumens: vt_lumens.round(4))
-
-      update_columns(lumens: (v_lumens + i_lumens + t_lumens + vt_lumens).round(4))
-  end
-
+#====================================================================================================================================================================>
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
    lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
@@ -342,33 +315,7 @@ class User < ActiveRecord::Base
   def lumen_package
     package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
   end
-
-  #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.#########################
-  def populate_lumen_values 
-    votes = LytitVote.where(user_id: self.id)
-    for vote in votes
-      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id, :lytit_vote_id => vote.id)
-      l.created_at = vote.created_at
-      l.save
-    end
-
-    comments = self.venue_comments
-    for comment in comments
-      if comment.media_type == 'text' and comment.consider? == 1
-        l2 = LumenValue.new(:value => comment.weight, :user_id => self.id, :venue_comment_id => comment.id, :media_type => 'text')
-        l2.created_at = comment.created_at
-        l2.save
-      else
-        views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
-        for view in views
-          adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-          l3 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => comment.media_type)
-          l3.created_at = view.created_at
-          l3.save
-        end
-      end
-    end
-  end
+#===================================================================================================================================================================> 
 
   def lumen_percentile_calculation
     all_lumens = User.all.map { |user| user.lumens}
