@@ -60,7 +60,7 @@ class Api::V1::GroupsController < ApiBaseController
 
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@groups = Group.where("LOWER(name) like ? OR LOWER(description) like ?", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
+		@groups = Group.where("LOWER(name) like ? OR LOWER(description) like ?", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%').includes(:groups_users)
 	end
 
 	def users
