@@ -7,7 +7,4 @@ json.array! @followed_venues do |v|
   	json.latitude v.latitude
  	json.longitude v.longitude
  	json.is_following 1
-  	json.followers_count v.followers.count
-	json.last_media_comment_url v.last_media_comment_url
-	json.last_media_comment_type v.last_media_comment_type
 end

@@ -122,7 +122,7 @@ class Api::V1::UsersController < ApiBaseController
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		else
-			@groups = @user.linkable_groups
+			@groups = @user.linkable_groups.includes(:groups_users, :groups_venues).order("Name ASC")
 		end
 	end
 
