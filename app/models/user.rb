@@ -158,13 +158,7 @@ class User < ActiveRecord::Base
   end
 
   def viewing_feed
-    begin
       feed = VenueComment.live_from_venues_followed_by(self).includes(:venue, :user)
-    rescue
-      return 0
-    else
-      return feed
-    end
   end
 
   #Global activity feed (venue comments, bounties, bounty responses)
