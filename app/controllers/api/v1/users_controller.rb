@@ -187,6 +187,7 @@ class Api::V1::UsersController < ApiBaseController
 			if  feed.count == 0
 				@viewing_places = 0
 				@news = []
+				render json: { viewing_places: 0}
 			else
 				@viewing_places = 1
 				@news = Kaminari.paginate_array(feed).page(params[:page]).per(10)
