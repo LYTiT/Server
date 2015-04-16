@@ -118,7 +118,7 @@ class VenueComment < ActiveRecord::Base
 
 	def VenueComment.live_from_venues_followed_by(user)
 		followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{user.id}"
-		if followed_venues_ids.count == 0
+		if followed_venues_ids.length == 0
 			return 0 
 		else
 			where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
