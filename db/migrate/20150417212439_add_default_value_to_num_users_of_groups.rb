@@ -1,5 +1,9 @@
 class AddDefaultValueToNumUsersOfGroups < ActiveRecord::Migration
-  def change
-  	add_column :groups, :users_count, :integer, :default => 1
+  def up
+  	change_column :groups, :users_count, :integer, :default => 1
+  end
+
+  def down
+  	change_column :groups, :users_count, :integer, :default => nil
   end
 end
