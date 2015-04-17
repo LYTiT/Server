@@ -1,5 +1,6 @@
 json.array! @bounties do |bounty|
 	json.id bounty.id
+	json.venue_id bounty.venue_id
 	json.created_at bounty.created_at 
 	json.expiration bounty.expiration
 	json.minutes_left bounty.minutes_left
