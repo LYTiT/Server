@@ -148,7 +148,11 @@ class VenueComment < ActiveRecord::Base
 			elsif self.venue_id != previous_comment.venue_id
 				consider = 1
 			else
-				consider = 0
+				if previous_comment.user_id == nil || self.is_response == true#it was a bounty request or response
+					consider = 1
+				else
+					consider = 0
+				end
 			end
 		end
 		update_columns(consider: consider)
