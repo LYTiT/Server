@@ -6,7 +6,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.adjusted_view_discount = LumenConstants.views_weight_adj
 
 		if @user.save
-			if @user.name[10] == @user.email[10] && @user.email.last(8) == "temp.com"
+			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
 				@user.vendor_id = @user.name
 				@user.name = "lyt_"+(@user.id*2+Time.now.day).to_s(16)
 				temp_user = true
