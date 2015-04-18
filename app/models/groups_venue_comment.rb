@@ -4,6 +4,7 @@ class GroupsVenueComment < ActiveRecord::Base
 
   validates :venue_comment_id, presence: true
   validates :group_id, presence: true
+  validates_uniqueness_of :venue_comment_id, :scope => :group_id
 
   after_create :hashtag_notification
 
