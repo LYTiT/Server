@@ -167,6 +167,14 @@ class User < ActiveRecord::Base
     feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
   end
 
+  def is_subscribed_to_bounty(target_bounty)
+    if target_bounty != nil
+      BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
+    else
+      nil
+    end
+  end
+
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
   def followers_not_in_group(group_id)
     users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
