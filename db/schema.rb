@@ -71,6 +71,16 @@ ActiveRecord::Schema.define(version: 20150419224339) do
     t.datetime "updated_at"
   end
 
+  create_table "bounty_subscribers", force: true do |t|
+    t.integer  "bounty_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "bounty_subscribers", ["bounty_id"], name: "index_bounty_subscribers_on_bounty_id", using: :btree
+  add_index "bounty_subscribers", ["user_id"], name: "index_bounty_subscribers_on_user_id", using: :btree
+
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
     t.integer  "user_id"
@@ -334,16 +344,6 @@ ActiveRecord::Schema.define(version: 20150419224339) do
   add_index "relationships", ["followed_id"], name: "index_relationships_on_followed_id", using: :btree
   add_index "relationships", ["follower_id", "followed_id"], name: "index_relationships_on_follower_id_and_followed_id", unique: true, using: :btree
   add_index "relationships", ["follower_id"], name: "index_relationships_on_follower_id", using: :btree
-
-  create_table "request_subscribers", force: true do |t|
-    t.integer  "bounty_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "request_subscribers", ["bounty_id"], name: "index_request_subscribers_on_bounty_id", using: :btree
-  add_index "request_subscribers", ["user_id"], name: "index_request_subscribers_on_user_id", using: :btree
 
   create_table "roles", force: true do |t|
     t.string "name"

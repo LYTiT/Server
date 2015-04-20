@@ -1,6 +1,6 @@
 class CreateBountySubscribers < ActiveRecord::Migration
   def change
-    create_table :request_subscribers do |t|
+    create_table :bounty_subscribers do |t|
     	t.references :bounty, index: true
 		t.references :user, index: true
 		

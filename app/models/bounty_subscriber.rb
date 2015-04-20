@@ -1,2 +1,2 @@
-class BountyPricingConstants < ActiveRecord::Base
+class BountySubscriber < ActiveRecord::Base
 end
