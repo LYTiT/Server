@@ -22,7 +22,7 @@ namespace :lytit do
 
     yesterday = Time.now - 1.day
     if yesterday.month != (today).month
-      final_winners = LumenGameWinner.joins(:user).where("email_confirmed = TRUE").where("lumen_game_winners.created_at >= ?", yesterday.beginning_of_month).sample(50)
+      final_winners = LumenGameWinner.joins(:user).where("email_confirmed = TRUE").where("lumen_game_winners.created_at >= ?", yesterday.beginning_of_month).order("id desc").first(50)
       for champ in final_winners
         puts "#{champ.user.name}-#{champ.user.email}"
         champ.user.send_email_validation

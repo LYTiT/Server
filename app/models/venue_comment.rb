@@ -225,28 +225,35 @@ class VenueComment < ActiveRecord::Base
 
 	#Bounty Response Notifications
 	def send_bounty_claim_notification
-		payload = {
-				:object_id => self.id, 
-				:type => 'bounty_claim', 
-				:user_id => bounty.user_id
-		}
-		message = "Someone responded to your Request at #{bounty.venue.name}"
-		notification = self.store_new_bounty_claim_notification(payload, bounty.user, message)
-		payload[:notification_id] = notification.id
-
-		if bounty.user.push_token
-			count = Notification.where(user_id: bounty.user_id, read: false).count
-			APNS.delay.send_notification(bounty.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
-		end
-
-		if bounty.user.gcm_token
-			gcm_payload = payload.dup
-			gcm_payload[:message] = message
-			options = {
-				:data => gcm_payload
+		recipient_ids = bounty.user_ids
+		for recipient_id in recipient_ids
+			payload = {
+					:object_id => self.id, 
+					:type => 'bounty_claim', 
+					:user_id => recipient_id 
 			}
-			request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-			request.send([bounty.user.gcm_token], options)
+			if bounty.user_id == recipient_id
+				message = "Someone responded to your Request at #{bounty.venue.name}"
+			else
+				message = "Somen responded to the Request at #{bounty.venue.name}"
+			end
+			notification = self.store_new_bounty_claim_notification(payload, User.find_by_id(recipient_id), message)
+			payload[:notification_id] = notification.id
+
+			if bounty.user.push_token
+				count = Notification.where(user_id: recipient_id, read: false).count
+				APNS.delay.send_notification(bounty.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+			end
+
+			if bounty.user.gcm_token
+				gcm_payload = payload.dup
+				gcm_payload[:message] = message
+				options = {
+					:data => gcm_payload
+				}
+				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
+				request.send([bounty.user.gcm_token], options)
+			end
 		end
 	end
 

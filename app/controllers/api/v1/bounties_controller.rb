@@ -11,6 +11,8 @@ class Api::V1::BountiesController < ApiBaseController
 		bounty.save
 		@venue.save
 		@user.save
+		original_subscriber = BountySubscriber.new(:user_id => params[:user_id], :bounty_id => bounty.id)
+		original_subscriber.save
 		response_venue_comment_housing = VenueComment.new(:comment => "This is a Moment Request", :media_type => params[:media_type], :venue_id => params[:venue_id], :bounty_id => bounty.id) #if a response comes in it will be loaded into this venue commment object.
 		response_venue_comment_housing.save
 		render json: { success: true }
@@ -61,5 +63,32 @@ class Api::V1::BountiesController < ApiBaseController
 		render 'bounty_pricing_constants.json.jbuilder'
 	end
 
+	def subscribe_to_bounty
+		@user = User.find_by_authentication_token(params[:auth_token])
+		original_subscriber = BountySubscriber.new(:user_id => @user.id , :bounty_id => params[:bounty_id])
+		render json: { success: true }
+	end
+
+	def update_bounty_details
+		@bounty = Bounty.find_by_id(params[:bounty_id])
+		if params[:venue_id] != nil
+			@bounty.venue_id = params[:venue_id]
+		end
+		if params[:lumen_reward] != nil
+			@bounty.lumen_reward = params[:lumen_reward] 
+		end
+		if params[:expiration] != nil
+			bounty_expiration = Time.now + params[:expiration].to_i.minutes
+			@bounty.expiration = bounty_expiration
+		end
+		if params[:media_type] != nil
+			@bounty.media_type = params[:media_type]
+		end
+		if params[:detail] != nil
+			@bounty.detail = params[:detail]
+		end
+			@bounty.save
+		render json: { success: true }
+	end
 
 end

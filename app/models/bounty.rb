@@ -3,6 +3,7 @@ class Bounty < ActiveRecord::Base
 	belongs_to :venue
 
 	has_many :venue_comments
+	has_many :bounty_subscribers
 
 	def check_validity
 		result = true

@@ -77,6 +77,8 @@ LytitServer::Application.routes.draw do
         get 'get_bounty_claim_rejection_notification_details'
         post 'accept_bounty_claim'
         post 'reject_bounty_claim'
+        post 'subscribe_to_bounty'
+        post 'update_bounty_details'
       end
 
       resources :group_invitations do
