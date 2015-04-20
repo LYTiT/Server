@@ -69,25 +69,19 @@ class Api::V1::BountiesController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def remove_bounty
+		@bounty = Bounty.find_by_id(params[:bounty_id])
+		@bounty.delete
+		render json: { success: true }
+	end
+
 	def update_bounty_details
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		if params[:venue_id] != nil
-			@bounty.venue_id = params[:venue_id]
-		end
-		if params[:lumen_reward] != nil
-			@bounty.lumen_reward = params[:lumen_reward] 
-		end
-		if params[:expiration] != nil
-			bounty_expiration = Time.now + params[:expiration].to_i.minutes
-			@bounty.expiration = bounty_expiration
-		end
-		if params[:media_type] != nil
-			@bounty.media_type = params[:media_type]
-		end
-		if params[:detail] != nil
-			@bounty.detail = params[:detail]
-		end
-			@bounty.save
+		@bounty.venue_id = params[:venue_id]
+		@bounty.lumen_reward = params[:lumen_reward] 
+		@bounty.media_type = params[:media_type]
+		@bounty.detail = params[:detail]
+		@bounty.save
 		render json: { success: true }
 	end
 

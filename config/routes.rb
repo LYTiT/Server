@@ -79,6 +79,7 @@ LytitServer::Application.routes.draw do
         post 'reject_bounty_claim'
         post 'subscribe_to_bounty'
         post 'update_bounty_details'
+        post 'remove_bounty'
       end
 
       resources :group_invitations do
