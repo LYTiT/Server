@@ -185,7 +185,7 @@ class VenueComment < ActiveRecord::Base
 		self.bounty_claim_acceptance_notification
 	end
 
-	def rejection(reasoning)
+	def claim_rejection(reasoning)
 		self.is_response_accepted = false
 		self.rejection_reason = reasoning
 		save
