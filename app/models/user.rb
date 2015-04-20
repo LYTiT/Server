@@ -167,7 +167,7 @@ class User < ActiveRecord::Base
     feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
   end
 
-  def is_subscribed_to_bounty(target_bounty)
+  def is_subscribed_to_bounty?(target_bounty)
     if target_bounty != nil
       BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
     else
