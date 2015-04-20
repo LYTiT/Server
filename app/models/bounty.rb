@@ -52,5 +52,13 @@ class Bounty < ActiveRecord::Base
 		claims_count = self.venue_comments.where("user_id IS NOT NULL AND (is_response_accepted = TRUE OR is_response_accepted IS NULL)").count
 	end
 
+	def is_subscribed?(target_user)
+		BountySubscriber.where("bounty_id = ? and user_id = ?", self.id, target_user.id).count > 0 ? true : false
+	end
+
+	def num_subsrcribed
+		self.bounty_subscribers.count
+	end
+
 
 end

@@ -164,7 +164,7 @@ class User < ActiveRecord::Base
   #Global activity feed (venue comments, bounties, bounty responses)
   def global_feed
     days_back = 5
-    feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty).order("id desc")
+    feed = VenueComment.where('created_at >= ?', (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.

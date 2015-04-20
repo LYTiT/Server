@@ -10,4 +10,5 @@ json.array! @bounties do |bounty|
   	json.media_type bounty.media_type
   	json.response_received bounty.response_received
   	json.validity bounty.validity
+  	json.num_subscribed bounty.num_subscribed
 end
