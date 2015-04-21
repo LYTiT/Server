@@ -12,6 +12,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.comment entry.comment
   json.views entry.views
 
+  json.bounty_id entry.bounty_id
   json.request_media_type entry.bounty.try(:media_type)
   json.lumen_reward entry.bounty.try(:lumen_reward)
   json.minutes_left entry.bounty.try(:minutes_left)
