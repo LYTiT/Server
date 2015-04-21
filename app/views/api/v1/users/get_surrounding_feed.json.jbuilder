@@ -19,7 +19,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.details entry.bounty.try(:detail)
   json.validity entry.bounty.try(:validity)
   json.is_subscribed @user.is_subscribed_to_bounty?(entry.bounty)
-  json.num_subsribed entry.bounty.try(:num_subscribed)
+  json.num_subcsribed entry.bounty.try(:num_subscribed)
 
   json.status entry.status
 
