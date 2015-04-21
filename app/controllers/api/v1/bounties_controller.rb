@@ -66,6 +66,7 @@ class Api::V1::BountiesController < ApiBaseController
 	def subscribe_to_bounty
 		@user = User.find_by_authentication_token(params[:auth_token])
 		original_subscriber = BountySubscriber.new(:user_id => @user.id , :bounty_id => params[:bounty_id])
+		@original_subscriber.save
 		render json: { success: true }
 	end
 
