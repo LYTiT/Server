@@ -60,6 +60,7 @@ class Api::V1::BountiesController < ApiBaseController
 	end
 
 	def get_pricing_constants
+		@user = User.find_by_authentication_token(params[:auth_token])
 		render 'bounty_pricing_constants.json.jbuilder'
 	end
 
