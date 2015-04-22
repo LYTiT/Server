@@ -73,7 +73,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_bounties
 		subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{params[:user_id]}"
-		raw_bounties = Bounty.where("(user_id = ? OR id IN (#{subcribed_bounty_ids})) AND validity = true", params[:user_id]).order('id DESC')
+		raw_bounties = Bounty.where("(user_id = ? OR id IN (#{subcribed_bounty_ids})) AND validity = true", params[:user_id]).includes(:venue).order('id DESC')
 		@bounties = []
 		for bounty in raw_bounties
 			if bounty.check_validity == true

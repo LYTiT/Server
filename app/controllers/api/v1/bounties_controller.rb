@@ -79,10 +79,17 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def update_bounty_details
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		@bounty.venue_id = params[:venue_id]
-		@bounty.lumen_reward = params[:lumen_reward] 
-		@bounty.media_type = params[:media_type]
-		@bounty.detail = params[:detail]
+		if params[:venue_id] != nil
+			@bounty.venue_id = params[:venue_id]
+		end
+		if	params[:lumen_reward] != nil
+			@bounty.lumen_reward = params[:lumen_reward] 
+		end
+		if	params[:media_type] != nil
+			@bounty.media_type = params[:media_type]
+		if	params[:detail] != nil
+			@bounty.detail = params[:detail]
+		end
 		@bounty.save
 		render json: { success: true }
 	end
