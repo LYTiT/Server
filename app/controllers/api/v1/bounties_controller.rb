@@ -87,6 +87,7 @@ class Api::V1::BountiesController < ApiBaseController
 		end
 		if	params[:media_type] != nil
 			@bounty.media_type = params[:media_type]
+		end
 		if	params[:detail] != nil
 			@bounty.detail = params[:detail]
 		end
