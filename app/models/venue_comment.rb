@@ -177,8 +177,7 @@ class VenueComment < ActiveRecord::Base
 		bounty_issuer.lumens = bounty_issuer.lumens + reward*(0.1)
 		bounty_issuer.save
 
-		venue.outstanding_bounties = venue.outstanding_bounties - 1 
-		venue.save
+		self.venue.decrement(:outstanding_bounties, 1)
 
 		bounty.validity = false
 		bounty.save

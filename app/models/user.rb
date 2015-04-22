@@ -124,6 +124,11 @@ class User < ActiveRecord::Base
     venues.size > 0
   end
 
+  def all_user_bounties
+    subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{self.id}"
+    raw_bounties = Bounty.where("(user_id = ? OR id IN (#{subcribed_bounty_ids})) AND validity = true", self.id).includes(:venue).order('id DESC')
+  end
+
   def send_location_added_to_group_notification?(group)
     self.notify_location_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
   end

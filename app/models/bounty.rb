@@ -9,8 +9,7 @@ class Bounty < ActiveRecord::Base
 		result = true
 
 		if self.expiration.to_time < Time.now && self.validity == true
-			venue.outstanding_bounties = venue.outstanding_bounties - 1
-			venue.save
+			self.venue.decrement(:outstanding_bounties, 1)
 
 			wrap_around_claim_time = self.last_viewed_claim_time || Time.now - 121.minutes #a Bounty is still valid 2 hours after the last response. Second part is a rescue.
 
