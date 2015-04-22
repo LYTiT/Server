@@ -73,7 +73,7 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def remove_bounty
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		@bounty.venue.decrement(:outstanding_bounties, 1)
+		@bounty.venue.decrement!(:outstanding_bounties, 1)
 		@user = User.find_by_authentication_token(params[:auth_token])
 		user_lumens = @user.lumens 
 		@user.update_columns(lumens: user_lumens+@bounty.lumen_reward)
