@@ -77,6 +77,8 @@ class Api::V1::BountiesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		user_lumens = @user.lumens 
 		@user.update_columns(lumens: user_lumens+@bounty.lumen_reward)
+		housing_venue_comment = VenueComment.where("bounty_id = ? and user_id IS NULL", params[:bounty_id]).first
+		housing_venue_comment.delete
 		@bounty.delete
 		render json: { success: true }
 	end
