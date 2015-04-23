@@ -11,13 +11,13 @@ class Bounty < ActiveRecord::Base
 		if self.expiration.to_time < Time.now and self.validity == true
 			self.venue.decrement!(:outstanding_bounties, 1)
 
-			if self.venue_comments.where("user_id IS NOT NULL").count == 0 || (self.created_at < (Time.now - 1.day)) #If no responses then dismiss bounty. If there are responses then keep valid 2hours after last viewed claim.
+			if self.num_responses == 0 || (self.created_at < (Time.now - 1.day)) #If no responses then dismiss bounty. If there are responses then keep valid 24hours after creation.
 				self.validity = false
 				result = false
 				self.save
 			end
 
-			if self.venue_comments.where("user_id IS NOT NULL").count  == 0 && self.lumen_reward > 0.0#if no responses received we return the deposited lumens for the request back to the user
+			if self.num_responses == 0 && self.lumen_reward > 0.0#if no responses received we return the deposited lumens for the request back to the user
 				user_lumens = user.lumens 
 				user.update_columns(lumens: user_lumens+self.lumen_reward)
 				self.update_columns(lumen_reward: 0.0)
@@ -25,11 +25,6 @@ class Bounty < ActiveRecord::Base
 
 		end
 		return result
-	end
-
-	def self.set_num_responses
-		bounties = Bounty.all
-		bounties.each{|x| x.update_columns(num_responses: x.venue_comments.where("user_id IS NOT NULL").count)}
 	end
 
 	def viewed_claim
