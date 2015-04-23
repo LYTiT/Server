@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150423205412) do
+ActiveRecord::Schema.define(version: 20150423215434) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -41,14 +41,15 @@ ActiveRecord::Schema.define(version: 20150423205412) do
     t.integer  "venue_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "validity",               default: true
+    t.boolean  "validity",                     default: true
     t.string   "media_type"
     t.string   "detail"
-    t.boolean  "response_received",      default: false
+    t.boolean  "response_received",            default: false
     t.datetime "expiration"
     t.datetime "last_viewed_claim_time"
     t.integer  "venue_comment_id"
-    t.integer  "num_responses",          default: 0
+    t.integer  "num_responses",                default: 0
+    t.boolean  "decrement_venue_bounty_count", default: true
   end
 
   add_index "bounties", ["user_id"], name: "index_bounties_on_user_id", using: :btree
