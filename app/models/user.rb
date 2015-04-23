@@ -171,7 +171,7 @@ class User < ActiveRecord::Base
     days_back = 1
     lower_bound = 1
     responded_to_bounty_ids = "SELECT id FROM bounties WHERE (num_responses > #{lower_bound} OR expiration > NOW()) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    feed = VenueComment.where("(created_at >= ? AND bounty_id NOT IN (#{responded_to_bounty_ids})) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
+    feed = VenueComment.where("(created_at >= ? AND bounty_id NOT IN (#{responded_to_bounty_ids}) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
   end
 
   def is_subscribed_to_bounty?(target_bounty)
