@@ -22,6 +22,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.num_subscribed entry.bounty.try(:num_subscribed)
   json.user_id entry.bounty.try(:user_id)
   json.response_received entry.bounty.try(:response_received)
+  json.num_responses entry.bounty.try(:num_responses)
 
   json.status entry.status
 

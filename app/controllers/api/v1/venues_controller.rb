@@ -129,6 +129,7 @@ class Api::V1::VenuesController < ApiBaseController
 					@comment.bounty_id = params[:is_bounty_response]
 					b = Bounty.find_by_id(params[:is_bounty_response])
 					b.response_received = true
+					b.increment!(:num_responses, 1)
 					@comment.save
 					b.save
 					@comment.delay.send_bounty_claim_notification

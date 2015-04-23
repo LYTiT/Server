@@ -29,6 +29,11 @@ class Bounty < ActiveRecord::Base
 		return result
 	end
 
+	def self.set_num_responses
+		bounties = Bounty.all
+		bounties.each{|x| x.update_columns(num_responses: x.venue_comments.where("user_id IS NOT NULL").count)}
+	end
+
 	def viewed_claim
 		self.last_viewed_claim_time = Time.now
 		self.response_received = false
