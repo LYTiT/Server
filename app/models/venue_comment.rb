@@ -188,9 +188,6 @@ class VenueComment < ActiveRecord::Base
 		self.is_response_accepted = false
 		self.rejection_reason = reasoning
 		save
-
-		self.bounty.response_received = false
-		self.bounty.save
 		
 		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :venue_comment_id => self.id)
 		new_rejection_entry.save
@@ -256,13 +253,13 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def store_new_bounty_claim_notification(payload, payer, message)
+	def store_new_bounty_claim_notification(payload, recipient, message)
 		notification = {
 			:payload => payload,
 			:gcm => payer.gcm_token.present?,
 			:apns => payer.push_token.present?,
 			:response => notification_payload,
-			:user_id => payer.id,
+			:user_id => recipient.id,
 			:read => false,
 			:message => message,
 			:deleted => false
