@@ -78,7 +78,7 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def unsubscribe_from_bounty
 		@user = User.find_by_authentication_token(params[:auth_token])
-		subscription = BountySubscriber.where("user_id = ? and bounty_id = ?", params[:user_id], params[:bounty_id])
+		subscription = BountySubscriber.where("user_id = #{params[:user_id]} and bounty_id = #{params[:bounty_id]}").first
 		subscription.delete
 		render json: { success: true}
 	end
