@@ -23,6 +23,11 @@ class Api::V1::BountiesController < ApiBaseController
 		@comments = @bounty.venue_comments.where("user_id IS NOT NULL AND (is_response_accepted = TRUE OR is_response_accepted IS NULL)").includes(:venue, :user).page(params[:page]).per(12).order("created_at desc")
 	end
 
+	def get_claims_for_global_feed
+		@bounty = Bounty.find_by_id(params[:bounty_id])
+		@comments = @bounty.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user).page(params[:page]).per(12).order("created_at desc")
+	end
+
 	def viewed_claim
 		@bounty = Bounty.find_by_id(params[:bounty_id])
 		@bounty.viewed_claim
@@ -66,9 +71,16 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def subscribe_to_bounty
 		@user = User.find_by_authentication_token(params[:auth_token])
-		original_subscriber = BountySubscriber.new(:user_id => @user.id , :bounty_id => params[:bounty_id])
-		original_subscriber.save
+		new_subscription = BountySubscriber.new(:user_id => @user.id , :bounty_id => params[:bounty_id])
+		new_subscription.save
 		render json: { success: true }
+	end
+
+	def unsubscribe_from_bounty
+		@user = User.find_by_authentication_token(params[:auth_token])
+		subscription = BountySubscriber.where("user_id = ? and bounty_id = ?", params[:user_id], params[:bounty_id])
+		subscription.delete
+		render json: { success: true}
 	end
 
 	def remove_bounty
