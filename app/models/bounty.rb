@@ -11,9 +11,7 @@ class Bounty < ActiveRecord::Base
 		if self.expiration.to_time < Time.now and self.validity == true
 			self.venue.decrement!(:outstanding_bounties, 1)
 
-			wrap_around_claim_time = self.last_viewed_claim_time || (Time.now - 121.minutes) #a Bounty is still valid 2 hours after the last response. Second part is a rescue.
-
-			if self.venue_comments.where("user_id IS NOT NULL").count == 0 || (wrap_around_claim_time < (Time.now - 120.minutes)) #If no responses then dismiss bounty. If there are responses then keep valid 2hours after last viewed claim.
+			if self.venue_comments.where("user_id IS NOT NULL").count == 0 || (self.created_at < (Time.now - 1.day)) #If no responses then dismiss bounty. If there are responses then keep valid 2hours after last viewed claim.
 				self.validity = false
 				result = false
 				self.save
