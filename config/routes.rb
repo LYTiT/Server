@@ -68,7 +68,8 @@ LytitServer::Application.routes.draw do
         get 'get_follower'
       end
 
-      resources :bounties, only: [:create] do
+      resources :bounties do
+        get 'create'
         get 'get_claims'
         post 'viewed_claim'
         get 'get_pricing_constants'
