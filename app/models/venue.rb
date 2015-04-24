@@ -39,6 +39,23 @@ class Venue < ActiveRecord::Base
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
+
+  #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
+  def type
+    if name == country && (address == nil && city == nil && state == nil && postal_code == 0)
+      type = "country"
+    elsif name.length == 2 && (address == nil && city == nil && postal_code == 0)
+      type = "state"
+    elsif ((name[0..(name.length-5)] == city && country == "United States") || name == city && country != "United States") && (address == nil)
+      type = "city"
+    else
+      type = "establishment"
+    end
+
+    return type
+  end
+
+
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))

@@ -180,6 +180,11 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_feed
 		@user = User.find_by_id(params[:user_id])
+		@city = params[:city]
+		@state = params[:state]
+		@country = params[:country]
+		@lat = params[:latitude]
+		@long = params[:longitude]
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		else

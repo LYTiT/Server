@@ -135,28 +135,6 @@ class Api::V1::VenuesController < ApiBaseController
 					@comment.delay.send_bounty_claim_notification
 				end
 
-				#check for hashtags
-				if params[:at_ids] != nil
-					for gid in params[:at_ids]
-						receiving_group = Group.find_by_id(gid["group_id"])
-						if receiving_group.is_user_member?(@user.id)
-							receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
-						end
-					end
-				else
-					if params[:at_names] != nil
-						for gname in params[:at_names]
-							receiving_group = Group.where("LOWER(name) like ?", gname["group_name"].to_s.downcase).first
-							if receiving_group.is_user_member?(@user.id)
-								receiving_group.hashtag_group!(@comment.id, @comment.venue_id)
-							end
-						end
-					end
-				end
-
-
-				@comment.delay.link_to_groups! #add associate comment with Groups (Placeslists) to which its venue belongs to
-
 			end
 
 		end
@@ -183,7 +161,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if not @venue
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
 		else
-			view = VenuePageView.new(:user_id => @user.id, :venue_id => params[:venue_id])
+			view = VenuePageView.new(:user_id => @user.id, :venue_id => params[:venue_id], :venue_lyt_sphere => @venue.l_sphere)
 			view.save
 			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND user_id IS NOT NULL").includes(:user, :groups_venue_comments).order('id desc')
 			@comments = live_comments.page(params[:page]).per(5)

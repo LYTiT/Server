@@ -23,6 +23,7 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.user_id entry.bounty.try(:user_id)
   json.response_received entry.bounty.try(:response_received)
   json.num_responses entry.bounty.try(:num_responses)
+  json.can_respond entry.bounty.can_user_respond?(@city, @state, @country, @lat, @long)
 
   json.status entry.status
 

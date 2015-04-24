@@ -58,5 +58,23 @@ class Bounty < ActiveRecord::Base
 		self.bounty_subscribers.count
 	end
 
+	def can_user_respond?(user_city, user_state, user_country, user_lat, user_long)
+		venue_type = bounty.venue.type
+
+		if venue_type == "country" && user_country == bounty.venue.country
+			result = true
+		elsif venue_type == "state" && user_state == bounty.venue.state
+			result = true
+		elsif venue_type == "city" && (user_city == bounty.venue.city && user_state == bounty.venue.state)
+			result = true
+		elsif venue_type == "establishment" && (bounty.venue.distance_to([user_lat, user_long]) * 1609.34) <= 400 #meters
+			result = true
+		else
+			result = false
+		end
+
+		return result
+
+	end
 
 end

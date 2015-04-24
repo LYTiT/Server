@@ -9,19 +9,9 @@ json.comments(@comments) do |comment|
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
   json.viewed comment.is_viewed?(@user)
-  json.total_views comment.total_views
+  json.total_views comment.views
   json.created_at comment.created_at
   json.updated_at comment.updated_at
-  json.group_1_name comment.hashtags[0].try(:name)
-  json.group_1_id comment.hashtags[0].try(:id)
-  json.group_2_name comment.hashtags[1].try(:name)
-  json.group_2_id comment.hashtags[1].try(:id)
-  json.group_3_name comment.hashtags[2].try(:name)
-  json.group_3_id comment.hashtags[2].try(:id)
-  json.group_4_name comment.hashtags[3].try(:name)
-  json.group_4_id comment.hashtags[3].try(:id)
-  json.group_5_name comment.hashtags[4].try(:name)
-  json.group_5_id comment.hashtags[4].try(:id)
 end
 json.pagination do 
   json.current_page @comments.current_page
