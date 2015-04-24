@@ -46,23 +46,7 @@ namespace :lytit do
       target_venue_count = target_venues.count
       for venue in target_venues
         venue.popularity_rank = rank
-
-
-
       end
-
-
-
-
-      end 
-
-
-
-
-      venue = Venue.find_by_id(v_id)
-      total_venue_view_count = VenuePageView.where("venue_id = #{v_id} AND consider = TRUE").count
-      pop_ranking = 1
-      pop_percentile = 1
 
 
     end
