@@ -198,6 +198,15 @@ class VenueComment < ActiveRecord::Base
 		self.bounty_claim_rejection_notification
 	end
 
+	def can_user_respond?(location_details)
+		if user_id == nil || bounty_id == nil
+			return false
+		else
+			return self.bounty.can_user_respond?(location_details)
+		end
+	end
+
+
 	def status
 		if is_response_accepted == false
 			return 0
