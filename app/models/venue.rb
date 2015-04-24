@@ -42,11 +42,22 @@ class Venue < ActiveRecord::Base
 
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def type
-    if name == country && (address == nil && city == nil) && (state == nil && postal_code.to_i == 0)
+    v_address = address || ""
+    v_city = city || ""
+    v_state = state || ""
+    v_country = country || ""
+
+    if postal_code == nil or postal_code == ""
+      vpostal_code = 0
+    else
+      vpostal_code = postal_code
+    end
+
+    if name == v_country && (v_address == "" && v_city == "") && (v_state == "" && vpostal_code.to_i == 0)
       type = 4 #country
-    elsif (name.length == 2 && address == nil) && (city == nil && postal_code.to_i == 0)
+    elsif (name.length == 2 && v_address == "") && (v_city == "" && vpostal_code.to_i == 0)
       type = 3 #state
-    elsif ((name[0..(name.length-5)] == city && country == "United States") || (name == city && country != "United States")) && (address == nil)
+    elsif ((name[0..(name.length-5)] == v_city && v_country == "United States") || (name == v_city && v_country != "United States")) && (v_address == "")
       type = 2 #city
     else
       type = 1 #establishment
