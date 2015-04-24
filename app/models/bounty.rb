@@ -61,7 +61,8 @@ class Bounty < ActiveRecord::Base
 	def can_user_respond?(city, state, country, lat, long)
 		#location_details = [city, state, country, lat, long]
 		venue_type = self.venue.type
-
+		puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%_______________-------------------------------->>>>>>>>>>>>>>>>>>"
+		puts "#{city}, #{state}, #{country}, #{lat}, #{long}"
 		if venue_type == "country" && country == self.venue.country
 			result = true
 		elsif venue_type == "state" && state == self.venue.state
