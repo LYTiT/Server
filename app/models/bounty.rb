@@ -12,11 +12,13 @@ class Bounty < ActiveRecord::Base
 			if self.decrement_venue_bounty_count == true
 				self.venue.decrement!(:outstanding_bounties, 1)
 				self.decrement_venue_bounty_count = false
+				self.save
 			end
 
 			if self.num_responses == 0 || (self.created_at < (Time.now - 1.day)) #If no responses then dismiss bounty. If there are responses then keep valid 24hours after creation.
 				self.validity = false
 				result = false
+				self.save
 			end
 
 			if self.num_responses == 0 && self.lumen_reward > 0.0#if no responses received we return the deposited lumens for the request back to the user
@@ -24,7 +26,7 @@ class Bounty < ActiveRecord::Base
 				user.update_columns(lumens: user_lumens+self.lumen_reward)
 				self.update_columns(lumen_reward: 0.0)
 			end
-   		 	self.save
+
 		end
 		return result
 	end
