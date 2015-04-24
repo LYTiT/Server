@@ -54,7 +54,7 @@ class User < ActiveRecord::Base
       person.video_lumens = 0.0
       person.image_lumens = 0.0
       person.text_lumens = 0.0
-      person.vote_lumens = 0.0
+      person.bonus_lumens = 0.0
       person.lumen_percentile = 0.0
       person.save
     end
@@ -217,6 +217,7 @@ class User < ActiveRecord::Base
   end
 
   #Lumens are acquired only after voting or posted content receives a view
+=begin
   def update_lumens_after_vote(id)
     new_lumens = LumenConstants.votes_weight_adj
     updated_lumens = self.lumens + new_lumens
@@ -230,6 +231,7 @@ class User < ActiveRecord::Base
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :lytit_vote_id => id)
     l.save
   end
+=end
 
   def update_lumens_after_text(text_id)
     id = text_id
@@ -377,6 +379,14 @@ class User < ActiveRecord::Base
     LytitVote.where(user_id: self.id).count
   end
 
+  def total_bonuses
+    LumenValue.where("user_id = #{self.id} AND media_type = bonus").count
+  end
+
+  def total_bounties
+    LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
+  end
+
   def total_video_comments
     VenueComment.where(user_id: self.id, media_type: "video").count
   end
@@ -433,7 +443,7 @@ class User < ActiveRecord::Base
       radii["video"] = 0.0
       radii["image"] = 0.0
       radii["text"] = 0.0
-      radii["votes"] = 0.0
+      radii["bonus"] = 0.0
       radii["bounty"] = 0.0
       return radii
     else
@@ -465,7 +475,7 @@ class User < ActiveRecord::Base
       total_lumens << video_lumens
       total_lumens << image_lumens
       total_lumens << text_lumens
-      total_lumens << vote_lumens
+      total_lumens << bonus_lumens
       total_lumens << bounty_lumens
 
       min_lumen = total_lumens.min
@@ -476,7 +486,7 @@ class User < ActiveRecord::Base
       radii["video"] = (video_lumens / self.lumens) * range + radius
       radii["image"] = (image_lumens / self.lumens) * range + radius
       radii["text"] = (text_lumens / self.lumens) * range + radius
-      radii["votes"] = (vote_lumens / self.lumens) * range + radius
+      radii["bonus"] = (bonus_lumens / self.lumens) * range + radius
       radii["bounty"] = (bounty_lumens / self.lumens) * range + radius
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
@@ -496,8 +506,8 @@ class User < ActiveRecord::Base
     radius_assignment["text"]
   end
 
-  def votes_radius
-    radius_assignment["votes"]
+  def bonus_radius
+    radius_assignment["bonus"]
   end
 
   def bounty_radius
@@ -525,8 +535,8 @@ class User < ActiveRecord::Base
     rank = radius_assignment.keys.index("text") + 1
   end
 
-  def lumen_votes_contribution_rank
-    rank = radius_assignment.keys.index("votes") + 1
+  def lumen_bonus_contribution_rank
+    rank = radius_assignment.keys.index("bonus") + 1
   end
 
   def lumen_bounty_contribution_rank
