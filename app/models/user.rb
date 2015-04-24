@@ -380,7 +380,7 @@ class User < ActiveRecord::Base
   end
 
   def total_bonuses
-    LumenValue.where("user_id = #{self.id} AND media_type = bonus").count
+    LumenValue.where("user_id = #{self.id} AND media_type = ?", "bonus").count
   end
 
   def total_bounties
