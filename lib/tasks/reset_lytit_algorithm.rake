@@ -38,9 +38,27 @@ namespace :lytit do
       puts "Until next month."
     end
 
-    venue_ids = VenuePageView.uniq.pluck(:venue_id)
+    spheres = VenuePageView.uniq.pluck(:venue_id)
 
-    for v_id in venue_ids
+    for sphere in spheres
+      rank = 1
+      target_venues = Venue.where("l_sphere = #{sphere} AND page_views > 0").order("page_views desc")
+      target_venue_count = target_venues.count
+      for venue in target_venues
+        venue.popularity_rank = rank
+
+
+
+      end
+
+
+
+
+      end 
+
+
+
+
       venue = Venue.find_by_id(v_id)
       total_venue_view_count = VenuePageView.where("venue_id = #{v_id} AND consider = TRUE").count
       pop_ranking = 1
