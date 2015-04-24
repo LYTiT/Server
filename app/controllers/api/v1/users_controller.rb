@@ -184,11 +184,6 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		else
 			feed = @user.viewing_feed
-			@city = params[:city]
-			@state = params[:state]
-			@country = params[:country]
-			@lat = params[:latitude]
-			@long = params[:longitude]
 			@news = Kaminari.paginate_array(feed).page(params[:page]).per(10)
 		end
 	end

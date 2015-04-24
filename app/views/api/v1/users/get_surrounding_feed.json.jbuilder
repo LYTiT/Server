@@ -6,6 +6,10 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.venue_id entry.venue_id
   json.venue_name entry.venue.name
   json.city entry.venue.city
+  json.state entry.venue.state
+  json.country entry.venue.country
+  json.latitude entry.venue.latitude
+  json.longitude entry.venue.longitude
   json.username_private entry.username_private
   json.media_type entry.media_type
   json.media_url entry.media_url
@@ -23,7 +27,8 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.user_id entry.bounty.try(:user_id)
   json.response_received entry.bounty.try(:response_received)
   json.num_responses entry.bounty.try(:num_responses)
-  json.can_respond entry.can_user_respond?(@city, @state, @country, @lat, @long)
+
+  json.compare_type entry.venue.type
 
   json.status entry.status
 
