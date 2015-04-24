@@ -20,6 +20,7 @@ namespace :lytit do
       bounty.check_validity
     end
 
+    #End of month Lumen Game Winner's determining
     yesterday = Time.now - 1.day
     if yesterday.month != (today).month
       final_winners = LumenGameWinner.joins(:user).where("email_confirmed = TRUE").where("lumen_game_winners.created_at >= ?", yesterday.beginning_of_month).order("id desc").first(50)
@@ -35,6 +36,17 @@ namespace :lytit do
       Mailer.delay.notify_admins_of_monthly_winners(founder_1)
       Mailer.delay.notify_admins_of_monthly_winners(founder_2)
       puts "Until next month."
+    end
+
+    venue_ids = VenuePageView.uniq.pluck(:venue_id)
+
+    for v_id in venue_ids
+      venue = Venue.find_by_id(v_id)
+      total_venue_view_count = VenuePageView.where("venue_id = #{v_id} AND consider = TRUE").count
+      pop_ranking = 1
+      pop_percentile = 1
+
+
     end
 
     puts "done."

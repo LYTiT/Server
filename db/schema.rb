@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150424000213) do
+ActiveRecord::Schema.define(version: 20150424033802) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -514,6 +514,7 @@ ActiveRecord::Schema.define(version: 20150424000213) do
     t.string   "last_media_comment_type"
     t.integer  "popularity_rank"
     t.float    "popularity_percentile"
+    t.integer  "page_views",                           default: 0
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
