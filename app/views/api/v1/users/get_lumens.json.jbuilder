@@ -17,7 +17,7 @@ json.view_rank @user.lumen_views_contribution_rank
 json.video_rank @user.lumen_video_contribution_rank
 json.photo_rank @user.lumen_image_contribution_rank
 json.text_rank @user.lumen_text_contribution_rank
-json.vote_rank @user.lumen_bonus_contribution_rank
+json.bonus_rank @user.lumen_bonus_contribution_rank
 json.bounty_rank @user.lumen_bounty_contribution_rank
 
 json.view_density @user.view_density
