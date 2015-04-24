@@ -26,11 +26,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_bounties
 		@venue = Venue.find_by_id(params[:venue_id])
-		raw_bounties = Bounty.where("venue_id = ? AND validity = true AND expiration > ?", @venue.id, Time.now).order('id DESC')
+		raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
 		@bounties = []
 		if raw_bounties.count > 0
 			for bounty in raw_bounties
-				if bounty.check_validity == true
+				if bounty.check_validity == true && bounty.expiration > Time.now
 					@bounties << bounty
 				end
 			end
