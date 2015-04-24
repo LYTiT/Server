@@ -200,7 +200,7 @@ class VenueComment < ActiveRecord::Base
 
 	def can_user_respond?(details)
 		if (user_id == nil || bounty_id == nil) || details == nil
-			return false
+			return nil
 		else
 			return self.bounty.can_user_respond?(details)
 		end

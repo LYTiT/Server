@@ -185,7 +185,8 @@ class Api::V1::UsersController < ApiBaseController
 		country = params[:country]
 		lat = params[:latitude]
 		long = params[:longitude]
-		@location_details=[city, state, country, lat, long]
+		location_details=[city, state, country, lat, long]
+		puts "#{location_details}"
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		else
