@@ -199,7 +199,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def can_user_respond?(user_city, user_state, user_country, user_lat, user_long)
-		if (user_id == nil || bounty_id == nil)
+		if user_id != nil || bounty_id == nil
 			return nil
 		else
 			return self.bounty.can_user_respond?(user_city, user_state, user_country, user_lat, user_long)
