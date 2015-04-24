@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150423215434) do
+ActiveRecord::Schema.define(version: 20150424000213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -449,6 +449,7 @@ ActiveRecord::Schema.define(version: 20150423215434) do
     t.string   "venue_l_sphere"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.boolean  "consider",       default: true
   end
 
   add_index "venue_page_views", ["user_id"], name: "index_venue_page_views_on_user_id", using: :btree
@@ -511,6 +512,8 @@ ActiveRecord::Schema.define(version: 20150423215434) do
     t.string   "last_media_comment_url"
     t.datetime "latest_placed_bounty_time"
     t.string   "last_media_comment_type"
+    t.integer  "popularity_rank"
+    t.float    "popularity_percentile"
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree

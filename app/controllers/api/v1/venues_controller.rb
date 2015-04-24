@@ -179,9 +179,12 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_comments
 		@venue = Venue.find_by_id(params[:venue_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if not @venue
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
 		else
+			view = VenuePageView.new(:user_id => @user.id, :venue_id => params[:venue_id])
+			view.save
 			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND user_id IS NOT NULL").includes(:user, :groups_venue_comments).order('id desc')
 			@comments = live_comments.page(params[:page]).per(5)
 		end
