@@ -179,6 +179,7 @@ class VenueComment < ActiveRecord::Base
 
 		self.venue.decrement!(:outstanding_bounties, 1)
 
+		bounty.decrement_venue_bounty_count = false
 		bounty.validity = false
 		bounty.save
 		self.bounty_claim_acceptance_notification

@@ -58,7 +58,7 @@ class Venue < ActiveRecord::Base
   #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
   def is_hot?
     last_posted_comment_time_wrapper = self.venue_comments.order("id desc").last.created_at || 1.minute
-    if self.popularity_percentile >= 0.75 && (Time.now - last_posted_comment_time_wrapper) >= 30.minutes
+    if self.popularity_percentile >= 75.0 && (Time.now - last_posted_comment_time_wrapper) >= 30.minutes
       true
     else
       false
