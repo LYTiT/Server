@@ -189,7 +189,6 @@ class Api::V1::UsersController < ApiBaseController
 			@country = params[:country]
 			@lat = params[:latitude]
 			@long = params[:longitude]
-			@location_details=[@city, @state, @country, @lat, @long]
 			@news = Kaminari.paginate_array(feed).page(params[:page]).per(10)
 		end
 	end
