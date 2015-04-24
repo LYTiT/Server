@@ -46,7 +46,7 @@ class Venue < ActiveRecord::Base
       type = 4 #country
     elsif (name.length == 2 && address == nil) && (city == nil && postal_code.to_i == 0)
       type = 3 #state
-    elsif ((name[0..(name.length-5)] == city && country == "United States") || name == city && country != "United States") && (address == nil)
+    elsif ((name[0..(name.length-5)] == city && country == "United States") || (name == city && country != "United States")) && (address == nil)
       type = 2 #city
     else
       type = 1 #establishment

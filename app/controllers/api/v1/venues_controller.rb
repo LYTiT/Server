@@ -138,6 +138,10 @@ class Api::V1::VenuesController < ApiBaseController
 					@comment.delay.send_bounty_claim_notification
 				end
 
+				if params[:bonus_lumens] != nil
+					@user.account_new_bonus_lumens(params[:bonus_lumens])
+				end
+
 			end
 
 		end
@@ -328,8 +332,6 @@ class Api::V1::VenuesController < ApiBaseController
 				venue.has_been_voted_at = true
 				venue.save
 			end
-
-			@user.update_lumens_after_vote(v.id)
 
 			if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
 				lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)

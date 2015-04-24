@@ -279,6 +279,15 @@ class User < ActiveRecord::Base
     end
   end
 
+  def account_new_bonus_lumens(bonus)
+      b_l = self.bonus_lumens + bonus 
+      updated_lumens = self.lumens + bonus
+      update_columns(bonus_lumens: (b_l).round(4))
+      update_columns(lumens: updated_lumens.round(4))
+      l = LumenValue.new(:value => bonus.to_f, :user_id => self.id, :media_type => "bonus")
+      l.save
+  end
+
   def adjust_lumens
     adjusted_total_lumens = (self.lumens - LumenConstants.text_media_weight).round(4)
     adjusted_text_lumens = (self.text_lumens - LumenConstants.text_media_weight).round(4)
