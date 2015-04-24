@@ -446,15 +446,15 @@ ActiveRecord::Schema.define(version: 20150424000213) do
   create_table "venue_page_views", force: true do |t|
     t.integer  "user_id"
     t.integer  "venue_id"
-    t.string   "venue_l_sphere"
+    t.string   "venue_lyt_sphere"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "consider",       default: true
+    t.boolean  "consider",         default: true
   end
 
   add_index "venue_page_views", ["user_id"], name: "index_venue_page_views_on_user_id", using: :btree
   add_index "venue_page_views", ["venue_id"], name: "index_venue_page_views_on_venue_id", using: :btree
-  add_index "venue_page_views", ["venue_l_sphere"], name: "index_venue_page_views_on_venue_l_sphere", using: :btree
+  add_index "venue_page_views", ["venue_lyt_sphere"], name: "index_venue_page_views_on_venue_lyt_sphere", using: :btree
 
   create_table "venue_ratings", force: true do |t|
     t.integer  "user_id"
