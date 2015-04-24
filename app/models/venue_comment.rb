@@ -198,16 +198,6 @@ class VenueComment < ActiveRecord::Base
 		self.bounty_claim_rejection_notification
 	end
 
-	def can_user_respond?(user_city, user_state, user_country, user_lat, user_long)
-		puts "XXXXXXXXXXXXXXXXXXXXX$$$$$$$$$$$$$$$$$$$$$$$$$$VEVEVEVEVEVEVEVEVEVEVEVVCVCVCVCVCVCVCVCV>>>>>>>>>>>>>>>>>>"
-		puts "#{user_city}, #{user_state}, #{user_country}, #{user_lat}, #{user_long}"
-		if user_id != nil || bounty_id == nil
-			return nil
-		else
-			return self.bounty.can_user_respond?(user_city, user_state, user_country, user_lat, user_long)
-		end
-	end
-
 
 	def status
 		if is_response_accepted == false
@@ -232,7 +222,7 @@ class VenueComment < ActiveRecord::Base
 
 	#Bounty Response Notifications
 	def send_bounty_claim_notification
-		recipient_ids = bounty.user_ids
+		recipient_ids = BountySubscriber.where("bounty_id = #{self.bounty_id}").pluck(:user_id)
 		for recipient_id in recipient_ids
 			payload = {
 					:object_id => self.id, 
