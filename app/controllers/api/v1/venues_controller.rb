@@ -146,23 +146,17 @@ class Api::V1::VenuesController < ApiBaseController
 				#LYTiT it UP!
 				rating = venue.rating
 				v = LytitVote.new(:value => 1, :venue_id => venue.id, :user_id => @user.id, :venue_rating => rating ? rating : 0, 
-													:prime => 0, :raw_value => 1.0)
+													:prime => 0.0, :raw_value => 1.0)
 
 				if v.save
-					venue.delay.account_new_vote(vote_value, v.id)
+					venue.delay.account_new_vote(1, v.id)
 					
-					if venue.has_been_voted_at == false
-						venue.has_been_voted_at = true
-						venue.save
-					end
 
 					if LytSphere.where("venue_id = ?", venue.id).count == 0
 						lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
 						lyt_sphere.save
 					end
 
-				else
-					render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
 				end
 
 			end
