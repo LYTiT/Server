@@ -60,15 +60,15 @@ class Bounty < ActiveRecord::Base
 
 	def can_user_respond?(location_details)
 		#location_details = [city, state, country, lat, long]
-		venue_type = bounty.venue.type
+		venue_type = self.venue.type
 
-		if venue_type == "country" && location_details[2] == bounty.venue.country
+		if venue_type == "country" && location_details[2] == self.venue.country
 			result = true
-		elsif venue_type == "state" && location_details[1] == bounty.venue.state
+		elsif venue_type == "state" && location_details[1] == self.venue.state
 			result = true
-		elsif venue_type == "city" && (location_details[0] == bounty.venue.city && location_details[1] == bounty.venue.state)
+		elsif venue_type == "city" && (location_details[0] == self.venue.city && location_details[1] == self.venue.state)
 			result = true
-		elsif venue_type == "establishment" && (bounty.venue.distance_to([location_details[3], location_details[4]]) * 1609.34) <= 400 #meters
+		elsif venue_type == "establishment" && (self.venue.distance_to([location_details[3], location_details[4]]) * 1609.34) <= 400 #meters
 			result = true
 		else
 			result = false
