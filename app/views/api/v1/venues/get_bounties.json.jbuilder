@@ -11,4 +11,5 @@ json.array! @bounties do |bounty|
   	json.response_received bounty.response_received
   	json.validity bounty.validity
   	json.num_subscribed bounty.num_subscribed
+  	json.did_respond @user.did_respond?(bounty)
 end

@@ -25,6 +25,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_bounties
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@venue = Venue.find_by_id(params[:venue_id])
 		raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
 		@bounties = []
