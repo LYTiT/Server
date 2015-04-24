@@ -15,8 +15,10 @@ class Api::V1::VenuesController < ApiBaseController
 			}
 		)
 
-		venue[:is_following] = @user.vfollowing?(@venue)
-		venue[:followers_count] = @venue.followers.count
+		venue[:is_hot] = @venue.is_hot?
+		venue[:bonus_lumens] = 1
+		venue[:compare_type] = @venue.type
+
 		render json: venue
 	end
 

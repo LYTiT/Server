@@ -55,6 +55,15 @@ class Venue < ActiveRecord::Base
     return type
   end
 
+  #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
+  def is_hot?
+    if self.popularity_percentile >= 0.75 && (Time.now - self.venue_comments.order("id desc").last.created_at) >= 30.minutes
+      true
+    else
+      false    
+    end
+  end
+
 
   def menu_link=(val)
     if val.present?
