@@ -124,9 +124,33 @@ class User < ActiveRecord::Base
     venues.size > 0
   end
 
+   #Global activity feed (venue comments, bounties, bounty responses)
+  def global_feed
+    days_back = 1
+    lower_bound = 1
+    responded_to_bounty_ids = "SELECT id FROM bounties WHERE (num_responses > #{lower_bound} OR expiration > NOW()) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
+    feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
+  end 
+
   def all_user_bounties
     subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{self.id}"
     raw_bounties = Bounty.where("(user_id = ? OR id IN (#{subcribed_bounty_ids})) AND validity = true", self.id).includes(:venue).order('id DESC')
+  end
+
+  def is_subscribed_to_bounty?(target_bounty)
+    if target_bounty != nil
+      BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
+    else
+      nil
+    end
+  end
+
+  def did_respond?(target_bounty)
+    if target_bounty != nil
+      VenueComment.where("user_id = #{self.id} AND is_response = TRUE AND bounty_id = #{target_bounty.id}").count > 0 ? true : false
+    else
+      nil
+    end
   end
 
   def send_location_added_to_group_notification?(group)
@@ -164,22 +188,6 @@ class User < ActiveRecord::Base
 
   def viewing_feed
       feed = VenueComment.live_from_venues_followed_by(self).includes(:venue, :user)
-  end
-
-  #Global activity feed (venue comments, bounties, bounty responses)
-  def global_feed
-    days_back = 1
-    lower_bound = 1
-    responded_to_bounty_ids = "SELECT id FROM bounties WHERE (num_responses > #{lower_bound} OR expiration > NOW()) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
-  end
-
-  def is_subscribed_to_bounty?(target_bounty)
-    if target_bounty != nil
-      BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
-    else
-      nil
-    end
   end
 
   #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
