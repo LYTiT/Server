@@ -106,8 +106,8 @@ class Api::V1::BountiesController < ApiBaseController
 		if	params[:media_type] != nil
 			@bounty.media_type = params[:media_type]
 		end
-		if	params[:detail] != nil
-			@bounty.detail = params[:detail]
+		if	params[:comment] != nil
+			@bounty.detail = params[:comment]
 		end
 		@bounty.save
 		render json: { success: true }
