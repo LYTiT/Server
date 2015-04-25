@@ -13,7 +13,7 @@ class Announcement < ActiveRecord::Base
 	#If the update is occuring for all users simply set 'send_to_all' == TRUE in the admin tool and save
 	#the outgoing Anouncement. Otherwise do not change 'send_to_all', save the Announcement, open up
 	#the rails console, create an array of user ids of who should receive the update and run '(your announcement).target_announcement(user_ids)'
-	#followed by '(your announcement).surprise_image_background_update(update?)' which will send the announcement out.
+	#followed by '(your announcement).surprise_image_update(update)' which will send the announcement out.
 	#------------------------------------------------------------------------------------>
 
 
@@ -37,7 +37,7 @@ class Announcement < ActiveRecord::Base
 		end
 	end
 
-	def surprise_image_background_update(update?)
+	def surprise_image_update(update)
 		if self.send_to_all == true
 			audience = User.all
 		else
@@ -45,9 +45,10 @@ class Announcement < ActiveRecord::Base
 		end
 
 		if audience.count > 0
-			self.delay.send_new_announcement(audience.to_a, nil, update?)
+			self.delay.send_new_announcement(audience.to_a, nil, update)
 		end
 	end
+
 
 	def send_new_announcement(members, for_lumen_games, for_background_update)
 		for member in members
