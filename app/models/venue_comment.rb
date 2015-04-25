@@ -189,6 +189,8 @@ class VenueComment < ActiveRecord::Base
 		self.is_response_accepted = false
 		self.rejection_reason = reasoning
 		save
+
+		bounty.decrement!(:num_responses, 1)
 		
 		new_rejection_entry = BountyClaimRejectionTracker.new(:user_id => user_id, :venue_comment_id => self.id)
 		new_rejection_entry.save
