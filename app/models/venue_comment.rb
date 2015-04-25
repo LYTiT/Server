@@ -260,8 +260,8 @@ class VenueComment < ActiveRecord::Base
 	def store_new_bounty_claim_notification(payload, recipient, message)
 		notification = {
 			:payload => payload,
-			:gcm => payer.gcm_token.present?,
-			:apns => payer.push_token.present?,
+			:gcm => recipient.gcm_token.present?,
+			:apns => recipient.push_token.present?,
 			:response => notification_payload,
 			:user_id => recipient.id,
 			:read => false,
