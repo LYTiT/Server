@@ -165,7 +165,12 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def delete_comment
-		VenueComment.where(user_id: @user.id, id: params[:id]).destroy_all
+		vc = VenueComment.find_by_id(params[:id])
+		bounty = vc.bounty
+		if bounty != nil
+			bounty.decrement!(:num_responses, 1)
+		end
+		vc.destroy
 		render json: { success: true }
 	end
 
