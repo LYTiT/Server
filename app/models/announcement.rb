@@ -79,4 +79,44 @@ class Announcement < ActiveRecord::Base
 		}
 	end
 
+	#----------------------------------------------------------------------------------->
+	#We use an announcement message to relay over the url of a new request background image.
+	#First have to create an Announcement with the amazon-url of the image to be used in the 'news' field
+	#If the update is occuring for all users simply set 'send_to_all' == TRUE in the admin tool and save
+	#the outgoing Anouncement. Otherwise do not change 'send_to_all', save the Announcement, open up
+	#the rails console, create an array of user ids of who should receive the update and run '(your announcement).target_announcement(user_ids)'
+	#followed by '(your announcement).new_announcement' which will send the announcement out.
+	def send_new_announcement(members, misc, image_presence)
+		for member in members
+			payload = {
+				:object_id => self.id,
+				:type => 'announcement', 
+				:user_id => member.id,
+				:additional => misc
+				:surprise_image => image_presence
+			}
+			message = "#{self.news}"
+			notification = self.store_new_announcement(payload, member, message)
+			payload[:notification_id] = notification.id
+
+			if member.push_token
+				count = Notification.where(user_id: member.id, read: false).count
+				APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+			end
+
+			if member.gcm_token
+				gcm_payload = payload.dup
+				gcm_payload[:message] = message
+				options = {
+					:data => gcm_payload
+				}
+				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
+				request.send([member.gcm_token], options)
+			end
+		end
+	end
+	#----------------------------------------------------------------------------------->
+
+
+
 end
