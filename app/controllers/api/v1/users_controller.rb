@@ -72,11 +72,12 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_bounties
+		@user = User.find_by_authentication_token(params[:auth_token])
 		subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{params[:user_id]}"
-		raw_bounties = Bounty.where("(user_id = ? OR id IN (#{subcribed_bounty_ids})) AND validity = true", params[:user_id]).includes(:venue).order('id DESC')
+		raw_bounties = Bounty.where("(user_id = ? AND validity = true) OR (id IN (#{subcribed_bounty_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY')", params[:user_id]).includes(:venue).order('id DESC')
 		@bounties = []
 		for bounty in raw_bounties
-			if bounty.check_validity == true
+			if (bounty.user_id == @user.id && bounty.check_validity == true) || (bounty.user_id != @user.id)
 				@bounties << bounty
 			end
 		end
