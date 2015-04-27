@@ -8,7 +8,7 @@ class LumenGameWinner < ActiveRecord::Base
   	recipient = AnnouncementUser.new(user_id: id, announcement_id: congratulations.id)
   	recipient.save
   	arr = []<<user
-  	congratulations.send_new_announcement(arr, self.id)
+  	congratulations.send_new_announcement(arr, self.id, nil)
   end
 
 
