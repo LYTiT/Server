@@ -45,6 +45,15 @@ class User < ActiveRecord::Base
   after_save :notify_venue_managers
 
   
+  def surprise_image_url
+    image_url = nil
+    if image_url == nil
+      return nil
+    else
+      return image_url
+    end
+  end
+
   #clear all outstanding user lumens
   def self.global_lumen_recalibration
     LumenValue.delete_all

@@ -50,6 +50,7 @@ LytitServer::Application.routes.draw do
         get 'validate_coupon_code'
         get 'email_availability'
         get 'is_user_confirmed'
+        get 'get_surprise_image'
       end
 
       resources :announcement do

@@ -64,6 +64,11 @@ class Api::V1::UsersController < ApiBaseController
 		render 'get_map_details.json.jbuilder'
 	end
 
+	def get_surprise_image
+		@user = User.find_by_id(params[:user_id])
+		render json: { validation_message: @user.surprise_image_url }
+	end
+
 	def set_version
 		@user = User.find_by_id(params[:user_id])
 		v = params[:version]
