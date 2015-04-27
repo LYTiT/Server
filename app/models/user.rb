@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
 
   
   def surprise_image_url
-    image_url = nil
+    image_url = "http://indianapublicmedia.org/amomentofscience/files/2012/09/181_volcano.jpg"
     if image_url == nil
       return nil
     else
