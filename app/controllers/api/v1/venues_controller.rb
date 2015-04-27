@@ -191,7 +191,7 @@ class Api::V1::VenuesController < ApiBaseController
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
 		else
 			view = VenuePageView.new(:user_id => @user.id, :venue_id => params[:venue_id], :venue_lyt_sphere => @venue.l_sphere)
-			view.delay.save
+			view.save
 			@venue.increment!(:page_views, 1)
 			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND user_id IS NOT NULL").includes(:user).order('id desc')
 			@comments = live_comments.page(params[:page]).per(5)

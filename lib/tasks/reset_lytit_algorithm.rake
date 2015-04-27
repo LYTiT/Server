@@ -39,10 +39,10 @@ namespace :lytit do
     end
 
     #update venue popularity rank and percentile as determined by number of views of the venue page
-    spheres = VenuePageView.uniq.pluck(:venue_id)
+    spheres = VenuePageView.uniq.pluck(:venue_lyt_sphere)
     for sphere in spheres
       rank = 1
-      target_venues = Venue.where("l_sphere = #{sphere} AND page_views > 0").order("page_views desc")
+      target_venues = Venue.where("l_sphere = ? AND page_views > 0", sphere).order("page_views desc")
       target_venue_count = target_venues.count
 
       for venue in target_venues
