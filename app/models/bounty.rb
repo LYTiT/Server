@@ -32,7 +32,7 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def total_pages_in_view
-		(self.venue_comments-1)/12+1
+		(self.venue_comments.count-1)/12+1
 	end
 
 	def viewed_claim
