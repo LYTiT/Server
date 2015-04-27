@@ -295,7 +295,7 @@ class VenueComment < ActiveRecord::Base
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
-			count = Notification.where(user_id: user_id, read: false).count
+			count = Notification.where(user_id: user_id, read: false, deleted: false).count
 			APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
