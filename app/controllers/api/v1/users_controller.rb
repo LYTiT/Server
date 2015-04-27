@@ -65,7 +65,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_surprise_image
-		@user = User.find_by_id(params[:user_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		render json: { validation_message: @user.surprise_image_url }
 	end
 
