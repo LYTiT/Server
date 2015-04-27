@@ -7,7 +7,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.lumens = 5.0
 
 		if @user.save
-			l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => bonus)
+			l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
       		l.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
 				@user.vendor_id = @user.name
