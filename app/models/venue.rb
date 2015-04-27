@@ -77,6 +77,11 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def view(user_id)
+    view = VenuePageView.new(:user_id => user_id, :venue_id => self.id, :venue_lyt_sphere =>  self.l_sphere)
+    view.save
+  end
+
 
   def menu_link=(val)
     if val.present?

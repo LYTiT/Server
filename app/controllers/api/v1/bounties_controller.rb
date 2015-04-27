@@ -23,9 +23,15 @@ class Api::V1::BountiesController < ApiBaseController
 		@comments = @bounty.venue_comments.where("user_id IS NOT NULL AND (is_response_accepted = TRUE OR is_response_accepted IS NULL)").includes(:venue, :user, :comment_views).page(params[:page]).per(12).order("created_at desc")
 	end
 
+	def get_response_index
+		#NOTE: make sure the itemst per page in the VIEW matches the per(xx) determinate below in the get_claims_for_global_feed
+		@response = VenueComment.find_by_id(params[:venue_comment_id])
+		@bounty = @response.bounty
+	end
+
 	def get_claims_for_global_feed
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		@comments = @bounty.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user).page(params[:page]).per(12).order("created_at desc")
+		@comments = @bounty.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user, :comment_views).page(params[:page]).per(12).order("created_at desc")
 	end
 
 	def viewed_claim

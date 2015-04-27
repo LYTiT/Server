@@ -160,6 +160,15 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	#Bounty Responses Methods ----------------------------------------------------------------------------------------
+	def response_index
+		bounty.venue_comments.order("id desc").index(self)
+	end
+
+	def response_page_in_view
+		pagination_per_page = 12
+		self.response_index%pagination_per_page+self.response_index/pagination_per_page
+	end
+
 	def claim_acceptance
 		self.is_response_accepted = true
 		save

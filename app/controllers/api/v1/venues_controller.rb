@@ -115,10 +115,6 @@ class Api::V1::VenuesController < ApiBaseController
 				@comment.offset_created_at = offset_time
 				@comment.save
 
-				venue.latest_posted_comment_time = Time.now
-				venue.last_media_comment_url = @comment.media_url
-				venue.last_media_comment_type = @comment.media_type
-				venue.save
 
 				if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
 					if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
@@ -140,7 +136,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 				#if a hot venue and valid bonus post assign user bonus lumens
 				if params[:bonus_lumens] != nil
-					@user.account_new_bonus_lumens(params[:bonus_lumens])
+					@user.delay.account_new_bonus_lumens(params[:bonus_lumens])
 				end
 
 				#LYTiT it UP!
@@ -150,7 +146,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 				if v.save
 					venue.delay.account_new_vote(1, v.id)
-					
 
 					if LytSphere.where("venue_id = ?", venue.id).count == 0
 						lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
@@ -190,9 +185,8 @@ class Api::V1::VenuesController < ApiBaseController
 		if not @venue
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
 		else
-			view = VenuePageView.new(:user_id => @user.id, :venue_id => params[:venue_id], :venue_lyt_sphere => @venue.l_sphere)
-			view.save
-			@venue.increment!(:page_views, 1)
+			@venue.delay.view(@user.id)
+			@venue.delay.increment!(:page_views, 1)
 			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND user_id IS NOT NULL").includes(:user).order('id desc')
 			@comments = live_comments.page(params[:page]).per(5)
 		end

@@ -84,6 +84,7 @@ LytitServer::Application.routes.draw do
         post 'remove_bounty'
         post 'unsubscribe_from_bounty'
         get 'get_claims_for_global_feed'
+        get 'get_response_index'
       end
 
       resources :group_invitations do
