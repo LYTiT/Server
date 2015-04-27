@@ -15,4 +15,5 @@ json.array! @bounties do |bounty|
   	json.new_claims bounty.new_claims
   	json.is_subscribed 1
   	json.num_subscribed bounty.num_subscribed
+  	json.num_responses bounty.num_responses-1
 end
