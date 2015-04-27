@@ -16,5 +16,5 @@ end
 json.pagination do 
   json.current_page @comments.current_page
   json.total_pages @comments.total_pages
-  json.total_posts @comments.count
+  json.total_posts @bounty.num_responses
 end
