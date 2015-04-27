@@ -62,10 +62,9 @@ class Api::V1::BountiesController < ApiBaseController
 		@bounty = @bounty_claim.bounty
 	end
 
-	def get_bounty_claim_rejection_notificaion_details
+	def get_bounty_claim_rejection_notification_details
 		@bounty_claim = VenueComment.find_by_id(params[:bounty_id])
 		@bounty = @bounty_claim.bounty
-		@venue = @bounty_claim.bounty.venue
 	end
 
 	def get_pricing_constants
