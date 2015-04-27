@@ -161,7 +161,7 @@ class VenueComment < ActiveRecord::Base
 
 	#Bounty Responses Methods ----------------------------------------------------------------------------------------
 	def response_index
-		bounty.venue_comments.order("id desc").index(self)
+		bounty.venue_comments.order("id desc").index(self)+1
 	end
 
 	def response_page_in_view
