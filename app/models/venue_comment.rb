@@ -166,7 +166,7 @@ class VenueComment < ActiveRecord::Base
 
 	def response_page_in_view
 		pagination_per_page = 12
-		self.response_index%pagination_per_page+self.response_index/pagination_per_page
+		return self.response_index/12+1
 	end
 
 	def claim_acceptance

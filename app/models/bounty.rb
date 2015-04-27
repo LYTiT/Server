@@ -31,6 +31,10 @@ class Bounty < ActiveRecord::Base
 		return result
 	end
 
+	def total_pages_in_view
+		(self.venue_comments-1)/12+1
+	end
+
 	def viewed_claim
 		self.last_viewed_claim_time = Time.now
 		save

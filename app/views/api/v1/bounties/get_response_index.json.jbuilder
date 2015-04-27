@@ -1,4 +1,3 @@
 json.position @response.response_index
 json.current_page @response.response_page_in_view
-json.total_page @bounty.venue_comments.count-1
-json.user_id @bounty.user_id
+json.total_page @bounty.total_pages_in_view
