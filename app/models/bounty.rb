@@ -10,7 +10,9 @@ class Bounty < ActiveRecord::Base
 
 		if self.expiration.to_time < Time.now and self.validity == true
 			if self.decrement_venue_bounty_count == true
-				self.venue.decrement!(:outstanding_bounties, 1)
+				if self.venue.outstanding_bounties >= 1
+					self.venue.decrement!(:outstanding_bounties, 1)
+				end
 				self.decrement_venue_bounty_count = false
 				self.save
 			end
