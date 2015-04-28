@@ -133,12 +133,18 @@ class Venue < ActiveRecord::Base
   end
 
   #Note we adjust for aspect ratio of iPhone screen
+=begin  
   def self.venues_in_view(radius, lat, long)
     min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
     min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND (color_rating > -1.0 OR outstanding_bounties > 0)", min_lat, max_lat, min_long, max_long)
+  end
+=end 
+
+  def self.venues_in_view(sw_lat, sw_long, ne_lat, ne_long)
+    Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).where("color_rating > -1.0 OR outstanding_bounties > 0")
   end
 
   #Top 10 most viewed Venue Comments in an viewed area
