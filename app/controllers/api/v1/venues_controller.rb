@@ -153,7 +153,7 @@ class Api::V1::VenuesController < ApiBaseController
 					venue.delay.account_new_vote(1, v.id)
 
 					if LytSphere.where("venue_id = ?", venue.id).count == 0
-						LytSphere.delay.(venue)
+						LytSphere.delay.create_new_sphere(venue)
 					end
 
 				end
