@@ -31,7 +31,7 @@ class Api::V1::BountiesController < ApiBaseController
 
 	def get_claims_for_global_feed
 		@bounty = Bounty.find_by_id(params[:bounty_id])
-		@comments = @bounty.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user, :comment_views).page(params[:page]).per(4).order("created_at desc")
+		@comments = @bounty.venue_comments.where("user_id IS NOT NULL").includes(:venue, :user, :comment_views).page(params[:page]).per(12).order("created_at desc")
 	end
 
 	def viewed_claim

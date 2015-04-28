@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
 
   
   def surprise_image_url
-    image_url = nil
+    image_url = "http://www.hdwallpapersimages.com/wp-content/uploads/2014/01/Winter-Tiger-Wild-Cat-Images.jpg"
     if image_url == nil
       return nil
     else
