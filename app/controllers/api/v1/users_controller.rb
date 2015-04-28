@@ -71,7 +71,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def set_version
-		@user = User.find_by_id(params[:user_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		v = params[:version]
 		if v.count(".") == 1
 			v = v + ".0"
@@ -101,7 +101,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_comments
-		@user = User.find_by_id(params[:user_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		else
@@ -110,7 +110,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_groups
-		@user = User.find_by_id(params[:user_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if not @user
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["User not found"] } }, :status => :not_found
 		end
@@ -148,7 +148,6 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def can_claim_bounties
-		@user = User.find_by_id(params[:user_id])
 		render json: { bool_response: @user.can_claim_bounties? } 
 	end
 
