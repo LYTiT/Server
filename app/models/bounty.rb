@@ -59,7 +59,7 @@ class Bounty < ActiveRecord::Base
 	end
 
 	def is_subscribed?(target_user)
-		BountySubscriber.where("bounty_id = ? and user_id = ?", self.id, target_user.id).count > 0 ? true : false
+		BountySubscriber.where("bounty_id = ? and user_id = ?", self.id, target_user.id).first ? true : false
 	end
 
 	def num_subscribed

@@ -156,7 +156,7 @@ class User < ActiveRecord::Base
 
   def did_respond?(target_bounty)
     if target_bounty != nil
-      VenueComment.where("user_id = #{self.id} AND is_response = TRUE AND bounty_id = #{target_bounty.id}").count > 0 ? true : false
+      VenueComment.where("user_id = #{self.id} AND is_response = TRUE AND bounty_id = #{target_bounty.id}").first ? true : false
     else
       nil
     end
