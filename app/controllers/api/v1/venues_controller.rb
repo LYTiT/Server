@@ -15,8 +15,13 @@ class Api::V1::VenuesController < ApiBaseController
 			}
 		)
 
-		venue[:is_hot] = @venue.is_hot?
-		venue[:bonus_lumens] = 1
+		if @venue.is_hot? == true
+			venue[:is_hot] = true
+			venue[:bonus_lumens] = 1
+		else
+			venue[:is_hot] = false
+			venue[:bonus_lumens] = nil
+		end
 		venue[:compare_type] = @venue.type
 
 		render json: venue
@@ -148,8 +153,7 @@ class Api::V1::VenuesController < ApiBaseController
 					venue.delay.account_new_vote(1, v.id)
 
 					if LytSphere.where("venue_id = ?", venue.id).count == 0
-						lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
-						lyt_sphere.save
+						LytSphere.delay.(venue)
 					end
 
 				end
