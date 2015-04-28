@@ -9,6 +9,7 @@ class Api::V1::UsersController < ApiBaseController
 			l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
       		l.save
       		@user.lumens = 5.0
+      		@user.bonus_lumens = 5.0
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
 				@user.vendor_id = @user.name
 				@user.name = "lyt_"+(@user.id*2+Time.now.day).to_s(16)
