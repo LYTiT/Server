@@ -1,3 +1,5 @@
-json.venue_name @venue.name
-json.bounty_id @bounty.id
-json.bounty_lumen_reward @bounty.lumen_reward*0.9
+json.set! :bounty do
+  json.set! :venue_name, @bounty.venue.name
+  json.set! :created_at, @bounty.created_at
+  json.set! :lumen_reward, @bounty.lumen_reward
+end

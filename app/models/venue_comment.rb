@@ -176,15 +176,17 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("bounty_id = #{self.bounty_id} AND id != #{self.id}").update_all(is_response_accepted: false)
 
 		reward = bounty.lumen_reward
-		bounty_lumen_value = LumenValue.new(:value => reward*(0.9), :user_id => user.id, :bounty_id => bounty.id)
-		user.bounty_lumens = (reward*(0.9)).round(4)
-		user.lumens = (user.lumens + reward*(0.9)).round(4) #10% is given back to the bounty issuer as a sign of good faith
-		bounty_lumen_value.save
+		bounty_lumen_value = LumenValue.new(:value => (reward-0.1), :user_id => user.id, :bounty_id => bounty.id)
+		user.bounty_lumens = (user.bounty_lumens + (reward-0.1)).round(4)
+		user.lumens = (user.lumens + (reward-0.1)).round(4) #0.1 is given back to the bounty issuer as a sign of good faith for accepting
 		user.save
+		bounty_lumen_value.save
 
 		bounty_issuer = self.bounty.user
-		bounty_issuer.lumens = bounty_issuer.lumens + reward*(0.1)
+		bounty_lumen_value_2 = LumenValue.new(:value => 0.1, :user_id => bounty_issuer.id, :media_type => "bonus")
+		bounty_issuer.lumens = bounty_issuer.lumens + (0.1)
 		bounty_issuer.save
+		bounty_lumen_value_2.save
 
 		self.venue.decrement!(:outstanding_bounties, 1)
 
