@@ -143,7 +143,7 @@ class User < ActiveRecord::Base
 
   def all_user_bounties
     subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{self.id}"
-    raw_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY') OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
+    raw_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND (NOW() <= expiration OR ((NOW() - created_at) <= INTERVAL '1 DAY' AND num_responses > 0))) OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
   end
 
   def is_subscribed_to_bounty?(target_bounty)
