@@ -37,7 +37,7 @@ RailsAdmin.config do |config|
       include_all_fields
     end
   end
-
+=begin
   config.model 'MenuSection' do
     nested do
       configure :menu_section_items do
@@ -47,7 +47,7 @@ RailsAdmin.config do |config|
       end
     end
   end
-
+=end
   config.model 'MenuSectionItem' do
     visible false
   end

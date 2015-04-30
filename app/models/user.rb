@@ -4,7 +4,7 @@ class User < ActiveRecord::Base
   attr_accessor :password_confirmation
 
   validates_uniqueness_of :name, :case_sensitive => false
-  validates :name, presence: true
+  validates :name, presence: true, format: { with: /\A(^@?(\w){1,40}$)\Z/i}
   validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
   validates :venues, absence: true, if: Proc.new {|user| user.role.try(:name) != "Venue Manager"}
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
@@ -12,33 +12,56 @@ class User < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
-  has_many :groups_users, :dependent => :destroy
-  has_many :groups, through: :groups_users
   has_many :flagged_comments, :dependent => :destroy
   has_many :venues
-  
-  has_many :relationships, foreign_key: "follower_id", dependent: :destroy
-  has_many :followed_users, through: :relationships, source: :followed
-  has_many :reverse_relationships, foreign_key: "followed_id", class_name: "Relationship", dependent: :destroy
-  has_many :followers, through: :reverse_relationships, source: :follower
-  
-  has_many :venue_relationships, foreign_key: "ufollower_id", dependent: :destroy
-  has_many :followed_venues, through: :venue_relationships, source: :vfollowed
-
-  has_many :reverse_group_invitations, foreign_key: "invited_id", class_name: "GroupInvitation",  dependent: :destroy
-  has_many :igroups, through: :reverse_group_invitations, source: :igroup
 
   has_many :lumen_values, :dependent => :destroy
 
   has_many :announcement_users, :dependent => :destroy
   has_many :announcements, through: :announcement_users
 
+  has_many :temp_posting_housings, :dependent => :destroy
+
+  has_many :bounties, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token
   before_save :generate_confirmation_token_for_venue_manager
+  before_save :generate_user_confirmation_token
   after_save :notify_venue_managers
+
   
+  def surprise_image_url
+    image_url = nil
+    if image_url == nil
+      return nil
+    else
+      return image_url
+    end
+  end
+
+  #clear all outstanding user lumens
+  def self.global_lumen_recalibration
+    LumenValue.delete_all
+    all = User.all
+    for person in all
+      person.lumens = 5.0
+      person.video_lumens = 0.0
+      person.image_lumens = 0.0
+      person.text_lumens = 0.0
+      person.bonus_lumens = 5.0
+      person.lumen_percentile = 0.0
+      person.total_views = 0
+      person.lumen_notification = 0.0
+      person.save
+    end
+  end
+
+  def send_email_validation
+    Mailer.delay.email_validation(self)
+  end
+
   # This is to deal with S3.
   def email_with_id
     "#{email}-#{id}"
@@ -46,6 +69,12 @@ class User < ActiveRecord::Base
 
   def set_version(v)
     update_columns(version: v)
+  end
+
+  def validate_email
+    self.email_confirmed = true
+    self.confirmation_token = nil
+    self.save
   end
 
   def toggle_group_notification(group_id, enabled)
@@ -93,135 +122,32 @@ class User < ActiveRecord::Base
     venues.size > 0
   end
 
-  def send_location_added_to_group_notification?(group)
-    self.notify_location_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
+   #Global activity feed (venue comments, bounties, bounty responses)
+  def global_feed
+    days_back = 1
+    responded_to_bounty_ids = "SELECT id FROM bounties WHERE (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
+    feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
+  end 
+
+  def total_user_bounties
+    subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{self.id}"
+    total_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND (NOW() <= expiration OR ((NOW() - created_at) <= INTERVAL '1 DAY' AND num_responses > 0))) OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
   end
 
-  def send_event_added_to_group_notification?(group)
-    self.notify_events_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
-  end
-
-  def following?(other_user)
-    relationships.find_by(followed_id: other_user.id) ? true : false
-  end
-  #follows a user
-  def follow!(other_user)
-    relationships.create!(followed_id: other_user.id)
-  end
-
-  def unfollow!(other_user)
-    relationships.find_by(followed_id: other_user.id).destroy
-  end
-
-  #follows a venue
-  def vfollow!(venue)
-    venue_relationships.create!(vfollowed_id: venue.id)
-  end
-
-  def vunfollow!(venue)
-    venue_relationships.find_by(vfollowed_id: venue.id).destroy
-  end
-
-  def vfollowing?(venue)
-    venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
-  end
-
-  def userfeed
-    ufeed = VenueComment.from_users_followed_by(self)
-    type = Array.new(ufeed.count, 1)
-    ufeed.zip(type.to_a)
-  end
-
-  def venuefeed
-    vfeed = VenueComment.from_venues_followed_by(self)
-    type = Array.new(vfeed.count, 0)
-    vfeed.zip(type.to_a)
-  end
-
-  #2D array containing arrays composed of a venue comment and a flag to determine the comments source (from followed user or venue)
-  def totalfeed
-    feed = (userfeed + venuefeed)
-    feed_sorted = feed.sort_by{|x,y| x.created_at}.reverse
-  end
-
-  #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
-  def followers_not_in_group(users, group_id)
-    target_group = Group.find_by_id(group_id)
-    return users if users.length <= 1
-
-    pivot_index = (users.length / 2).to_i
-    pivot_value = users[pivot_index]
-    users.delete_at(pivot_index)
-
-    lesser = Array.new
-    greater = Array.new
-
-    users.each do |x|
-      if (target_group.is_user_member?(x.id) == false) && (x.invited?(group_id) == false)
-        if x.name.upcase <= pivot_value.name.upcase
-          lesser << x
-        else
-          greater << x
-        end
-      end
-    end
-
-    if (target_group.is_user_member?(pivot_value.id) == false) && (pivot_value.invited?(group_id) == false)
-      return followers_not_in_group(lesser, group_id) + [pivot_value] + followers_not_in_group(greater, group_id)
+  def is_subscribed_to_bounty?(target_bounty)
+    if target_bounty != nil
+      BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
     else
-      return followers_not_in_group(lesser, group_id) + followers_not_in_group(greater, group_id)
+      nil
     end
-
   end
 
-  #Returns list of Groups user is a member of which ar linkable to a Venue Page (either linkable xor admin of)
-  def linkable_groups(user_groups)
-    return user_groups if user_groups.length <= 1
-
-    pivot_index = (user_groups.length / 2).to_i
-    pivot_value = user_groups[pivot_index]
-    user_groups.delete_at(pivot_index)
-
-    lesser = Array.new
-    greater = Array.new
-
-    user_groups.each do |x|
-      if (x.can_link_venues == true) || (x.is_user_admin?(self.id) == true)
-        if x.name.upcase <= pivot_value.name.upcase
-          lesser << x
-        else
-          greater << x
-        end
-      end
-    end
-
-    if (pivot_value.can_link_venues == true) || (pivot_value.is_user_admin?(self.id) == true)
-      return linkable_groups(lesser) + [pivot_value] + linkable_groups(greater)
+  def did_respond?(target_bounty)
+    if target_bounty != nil
+      VenueComment.where("user_id = #{self.id} AND is_response = TRUE AND bounty_id = #{target_bounty.id}").first ? true : false
     else
-      return linkable_groups(lesser) + linkable_groups(greater)
+      nil
     end
-
-  end
-
-
-  #has the user been invited to a the Group "group"?
-  def invited?(group_id)
-    reverse_group_invitations.find_by(igroup_id: group_id) ? true : false
-  end
-
-  #Lumens are acquired only after voting or posted content receives a view
-  def update_lumens_after_vote(id)
-    new_lumens = LumenConstants.votes_weight_adj
-    updated_lumens = self.lumens + new_lumens
-
-    vt_l = self.vote_lumens
-    update_columns(vote_lumens: (vt_l + new_lumens).round(4))
-
-    update_columns(lumens: updated_lumens)
-    update_lumen_percentile
-
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :lytit_vote_id => id)
-    l.save
   end
 
   def update_lumens_after_text(text_id)
@@ -233,13 +159,18 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: (t_l + new_lumens).round(4))
 
     update_columns(lumens: updated_lumens)
-    update_lumen_percentile
+    #update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => "text")
     l.save
   end
 
   def update_lumens_after_view(comment)
+    if self.adjusted_view_discount == nil || self.adjusted_view_discount > LumenConstants.views_weight_adj
+      self.adjusted_view_discount = LumenConstants.views_weight_adj
+      save
+    end
+
     id = comment.id
     time = Time.now
     comment_time = comment.created_at
@@ -247,7 +178,7 @@ class User < ActiveRecord::Base
     adjusted_view = 2.0 ** (-time_delta)
     
     previous_lumens = self.lumens
-    new_lumens = comment.consider*(comment.weight*adjusted_view*LumenConstants.views_weight_adj).round(4)
+    new_lumens = comment.consider*(comment.weight*adjusted_view*adjusted_view_discount).round(4)
     updated_lumens = previous_lumens + new_lumens
 
     if comment.media_type == 'video'
@@ -259,12 +190,21 @@ class User < ActiveRecord::Base
     end
 
     update_columns(lumens: updated_lumens.round(4))
-    update_lumen_percentile
+    #update_lumen_percentile
 
     if new_lumens > 0
       l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => comment.media_type)
       l.save
     end
+  end
+
+  def account_new_bonus_lumens(bonus)
+      b_l = self.bonus_lumens + bonus 
+      updated_lumens = self.lumens + bonus
+      update_columns(bonus_lumens: (b_l).round(4))
+      update_columns(lumens: updated_lumens.round(4))
+      l = LumenValue.new(:value => bonus.to_f, :user_id => self.id, :media_type => "bonus")
+      l.save
   end
 
   def adjust_lumens
@@ -275,38 +215,10 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: adjusted_text_lumens)
   end
 
-   #Lumen Calculation########################################################################################
-  def populate_lumens()
-    comments = self.venue_comments
-    v_lumens = 0
-    i_lumens = 0
-    t_lumens = 0
-    vt_lumens = self.total_votes*LumenConstants.votes_weight_adj
-    
-    lumens = vt_lumens 
-
-    comments.each do |comment|
-      if comment.media_type == 'video'
-        v_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      elsif comment.media_type == 'image'
-        i_lumens += comment.consider*(comment.weight*comment.adj_views*LumenConstants.views_weight_adj)
-      else
-        t_lumens += comment.consider*(comment.weight)
-      end
-    end
-
-      update_columns(video_lumens: v_lumens.round(4))
-      update_columns(image_lumens: i_lumens.round(4))
-      update_columns(text_lumens: t_lumens.round(4))
-      update_columns(vote_lumens: vt_lumens.round(4))
-
-      update_columns(lumens: (v_lumens + i_lumens + t_lumens + vt_lumens).round(4))
-  end
-
+#====================================================================================================================================================================>
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
-   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day)
-   lumens_of_date.inject(0) { |sum, l| sum + l.value}
+   lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
   end
 
   def weekly_lumens
@@ -321,10 +233,10 @@ class User < ActiveRecord::Base
     weekly_lumens = [lumens_on_date(t_1).round(4), lumens_on_date(t_2).round(4), lumens_on_date(t_3).round(4), lumens_on_date(t_4).round(4), lumens_on_date(t_5).round(4), lumens_on_date(t_6).round(4), lumens_on_date(t_7).round(4)]
   end
 
-  #Constructs array of color values which determine which coloor to assign to particular weekly Lumen value on the front-end.
-  def weekly_lumen_color_values(weekly_lumens)
+  #Constructs array of color values which determine which color to assign to particular weekly Lumen value on the front-end.
+  def weekly_lumen_color_values(weekly_lumens_entries)
     color_values = [] 
-    weekly_lumens.each {|l| color_values << color_value_assignment(l)}
+    weekly_lumens_entries.each {|l| color_values << color_value_assignment(l)}
     color_values
   end
 
@@ -335,15 +247,15 @@ class User < ActiveRecord::Base
       0
     elsif rvalue.between?(0.00001, 2.0)
       1
-    elsif rvalue.between?(2.00001, 7.0)
+    elsif rvalue.between?(2.00001, 3.0)
       2
-    elsif rvalue.between?(7.00001, 16.0)
+    elsif rvalue.between?(3.00001, 4.0)
       3
-    elsif rvalue.between?(16.00001, 32.0)
+    elsif rvalue.between?(4.00001, 5.0)
       4
-    elsif rvalue.between?(32.00001, 64.0)
+    elsif rvalue.between?(5.00001, 6.0)
       5
-    elsif rvalue.between?(64.00001, 128.0)
+    elsif rvalue.between?(6.00001, 7.0)
       6
     else 
       7
@@ -354,40 +266,14 @@ class User < ActiveRecord::Base
   def lumen_package
     package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
   end
-
-  #Extract Lumen Values for each user by instance and create according Lume Value objects. This is to backfill historical Lumen values.#########################
-  def populate_lumen_values 
-    votes = LytitVote.where(user_id: self.id)
-    for vote in votes
-      l = LumenValue.new(:value => LumenConstants.votes_weight_adj, :user_id => self.id, :lytit_vote_id => vote.id)
-      l.created_at = vote.created_at
-      l.save
-    end
-
-    comments = self.venue_comments
-    for comment in comments
-      if comment.media_type == 'text' and comment.consider? == 1
-        l2 = LumenValue.new(:value => comment.weight, :user_id => self.id, :venue_comment_id => comment.id, :media_type => 'text')
-        l2.created_at = comment.created_at
-        l2.save
-      else
-        views = CommentView.where("venue_comment_id = ? and user_id != ?", comment.venue_id, self.id)
-        for view in views
-          adjusted_views = 2 ** ((- (view.created_at - comment.created_at) / 1.minute) / (LumenConstants.views_halflife))
-          l3 = LumenValue.new(:value => (comment.consider*(comment.weight*adjusted_views*LumenConstants.views_weight_adj)).round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => comment.media_type)
-          l3.created_at = view.created_at
-          l3.save
-        end
-      end
-    end
-  end
+#===================================================================================================================================================================> 
 
   def lumen_percentile_calculation
     all_lumens = User.all.map { |user| user.lumens}
     percentile = all_lumens.percentile_rank(self.lumens)
   end
 
-  ############################################################################################################################################################
+  
   def update_lumen_percentile
     if self.lumens == 0
       update_columns(lumen_percentile: 0)
@@ -398,9 +284,23 @@ class User < ActiveRecord::Base
     end
   end
 
+  def lumen_rank #we update the percentile everytime we check rank
+    total_number = User.count
+    rank = User.where("lumens > #{self.lumens}").count+1
+    self.lumen_percentile = 100.0*(total_number.to_f-rank.to_f)/total_number.to_f
+    self.save
+  end
 
   def total_votes
     LytitVote.where(user_id: self.id).count
+  end
+
+  def total_bonuses
+    LumenValue.where(user_id: self.id, media_type: "bonus").count
+  end
+
+  def total_bounties
+    LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
   end
 
   def total_video_comments
@@ -415,12 +315,6 @@ class User < ActiveRecord::Base
     VenueComment.where(user_id: self.id, media_type: "text").count
   end
 
-  def populate_total_views
-    count = 0
-    comments = VenueComment.where(user_id: self.id, media_type: "video").append(VenueComment.where(user_id: self.id, media_type: "image")).flatten!
-    comments.each {|comment| count += comment.total_views}
-    update_columns(total_views: count)
-  end
 
   def update_total_views
     current = total_views
@@ -459,27 +353,29 @@ class User < ActiveRecord::Base
       radii["video"] = 0.0
       radii["image"] = 0.0
       radii["text"] = 0.0
-      radii["votes"] = 0.0
+      radii["bonus"] = 0.0
+      radii["bounty"] = 0.0
       return radii
     else
-      perc = lumen_percentile
+      perc = lumen_percentile || 91.0
+
       if perc.between?(0, 10)
         span = 100
-      elsif perc.between?(11, 20)
+      elsif perc.between?(11.0, 20.0)
         span = 105
-      elsif perc.between?(21, 30)
+      elsif perc.between?(21.0, 30.0)
         span = 110
-      elsif perc.between?(31, 40)
+      elsif perc.between?(31.0, 40.0)
         span = 115
-      elsif perc.between?(41, 50)
-        span = 120#120
-      elsif perc.between?(51, 60)
+      elsif perc.between?(41.0, 50.0)
+        span = 120
+      elsif perc.between?(51.0, 60.0)
         span = 125
-      elsif perc.between?(61, 70)
+      elsif perc.between?(61.0, 70.0)
         span = 135
-      elsif perc.between?(71, 80)
+      elsif perc.between?(71.0, 80.0)
         span = 140 
-      elsif perc.between?(81, 90)
+      elsif perc.between?(81.0, 90.0)
         span = 145
       else
         span = 150
@@ -489,38 +385,63 @@ class User < ActiveRecord::Base
       total_lumens << video_lumens
       total_lumens << image_lumens
       total_lumens << text_lumens
-      total_lumens << vote_lumens
+      total_lumens << bonus_lumens
+      total_lumens << bounty_lumens
 
       min_lumen = total_lumens.min
 
       range = (span - 65)/ (1 + (min_lumen / self.lumens))
       radius = span - range
 
-      radii["video"] = (video_lumens / self.lumens) * range + radius
-      radii["image"] = (image_lumens / self.lumens) * range + radius
-      radii["text"] = (text_lumens / self.lumens) * range + radius
-      radii["votes"] = (vote_lumens / self.lumens) * range + radius
+      radii["video"] = ((video_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((video_lumens / self.lumens) * range + radius)
+      radii["image"] = ((image_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((image_lumens / self.lumens) * range + radius)
+      radii["text"] = ((text_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((text_lumens / self.lumens) * range + radius)
+      radii["bonus"] = ((bonus_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((bonus_lumens / self.lumens) * range + radius)
+      radii["bounty"] = ((bounty_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((bounty_lumens / self.lumens) * range + radius)
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
       return radii2
     end
   end
 
-
   def video_radius
-    radius_assignment["video"]
+    if video_lumens == 0
+      0
+    else
+      radius_assignment["video"]
+    end
   end
 
   def image_radius
-    radius_assignment["image"]
+    if image_lumens == 0
+      0
+    else
+      radius_assignment["image"]
+    end
   end
   
   def text_radius
-    radius_assignment["text"]
+    if text_lumens == 0
+      0
+    else
+      radius_assignment["text"]
+    end
   end
 
-  def votes_radius
-    radius_assignment["votes"]
+  def bonus_radius
+    if bonus_lumens == 0
+      0
+    else
+      radius_assignment["bonus"]
+    end
+  end
+
+  def bounty_radius
+    if bounty_lumens == 0
+      0
+    else
+      radius_assignment["bounty"]
+    end
   end
 
   def views_radius
@@ -544,8 +465,12 @@ class User < ActiveRecord::Base
     rank = radius_assignment.keys.index("text") + 1
   end
 
-  def lumen_votes_contribution_rank
-    rank = radius_assignment.keys.index("votes") + 1
+  def lumen_bonus_contribution_rank
+    rank = radius_assignment.keys.index("bonus") + 1
+  end
+
+  def lumen_bounty_contribution_rank
+    rank = radius_assignment.keys.index("bounty") + 1
   end 
 
   def lumen_views_contribution_rank
@@ -566,60 +491,28 @@ class User < ActiveRecord::Base
     end
   end
 
-  #For posting by parts implementation
-  def posting_kill_request
-    last_comments = self.venue_comments.order('id ASC').to_a.pop(5)
-    last_comments.reverse!
-    pos = 0
-    rescued = false
+  #Sanity check if user is permited to claim Bounties based on his rejection history
+  def can_claim_bounties?
+    time_out = 1.0 #days
+    rejection_rate = 0.5
 
-    for last_comment in last_comments
+    if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
+      return false
+    else
+      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", Time.now, (Time.now - 7.days)).count
 
-      if last_comment.venue_id == 14002
-        
-        #This is probably redundent however just to make sure that cases such as simultaneous photo and comment saving are accounted for.
-        for c in last_comments[pos..last_comments.length] 
-          if last_comment.session != nil and last_comment.session == c.session
-            if c.venue_id != 14002 #c must be the text
-              c.media_type = last_comment.media_type
-              c.media_url = last_comment.media_url
-              c.save
-              last_comment.delete
-              rescued = true
-            else
-              if c.media_type == "text" #last_comment is media
-                c.venue_id = c.views
-                c.views = 0
-                c.comment = nil
-                c.media_type = last_comment.media_type
-                c.media_url = last_comment.media_url
-                c.save
-                last_comment.delete
-                rescued = true
-              else #last_comment is text that is blank
-                c.venue_id = last_comment.views
-                c.save
-                last_comment.delete
-                rescued = true
-              end
-            end
-          end
-        end
-
-        if rescued == false
-          if (last_comment.media_type != "text") && (((Time.now - last_comment.created_at) / 1.minute) >= 1.0)
-            last_comment.delete
-          end
-
-          if (last_comment.media_type == "text") && (((Time.now - last_comment.created_at) / 1.minute) > 5.0)
-            last_comment.delete
-          end
-        end
-
+      if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
+        self.can_claim_bounty = false
+        BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).update_all(active: false)
+      else
+        self.can_claim_bounty = true
       end
-      pos = pos + 1
-    end
 
+      save
+      return self.can_claim_bounty
+
+    end
   end
 
 
@@ -630,6 +523,12 @@ class User < ActiveRecord::Base
       if role.try(:name) == "Venue Manager"
         self.confirmation_token = SecureRandom.hex
       end    
+    end
+  end
+
+  def generate_user_confirmation_token
+    if self.confirmation_token.blank?
+      self.confirmation_token = SecureRandom.hex
     end
   end
 

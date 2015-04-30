@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141212074856) do
+ActiveRecord::Schema.define(version: 20150430070028) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,7 +32,56 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.boolean  "send_to_all", default: false
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.string   "title"
   end
+
+  create_table "bounties", force: true do |t|
+    t.float    "lumen_reward"
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "validity",                     default: true
+    t.string   "media_type"
+    t.string   "detail"
+    t.boolean  "response_received",            default: false
+    t.datetime "expiration"
+    t.datetime "last_viewed_claim_time"
+    t.integer  "venue_comment_id"
+    t.integer  "num_responses",                default: 0
+    t.boolean  "decrement_venue_bounty_count", default: true
+  end
+
+  add_index "bounties", ["user_id"], name: "index_bounties_on_user_id", using: :btree
+  add_index "bounties", ["venue_id"], name: "index_bounties_on_venue_id", using: :btree
+
+  create_table "bounty_claim_rejection_trackers", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "venue_comment_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "active",           default: true
+  end
+
+  add_index "bounty_claim_rejection_trackers", ["user_id"], name: "index_bounty_claim_rejection_trackers_on_user_id", using: :btree
+  add_index "bounty_claim_rejection_trackers", ["venue_comment_id"], name: "index_bounty_claim_rejection_trackers_on_venue_comment_id", using: :btree
+
+  create_table "bounty_pricing_constants", force: true do |t|
+    t.string   "constant_name"
+    t.float    "constant_value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "bounty_subscribers", force: true do |t|
+    t.integer  "bounty_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "bounty_subscribers", ["bounty_id"], name: "index_bounty_subscribers_on_bounty_id", using: :btree
+  add_index "bounty_subscribers", ["user_id"], name: "index_bounty_subscribers_on_user_id", using: :btree
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -44,6 +93,23 @@ ActiveRecord::Schema.define(version: 20141212074856) do
   add_index "comment_views", ["user_id"], name: "index_comment_views_on_user_id", using: :btree
   add_index "comment_views", ["venue_comment_id", "user_id"], name: "index_comment_views_on_venue_comment_id_and_user_id", unique: true, using: :btree
   add_index "comment_views", ["venue_comment_id"], name: "index_comment_views_on_venue_comment_id", using: :btree
+
+  create_table "coupon_claimers", force: true do |t|
+    t.integer  "coupon_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "coupon_claimers", ["coupon_id"], name: "index_coupon_claimers_on_coupon_id", using: :btree
+
+  create_table "coupons", force: true do |t|
+    t.string   "code"
+    t.float    "lumen_gift"
+    t.integer  "supply"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -60,27 +126,6 @@ ActiveRecord::Schema.define(version: 20141212074856) do
   end
 
   add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
-
-  create_table "events", force: true do |t|
-    t.string   "name"
-    t.text     "description"
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.text     "location_name"
-    t.text     "latitude"
-    t.text     "longitude"
-    t.integer  "venue_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "events_groups", force: true do |t|
-    t.integer  "event_id"
-    t.integer  "group_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "exported_data_csvs", force: true do |t|
     t.datetime "created_at"
@@ -101,78 +146,24 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.datetime "updated_at"
   end
 
-  create_table "flagged_events", force: true do |t|
-    t.integer  "event_id"
-    t.integer  "user_id"
-    t.text     "message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "flagged_groups", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "group_id"
-    t.text     "message"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "flagged_groups", ["group_id"], name: "index_flagged_groups_on_group_id", using: :btree
-  add_index "flagged_groups", ["user_id"], name: "index_flagged_groups_on_user_id", using: :btree
-
-  create_table "group_invitations", force: true do |t|
-    t.integer  "igroup_id"
-    t.integer  "invited_id"
-    t.integer  "host_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "active",     default: true
-  end
-
-  add_index "group_invitations", ["host_id"], name: "index_group_invitations_on_host_id", using: :btree
-  add_index "group_invitations", ["igroup_id", "invited_id"], name: "index_group_invitations_on_igroup_id_and_invited_id", unique: true, using: :btree
-  add_index "group_invitations", ["igroup_id"], name: "index_group_invitations_on_igroup_id", using: :btree
-  add_index "group_invitations", ["invited_id"], name: "index_group_invitations_on_invited_id", using: :btree
-
-  create_table "groups", force: true do |t|
-    t.string   "name"
-    t.string   "description"
-    t.boolean  "is_public"
-    t.string   "password"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.datetime "deleted_at"
-    t.boolean  "can_link_events", default: true
-    t.boolean  "can_link_venues", default: true
-  end
-
-  add_index "groups", ["deleted_at"], name: "index_groups_on_deleted_at", using: :btree
-
-  create_table "groups_users", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "group_id"
-    t.boolean  "is_admin",          default: false
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "notification_flag", default: true
-  end
-
-  create_table "groups_venues", force: true do |t|
-    t.integer  "group_id"
-    t.integer  "venue_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "user_id"
-  end
-
-  add_index "groups_venues", ["user_id"], name: "index_groups_venues_on_user_id", using: :btree
-
   create_table "lumen_constants", force: true do |t|
     t.string   "constant_name"
     t.float    "constant_value"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "lumen_game_winners", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "winning_validation_code"
+    t.string   "paypal_info"
+    t.boolean  "payment_made"
+    t.boolean  "email_sent"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "lumen_game_winners", ["user_id"], name: "index_lumen_game_winners_on_user_id", using: :btree
 
   create_table "lumen_values", force: true do |t|
     t.float    "value"
@@ -182,6 +173,7 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.integer  "lytit_vote_id"
     t.integer  "venue_comment_id"
     t.string   "media_type"
+    t.integer  "bounty_id"
   end
 
   add_index "lumen_values", ["user_id"], name: "index_lumen_values_on_user_id", using: :btree
@@ -243,48 +235,57 @@ ActiveRecord::Schema.define(version: 20141212074856) do
 
   add_index "menu_sections", ["venue_id"], name: "index_menu_sections_on_venue_id", using: :btree
 
-  create_table "relationships", force: true do |t|
-    t.integer  "follower_id"
-    t.integer  "followed_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "relationships", ["followed_id"], name: "index_relationships_on_followed_id", using: :btree
-  add_index "relationships", ["follower_id", "followed_id"], name: "index_relationships_on_follower_id_and_followed_id", unique: true, using: :btree
-  add_index "relationships", ["follower_id"], name: "index_relationships_on_follower_id", using: :btree
-
   create_table "roles", force: true do |t|
     t.string "name"
   end
 
-  create_table "users", force: true do |t|
-    t.datetime "created_at",                                                    null: false
-    t.datetime "updated_at",                                                    null: false
-    t.string   "email",                                                         null: false
-    t.string   "encrypted_password",              limit: 128,                   null: false
-    t.string   "confirmation_token",              limit: 128
-    t.string   "remember_token",                  limit: 128,                   null: false
-    t.string   "name"
-    t.string   "authentication_token"
-    t.boolean  "notify_location_added_to_groups",             default: true
-    t.boolean  "notify_events_added_to_groups",               default: true
-    t.text     "push_token"
-    t.boolean  "notify_venue_added_to_groups",                default: true
-    t.integer  "role_id"
-    t.boolean  "username_private",                            default: false
-    t.string   "gcm_token"
-    t.float    "lumens",                                      default: 0.0
-    t.float    "lumen_percentile"
-    t.float    "video_lumens",                                default: 0.0
-    t.float    "image_lumens",                                default: 0.0
-    t.float    "text_lumens",                                 default: 0.0
-    t.float    "vote_lumens",                                 default: 0.0
-    t.integer  "total_views",                                 default: 0
-    t.float    "lumen_notification",                          default: 0.0
-    t.string   "version",                                     default: "3.0.0"
+  create_table "temp_posting_housings", force: true do |t|
+    t.string   "comment"
+    t.string   "media_type"
+    t.string   "media_url"
+    t.integer  "session"
+    t.boolean  "username_private"
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
+  add_index "temp_posting_housings", ["user_id"], name: "index_temp_posting_housings_on_user_id", using: :btree
+  add_index "temp_posting_housings", ["venue_id"], name: "index_temp_posting_housings_on_venue_id", using: :btree
+
+  create_table "users", force: true do |t|
+    t.datetime "created_at",                                           null: false
+    t.datetime "updated_at",                                           null: false
+    t.string   "email",                                                null: false
+    t.string   "encrypted_password",     limit: 128,                   null: false
+    t.string   "confirmation_token",     limit: 128
+    t.string   "remember_token",         limit: 128,                   null: false
+    t.string   "name"
+    t.string   "authentication_token"
+    t.text     "push_token"
+    t.integer  "role_id"
+    t.boolean  "username_private",                   default: false
+    t.string   "gcm_token"
+    t.float    "lumens",                             default: 0.0
+    t.float    "lumen_percentile"
+    t.float    "video_lumens",                       default: 0.0
+    t.float    "image_lumens",                       default: 0.0
+    t.float    "text_lumens",                        default: 0.0
+    t.float    "bonus_lumens",                       default: 0.0
+    t.integer  "total_views",                        default: 0
+    t.float    "lumen_notification",                 default: 0.0
+    t.string   "version",                            default: "1.0.0"
+    t.float    "bounty_lumens",                      default: 0.0
+    t.boolean  "can_claim_bounty",                   default: true
+    t.datetime "latest_rejection_time"
+    t.float    "adjusted_view_discount"
+    t.boolean  "email_confirmed",                    default: false
+    t.boolean  "registered",                         default: false
+    t.string   "vendor_id"
+  end
+
+  add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree
   add_index "users", ["email"], name: "index_users_on_email", using: :btree
   add_index "users", ["image_lumens"], name: "index_users_on_image_lumens", using: :btree
   add_index "users", ["lumens"], name: "index_users_on_lumens", using: :btree
@@ -292,7 +293,6 @@ ActiveRecord::Schema.define(version: 20141212074856) do
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
   add_index "users", ["text_lumens"], name: "index_users_on_text_lumens", using: :btree
   add_index "users", ["video_lumens"], name: "index_users_on_video_lumens", using: :btree
-  add_index "users", ["vote_lumens"], name: "index_users_on_vote_lumens", using: :btree
 
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
@@ -302,12 +302,17 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.integer  "venue_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.boolean  "username_private", default: false
-    t.integer  "consider",         default: 2
-    t.integer  "views",            default: 0
-    t.float    "adj_views",        default: 0.0
-    t.boolean  "from_user",        default: false
+    t.boolean  "username_private",     default: false
+    t.integer  "consider",             default: 2
+    t.integer  "views",                default: 0
+    t.float    "adj_views",            default: 0.0
+    t.boolean  "from_user",            default: false
     t.integer  "session"
+    t.string   "offset_created_at"
+    t.integer  "bounty_id"
+    t.boolean  "is_response"
+    t.boolean  "is_response_accepted"
+    t.string   "rejection_reason"
   end
 
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
@@ -323,6 +328,19 @@ ActiveRecord::Schema.define(version: 20141212074856) do
 
   add_index "venue_messages", ["venue_id"], name: "index_venue_messages_on_venue_id", using: :btree
 
+  create_table "venue_page_views", force: true do |t|
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.string   "venue_lyt_sphere"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.boolean  "consider",         default: true
+  end
+
+  add_index "venue_page_views", ["user_id"], name: "index_venue_page_views_on_user_id", using: :btree
+  add_index "venue_page_views", ["venue_id"], name: "index_venue_page_views_on_venue_id", using: :btree
+  add_index "venue_page_views", ["venue_lyt_sphere"], name: "index_venue_page_views_on_venue_lyt_sphere", using: :btree
+
   create_table "venue_ratings", force: true do |t|
     t.integer  "user_id"
     t.integer  "venue_id"
@@ -333,17 +351,6 @@ ActiveRecord::Schema.define(version: 20141212074856) do
 
   add_index "venue_ratings", ["user_id"], name: "index_venue_ratings_on_user_id", using: :btree
   add_index "venue_ratings", ["venue_id"], name: "index_venue_ratings_on_venue_id", using: :btree
-
-  create_table "venue_relationships", force: true do |t|
-    t.integer  "ufollower_id"
-    t.integer  "vfollowed_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "venue_relationships", ["ufollower_id", "vfollowed_id"], name: "index_venue_relationships_on_ufollower_id_and_vfollowed_id", unique: true, using: :btree
-  add_index "venue_relationships", ["ufollower_id"], name: "index_venue_relationships_on_ufollower_id", using: :btree
-  add_index "venue_relationships", ["vfollowed_id"], name: "index_venue_relationships_on_vfollowed_id", using: :btree
 
   create_table "venues", force: true do |t|
     t.string   "name"
@@ -356,25 +363,31 @@ ActiveRecord::Schema.define(version: 20141212074856) do
     t.datetime "updated_at"
     t.float    "latitude"
     t.float    "longitude"
-    t.float    "google_place_rating"
-    t.string   "google_place_key"
     t.string   "country"
     t.string   "postal_code"
     t.text     "formatted_address"
-    t.text     "google_place_reference"
     t.datetime "fetched_at"
-    t.float    "r_up_votes",                       default: 1.0
-    t.float    "r_down_votes",                     default: 1.0
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.integer  "user_id"
+    t.float    "r_up_votes",                           default: 1.0
+    t.float    "r_down_votes",                         default: 1.0
     t.string   "menu_link"
-    t.float    "color_rating",                     default: -1.0
-    t.integer  "key",                    limit: 8
+    t.float    "color_rating",                         default: -1.0
+    t.integer  "key",                        limit: 8
+    t.string   "time_zone"
+    t.integer  "outstanding_bounties",                 default: 0
+    t.string   "l_sphere"
+    t.datetime "latest_posted_comment_time"
+    t.boolean  "is_address",                           default: false
+    t.boolean  "has_been_voted_at",                    default: false
+    t.datetime "latest_placed_bounty_time"
+    t.integer  "popularity_rank"
+    t.float    "popularity_percentile"
+    t.integer  "page_views",                           default: 0
+    t.integer  "user_id"
   end
 
-  add_index "venues", ["google_place_key"], name: "index_venues_on_google_place_key", unique: true, using: :btree
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
-  add_index "venues", ["user_id"], name: "index_venues_on_user_id", using: :btree
+  add_index "venues", ["l_sphere"], name: "index_venues_on_l_sphere", using: :btree
+  add_index "venues", ["latitude"], name: "index_venues_on_latitude", using: :btree
+  add_index "venues", ["longitude"], name: "index_venues_on_longitude", using: :btree
 
 end

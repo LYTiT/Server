@@ -10,21 +10,17 @@ class Venue < ActiveRecord::Base
   validates :latitude, presence: true
   validates :longitude, presence: true
   validate :validate_menu_link
+  validates_numericality_of :outstanding_bounties, :greater_than_or_equal_to => 0
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
-  has_many :groups_venues, :dependent => :destroy
-  has_many :groups, through: :groups_venues
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
 
-  has_many :rvenue_relationships, foreign_key: "vfollowed_id", class_name: "VenueRelationship",  dependent: :destroy
-  has_many :followers, through: :rvenue_relationships, source: :ufollower
-
   has_many :lyt_spheres, :dependent => :destroy
 
-  has_many :events, :dependent => :destroy
+  has_many :bounties, :dependent => :destroy
 
   belongs_to :user
 
@@ -32,13 +28,53 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
-  GOOGLE_PLACE_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy establishment finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
-
-  GOOGLE_PLACE_VOTING_TYPES = %w(airport amusement_park art_gallery bakery bar bowling_alley bus_station cafe campground casino city_hall courthouse department_store embassy finance food gym hospital library movie_theater museum night_club park restaurant school shopping_mall spa stadium university street_address neighborhood locality)
-
   has_many :lytit_votes, :dependent => :destroy
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
+
+
+  #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
+  def type
+    v_address = address || ""
+    v_city = city || ""
+    v_state = state || ""
+    v_country = country || ""
+
+    if postal_code == nil or postal_code == ""
+      vpostal_code = 0
+    else
+      vpostal_code = postal_code
+    end
+
+    if name == v_country && (v_address == "" && v_city == "") && (v_state == "" && vpostal_code.to_i == 0)
+      type = 4 #country
+    elsif (name.length == 2 && v_address == "") && (v_city == "" && vpostal_code.to_i == 0)
+      type = 3 #state
+    elsif ((name[0..(name.length-5)] == v_city && v_country == "United States") || (name == v_city && v_country != "United States")) && (v_address == "")
+      type = 2 #city
+    else
+      type = 1 #establishment
+    end
+
+    return type
+  end
+
+  #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
+  def is_hot?
+    last_posted_comment_time_wrapper = self.latest_posted_comment_time || (Time.now - 31.minute)
+    popularity_percentile_wrapper = self.popularity_percentile || 0.0
+    if popularity_percentile_wrapper >= 75.0 && (Time.now - last_posted_comment_time_wrapper) >= 30.minutes
+      true
+    else
+      false
+    end
+  end
+
+  def view(user_id)
+    view = VenuePageView.new(:user_id => user_id, :venue_id => self.id, :venue_lyt_sphere =>  self.l_sphere)
+    view.save
+  end
+
 
   def menu_link=(val)
     if val.present?
@@ -49,6 +85,14 @@ class Venue < ActiveRecord::Base
       val = nil
     end
     write_attribute(:menu_link, val)
+  end
+
+  def has_menue?
+    if menue.menu_section_items.count = 0
+      return false
+    else
+      return true
+    end
   end
 
   def to_param
@@ -67,226 +111,16 @@ class Venue < ActiveRecord::Base
     venue_comments.where("venue_comments.id NOT IN (?)", ids)
   end
 
-=begin >>>SEARCHING 1.0<<<
-  def self.fetch_venues(fetch_type, q, latitude, longitude, meters = nil, timewalk_start_time = nil, timewalk_end_time = nil, group_id = nil, user = nil)
-    if not meters.present? and q.present?
-      meters = 50000
-    end
-    meters ||= 50000
-    list = []
-    client = Venue.google_place_client
-    if (timewalk_start_time.present? and timewalk_end_time.present?) or group_id.present?
-      list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
-    else
-      begin
-        if fetch_type == 'rankby'
-          spots = client.spots(latitude, longitude, :rankby => 'distance', :types => GOOGLE_PLACE_VOTING_TYPES)
-        else
-          if q.blank?
-            spots = client.spots(latitude, longitude, :radius => meters, :types => GOOGLE_PLACE_TYPES)
-          else
-            #spots = client.spots_by_query(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
-             spots = client.predictions_by_input(q, :radius => meters, :lat => latitude, :lng => longitude, :types => GOOGLE_PLACE_TYPES)
-          end
-        end
-        keys = spots.collect(&:place_id)
-        venues = Venue.where(google_place_key: keys)
-        spots.each do |spot|
-          venue = venues.select{|venue| venue.google_place_key == spot.place_id}.first
-          venue ||= Venue.new()
-          venue.name = spot.name
-          venue.google_place_key = spot.place_id
-          venue.google_place_rating = spot.rating
-          venue.google_place_reference = spot.reference
-          venue.latitude = spot.lat
-          venue.longitude = spot.lng
-          venue.formatted_address = spot.formatted_address
-          venue.city = spot.city
-          venue.save
-          list << venue.id if venue.persisted?
-        end
-      rescue
-        list = default_venues(fetch_type, meters, latitude, longitude, q, group_id)
-      end
-    end
-
-    if timewalk_start_time.present? and timewalk_end_time.present?
-      start_time = Time.parse(timewalk_start_time).utc.to_time
-      end_time = Time.parse(timewalk_end_time).utc.to_time
-      list = VenueColorRating.fields(:venue_id).where(:venue_id => list, :created_at => {:$gt => start_time, :$lt => end_time}).all.collect(&:venue_id)
-    end
-
-    venues = nil
-    if fetch_type == 'rankby'
-      venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("id IN (?)", list).where("start_date IS NULL or (start_date <= ? and end_date >= ?)", Time.now, Time.now)
-      venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
-      venues = venues.limit(20)
-    else
-      if q.blank?
-        # rated_venue_ids = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).collect(&:id)
-        # list = list + rated_venue_ids
-        if timewalk_start_time.present? and timewalk_end_time.present?
-          venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC')
-          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
-        else
-          venues = Venue.visible.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.color_rating <> -1.0 and venues.color_rating IS NOT NULL")
-          venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
-        end
-      else
-        list = list + Event.select(:venue_id).where("name ILIKE ?", "%#{q}%").where("start_date <= ? and end_date >= ?", Time.now, Time.now).collect(&:venue_id)
-        venues = Venue.within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).order('distance ASC').where("venues.id IN (?)", list.uniq)
-        venues = venues.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?        
-        venues = venues.sort{ |a,b| Levenshtein.distance(q, a.name) <=> Levenshtein.distance(q, b.name) }
-      end
-    end
-
-    if timewalk_start_time.present? and timewalk_end_time.present?
-      data = {
-        :venues => Venue.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, q.present?),
-        :checkins => Venue.checkins(timewalk_start_time, timewalk_end_time, user)
-      }
-      return data
-    else
-      return venues.uniq
-    end
-
+  def self.venues_in_view(sw_lat, sw_long, ne_lat, ne_long)
+    Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).where("color_rating > -1.0 OR outstanding_bounties > 0")
   end
 
-  def self.default_venues(fetch_type, meters, latitude, longitude, q, group_id)
-    list = []
-    if fetch_type == 'rankby'
-      list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude])
-      list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
-      list = list.limit(20).collect(&:id)
-    else
-      if q.blank?
-        # list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).limit(20).collect(&:id)
-      else
-        list = Venue.select(:id).within(Venue.meters_to_miles(meters.to_i), :origin => [latitude, longitude]).where("name ILIKE ?", "%#{q}%")
-        list = list.joins(:groups_venues).where(groups_venues: {group_id: group_id}) if group_id.present?
-        list = list.limit(20).collect(&:id)
-      end
-    end
-    list
-  end
-
-  def self.checkins(timewalk_start_time, timewalk_end_time, user)
-    timeslot = {}
-    if user.present?
-      timewalk_start_time = DateTime.parse(timewalk_start_time)
-      timewalk_end_time = DateTime.parse(timewalk_end_time)
-      slots = []
-      current_slot = timewalk_start_time
-      begin
-        slots << current_slot
-        current_slot = current_slot + 15.minutes
-      end while current_slot <= timewalk_end_time
-      slots.each do |time_slot|
-        timeslot[time_slot.as_json] = LytitVote.select(:venue_id).where("user_id = ? AND created_at BETWEEN ? AND ?", user.id, (time_slot - 45.minutes), time_slot).last.try(:venue_id)
-      end
-    end
-    timeslot
-  end
-
-  def self.timewalk_ratings(venues, timewalk_start_time, timewalk_end_time, allow_blank)
-    venue_ids = venues.collect(&:id)
-    venues = venues.as_json
-    timewalk_start_time = Time.parse(timewalk_start_time)
-    timewalk_end_time = Time.parse(timewalk_end_time)
-    slots = []
-    current_slot = timewalk_start_time
-    begin
-      slots << current_slot
-      current_slot = current_slot + 15.minutes
-    end while current_slot <= timewalk_end_time
-    slots.each do |time_slot|
-      start_time = (time_slot - (7.minutes + 5.seconds)).utc.to_time
-      end_time = (time_slot + (7.minutes + 5.seconds)).utc.to_time
-      color_ratings = VenueColorRating.where(:venue_id => venue_ids, :created_at => {:$gt => start_time, :$lt => end_time}).order("created_at DESC").all
-      venue_color_ratings = {}
-      color_ratings.each do |color_rating|
-        unless venue_color_ratings[color_rating["venue_id"]].present?
-          venue_color_ratings[color_rating["venue_id"]] = color_rating["color_rating"]
-        end
-      end
-      venues.each do |venue|
-        venue["timewalk_color_ratings"] ||= {}
-        if venue_color_ratings[venue["id"]].present?
-          venue["timewalk_color_ratings"][time_slot.as_json] = venue_color_ratings[venue["id"]]
-        end
-        if allow_blank and not venue["timewalk_color_ratings"][time_slot.as_json].present?
-          venue["timewalk_color_ratings"][time_slot.as_json] = -1
-        end
-      end
-    end
-    venues.collect{|a|
-      if a["timewalk_color_ratings"].present?
-        color_values = a["timewalk_color_ratings"].values.uniq.compact
-        if color_values.size == 1 and color_values.first == -1
-        else
-          a
-        end
-      end
-    }.compact
-  end
-
-  def self.fetch_spot(google_reference_key)
-    venue = Venue.where("google_place_reference = ?", google_reference_key).first
-    if venue.blank?
-      venue = Venue.new
-      venue.google_place_reference = google_reference_key
-    end
-    venue.populate_google_address(true)
-    venue
-  end
-
-  def populate_google_address(force = false)
-    if force == true or !self.fetched_at.present? or ((Time.now - self.fetched_at) / 1.day).round > 4
-      begin
-        client = Venue.google_place_client
-        spot = client.spot(self.google_place_reference)
-        self.city = spot.city
-        self.state = spot.region
-        self.postal_code = spot.postal_code
-        self.country = spot.country
-        self.address = [ spot.street_number, spot.street].compact.join(', ')
-        self.phone_number = spot.formatted_phone_number
-        self.fetched_at = Time.now
-        self.save
-      rescue
-      end
-    end
-  end
-=end
-
-  #1 degree of latitude is ~110.54km while 1 degree of longitude is ~113.20*cos(latitude)km. This does not account for flattening at the earth's poles but in our 
-  #case it is sufficiently accurate (Santa, dealt with it!)
-  #lat_raidus is the horizontal distance corresponding to zoom level of the device's screen.
-  def self.venues_in_view(radius, lat, long)
-    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND color_rating > -1.0", min_lat, max_lat, min_long, max_long)
-  end
-
-  def self.newfetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
+  def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     if vname == nil && vcountry == nil
       return
     end
 
-    #Lookup up by unique key. Perhaps may have to resort to in the future.
-
-    #lookup_key = createKey(vlatitude, vlongitude, vaddress)
-    #venues = Venue.where("key = ?", lookup_key)
-    # 3 is the allowed deviation allowed in lat and long in the 1/1000 place
-    
-    #lat_range = *( ( ((vlatitude.to_f)*1000).floor.abs - 3 )..( ((vlatitude.to_f)*1000).floor.abs + 3 ))
-    #long_range = *( ( ((vlongitude.to_f)*1000).floor.abs - 3 )..( ((vlongitude.to_f)*1000).floor.abs + 3 ))
-    #venues = Venue.where("CAST(LEFT(CAST(key AS VARCHAR), 5) AS INT) IN (?) AND CAST(RIGHT(CAST((key/1000) AS VARCHAR), 5) AS INT) IN (?)", lat_range, long_range)
-    #--------------------------------
-
-    #We need to determin the type of search being conducted whether it is venue specific or geographic
+    #We need to determine the type of search being conducted whether it is venue specific or geographic
     if vaddress == nil
       if vcity != nil #city search
         radius = 3000
@@ -362,8 +196,25 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
+      if lookup.l_sphere == nil && vcity != nil #Add LYT Sphere if not present
+        lookup.l_sphere = lookup.city.delete(" ")+(lookup.latitude.round(0).abs).to_s+(lookup.longitude.round(0).abs).to_s
+        lookup.save
+      end
+      if lookup.time_zone == nil #Add timezone of venue if not present
+        Timezone::Configure.begin do |c|
+          c.username = 'LYTiT'
+        end
+        timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+        lookup.time_zone = timezone.active_support_time_zone
+        lookup.save
+      end
       return lookup
     else
+      Timezone::Configure.begin do |c|
+        c.username = 'LYTiT'
+      end
+      timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+
       venue = Venue.new
       venue.name = vname
       venue.address = vaddress
@@ -381,44 +232,23 @@ class Venue < ActiveRecord::Base
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
-      #venue.key = createKey(vlatitude, vlongitude, vaddress)
+      if vcity != nil
+        venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+      end
+      venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
+
+      if vaddress != nil && vname != nil
+        if vaddress.gsub(" ","").gsub(",", "") == vname.gsub(" ","").gsub(",", "")
+          venue.is_address = true
+        end
+      end
+
       venue.save
       return venue
     end
   end
 
-  #LYTiT specific identifier keys for venues
-=begin  def self.createKey(lat, long, addrs)
-    part1 = ((lat.to_f)*1000).floor.abs.to_s
-    part2 = ((long.to_f)*1000).floor.abs.to_s
-    part3 = addrs.split(" ").first.to_s
-
-    key = (part1+part2+part3).to_i
-  end
-
-  def createKeylocal(lat, long, addrs)
-    part1 = ((lat.to_f)*1000).floor.abs.to_s
-    part2 = ((long.to_f)*1000).floor.abs.to_s
-    part3 = addrs.split(" ").first.to_s
-
-    key = (part1+part2+part3).to_i
-  end
-
-  def addKey
-    a1 = self.address
-    a2 = self.formatted_address
-    target = a1 || a2
-
-    if target == nil 
-      self.delete
-    else
-      key = createKeylocal(self.latitude, self.longitude, target)
-      update_columns(key: key)
-    end
-  end
-=end
-  
   #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
@@ -429,7 +259,45 @@ class Venue < ActiveRecord::Base
     return box
   end
 
-  #Uniform formatting of venues phone numbers into a "+X (XXX) XXX-XXXX" style
+  def set_time_zone
+    Timezone::Configure.begin do |c|
+      c.username = 'LYTiT'
+    end
+    lat = 0/self.latitude == 0.0 ? self.latitude : 0.0
+    long = 0/self.longitude == 0.0 ? self.longitude : 0.0
+    timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
+    self.time_zone = timezone.active_support_time_zone rescue nil
+    self.save
+  end
+
+  #RUN THIS ON BOLT BEFORE RELEASE 1.0
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  def self.set_is_address_and_votes_received
+    target_venues = Venue.all
+    for v in target_venues
+      if v.address != nil && v.name != nil
+        if v.address.gsub(" ","").gsub(",", "") == v.name.gsub(" ","").gsub(",", "")
+          v.update_columns(is_address: true)
+        end
+      end
+
+      if v.lytit_votes.count > 0
+        v.update_columns(has_been_voted_at: true)
+      end
+    end
+  end
+
+  def self.set_latest_placed_bounty_time
+    v_ids = "SELECT venue_id FROM bounties WHERE user_id > 0"
+    target_venues = Venue.where("id IN (#{v_ids})")
+    for v in target_venues
+      target_bounty = v.bounties.order("id desc").first
+      v.update_columns(latest_placed_bounty_time: target_bounty.created_at)
+    end
+  end
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+  #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
   def self.formatTelephone(number)
     if number == nil
       return
@@ -448,63 +316,35 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  #temp method to reformat older telephones
+  def reformatTelephone
+    number = phone_number
+    if number == nil
+      return
+    end
+
+    digits = number.gsub(/\D/, '').split(//)
+    lead = digits[0]
+
+    if (digits.length == 11)
+      digits.shift
+    end
+
+    digits = digits.join
+    if (digits.length == 10)
+      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
+    end
+    update_columns(phone_number: number)
+  end  
+
+
   def add_Geohash
     update_columns(geohash: GeoHash.encode(self.latitude, self.longitude))
   end
 
   def self.near_locations(lat, long)
-=begin    
-    boundry = GeoHash.neighbors(self.geohash)
-    adj_boundry = []
-    boundry.each {|bound| adj_boundry << bound[0,7]}
-    adj_boundry
-    #neighbors = "SELECT venue FROM venues WHERE LEFT(geohash,7) IN (#{boundry})"
-    neighbors = Venue.where("LEFT(geohash, 7) IN (?)", adj_boundry)
-    neighbors = neighbors.order('distance ASC')
-=end
     meter_radius = 400
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
-    suggestions = []
-    count = 0
-
-    #Must ommit custom locations (addresses) from being pulled into the surrounding venues display that is the reason for the second part of the if block
-    for location in surroundings
-      if (LytitVote.where("venue_id = ?", location.id).count > 0 && location.city != nil) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", "")) 
-        suggestions << location
-        count += 1
-        if count == 10
-          break
-        end
-      end
-    end 
-    return suggestions.compact
-  end
-
-  #Active venue's nearby to follow
-  def self.recommended_venues(user, lat, long)
-    meter_radius = 1000
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).order('distance ASC')
-    recommendations = []
-    count = 0
-
-    for location in surroundings
-      if (VenueComment.where("venue_id = ? AND NOT media_type = ?", location.id, "text").count > 1 && user.vfollowing?(location) == false) && (location.address.gsub(" ","").gsub(",", "") != location.name.gsub(" ","").gsub(",", ""))
-        recommendations << location
-        count += 1
-        if count == 10
-          break
-        end
-      end
-    end
-    return recommendations.compact
-  end
-
-  def last_image_url
-    images = VenueComment.where("venue_id = ? AND media_type = ?", self.id, "image")
-    images = images.sort_by{|x,y| x.created_at}.reverse
-    if images.first != nil
-      return images.first.media_url
-    end
+    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
 
   def cord_to_city
@@ -514,10 +354,6 @@ class Venue < ActiveRecord::Base
       city = result.country
     end
     return city
-  end
-
-  def self.google_place_client
-    GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
 
   def self.miles_to_meters(miles)
@@ -640,12 +476,14 @@ class Venue < ActiveRecord::Base
     save
   end
 
+  #priming factor that used to be calculted from historical average rating of a place
   def get_k
+=begin    
     if self.google_place_rating
       p = self.google_place_rating / 5
       return (LytitConstants.google_place_factor * (p ** 2)).round(4)
     end
-
+=end
     0
   end
 

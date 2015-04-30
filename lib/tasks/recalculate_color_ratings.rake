@@ -76,6 +76,7 @@ namespace :lytit do
 
     end
 
+
     end_time = Time.now
 
     puts "Done. Time Taken: #{end_time - start_time}s"

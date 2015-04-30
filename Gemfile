@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.1'
+ruby '2.1.2'
 
 gem 'bourbon'
 gem 'clearance'
@@ -44,6 +44,9 @@ gem 'kaminari'
 gem 'descriptive_statistics'
 gem 'geocoder'
 gem 'pr_geohash'
+gem 'timezone'
+gem 'tzinfo'
+gem 'skylight'
 
 group :development do
   gem 'better_errors'

@@ -327,6 +327,8 @@ GEM
       multi_json (~> 1.0)
       simplecov-html (~> 0.8.0)
     simplecov-html (0.8.0)
+    skylight (0.6.0)
+      activesupport (>= 3.0.0)
     slop (3.6.0)
     spring (1.2.0)
     spring-commands-rspec (1.0.4)
@@ -347,6 +349,7 @@ GEM
     thread_safe (0.3.4)
     tilt (1.4.1)
     timecop (0.7.1)
+    timezone (0.3.7)
     title (0.0.5)
       i18n
       rails (>= 3.1)
@@ -425,12 +428,15 @@ DEPENDENCIES
   shoulda-matchers
   simple_form
   simplecov
+  skylight
   spring
   spring-commands-rspec
   therubyracer
   timecop
+  timezone
   title
   twitter-bootstrap-rails!
+  tzinfo
   uglifier
   unicorn
   webmock

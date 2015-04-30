@@ -20,6 +20,19 @@ class UsersController < ApplicationController
     end
   end
 
+  def validate_email
+    @user = User.find_by_id_and_confirmation_token!(params[:user_id], params[:token])
+    if @user
+      @user.validate_email
+      flash[:notice] = "Email confirmed! You are entitled to the Lumen Game prize."
+      redirect_to root_path
+    else
+      flash[:error] = "Sorry. User does not exist"
+      #redirect_to "/"
+    end
+
+  end
+
   private
 
   def set_password_params
