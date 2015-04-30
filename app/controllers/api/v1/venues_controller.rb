@@ -228,8 +228,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitdue], params[:ne_longitude])
+		@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
 		render 'display.json.jbuilder'
 	end
 
