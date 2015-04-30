@@ -16,29 +16,15 @@ LytitServer::Application.routes.draw do
           post 'mark_as_responded_to'
         end
         post 'set_version'
-        get 'following'
-        get 'followers'
-        get 'is_following_user'
-        get 'vfollowing'
-        get 'is_following_venue'
-        get 'get_feed'
         get 'get_lumens'
         get 'get_daily_lumens'
         post 'posting_kill_request'
         get 'get_lumen_notification_details'
-        get 'get_followers_for_invite'
-        get 'get_following_for_invite'
-        get 'get_linkable_groups'
-        get 'is_member'
         get 'get_bounties'
         post 'can_claim_bounties'
-        get 'get_recommended_users'
         collection do
           get 'search'
         end
-        get 'get_list_of_places_mapped'
-        get 'get_venue_comments_from_venue'
-        get 'get_a_users_profile'
         get 'get_surrounding_feed'
         get 'get_map_details'
         get 'confirm_email'
@@ -61,14 +47,6 @@ LytitServer::Application.routes.draw do
         post 'update_winner_paypal_info'
       end
 
-      resources :relationships do
-        post 'create'
-        delete 'destroy'
-        post 'v_create'
-        delete 'v_destroy'
-        get 'get_follower'
-      end
-
       resources :bounties do
         get 'create'
         get 'get_claims'
@@ -87,16 +65,6 @@ LytitServer::Application.routes.draw do
         get 'get_response_index'
       end
 
-      resources :group_invitations do
-        get 'get_group_invite_notification_details'
-        get 'validate_invitation'
-        post 'destroy'
-      end
-
-      resources :at_group_relationships do
-        get 'get_at_group_notification_details'
-      end
-
       post '/register_push_token' => 'users#register_push_token'
       post '/register_gcm_token' => 'users#register_gcm_token'
       post '/change_password' => 'users#change_password'
@@ -110,31 +78,15 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
         post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
 
-        
         collection do
           get 'refresh_map_view'
-        end
-        
+        end 
         collection do
           get 'search'
         end
-
         collection do
           get 'get_suggested_venues'
         end
-
-        collection do 
-          get 'get_recommendations'
-        end
-
-        collection do 
-          get 'search_to_follow'
-        end
-
-        collection do 
-          get 'get_geo_spotlyt'
-        end
-
         get 'get_bounties'
         post 'vote'
       end
@@ -146,37 +98,6 @@ LytitServer::Application.routes.draw do
       #why does this route appear in the middle of nowhere?
       #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
-
-      resources :groups, only: [:create] do
-        post 'join', :action => :join
-        delete 'leave', :action => :leave
-        post 'toggle_admin', :action => :toggle_admin
-        post 'update'
-        delete 'remove_user'
-        get 'users'
-        get 'venues'
-        post 'delete'
-        post 'report'
-        get 'group_venue_details'
-        post 'invite_users'
-        get 'get_groupfeed'
-        get 'get_group_details'
-        collection do
-          get 'search'
-        end
-        collection do
-          get 'get_popular_groups'
-        end
-        get 'get_past_events'
-        get 'get_upcoming_events'
-        get 'get_all_events'
-        post 'add_venues/:venue_id', :action => :add_venue, :as => :add_venue
-        delete 'add_venues/:venue_id', :action => :remove_venue, :as => :remove_venue
-        post 'add_cover'
-        get 'get_hashtag_notification_details'
-        get 'name_availability'
-      end
-
 
       #we don't need to put an end here because there is no "do" we 
       #put end on "do"

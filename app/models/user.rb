@@ -12,21 +12,7 @@ class User < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
-  has_many :groups_users, :dependent => :destroy
-  has_many :groups, through: :groups_users
   has_many :flagged_comments, :dependent => :destroy
-  has_many :venues
-  
-  has_many :relationships, foreign_key: "follower_id", dependent: :destroy
-  has_many :followed_users, through: :relationships, source: :followed
-  has_many :reverse_relationships, foreign_key: "followed_id", class_name: "Relationship", dependent: :destroy
-  has_many :followers, through: :reverse_relationships, source: :follower
-  
-  has_many :venue_relationships, foreign_key: "ufollower_id", dependent: :destroy
-  has_many :followed_venues, through: :venue_relationships, source: :vfollowed
-
-  has_many :reverse_group_invitations, foreign_key: "invited_id", class_name: "GroupInvitation",  dependent: :destroy
-  has_many :igroups, through: :reverse_group_invitations, source: :igroup
 
   has_many :lumen_values, :dependent => :destroy
 
@@ -65,6 +51,8 @@ class User < ActiveRecord::Base
       person.text_lumens = 0.0
       person.bonus_lumens = 0.0
       person.lumen_percentile = 0.0
+      person.total_views = 0
+      person.lumen_notification = 0.0
       person.save
     end
   end
@@ -161,86 +149,6 @@ class User < ActiveRecord::Base
       nil
     end
   end
-
-  def send_location_added_to_group_notification?(group)
-    self.notify_location_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
-  end
-
-  def send_event_added_to_group_notification?(group)
-    self.notify_events_added_to_groups and GroupsUser.send_notification?(group.id, self.id)
-  end
-
-  def following?(other_user)
-    relationships.find_by(followed_id: other_user.id) ? true : false
-  end
-  #follows a user
-  def follow!(other_user)
-    relationships.create!(followed_id: other_user.id)
-  end
-
-  def unfollow!(other_user)
-    relationships.find_by(followed_id: other_user.id).destroy
-  end
-
-  #follows a venue
-  def vfollow!(venue)
-    venue_relationships.create!(vfollowed_id: venue.id)
-  end
-
-  def vunfollow!(venue)
-    venue_relationships.find_by(vfollowed_id: venue.id).destroy
-  end
-
-  def vfollowing?(venue)
-    venue_relationships.find_by(vfollowed_id: venue.id) ? true : false
-  end
-
-  def viewing_feed
-      feed = VenueComment.live_from_venues_followed_by(self).includes(:venue, :user)
-  end
-
-  #Returns users sorted in alphabetical order that are not in a group. We also omit users that have already received an invitation to join the Group.
-  def followers_not_in_group(group_id)
-    users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
-    followers_ids = "SELECT follower_id FROM relationships WHERE followed_id = #{self.id}"
-    User.where("id IN (#{followers_ids}) AND id NOT IN (#{users_in_group})").order("Name ASC")
-  end
-
-  def following_not_in_group(group_id)
-    users_in_group = "SELECT user_id FROM groups_users WHERE group_id = #{group_id}"
-    following_ids = "SELECT followed_id FROM relationships WHERE follower_id = #{self.id}"
-    User.where("id IN (#{following_ids}) AND id NOT IN (#{users_in_group})").order("Name ASC")
-  end
-
-  #Returns list of Groups user is a member of which ar linkable to a Venue Page (either linkable xor admin of)
-  def linkable_groups
-    all_groups_ids = "SELECT group_id FROM groups_users WHERE user_id = #{self.id}"
-    admin_groups_ids = "SELECT group_id FROM groups_users WHERE user_id = #{self.id} AND is_admin = true"
-    Group.where("(id IN (#{all_groups_ids}) AND can_link_venues = true) OR id IN (#{admin_groups_ids})").order("Name ASC")
-  end
-
-
-  #Has the user been invited to a the Group "group"?
-  def invited?(group_id)
-    reverse_group_invitations.find_by(igroup_id: group_id) ? true : false
-  end
-
-  #Lumens are acquired only after voting or posted content receives a view
-=begin
-  def update_lumens_after_vote(id)
-    new_lumens = LumenConstants.votes_weight_adj
-    updated_lumens = self.lumens + new_lumens
-
-    vt_l = self.vote_lumens
-    update_columns(vote_lumens: (vt_l + new_lumens).round(4))
-
-    update_columns(lumens: updated_lumens)
-    #update_lumen_percentile
-
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :lytit_vote_id => id)
-    l.save
-  end
-=end
 
   def update_lumens_after_text(text_id)
     id = text_id
@@ -408,12 +316,6 @@ class User < ActiveRecord::Base
     VenueComment.where(user_id: self.id, media_type: "text").count
   end
 
-  def populate_total_views
-    count = 0
-    comments = VenueComment.where(user_id: self.id, media_type: "video").append(VenueComment.where(user_id: self.id, media_type: "image")).flatten!
-    comments.each {|comment| count += comment.total_views}
-    update_columns(total_views: count)
-  end
 
   def update_total_views
     current = total_views
@@ -592,28 +494,6 @@ class User < ActiveRecord::Base
       return self.can_claim_bounty
 
     end
-  end
-
-  def list_of_places_mapped
-    Venue.where("id IN (?)", VenueComment.where("user_id = #{self.id}").uniq.pluck(:venue_id)).order("Name ASC")
-  end
-
-  def venue_comments_from_venue(venue_id)
-    VenueComment.where("user_id = #{self.id} AND venue_id = #{venue_id}").order("Id DESC")
-  end
-
-  def last_three_comments
-    VenueComment.where("user_id = #{self.id} AND media_type != 'text'").order("Id DESC limit 3")
-  end
-
-  def last_media_comment
-    VenueComment.where("user_id = #{self.id} AND media_type != 'text'").order("Id DESC limit 1")[0]
-  end
-
-  #Returns 10 random users out of the top 20 most frequent venue comment posters
-  def top_posting_users
-    top_20_users = User.where("id != #{self.id}").order("lumens DESC limit 20")
-    top_10_random_users = top_20_users.sample(10)
   end
 
 

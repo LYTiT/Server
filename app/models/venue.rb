@@ -15,17 +15,10 @@ class Venue < ActiveRecord::Base
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
-  has_many :groups_venues, :dependent => :destroy
-  has_many :groups, through: :groups_venues
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
 
-  has_many :rvenue_relationships, foreign_key: "vfollowed_id", class_name: "VenueRelationship",  dependent: :destroy
-  has_many :followers, through: :rvenue_relationships, source: :ufollower
-
   has_many :lyt_spheres, :dependent => :destroy
-
-  has_many :events, :dependent => :destroy
 
   has_many :bounties, :dependent => :destroy
 
@@ -68,7 +61,7 @@ class Venue < ActiveRecord::Base
 
   #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
   def is_hot?
-    last_posted_comment_time_wrapper = self.venue_comments.order("id desc").first.created_at || (Time.now - 31.minute)
+    last_posted_comment_time_wrapper = self.latest_posted_comment_time || (Time.now - 31.minute)
     popularity_percentile_wrapper = self.popularity_percentile || 0.0
     if popularity_percentile_wrapper >= 75.0 && (Time.now - last_posted_comment_time_wrapper) >= 30.minutes
       true
@@ -118,43 +111,8 @@ class Venue < ActiveRecord::Base
     venue_comments.where("venue_comments.id NOT IN (?)", ids)
   end
 
-  def is_linked_to_group?(group_id)
-    if group_id == nil
-      return nil
-    else
-      GroupsVenue.where("venue_id = ? and group_id = ?", self.id, group_id).first ? true : false
-    end
-  end
-
-  def group_venue_created_at(group_id)
-  end
-
-  def group_venue_created_by(group_id)
-  end
-
-  #Note we adjust for aspect ratio of iPhone screen
-=begin  
-  def self.venues_in_view(radius, lat, long)
-    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND (color_rating > -1.0 OR outstanding_bounties > 0)", min_lat, max_lat, min_long, max_long)
-  end
-=end 
-
   def self.venues_in_view(sw_lat, sw_long, ne_lat, ne_long)
     Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).where("color_rating > -1.0 OR outstanding_bounties > 0")
-  end
-
-  #Top 10 most viewed Venue Comments in an viewed area
-  def self.geo_spotlyt(radius, lat, long, start_t, end_t)
-    min_lat = lat.to_f - ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    max_lat = lat.to_f + ((radius.to_i) * (284.0 / 160.0)) / (109.0 * 1000)
-    min_long = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    max_long = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    venue_ids = "SELECT id FROM venues WHERE latitude >= #{min_lat} AND latitude <= #{max_lat} AND longitude >= #{min_long} AND longitude <= #{max_long} AND latest_posted_comment_time IS NOT NULL"
-    spotlyts = VenueComment.where("(media_type = 'image' OR media_type = 'video') AND offset_created_at < ? AND offset_created_at >= ? AND venue_id in (#{venue_ids})", end_t, start_t).order("Views DESC limit 10")
   end
 
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
@@ -329,31 +287,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.set_last_media_time_and_url
-    target_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
-    for v in target_venues
-      last_vc = v.venue_comments.order("id desc")[0]
-      v.update_columns(latest_posted_comment_time: last_vc.created_at)
-
-      last_media = VenueComment.where("venue_id = ? AND NOT media_type = ?", v.id, "text").order('id desc').first
-      if last_media != nil
-        v.update_columns(last_media_comment_url: last_media.media_url)
-      end
-    end
-  end
-
-  def self.set_last_media_comment_type
-    all_venues = Venue.joins(:venue_comments).where("venue_comments.id > 0")
-
-    for v in all_venues
-      last_vc = v.venue_comments.order('id desc').first
-      if last_vc != nil
-        v.last_media_comment_type = last_vc.media_type
-        v.save
-      end
-    end
-  end
-
   def self.set_latest_placed_bounty_time
     v_ids = "SELECT venue_id FROM bounties WHERE user_id > 0"
     target_venues = Venue.where("id IN (#{v_ids})")
@@ -414,12 +347,6 @@ class Venue < ActiveRecord::Base
     surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
 
-  #Active venue's nearby to follow
-  def self.recommended_venues(user, lat, long)
-    meter_radius = 500
-    recommendations = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("last_media_comment_url IS NOT NULL AND is_address = FALSE").order('distance ASC limit 10')
-  end
-
   def cord_to_city
     query = self.latitude.to_s + "," + self.longitude.to_s
     result = Geocoder.search(query).first 
@@ -427,10 +354,6 @@ class Venue < ActiveRecord::Base
       city = result.country
     end
     return city
-  end
-
-  def self.google_place_client
-    GooglePlaces::Client.new(ENV['GOOGLE_PLACE_API_KEY'])
   end
 
   def self.miles_to_meters(miles)
@@ -551,15 +474,6 @@ class Venue < ActiveRecord::Base
     self.r_up_votes = 1 + get_k
     self.r_down_votes = 1
     save
-  end
-
-  def get_k
-    if self.google_place_rating
-      p = self.google_place_rating / 5
-      return (LytitConstants.google_place_factor * (p ** 2)).round(4)
-    end
-
-    0
   end
 
   private ##################################################################################################

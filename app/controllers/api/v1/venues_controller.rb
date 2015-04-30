@@ -120,6 +120,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@comment.offset_created_at = offset_time
 				@comment.save
 
+				venue.update_columns(latest_posted_comment_time: Time.now)
 
 				if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
 					if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
@@ -226,32 +227,6 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
-
-	def get_groups
-		@venue = Venue.find_by_id(params[:venue_id])
-		if not @venue
-			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
-		end
-	end
-
-	def refresh_map_view
-		@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
-		render 'display.json.jbuilder'
-	end
-
-	#Top viewed comments of a geographical area based on zoom level.
-	def get_geo_spotlyt
-		selected_date = params[:spotlyt_date]
-		selection = Time.parse(selected_date)
-
-		start_t = selection
-		end_t = selection + 24.hour
-
-		@spotlyts = Venue.geo_spotlyt(params[:radius], params[:latitude], params[:longitude], start_t, end_t)
-
-		render 'get_geo_spotlyt.json.jbuilder'
-	end
-
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:group_id].present? and not params[:q].present?
@@ -285,39 +260,11 @@ class Api::V1::VenuesController < ApiBaseController
 			render 'search.json.jbuilder'
 		end
 	end
-	
-	def search_to_follow
-		@user = User.find_by_authentication_token(params[:auth_token])
-
-		#I am aware this approach is Muppet, need to update later 
-		venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
-
-		venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
-		venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
-		venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
-		venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
-		venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
-		venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
-		venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
-		venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
-		venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
-		venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
-
-		venues_crude = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
-		@venues = venues_crude.uniq
-		render 'search_to_follow.json.jbuilder'
-	end  
 
 	def get_suggested_venues
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
 		render 'get_suggested_venues.json.jbuilder'
-	end
-
-	def get_recommendations
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@recommendations = Venue.recommended_venues(@user, params[:latitude], params[:longitude])
-		render 'get_recommendations.json.jbuilder'
 	end
 
 	def rate_venue
@@ -358,11 +305,6 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
 		end
-	end
-
-	def followers
-		@venue = Venue.find(params[:venue_id])
-		@followers = @venue.followers
 	end
 
 

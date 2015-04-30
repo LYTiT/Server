@@ -8,22 +8,11 @@ class VenueComment < ActiveRecord::Base
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
-	has_many :groups_venue_comments, :dependent => :destroy
-	has_many :groups, through: :groups_venue_comments
 
 	validate :comment_or_media
 	validate :proper_media_type_for_response
 
 
-	def link_to_groups!
-		g_ids = GroupsVenue.where("venue_id = #{self.venue_id}").pluck(:group_id)
-		g_ids.map{|target_group_id| GroupsVenueComment.create!(venue_comment_id: self.id, group_id: target_group_id, is_hashtag: false) if (GroupsVenueComment.find_by_venue_comment_id_and_group_id(self.id, target_group_id) == nil)}
-	end
-
-	def hashtags
-		hashtags = "SELECT group_id FROM groups_venue_comments WHERE venue_comment_id = #{self.id} AND is_hashtag = TRUE"
-		hashtag_groups = Group.where("id IN (#{hashtags})").to_a
-	end
 
 	def comment_or_media
 		if self.comment.blank? and self.media_url.blank?
@@ -97,33 +86,9 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
-	#returns comments of users followed
-	def VenueComment.from_users_followed_by(user)
-		followed_users_ids = "SELECT followed_id FROM relationships WHERE follower_id = :user_id " #AND username_private = 'false' AND venue_id != 14002"
-		where("user_id IN (#{followed_users_ids}) AND username_private = 'false' AND venue_id != 14002", user_id: user)
-	end
-
-	#returns comments of venues followed
-	def VenueComment.from_venues_followed_by(user)
-		ids_followed_by_user = "SELECT followed_id FROM relationships WHERE follower_id = #{user.id}" 
-
-		if ids_followed_by_user.length > 0
-			followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id NOT IN (#{ids_followed_by_user}) AND user_id != :user_id"
-			where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL", user_id: user)
-		else
-			followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = :user_id AND user_id != :user_id"
-			where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL", user_id: user)
-		end
-	end
-
 	def VenueComment.live_from_venues_followed_by(user)
 		followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{user.id}"
 		where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
-	end
-
-	def VenueComment.from_group_venues(group)
-		group_venue_ids = "SELECT venue_id FROM groups_venues WHERE group_id = :group_id"
-		where("venue_id in (#{group_venue_ids})", group_id: id)
 	end
 
 	def set_offset_created_at
@@ -214,7 +179,6 @@ class VenueComment < ActiveRecord::Base
 
 		self.bounty_claim_rejection_notification
 	end
-
 
 	def status
 		if is_response_accepted == false
