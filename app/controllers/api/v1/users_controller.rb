@@ -185,6 +185,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_lumens
 		@user = User.find(params[:user_id])
+		@user.lumen_rank
 	end
 
 	def get_daily_lumens

@@ -289,7 +289,6 @@ class User < ActiveRecord::Base
     rank = User.where("lumens > #{self.lumens}").count+1
     self.lumen_percentile = 100.0*(total_number.to_f-rank.to_f)/total_number.to_f
     self.save
-    return rank 
   end
 
   def total_votes
