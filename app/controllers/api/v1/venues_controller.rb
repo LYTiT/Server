@@ -212,7 +212,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if poster_id != @user.id
 				@comment.calculate_adj_view
 				if @comment.consider? == 1 
-					poster.delay.update_lumens_after_view(@comment)
+					poster.update_lumens_after_view(@comment)
 				end
 			end
 		end
