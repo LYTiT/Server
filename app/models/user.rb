@@ -393,11 +393,11 @@ class User < ActiveRecord::Base
       range = (span - 65)/ (1 + (min_lumen / self.lumens))
       radius = span - range
 
-      radii["video"] = (video_lumens / self.lumens) * range + radius
-      radii["image"] = (image_lumens / self.lumens) * range + radius
-      radii["text"] = (text_lumens / self.lumens) * range + radius
-      radii["bonus"] = (bonus_lumens / self.lumens) * range + radius
-      radii["bounty"] = (bounty_lumens / self.lumens) * range + radius
+      radii["video"] = (video_lumens / self.lumens) * range + radius > range + raidus ? range + raidus : (video_lumens / self.lumens) * range + radius
+      radii["image"] = (image_lumens / self.lumens) * range + radius > range + raidus ? range + raidus : (image_lumens / self.lumens) * range + radius
+      radii["text"] = (text_lumens / self.lumens) * range + radius > range + raidus ? range + raidus : (text_lumens / self.lumens) * range + radius
+      radii["bonus"] = (bonus_lumens / self.lumens) * range + radius > range + raidus ? range + raidus : (bonus_lumens / self.lumens) * range + radius
+      radii["bounty"] = (bounty_lumens / self.lumens) * range + radius > range + raidus ? range + raidus : (bounty_lumens / self.lumens) * range + radius
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
       return radii2
