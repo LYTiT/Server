@@ -405,23 +405,43 @@ class User < ActiveRecord::Base
   end
 
   def video_radius
-    radius_assignment["video"]
+    if video_lumens == 0
+      0
+    else
+      radius_assignment["video"]
+    end
   end
 
   def image_radius
-    radius_assignment["image"]
+    if image_lumens == 0
+      0
+    else
+      radius_assignment["image"]
+    end
   end
   
   def text_radius
-    radius_assignment["text"]
+    if text_lumens == 0
+      0
+    else
+      radius_assignment["text"]
+    end
   end
 
   def bonus_radius
-    radius_assignment["bonus"]
+    if bonus_lumens == 0
+      0
+    else
+      radius_assignment["bonus"]
+    end
   end
 
   def bounty_radius
-    radius_assignment["bounty"]
+    if bounty_lumens == 0
+      0
+    else
+      radius_assignment["bounty"]
+    end
   end
 
   def views_radius
