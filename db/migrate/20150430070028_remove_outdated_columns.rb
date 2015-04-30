@@ -9,6 +9,5 @@ class RemoveOutdatedColumns < ActiveRecord::Migration
   	remove_column :venues, :last_media_comment_type, :string
   	remove_column :venues, :start_date, :datetime
   	remove_column :venues, :end_date, :datetime
-  	remove_column :venues, :user_id, :integer
   end
 end

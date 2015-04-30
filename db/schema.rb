@@ -382,6 +382,7 @@ ActiveRecord::Schema.define(version: 20150430070028) do
     t.integer  "popularity_rank"
     t.float    "popularity_percentile"
     t.integer  "page_views",                           default: 0
+    t.integer  "user_id"
   end
 
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
