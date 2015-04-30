@@ -298,7 +298,7 @@ class User < ActiveRecord::Base
   end
 
   def total_bonuses
-    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, "bonus", DateTime.new(2015,4,30)).count
+    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, 'bonus', DateTime.new(2015,4,30)).count
   end
 
   def total_bounties
@@ -306,15 +306,15 @@ class User < ActiveRecord::Base
   end
 
   def total_video_comments
-    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, "video", DateTime.new(2015,4,30)).count
+    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, 'video', DateTime.new(2015,4,30)).count
   end
 
   def total_image_comments
-    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, "image", DateTime.new(2015,4,30)).count
+    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, 'image', DateTime.new(2015,4,30)).count
   end
 
   def total_text_comments
-    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, "text", DateTime.new(2015,4,30)).count
+    LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, 'text', DateTime.new(2015,4,30)).count
   end
 
 
