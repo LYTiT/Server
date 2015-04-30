@@ -476,6 +476,17 @@ class Venue < ActiveRecord::Base
     save
   end
 
+  #priming factor that used to be calculted from historical average rating of a place
+  def get_k
+=begin    
+    if self.google_place_rating
+      p = self.google_place_rating / 5
+      return (LytitConstants.google_place_factor * (p ** 2)).round(4)
+    end
+=end
+    0
+  end
+
   private ##################################################################################################
 
   def valid_votes_timestamp

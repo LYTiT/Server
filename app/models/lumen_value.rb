@@ -22,7 +22,7 @@ class LumenValue < ActiveRecord::Base
 	def is_a_winner?
 		today = Time.now	
 		if today.month != (today + 1.day).month
-			if  LumenValue.where("user_id = ? AND created_at >= ? AND created_at <=", user_id, today.beginning_of_day-1.month, today).sum(:value) >= 100 and user.email.last(3) == "edu"
+			if  LumenValue.where("user_id = ? AND created_at >= ? AND created_at <=?", user_id, today.beginning_of_day-1.month, today).sum(:value) >= 100 and user.email.last(3) == "edu"
 				if LumenGameWinner.where("user_id = ? AND email_sent = TRUE", self.user_id).any? == false and LumenGameWinner.where("created_at > ?", today-1.month).count < 50
 					winner_code = self.generate_winning_code
 					LumenGameWinner.create!(user_id: user_id, winning_validation_code: winner_code)
