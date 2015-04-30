@@ -55,6 +55,8 @@ class User < ActiveRecord::Base
       person.total_views = 0
       person.lumen_notification = 0.0
       person.save
+      l = LumenValue.new(:value => 5.0, :user_id => person.id, :media_type => "bonus")
+      l.save
     end
   end
 
@@ -292,7 +294,15 @@ class User < ActiveRecord::Base
   end
 
   def total_votes
-    LytitVote.where(user_id: self.id).count
+    LytitVote.where("user_id = ? AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
+  end
+
+  def total_bonuses
+    LumenValue.where("user_id = ? AND media_type = bonus AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
+  end
+
+  def total_bounties
+    LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
   end
 
   def total_bonuses
@@ -304,15 +314,15 @@ class User < ActiveRecord::Base
   end
 
   def total_video_comments
-    VenueComment.where(user_id: self.id, media_type: "video").count
+    LumenValue.where("user_id = ? AND media_type = video AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
   end
 
   def total_image_comments
-    VenueComment.where(user_id: self.id, media_type: "image").count
+    LumenValue.where("user_id = ? AND media_type = image AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
   end
 
   def total_text_comments
-    VenueComment.where(user_id: self.id, media_type: "text").count
+    LumenValue.where("user_id = ? AND media_type = text AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
   end
 
 
