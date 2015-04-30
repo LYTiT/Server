@@ -16,12 +16,14 @@ class Api::V1::UsersController < ApiBaseController
 				@user.save
 			end
 
-			if User.where("vendor_id = ?", @user.vendor_id).first == nil
+			if VendorIdTracker.where("used_vendor_id = ?", @user.vendor_id).first == nil
 				l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
       			l.save
       			@user.lumens = 5.0
       			@user.bonus_lumens = 5.0
       			@user.save
+      			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
+      			v_id_tracker.save
       		end
 			sign_in @user
 

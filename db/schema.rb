@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150430070028) do
+ActiveRecord::Schema.define(version: 20150430232038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -293,6 +293,10 @@ ActiveRecord::Schema.define(version: 20150430070028) do
   add_index "users", ["role_id"], name: "index_users_on_role_id", using: :btree
   add_index "users", ["text_lumens"], name: "index_users_on_text_lumens", using: :btree
   add_index "users", ["video_lumens"], name: "index_users_on_video_lumens", using: :btree
+
+  create_table "vendor_id_trackers", force: true do |t|
+    t.string "used_vendor_id"
+  end
 
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
