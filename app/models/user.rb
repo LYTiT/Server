@@ -46,11 +46,11 @@ class User < ActiveRecord::Base
     LumenValue.delete_all
     all = User.all
     for person in all
-      person.lumens = 0.0
+      person.lumens = 5.0
       person.video_lumens = 0.0
       person.image_lumens = 0.0
       person.text_lumens = 0.0
-      person.bonus_lumens = 0.0
+      person.bonus_lumens = 5.0
       person.lumen_percentile = 0.0
       person.total_views = 0
       person.lumen_notification = 0.0
