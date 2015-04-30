@@ -27,6 +27,19 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+	def destroy_previous_temp_user
+		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
+		user_bounties = previous_user.bounties
+		if user_bounties.count > 0
+			for bounty in user_bounties
+				bounty.venue.decrement!(:outstanding_bounties, 1)
+				bounty.destroy
+			end
+		end
+		previous_user.destroy
+		render json: { success: true }
+	end
+
 	def register
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@user.name = params[:username]
@@ -92,18 +105,6 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@validation_message = Coupon.check_code(params[:coupon_code], @user)
 		render json: { validation_message: @validation_message }
-	end
-
-	def destroy_previous_temp_user
-		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
-		user_bounties = user.bounties
-		if user_bounties.count > 0
-			for bounty in user_bounties
-				bounty.venue.decrement!(:outstanding_bounties, 1)
-			end
-		end
-		previous_user.destroy
-		render json: { success: true }
 	end
 
 	def confirm_email
