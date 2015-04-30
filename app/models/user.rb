@@ -305,14 +305,6 @@ class User < ActiveRecord::Base
     LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
   end
 
-  def total_bonuses
-    LumenValue.where(user_id: self.id, media_type: "bonus").count
-  end
-
-  def total_bounties
-    LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
-  end
-
   def total_video_comments
     LumenValue.where("user_id = ? AND media_type = video AND created_at >= ?", self.id, DateTime.new(2015,4,30)).count
   end
