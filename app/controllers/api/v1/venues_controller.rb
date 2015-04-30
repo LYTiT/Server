@@ -198,6 +198,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def mark_comment_as_viewed
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@comment = VenueComment.find_by_id_and_venue_id(params[:post_id], params[:venue_id])
 
 		#consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
