@@ -49,6 +49,12 @@ class Api::V1::UsersController < ApiBaseController
 
 	def destroy_previous_temp_user
 		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
+		user_bounties = user.bounties
+		if user_bounties.count > 0
+			for bounty in user_bounties
+				bounty.venue.decrement!(:outstanding_bounties, 1)
+			end
+		end
 		previous_user.destroy
 		render json: { success: true }
 	end
@@ -82,10 +88,9 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_bounties
 		@user = User.find_by_authentication_token(params[:auth_token])
-		subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{params[:user_id]}"
-		raw_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY') OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", params[:user_id], params[:user_id]).includes(:venue).order('id DESC')
+		total_bounties = @user.total_user_bounties
 		@bounties = []
-		for bounty in raw_bounties
+		for bounty in total_bounties
 			if (bounty.user_id == @user.id && bounty.check_validity == true) || (bounty.user_id != @user.id)
 				@bounties << bounty
 			end
