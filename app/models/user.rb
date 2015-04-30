@@ -13,6 +13,7 @@ class User < ActiveRecord::Base
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
   has_many :flagged_comments, :dependent => :destroy
+  has_many :venues
 
   has_many :lumen_values, :dependent => :destroy
 
