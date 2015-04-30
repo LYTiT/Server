@@ -79,16 +79,6 @@ class User < ActiveRecord::Base
     self.save
   end
 
-  def toggle_group_notification(group_id, enabled)
-    group_user = GroupsUser.where("group_id = ? and user_id = ?", group_id, self.id).first
-    if group_user
-      group_user.update(:notification_flag => (enabled == 'yes' ? true : false))
-      return true
-    else
-      return false, 'You are not member of this group'
-    end
-  end
-
   def is_venue_manager?
     role.try(:name) == "Venue Manager"
   end

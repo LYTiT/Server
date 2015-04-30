@@ -9,8 +9,10 @@ class Api::V1::UsersController < ApiBaseController
 		@user.adjusted_view_discount = LumenConstants.views_weight_adj
 
 		if @user.save
-			l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
-      		l.save
+			if User.where("vendor_id = ?", @user.name).first != nil
+				l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
+      			l.save
+      		end
       		@user.lumens = 5.0
       		@user.bonus_lumens = 5.0
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
