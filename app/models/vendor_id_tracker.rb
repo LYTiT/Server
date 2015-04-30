@@ -1,2 +1,2 @@
-class Venue < ActiveRecord::Base
+class VendorIdTracker < ActiveRecord::Base
 end
