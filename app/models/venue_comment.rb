@@ -215,22 +215,23 @@ class VenueComment < ActiveRecord::Base
 			else
 				message = "Someone responded to the Request at #{bounty.venue.name}"
 			end
-			notification = self.store_new_bounty_claim_notification(payload, User.find_by_id(recipient_id), message)
+			recipient = User.find_by_id(recipient_id)
+			notification = self.store_new_bounty_claim_notification(payload, recipient, message)
 			payload[:notification_id] = notification.id
 
-			if bounty.user.push_token
-				count = Notification.where(user_id: user_id, read: false, deleted: false).count
+			if recipient.push_token
+				count = Notification.where(user_id: recipient_id, read: false, deleted: false).count
 				APNS.delay.send_notification(bounty.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end
 
-			if bounty.user.gcm_token
+			if recipient.gcm_token
 				gcm_payload = payload.dup
 				gcm_payload[:message] = message
 				options = {
 					:data => gcm_payload
 				}
 				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-				request.send([bounty.user.gcm_token], options)
+				request.send([recipient.gcm_token], options)
 			end
 		end
 	end
@@ -266,14 +267,14 @@ class VenueComment < ActiveRecord::Base
 		payload = {
 				:object_id => bounty_id,
 				:type => 'bounty_claim_acceptance', 
-				:user_id => user_id
+				:user_id => self.bounty.user.id
 		}
 		message = "Congratulations! Your Moment Response at #{bounty.venue.name} has been accepted"
-		notification = self.store_new_bounty_claim_acceptance_notification(payload, user, message)
+		notification = self.store_new_bounty_claim_acceptance_notification(payload, self.bounty.user, message)
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
-			count = Notification.where(user_id: user_id, read: false, deleted: false).count
+			count = Notification.where(user_id: self.bounty.user.id, read: false, deleted: false).count
 			APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
@@ -322,14 +323,14 @@ class VenueComment < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id,
 		    :type => 'bounty_claim_rejection', 
-		    :user_id => user_id
+		    :user_id => self.bounty.user.id
 		}
 		message = "Your Bounty Claim at #{bounty.venue.name} has been rejected"
 		notification = self.store_new_bounty_claim_rejection_notification(payload, user, message)
 		payload[:notification_id] = notification.id
 
 		if bounty.user.push_token
-		  count = Notification.where(user_id: user_id, read: false, deleted: false).count
+		  count = Notification.where(user_id: self.bounty.user.id, read: false, deleted: false).count
 		  APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
