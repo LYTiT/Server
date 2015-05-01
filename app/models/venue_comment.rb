@@ -246,7 +246,7 @@ class VenueComment < ActiveRecord::Base
 			:message => message,
 			:deleted => false
 		}
-		Notification.create(notification)
+		Notification.create!(notification)
 	end
 
 	def notification_payload
@@ -284,7 +284,7 @@ class VenueComment < ActiveRecord::Base
 				:data => gcm_payload
 			}
 			request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-			request.send([user.gcm_token], options)
+			request.send([bounty.user.gcm_token], options)
 		end
 	end
 
@@ -299,14 +299,14 @@ class VenueComment < ActiveRecord::Base
 			:message => message,
 			:deleted => false
 		}
-		Notification.create(notification)
+		Notification.create!(notification)
 	end
 
 	def acceptance_notification_payload
 		{
 			:bounty => {
 			:id => self.bounty_id,
-			:lumen_reward => (self.bounty.lumen_reward)*0.9,
+			:lumen_reward => (self.bounty.lumen_reward),
 			:venue_comment_id => self.id,
 			:venue_name => self.venue.name
 			}
@@ -355,7 +355,7 @@ class VenueComment < ActiveRecord::Base
 		  :message => message,
 		  :deleted => false
 		}
-		Notification.create(notification)
+		Notification.create!(notification)
 	end
 
 	def rejection_notification_payload

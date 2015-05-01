@@ -53,7 +53,7 @@ LytitServer::Application.routes.draw do
         post 'viewed_claim'
         get 'get_pricing_constants'
         get 'get_bounty_claim_notification_details'
-        get 'get_bounty_claim_acceptance_notification_details'
+        get 'get_bounty_claim_accept_notification_details'
         get 'get_bounty_claim_rejection_notification_details'
         post 'accept_bounty_claim'
         post 'reject_bounty_claim'
