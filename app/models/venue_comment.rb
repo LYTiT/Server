@@ -247,7 +247,7 @@ class VenueComment < ActiveRecord::Base
 			:message => message,
 			:deleted => false
 		}
-		Notification.create!(notification)
+		Notification.create(notification)
 	end
 
 	def notification_payload
@@ -300,7 +300,7 @@ class VenueComment < ActiveRecord::Base
 			:message => message,
 			:deleted => false
 		}
-		Notification.create!(notification)
+		Notification.create(notification)
 	end
 
 	def acceptance_notification_payload
@@ -356,7 +356,7 @@ class VenueComment < ActiveRecord::Base
 		  :message => message,
 		  :deleted => false
 		}
-		Notification.create!(notification)
+		Notification.create(notification)
 	end
 
 	def rejection_notification_payload
