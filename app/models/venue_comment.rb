@@ -213,7 +213,7 @@ class VenueComment < ActiveRecord::Base
 			if bounty.user_id == recipient_id
 				message = "Someone responded to your Request at #{bounty.venue.name}"
 			else
-				message = "Somen responded to the Request at #{bounty.venue.name}"
+				message = "Someone responded to the Request at #{bounty.venue.name}"
 			end
 			notification = self.store_new_bounty_claim_notification(payload, User.find_by_id(recipient_id), message)
 			payload[:notification_id] = notification.id
