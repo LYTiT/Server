@@ -23,6 +23,7 @@ class User < ActiveRecord::Base
   has_many :temp_posting_housings, :dependent => :destroy
 
   has_many :bounties, :dependent => :destroy
+  has_many :bounty_subscribers, :dependent => :destroy
 
   belongs_to :role
 
