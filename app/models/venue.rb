@@ -112,7 +112,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.venues_in_view(sw_lat, sw_long, ne_lat, ne_long)
-    Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).where("color_rating > -1.0 OR outstanding_bounties > 0")
+    Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).where("color_rating > -1.0 OR outstanding_bounties > 0").order("color_rating desc")
   end
 
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)

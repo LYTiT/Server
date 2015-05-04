@@ -86,11 +86,6 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
-	def VenueComment.live_from_venues_followed_by(user)
-		followed_venues_ids = "SELECT vfollowed_id FROM venue_relationships WHERE ufollower_id = #{user.id}"
-		where("venue_id IN (#{followed_venues_ids}) AND user_id IS NOT NULL AND (NOW() - created_at) <= INTERVAL '1 DAY' ").order("id desc")
-	end
-
 	def set_offset_created_at
 		#note that offset time will still be stored in UTC, disregard the timezone
 		if venue != nil
@@ -268,15 +263,15 @@ class VenueComment < ActiveRecord::Base
 		payload = {
 				:object_id => bounty_id,
 				:type => 'bounty_claim_acceptance', 
-				:user_id => self.bounty.user.id
+				:user_id => self.user_id
 		}
 		message = "Congratulations! Your Moment Response at #{bounty.venue.name} has been accepted"
-		notification = self.store_new_bounty_claim_acceptance_notification(payload, self.bounty.user, message)
+		notification = self.store_new_bounty_claim_acceptance_notification(payload, self.user, message)
 		payload[:notification_id] = notification.id
 
-		if bounty.user.push_token
-			count = Notification.where(user_id: self.bounty.user.id, read: false, deleted: false).count
-			APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+		if self.user.push_token
+			count = Notification.where(user_id: self.user_id, read: false, deleted: false).count
+			APNS.delay.send_notification(self.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
 		if bounty.user.gcm_token
@@ -290,13 +285,13 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def store_new_bounty_claim_acceptance_notification(payload, user, message)
+	def store_new_bounty_claim_acceptance_notification(payload, response_user, message)
 		notification = {
 			:payload => payload,
-			:gcm => user.gcm_token.present?,
-			:apns => user.push_token.present?,
+			:gcm => response_user.gcm_token.present?,
+			:apns => response_user.push_token.present?,
 			:response => acceptance_notification_payload,
-			:user_id => user.id,
+			:user_id => response_user.id,
 			:read => false,
 			:message => message,
 			:deleted => false
@@ -324,35 +319,35 @@ class VenueComment < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id,
 		    :type => 'bounty_claim_rejection', 
-		    :user_id => self.bounty.user.id
+		    :user_id => self.user_id
 		}
 		message = "Your Bounty Claim at #{bounty.venue.name} has been rejected"
-		notification = self.store_new_bounty_claim_rejection_notification(payload, user, message)
+		notification = self.store_new_bounty_claim_rejection_notification(payload, self.user, message)
 		payload[:notification_id] = notification.id
 
-		if bounty.user.push_token
-		  count = Notification.where(user_id: self.bounty.user.id, read: false, deleted: false).count
-		  APNS.delay.send_notification(user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+		if self.user.push_token
+		  count = Notification.where(user_id: self.user_id, read: false, deleted: false).count
+		  APNS.delay.send_notification(self.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
-		if bounty.user.gcm_token
+		if self.user.gcm_token
 		  gcm_payload = payload.dup
 		  gcm_payload[:message] = message
 		  options = {
 		    :data => gcm_payload
 		  }
 		  request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-		  request.send([user.gcm_token], options)
+		  request.send([self.user.gcm_token], options)
 		end
 	end
 
-	def store_new_bounty_claim_rejection_notification(payload, user, message)
+	def store_new_bounty_claim_rejection_notification(payload, response_user, message)
 		notification = {
 		  :payload => payload,
-		  :gcm => user.gcm_token.present?,
-		  :apns => user.push_token.present?,
+		  :gcm => response_user.gcm_token.present?,
+		  :apns => response_user.push_token.present?,
 		  :response => rejection_notification_payload,
-		  :user_id => user.id,
+		  :user_id => response_user.id,
 		  :read => false,
 		  :message => message,
 		  :deleted => false
