@@ -3,16 +3,14 @@
 <head lang="en" data-placeholder-focus="false">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LYTiT</title>
+  <title>LYTiT | <%=yield(:title) %> </title>
   <%= stylesheet_link_tag :application, :media => 'all' %>
   <%= csrf_meta_tags %>
 </head>
-<!-- <%= render 'layouts/my_custom_flash', :flash => flash %> -->
-<body class="<%= body_class %> splash">
-  <div class="container">
+<body>
+  <div class ="lytit <=% controller.controller_name %>">
     <%= yield %>
   </div>
-  <%= render 'layouts/footer' %>
   <%= render 'layouts/contact_us' %>
   <%= render 'javascript' %>
 </body>

@@ -1,40 +1,140 @@
-<!-- <div class="static_pages">   
+<% provide(:title, "Legal") %>
+<%= favicon_link_tag %>
+
+
+<nav class="navbar navbar-default navbar-flat">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <div class="navbar-brand" href="/"><%= image_tag "lytit_official_white_resized.png"%> </div>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="navbar-collapse collapse navbar-collapse-flat">
+      <ul class="nav navbar-nav navbar-right">
+        <li class="<%= yield(:home) %>"><%= link_to "HOME", root_path %></li>
+        <li class="<%= yield(:lumen_game) %>"><%= link_to "LUMEN GAME", lumen_game_path %></li>
+        <!--<li class="<%= yield(:blog) %>"><%= link_to "BLOG", blog_path %></li>-->
+        <li class="<%= yield(:contact) %>"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a>
+        <li class="twitter" href="/"><%= link_to "L", "https://twitter.com/LYTiTApp"%></li>
+        <li class="facebook" href="/"><%= link_to "F", "https://facebook.com/LYTiTApp" %></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+<div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+<div class="static_pages">   
   <h1>Terms and Conditions</h1>   
-  <p>Last updated: August 01, 2014</p>
+  <p>Last updated: May 01, 2015</p>
   <p><b>LYTiT, INC. TERMS AND CONDITIONS (“TERMS”)</b></p>
-  <p>Please read these Terms and Conditions ("Terms", "Terms and Conditions") carefully before using the LYTiT mobile application (the "Service" operated by LYTIT, INC. ("us", "we", or "our").</p>
+  <p>Please read these Terms and Conditions ("Terms", "Terms and Conditions") carefully before using the LYTiT mobile application (the "Service" or “Services”) operated by LYTIT, INC. ("us", "we", or "our").</p>
   <p>Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms are personal to you, and are not transferable, assignable or sublicensable by you.</p>
-  <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service.</p>
+  <p>By accessing or using the Service you agree to be bound by these Terms and the LYTiT Privacy policy. If you disagree with any part of the terms then you may not access the Service.</p>
+  <p><b>General Terms</b></p>
+  <p>You are responsible for your use of the Services, for any Content you post to the Services, and for any consequences thereof. The Content you submit, post, or display will be able to be viewed by other users of the Services and through third party services and websites. You should only provide Content that you are comfortable sharing with others under these Terms.</p>
+  <p>You may use the Services only if you can form a binding contract with LYTiT and are not a person barred from receiving services under the laws of the United States or other applicable jurisdiction. If you are accepting these Terms and using the Services on behalf of a company, organization, government, or other legal entity, you represent and warrant that you are authorized to do so. You may use the Services only in compliance with these Terms and all applicable local, state, national, and international laws, rules and regulations.</p>
+  <p>The Services that LYTiT provides are always evolving and the form and nature of the Services that LYTiT provides may change from time to time without prior notice to you. In addition, LYTiT may stop (permanently or temporarily) providing the Services (or any features within the Services) to you or to users generally and may not be able to provide you with prior notice. We also retain the right to create limits on use and storage at our sole discretion at any time without prior notice to you.</p>
+  <p>The Services may include advertisements, which may be targeted to the Content or information on the Services, queries made through the Services, or other information. The types and extent of advertising by LYTiT on the Services are subject to change. In consideration for LYTiT granting you access to and use of the Services, you agree that LYTiT, third party providers and partners may place such advertising on the Services or in connection with the display of Content or information from the Services whether submitted by you or others.</p>
   <p><b>Accounts</b></p>
-  <p>To use the Service you must register an account using a valid e-mail address, username (“User Name”), and password. You must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>
-  <p>You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password, whether your password is with our Service or a thirdparty service.</p>
+  <p>To use the Service, you must download the LYTiT mobile application on your mobile device. You are not required to register an account, submit your name or contact information.  When you use the LYTiT mobile application on your mobile device, you must agree to let LYTiT access your location information and to these Terms and Conditions; if you do not agree to both, LYTiT and the Service will not function.  When you download LYTiT and use the Service, but choose not to register, we do collect your IP address and generate or collect a unique identifier for your mobile device, which will serve as your user ID.</p>
+  <p>While you may use the Service and view Content without registering for an Account you may register for an account with LYTiT using a valid e-mail address, username (“User Name”), and password. You must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>
+  <p>You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password, whether your password is with our Service or a third party service.</p>
   <p>You agree not to disclose your password to any third party. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.</p>
   <p>You may not use as a User Name that is the name of another person or entity or that is not lawfully available for use, a name or trade mark that is subject to any rights of another person or entity other than you without appropriate authorization, or a name that is otherwise offensive, vulgar or obscene.</p>
   <p>LYTiT reserves the right to refuse the registration of or cancel a User Name in its sole discretion. You shall not use another user’s account without such other user’s prior express permission. It is your responsibility to immediately notify LYTiT in writing of any unauthorized use of your account, or other account related security breach of which you are aware.</p>
-  <p><b>Content</b></p>
-  <p>The Service allows you to post, link, store, share and otherwise make available certain information, text, photos, videos, or other material ("Content"). You are responsible for the Content that you post to LYTiT, including its legality, reliability, and appropriateness.</p>
-  <p>By posting Content to the Service, you grant us the right and license to use, analyze, modify, publicly perform, publicly display, incorporate into our marketing materials, reproduce, and distribute such Content on and through the Service. You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. You agree that this license includes the right for us to make your Content available to other users of the Service, who may also use your Content subject to these Terms.</p>
-  <p>You represent and warrant that: (i) the Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person.</p>
-  <p>LYTiT has no obligation to monitor the Service but reserves the right to remove, suspend, edit or modify any Content in its sole discretion without notice to you and for any reason or for no reason at all. LYTiT also reserves the right to access, read, preserve, and disclose any information as LYTiT reasonably believes is necessary to: (i) satisfy any applicable law, regulation, legal process or governmental request, (ii) enforce these Terms, including investigation of potential violations hereof, (iii) detect, prevent, or otherwise address fraud, security or technical issues, (iv) respond to user support requests, or (v) protect the rights, property or safety of LYTiT, its users and the public.</p>
-  <p>You understand that when Content is deleted it may still persist in backup copies for a reasonable period of time (but following removal will not be shared with others) or may remain with users who have previously accessed or downloaded your Content.</p>
+  <p><b>LYTiT Submissions</b></p>
+  <p>The Service allows you to post, link, display, store, share and otherwise make available certain information, text, photos, videos, or other material (collectively, "Content"). You are responsible for the Content that you post to LYTiT whether publicly or anonymously, including its legality, reliability, and appropriateness. You expressly agree that any Content you post will not violate any laws or regulations nor will such Content be in violation of the “Rules of Conduct” paragraph below.</p>
+  <p>We do not endorse, support, represent or guarantee the completeness, truthfulness, accuracy, or reliability of any Content or communications posted via the Service or endorse any opinions expressed via the Service. You understand that by using the Service, you may be exposed to Content that might be offensive, harmful, inaccurate or otherwise inappropriate, or in some cases, postings that have been mislabeled or are otherwise deceptive. Under no circumstances will LYTiT be liable in any way for any Content, including, but not limited to, any errors or omissions in any Content, or any loss or damage of any kind incurred as a result of the use of any Content posted, emailed, transmitted or otherwise made available via the Service or transmitted elsewhere.</p>
+  <p>By submitting Content to the Service, you hereby grant us a non-exclusive, perpetual, irrevocable, royalty-free, fully-paid up, worldwide license (including the right to sublicense through multiple tiers), subject to LYTiT’s Privacy Policy available at [lytit.com/privacy], to use, analyze, process, adapt, modify, publicly perform, publicly display, incorporate into our marketing materials, reproduce,  prepare derivative works, publish, transmit and distribute each of your Content, or any portion thereof, in any form, medium or distribution method now known or hereafter existing, known or discovered, on and through the Service, and authorize others to use the Content. You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. You agree that this license includes the right for us to make your Content available to other users of the Service, who may also use your Content subject to these Terms.</p>
+  <p>You represent and warrant that: (i) the Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person. You shall be solely liable for any damage resulting from any infringement of copyrights, trademarks, proprietary rights, violation of contract, privacy or publicity rights or any other harm resulting from any Content that you post.</p>
+  <p>LYTiT has no obligation to monitor the Service but reserves the right to remove, suspend, edit or modify any Content in its sole discretion without notice to you and for any reason or for no reason at all. LYTiT also reserves the right to access, read, preserve, and disclose any information as LYTiT reasonably believes is necessary to: (i) satisfy any applicable law, regulation, legal process or governmental request, (ii) enforce these Terms, including investigation of potential violations hereof, (iii) detect, prevent, or otherwise address fraud, security or technical issues, (iv) respond to user support requests, or (v) protect the rights, property or safety of LYTiT, its users and the public. LYTiT, at its discretion, will cooperate with law enforcement agencies in any investigation of alleged illegal activity on the Service.</p>
+  <p>You understand that when Content is deleted it may still persist in backup copies for a reasonable period of time (but following removal will not be shared with others) or may remain with users who have previously accessed or downloaded your Content. You understand and agree that LYTiT reserves the right to store deleted Content.  However, you agree that we have no obligation to retain any Content for any period of time, nor shall we be responsible or liable to you or any third party for any lost content or losses related to the expiration or deletion of any Content.</p>
+  <p>We may offer you the opportunity to invite your friends or contacts to view your place lists or otherwise enjoy the Service. If you choose to invite one or more of your friends or contacts using text messaging (SMS) or e-mail or otherwise, we may suggest content for the message. You can edit that suggested content, and if you choose to send text message invitations, those messages will be sent from the native SMS application on your device. If you do choose to send such invitations, you represent to LYTiT that the recipients of such invitations have consented to receive such messages from you, and that those recipients do not consider such messages unwanted or unsolicited.</p> 
+  <p><b>Your License to Use the Services</b></p>
+  <p>LYTiT gives you a personal, worldwide, royalty-free, non-assignable and non-exclusive license to use the software that is provided to you by LYTiT as part of the Services. This license is for the sole purpose of enabling you to use and enjoy the benefit of the Services as provided by LYTiT, in the manner permitted by these Terms.</p>
   <p><b>Intellectual Property</b></p>
   <p>The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property of LYTIT, INC. and its licensors. The Service is protected by copyright, trademark, and other laws of both the United States and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of LYTIT, INC.</p>
+  <p><b>Intellectual Property Infringement.</b></p>
+  <p>LYTiT respects the intellectual property rights of others, and we ask you to do the same. LYTiT may, in appropriate circumstances and at our discretion, terminate service and/or access to the Service for users who infringe the intellectual property rights of others. If you believe that your work is the subject of copyright infringement and/or trademark infringement and appears on our Site, please provide LYTiT designated agent the following information</p>
+  <ul class="tnc-list">
+    <li>Your name, address, telephone number, and email address (if any).</li>
+    <li>A description of the copyrighted work that you claim has been infringed.</li>
+    <li>A description of where on the Service the material that you claim is infringing may be found, sufficient for LYTiT to locate the material;</li>
+    <li>A statement that you have a good faith belief that the use of the copyrighted work is not authorized by the copyright owner, its agent, or the law.</li>
+    <li>A statement by you UNDER PENALTY OF PERJURY that the information in your notice is accurate and that you are the copyright owner or authorized to act on the copyright owner's behalf.</li>
+    <li>Your electronic or physical signature.</li>
+  </ul>
+  <p>LYTiT’s agent for notice of claims of copyright or trademark infringement on the Services can be reached as follows:</p>
+  <ul class="tnc-list-2">
+    <li>E-mail: legal@lytit.com</li>
+    <li>LYTiT Copyright Agent:</li>
+    <li>LYTIT, INC</li>
+    <li>Attn: Copyright Agent</li>
+    <li>344 Third Ave, 17G</li>
+    <li>New York, NY 10010</li>
+  </ul>
+  <p>Please also note that for copyright infringements under Section 512(f) of the Copyright Act, any person who knowingly materially misrepresents that material or activity is infringing may be subject to liability.</p>
+  <p><u>Submitting a DMCA Counter-Notification</u><p>
+  <p>If you receive such take down notice from us and believe your material has been removed by mistake or misidentification, you may provide us with a counter-notification in writing to LYTiT designated agent that includes all of the following information:</p>
+  <ul class="tnc-list">
+    <li>Your physical or electronic signature.</li>
+    <li>Identification of the material that has been removed or to which access has been disabled, and the location at which the material appeared before it was removed or access to it was disabled.</li>
+    <li>A statement from you under the penalty of perjury, that you have a good faith belief that the material was removed or disabled as a result of a mistake or misidentification.</li>
+    <li>Your name, physical address and telephone number, and a statement that you consent to the jurisdiction of a court for the judicial district in which your physical address is located, or if your physical address is outside of the United States, for any judicial district in which LYTiT may be located, and that you will accept service of process from the person who provided notification of allegedly infringing material or an agent of such person.</li>
+  </ul>
+  <p><u>Termination of Repeat Infringers</u></p>
+  <p>LYTiT reserves the right, in its sole discretion, to terminate the account or access of any user of our web site and/or service who is the subject or repeated DMCA or other infringement notifications.</p>
   <p><b>Rules of Conduct</b></p>
-  <p>By using the Service you unconditionally agree that it will not be used for any purpose that is prohibited by these Terms. You are responsible for all your activity in connection with the Service and shall abide by all applicable local, state, national and international laws and regulations.</p>
-  <p>You shall not: (i) bypass any measures LYTiT may put in place to prevent or restrict access to the Service (ii) interfere or attempt to interfere with the proper working of the Service or activities conducted on the Service (iv) unreasonably (as determined by LYTiT in its sole discretion) strain the LYTiT infrastructure (iii) decipher, decompile, disassemble, reverse engineer or otherwise attempt to derive any source code or underlying ideas or algorithms of any part of the Service except to the limited extent applicable laws specifically prohibit such restriction (iv) spam the Service.</p>
+  <p>By using the Service you agree that it will not be used for any purpose that is prohibited by these Terms. You are responsible for all your activity in connection with the Service and shall abide by all applicable local, state, national and international laws and regulations.  This paragraph Rules of Conduct provides examples and is not complete or exhaustive.  You may not do any of the following while accessing or using the Service:</p>
+  <ol type="i">
+    <li>Bypass any measures LYTiT may put in place to prevent or restrict access to the Service.</li>
+    <li>Interfere or attempt to interfere with the proper working of the Service or activities conducted on the Service (iv) unreasonably (as determined by LYTiT in its sole discretion) strain the LYTiT infrastructure.</li>
+    <li>Decipher, decompile, disassemble, reverse engineer or otherwise attempt to derive any source code or underlying ideas or algorithms of any part of the Service except to the limited extent applicable laws specifically prohibit such restriction;</li>
+    <li>Probe, scan, or test the vulnerability of any system or network or breach or circumvent any security or authentication services;</li>
+    <li>Access or search or attempt to access or search the Service by any means (automated or otherwise) other than through our currently available, published interfaces that are provided by LYTiT (and only pursuant to those terms and conditions).</li>
+    <li>Spam the Service.</li>
+    <li>Defame, abuse, or otherwise violate the legal rights of others.</li>
+    <li>Discuss or incite illegal activity.</li>
+    <li>Post anything that exploits children or minors (including child pornography).</li>
+    <li>Post anything contrary to our public image, goodwill or reputation.</li>
+    <li>Use racially or ethnically offensive language.</li>
+  </ol>
   <p><b>Termination</b></p>
-  <p>We may terminate or suspend access to our Service immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms. Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service.</p>
+  <p>We may terminate or suspend access to our Service immediately, with or without prior notice, without liability, for any reason whatsoever, including without limitation if you breach the Terms or for any action LYTiT determines is inappropriate or disruptive to the Service or to any other LYTiT user.</p>
+  <p>Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service.</p>
   <p>All provisions of the Terms which by their nature should survive termination shall survive termination, including, without limitation, ownership provisions, warranty disclaimers, indemnity and limitations of liability.</p>
   <p><b>Indemnification</b></p>
-  <p>You agree to defend, indemnify and hold harmless LYTIT, INC. and its licensee and licensors, and their employees, contractors, agents, officers and directors, from and against any and all claims, damages, obligations, losses, liabilities, costs or debt, and expenses (including but not limited to attorney's fees), resulting from or arising out of a) your use and access of the Service, by you or any person using your account and password; b) a breach of these Terms, or c) Content posted on the Service.</p>
-  <p><b>Limitation Of Liability</b></p>
-  <p>IN NO EVENT SHALL LYTIT, INC., NOR ITS DIRECTORS, EMPLOYEES, PARTNERS, AGENTS, SUPPLIERS, OR AFFILIATES, BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, INCLUDING WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER INTANGIBLE LOSSES, RESULTING FROM (I) YOUR ACCESS TO OR USE OF OR INABILITY TO ACCESS OR USE THE SERVICE; (II) ANY CONDUCT OR CONTENT OF ANY THIRD PARTY ON THE SERVICE; (III) ANY CONTENT OBTAINED FROM THE SERVICE; AND (IV) UNAUTHORIZED ACCESS, USE OR ALTERATION OF YOUR TRANSMISSIONS OR CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT (INCLUDING NEGLIGENCE) OR ANY OTHER LEGAL THEORY, WHETHER OR NOT WE HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGE, AND EVEN IF A REMEDY SET FORTH HEREIN IS FOUND TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.</p>
+  <p>You agree to defend, indemnify and hold harmless LYTIT, INC. and its licensee and licensors, and their affiliates, employees, contractors, agents, officers and directors, from and against any and all claims, damages, obligations, losses, liabilities, costs or debt, and expenses (including but not limited to attorney's fees), resulting from or arising out of a) your use and access of the Service, by you or any person using your account and password; b) a breach of these Terms; c) Content posted on the Service; or d) any claim or demand from a third-party that your use of the Service or by any person using your user name and/or password or your participation in the Service or posting of Content violates any applicable law or regulation, or the copyrights, trademark rights, or other rights of a third-party.</p>
+  <p><b>Limitation of Liability</b></p>
+  <p>IN NO EVENT SHALL LYTIT, INC., NOR ITS DIRECTORS, EMPLOYEES, PARTNERS, 
+  AGENTS, SUPPLIERS, OR AFFILIATES, BE LIABLE FOR ANY INDIRECT, 
+  INCIDENTAL, SPECIAL, CONSEQUENTIAL OR PUNITIVE DAMAGES, INCLUDING 
+  WITHOUT LIMITATION, LOSS OF PROFITS, DATA, USE, GOODWILL, OR OTHER 
+  INTANGIBLE LOSSES, RESULTING FROM (I) YOUR ACCESS TO OR USE OF OR 
+  INABILITY TO ACCESS OR USE THE SERVICE OR CONTENT; (II) ANY CONDUCT OR CONTENT OF ANY THIRD PARTY ON THE SERVICE; (III) ANY CONTENT OBTAINED FROM THE SERVICE;  (IV) YOUR DISPLAYING, COPYING, DOWNLOADING ANY MATERIALS TO OR FROM THE SERVICES, AND (V) UNAUTHORIZED ACCESS, USE OR ALTERATION OF YOUR TRANSMISSIONS, OR CONTENT, WHETHER BASED ON WARRANTY, CONTRACT, TORT (INCLUDING NEGLIGENCE) OR ANY OTHER LEGAL THEORY, WHETHER OR NOT WE HAVE BEEN INFORMED OF THE POSSIBILITY OF SUCH DAMAGE, AND EVEN IF A REMEDY SET FORTH HEREIN IS FOUND TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.</p>
+  <p><b>Links</b></p>
+  <p>The Services may contain links to third-party websites or resources. You acknowledge and agree that we are not responsible or liable for: (i) the availability or accuracy of such websites or resources; or (ii) the content, products, or services on or available from such websites or resources. Links to such websites or resources do not imply any endorsement by LYTiT of such websites or resources or the content, products, or services available from such websites or resources. You acknowledge sole responsibility for and assume all risk arising from your use of any such websites or resources.</p>
   <p><b>Disclaimer</b></p>
-  <p>YOUR USE OF THE SERVICE IS AT YOUR SOLE RISK. THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. THE SERVICE IS PROVIDED WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT OR COURSE OF PERFORMANCE.</p>
-  <p>LYTIT, INC. ITS SUBSIDIARIES, AFFILIATES, AND ITS LICENSORS DO NOT WARRANT THAT A) THE SERVICE WILL FUNCTION UNINTERRUPTED, SECURE OR AVAILABLE AT ANY PARTICULAR TIME OR LOCATION; B) ANY ERRORS OR DEFECTS WILL BE CORRECTED; C) THE SERVICE IS FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS; OR D) THE RESULTS OF USING THE SERVICE WILL MEET YOUR REQUIREMENTS.</p>
+  <p>YOUR USE OF THE SERVICE IS AT YOUR SOLE RISK. THE SERVICE IS PROVIDED 
+  ON AN "AS IS" AND "AS AVAILABLE" BASIS. THE SERVICE IS PROVIDED WITHOUT 
+  WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, BUT 
+  NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT OR COURSE OF PERFORMANCE.</p>
+  <p>LYTIT, INC. ITS SUBSIDIARIES, AFFILIATES, AND ITS LICENSORS DO NOT 
+  WARRANT THAT A) THE SERVICE WILL FUNCTION UNINTERRUPTED, SECURE OR 
+  AVAILABLE AT ANY PARTICULAR TIME OR LOCATION; B) ANY ERRORS OR 
+  DEFECTS WILL BE CORRECTED; C) THE SERVICE IS FREE OF VIRUSES OR OTHER HARMFUL COMPONENTS; OR D) THE RESULTS OF USING THE SERVICE WILL MEET YOUR REQUIREMENTS.</p>
   <p><b>Exclusions</b></p>
   <p>Some jurisdictions do not allow the exclusion of certain warranties or the exclusion or limitation of liability for consequential or incidental damages, so the limitations above may not apply to you.</p>
-  <p><b>Governing law</b></p>
+  <p><b>Local Laws; Export Control.</b></p>
+  <p>LYTiT controls and operates the Services from its headquarters in the United States of America and the Materials may not be appropriate or available for use in other locations. If you use the Services outside the United States of America, you are responsible for following applicable local laws.</p>
+  <p><b>Governing Law </b></p>
   <p>These Terms shall be governed and construed in accordance with the laws of the State of New York without regard to its conflict of law provisions.</p>
   <p>Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect. These Terms constitute the entire agreement between us regarding our Service, and supersede and replace any prior agreements we might have between us regarding the Service.</p>
   <p><b>Changes</b></p>
@@ -42,4 +142,24 @@
   <p>By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, please stop using the Service.</p>
   <p><b>Contact Us</b></p>
   <p>If you have any questions about these Terms, please contact us at <a style="color: #00ccff;" href="mailto:support@lytit.com">support@lytit.com</a></p>
-</div> -->
+  <br /><br /><br /><br />
+</div>
+</div>
+
+
+  <div class="footer-area">
+       <div class="container">
+           <div class="row">
+               <div class="col-sm-4">
+                   <p class="copy-right">© 2015 LYTiT, INC.</p>
+               </div><!--/col-sm-5 -->
+               <div class="col-sm-8 footer-right">
+                   <ul>
+                     <li><%= link_to "Terms & Conditions", terms_and_conditions_path %></li>
+                     <li><a href="privacy.php">Privacy</a></li>
+                     <li><a href="mailto:support@lytit.com">Support</a></li>
+                   </ul>                
+                </div><!--/col-sm-7 -->
+           </div><!--/row -->
+       </div><!--/container -->
+  </div><!--/footer-area -->
