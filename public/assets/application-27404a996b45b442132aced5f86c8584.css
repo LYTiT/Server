@@ -7672,7 +7672,6 @@ body.venue_manager {
     float: left !important;
     position: absolute;
     width: 100%;
-    z-index: 2;
     margin-top: 21px;
     background: white;
     -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
@@ -8173,8 +8172,8 @@ h6 {
 
 /* line 639, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box p {
+  font-family: Roboto-Light;
   font-size: 20px;
-  font-weight: 300;
   line-height: 32px;
 }
 
