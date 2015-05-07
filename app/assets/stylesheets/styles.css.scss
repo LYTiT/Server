@@ -27,11 +27,15 @@
     src: url(/assets/socialico.ttf) format("truetype");
 }
 
+@font-face {
+  font-family: "Questrial";
+  src: url(/assets/questrial.ttf) format("truetype");
+}
+
 
 
 @import url('//fonts.googleapis.com/css?family=Lato:100');
 @import url('//fonts.googleapis.com/css?family=Roboto:100,300');
-@import url('//fonts.googleapis.com/css?family=Questrial');
 
 .twitter {
   font-family: "socialico";
