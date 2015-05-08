@@ -19,7 +19,11 @@
 
 @font-face {
     font-family: "Placelists";
-    src: url(/assets/placelists.ttf) format("truetype");
+    src: url(/assets/placelists.eot);
+    src: url(/assets/placelists.ttf) format("truetype"),
+       url(/assets/placelists.eot?#iefix) format("embedded-opentype"),
+       url(/assets/placelists.woff) format("woff"),
+       url(/assets/webfont.svg#svgplacelists) format("svg");
 }
 
 @font-face {
@@ -33,22 +37,38 @@
 
 @font-face {
   font-family: "Questrial";
-  src: url(/assets/questrial.ttf) format("truetype");
+  src: url(/assets/questrial.eot);
+  src: url(/assets/questrial.ttf) format("truetype"),
+       url(/assets/questrial.eot?#iefix) format("embedded-opentype"),
+       url(/assets/questrial.woff) format("woff"),
+       url(/assets/webfont.svg#svgquestrial) format("svg");
 }
 
 @font-face {
   font-family: "Roboto-Thin";
-  src: url(/assets/roboto_thin.ttf) format("truetype");
+  src: url(/assets/roboto-thin.eot);
+  src: url(/assets/roboto-thin.ttf) format("truetype"),
+       url(/assets/roboto-thin.eot?#iefix) format("embedded-opentype"),
+       url(/assets/roboto-thin.woff) format("woff"),
+       url(/assets/webfont.svg#svgroboto-thin) format("svg");
 }
 
 @font-face {
   font-family: "Roboto-Light";
-  src: url(/assets/roboto_light.ttf) format("truetype");
+  src: url(/assets/roboto-light.eot);
+  src: url(/assets/roboto-light.ttf) format("truetype"),
+       url(/assets/roboto-light.eot?#iefix) format("embedded-opentype"),
+       url(/assets/roboto-light.woff) format("woff"),
+       url(/assets/webfont.svg#svgroboto-light) format("svg");
 }
 
 @font-face {
   font-family: "Roboto";
-  src: url(/assets/roboto_regular.ttf) format("truetype");
+  src: url(/assets/roboto-regular.eot);
+  src: url(/assets/roboto-regular.ttf) format("truetype"),
+       url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"),
+       url(/assets/roboto-regular.woff) format("woff"),
+       url(/assets/webfont.svg#svgroboto-regular) format("svg");
 }
 
 
