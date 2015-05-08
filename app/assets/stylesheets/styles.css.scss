@@ -153,6 +153,13 @@ height: 5.0em;
   margin-top: 50px;
   }
 
+@media (max-width: 1024px) {
+#header {
+    background: url(nyc_map_lights_v2.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+    background-size: contain;
+}
+}
+
 @media(max-width:992px)
 {
   .footer-area .footer-right {
@@ -215,7 +222,7 @@ height: 5.0em;
 @media (max-width: 768px) {
 #header {
     background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-    background-size: contain;
+    background-size: cover;
 }
 }
 
@@ -283,14 +290,14 @@ height: 5.0em;
 
 }
 
-@media (max-width: 410px) {
-
-
+@media (max-width: 460px) {
 #header {
     background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
     background-size: contain;
 }
+}
 
+@media (max-width: 410px) {
   .navbar-default {
     padding-top: 10px;
     height: 4.0em;
