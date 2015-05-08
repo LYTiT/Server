@@ -215,6 +215,11 @@ height: 5.0em;
 
 @media (max-width: 760px) {
 
+#header {
+    background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+    background-size: contain;
+}
+
 .navbar-default {
   height: 4.5em;
 }
