@@ -96,7 +96,7 @@ body {
     background-color: #186B95;
 }
 #header {
-    background: url(nyc_map_lights.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+    background: url(nyc_map_lights_xl.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
     background-size: cover;
     float: left;
     position: relative;
@@ -120,7 +120,7 @@ body {
 }
 @media (max-width: 1024px) {
     #header {
-        background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background: url(nyc_map_lights_l.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
         background-size: contain;
     }
 }
@@ -170,12 +170,7 @@ body {
         text-align: center;
     }
 }
-@media (max-width: 768px) {
-    #header {
-        background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-        background-size: contain;
-    }
-}
+
 @media (max-width: 760px) {
     .navbar-default {
         height: 4.5em;
@@ -224,13 +219,13 @@ body {
 }
 @media (max-width: 660px) {
     #header {
-        background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background: url(nyc_map_lights_m.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
         background-size: contain;
     }
 }
 @media (max-width: 520px) {
     #header {
-        background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background: url(nyc_map_lights_s.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
         background-size: contain;
     }
 }
