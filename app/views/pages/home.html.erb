@@ -1,139 +1,161 @@
 <% provide(:home, "active") %>
 <% provide(:title, "Home") %>
 <%= favicon_link_tag %>
-
 <nav class="navbar navbar-default">
-  <div class="container">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <div class="navbar-brand" href="/"><%= image_tag "lytit_official_white_resized.png"%> </div>
-    </div>
-
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-right">
-        <li class="<%= yield(:home) %>"><%= link_to "HOME", root_path %></li>
-        <li class="<%= yield(:lumen_game) %>"><%= link_to "LUMEN GAME", lumen_game_path %></li>
-        <!--<li class="<%= yield(:blog) %>"><%= link_to "BLOG", blog_path %></li>-->
-        <li class="<%= yield(:contact) %>"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a>
-        <li class="twitter" href="/"><%= link_to "L", "https://twitter.com/LYTiTApp"%></li>
-        <li class="facebook" href="/"><%= link_to "F", "https://facebook.com/LYTiTApp" %></li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
+   <div class="container">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         </button>
+         <div class="navbar-brand" href="/"><%= image_tag "lytit_official_white_resized.png"%> </div>
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="navbar-collapse collapse">
+         <ul class="nav navbar-nav navbar-right">
+            <li class="<%= yield(:home) %>"><%= link_to "HOME", root_path %></li>
+            <li class="<%= yield(:lumen_game) %>"><%= link_to "LUMEN GAME", lumen_game_path %></li>
+            <!--<li class="<%= yield(:blog) %>"><%= link_to "BLOG", blog_path %></li>-->
+            <li class="<%= yield(:contact) %>"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a>
+            <li class="twitter" href="/"><%= link_to "L", "https://twitter.com/LYTiTApp"%></li>
+            <li class="facebook" href="/"><%= link_to "F", "https://facebook.com/LYTiTApp" %></li>
+         </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+   </div>
+   <!-- /.container-fluid -->
 </nav>
-
 <div class="page-container">
-<div id="header">
+   <div id="header">
       <div class="header-bottom">
-          <div class="container">
-              <div class="central-image">
-                  <div class="col-sm-10 col-sm-offset-1 text-center">
-                      <h1>Map the Moment</h1>
-                       <p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownload.png"%></a></p>
-
-                  </div><!-- /col-md-10 -->
-              </div><!--/row -->
-          </div><!--/container -->
-      </div><!--/header-bottom -->
-</div>
-
-<div id="content">
-     <div class="home-top text-center">
-        <div class="container">
+         <div class="container">
+            <div class="central-image">
+               <div class="col-sm-10 col-sm-offset-1 text-center">
+                  <h1>Map the Moment</h1>
+                  <p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownload.png"%></a></p>
+               </div>
+               <!-- /col-md-10 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/header-bottom -->
+   </div>
+   <div id="content">
+      <div class="home-top text-center">
+         <div class="container">
             <div class="row">
-                <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
-                    <h2>Request & share Moments with people in real-time</h2>
-                    <p>Anonymously capture what's happening around you to contribute to a live picture  of our surroundings. No Moment is too big or too small on LYTiT since all of them dissappear after a day. If you wish to see something specific from an area or a place - just place a Request!</p>
-                </div><!--/col-sm-10 -->
-            </div><!--/row -->
-        </div><!--/container -->
-      </div><!--/home-top --> 
-
-
+               <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
+                  <h2>Request & share Moments with people in real-time</h2>
+                  <p>Anonymously capture what's happening around you to contribute to a live picture  of our surroundings. No Moment is too big or too small on LYTiT since all of them dissappear after a day. If you wish to see something specific from an area or a place - just place a Request!</p>
+               </div>
+               <!--/col-sm-10 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/home-top --> 
       <div class="feature-box gray-bg">
-          <div class="container">
-              <div class="row">
-                  <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                      <div class="feature-icon-2"><%= image_tag "lytit_icon.png"%></div>
-                      <h3>LYTiT UP</h3>
-                      <p>Everytime you post a Moment on LYTiT you Map it to your location which in turn brightens its LYT. The more recent the Moments at a Place, the more vibrantly it glows on the Map.</p>
-                  </div><!--/col-sm-6 -->
-                  <div class="col-sm-6 col-md-4 leftPadding">
-                      <p class="iphone-img"><%= image_tag "iphone_lyt_map.png"%></p>
-                  </div><!--/col-sm-6 -->
-              </div><!--/row -->
-          </div><!--/container -->
-      </div><!--/feature-box -->
-
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
+                  <div class="feature-icon-2"><%= image_tag "lytit_icon.png"%></div>
+                  <h3>LYTiT UP</h3>
+                  <p>Everytime you post a Moment on LYTiT you Map it to your location which in turn brightens its LYT. The more recent the Moments at a Place, the more vibrantly it glows on the Map.</p>
+               </div>
+               <!--/col-sm-6 -->
+               <div class="col-sm-6 col-md-4 leftPadding">
+                  <p class="iphone-img"><%= image_tag "iphone_lyt_map.png"%></p>
+               </div>
+               <!--/col-sm-6 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/feature-box -->
       <div class="feature-box invert-mobile">
-          <div class="container">
-              <div class="row">
-                  <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                    <p class="iphone-img"><%= image_tag "iphone_lumens.png"%></p>
-                  </div><!--/col-sm-6 -->
-                  <div class="col-sm-6 col-md-4 leftPadding">
-                      <p class="feature-icon-3"><%= image_tag "Lumens.png"%></p>
-                      <h3>EARN LUMENS</h3>
-                      <p>Mapping Moments makes you informative to others and for that you receive Lumens! Spend your Lumens on Requests to notify everyone of Moments you want to see.</p>
-                  </div><!--/col-sm-6 -->
-              </div><!--/row -->
-          </div><!--/container -->
-      </div><!--/feature-box -->
-
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
+                  <p class="iphone-img"><%= image_tag "iphone_lumens.png"%></p>
+               </div>
+               <!--/col-sm-6 -->
+               <div class="col-sm-6 col-md-4 leftPadding">
+                  <p class="feature-icon-3"><%= image_tag "Lumens.png"%></p>
+                  <h3>EARN LUMENS</h3>
+                  <p>Mapping Moments makes you informative to others and for that you receive Lumens! Spend your Lumens on Requests to notify everyone of Moments you want to see.</p>
+               </div>
+               <!--/col-sm-6 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/feature-box -->
       <div class="feature-box gray-bg">
-          <div class="container">
-              <div class="row">
-                  <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                      <p class="feature-icon-4"><%= image_tag "Requests.png"%></p>
-                      <h3>PLACE REQUESTS</h3>
-                      <p>Request a Moment from a location, whether it's to find out how crowded a cafe is or to see the sunset from the other side of town. Claim Lumens by responding to the Requests of others.</p>
-                  </div><!--/col-sm-6 -->
-                  <div class="col-sm-6 col-md-4 leftPadding">
-                      <p class="iphone-img"><%= image_tag "iphone_requests.png"%></p>
-                  </div><!--/col-sm-6 -->
-              </div><!--/row -->
-          </div><!--/container -->
-      </div><!--/feature-box -->
-
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
+                  <p class="feature-icon-4"><%= image_tag "Requests.png"%></p>
+                  <h3>PLACE REQUESTS</h3>
+                  <p>Request a Moment from a location, whether it's to find out how crowded a cafe is or to see the sunset from the other side of town. Claim Lumens by responding to the Requests of others.</p>
+               </div>
+               <!--/col-sm-6 -->
+               <div class="col-sm-6 col-md-4 leftPadding">
+                  <p class="iphone-img"><%= image_tag "iphone_requests.png"%></p>
+               </div>
+               <!--/col-sm-6 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/feature-box -->
       <div class="feature-box invert-mobile">
-          <div class="container">
-              <div class="row">
-                  <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                    <p class="iphone-img"><%= image_tag "iphone_happening_feed.png"%></p>
-                  </div><!--/col-sm-6 -->
-                  <div class="col-sm-6 col-md-4 leftPadding">
-                      <p class="feature-icon-3"><%= image_tag "Happening.png"%></p>
-                      <h3>DISCOVER MOMENTS</h3>
-                      <p>Open the Happening Feed to see the day's Moments and Requests occuring all over.</p>
-                  </div><!--/col-sm-6 -->
-              </div><!--/row -->
-          </div><!--/container -->
-      </div><!--/feature-box -->
-
-</div>
-
-
-  <div class="footer-area">
-       <div class="container">
-           <div class="row">
-               <div class="col-sm-4">
-                   <p class="copy-right">© 2015 LYTiT, INC.</p>
-               </div><!--/col-sm-5 -->
-               <div class="col-sm-8 footer-right">
-                   <ul>
-                     <li><%= link_to "Terms & Conditions", tnc_path %></li>
-                     <li><a href="privacy.php">Privacy</a></li>
-                     <li><a href="mailto:support@lytit.com">Support</a></li>
-                   </ul>                
-                </div><!--/col-sm-7 -->
-           </div><!--/row -->
-       </div><!--/container -->
-  </div><!--/footer-area -->
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
+                  <p class="iphone-img"><%= image_tag "iphone_happening_feed.png"%></p>
+               </div>
+               <!--/col-sm-6 -->
+               <div class="col-sm-6 col-md-4 leftPadding">
+                  <p class="feature-icon-3"><%= image_tag "Happening.png"%></p>
+                  <h3>DISCOVER MOMENTS</h3>
+                  <p>Open the Happening Feed to see the day's Moments and Requests occuring all over.</p>
+               </div>
+               <!--/col-sm-6 -->
+            </div>
+            <!--/row -->
+         </div>
+         <!--/container -->
+      </div>
+      <!--/feature-box -->
+   </div>
+   <div class="footer-area">
+      <div class="container">
+         <div class="row">
+            <div class="col-sm-4">
+               <p class="copy-right">© 2015 LYTiT, INC.</p>
+            </div>
+            <!--/col-sm-5 -->
+            <div class="col-sm-8 footer-right">
+               <ul>
+                  <li><%= link_to "Terms & Conditions", tnc_path %></li>
+                  <li><a href="privacy.php">Privacy</a></li>
+                  <li><a href="mailto:support@lytit.com">Support</a></li>
+               </ul>
+            </div>
+            <!--/col-sm-7 -->
+         </div>
+         <!--/row -->
+      </div>
+      <!--/container -->
+   </div>
+   <!--/footer-area -->
 </div>

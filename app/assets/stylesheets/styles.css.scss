@@ -1,150 +1,100 @@
-/* Large Devices, Wide Screens */
-@media only screen and (max-width : 1200px) {}
-
-/* Medium Devices, Desktops */
-@media only screen and (max-width : 992px) {}
-
-/* Small Devices, Tablets */
-@media only screen and (max-width : 768px) {}
-
-/* Extra Small Devices, Phones */ 
-@media only screen and (max-width : 480px) {}
-
-/* Custom, iPhone Retina */ 
-@media only screen and (max-width : 320px) {}
-
-
-
-
-
 @font-face {
     font-family: "Placelists";
     src: url(/assets/placelists.eot);
-    src: url(/assets/placelists.ttf) format("truetype"),
-       url(/assets/placelists.eot?#iefix) format("embedded-opentype"),
-       url(/assets/placelists.woff) format("woff"),
-       url(/assets/webfont.svg#svgplacelists) format("svg");
+    src: url(/assets/placelists.ttf) format("truetype"), url(/assets/placelists.eot?#iefix) format("embedded-opentype"), url(/assets/placelists.woff) format("woff"), url(/assets/webfont.svg#svgplacelists) format("svg");
 }
-
 @font-face {
     font-family: "socialico";
     src: url(/assets/socialico.eot);
-    src: url(/assets/socialico.ttf) format("truetype"),
-         url(/assets/socialico.eot?#iefix) format("embedded-opentype"),
-         url(/assets/socialico.woff) format("woff"),
-         url(/assets/webfont.svg#svgsocialico) format("svg");
+    src: url(/assets/socialico.ttf) format("truetype"), url(/assets/socialico.eot?#iefix) format("embedded-opentype"), url(/assets/socialico.woff) format("woff"), url(/assets/webfont.svg#svgsocialico) format("svg");
 }
-
 @font-face {
-  font-family: "Questrial";
-  src: url(/assets/questrial.eot);
-  src: url(/assets/questrial.ttf) format("truetype"),
-       url(/assets/questrial.eot?#iefix) format("embedded-opentype"),
-       url(/assets/questrial.woff) format("woff"),
-       url(/assets/webfont.svg#svgquestrial) format("svg");
+    font-family: "Questrial";
+    src: url(/assets/questrial.eot);
+    src: url(/assets/questrial.ttf) format("truetype"), url(/assets/questrial.eot?#iefix) format("embedded-opentype"), url(/assets/questrial.woff) format("woff"), url(/assets/webfont.svg#svgquestrial) format("svg");
 }
-
 @font-face {
-  font-family: "Roboto-Thin";
-  src: url(/assets/roboto-thin.eot);
-  src: url(/assets/roboto-thin.ttf) format("truetype"),
-       url(/assets/roboto-thin.eot?#iefix) format("embedded-opentype"),
-       url(/assets/roboto-thin.woff) format("woff"),
-       url(/assets/webfont.svg#svgroboto-thin) format("svg");
+    font-family: "Roboto-Thin";
+    src: url(/assets/roboto-thin.eot);
+    src: url(/assets/roboto-thin.ttf) format("truetype"), url(/assets/roboto-thin.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-thin.woff) format("woff"), url(/assets/webfont.svg#svgroboto-thin) format("svg");
 }
-
 @font-face {
-  font-family: "Roboto-Light";
-  src: url(/assets/roboto-light.eot);
-  src: url(/assets/roboto-light.ttf) format("truetype"),
-       url(/assets/roboto-light.eot?#iefix) format("embedded-opentype"),
-       url(/assets/roboto-light.woff) format("woff"),
-       url(/assets/webfont.svg#svgroboto-light) format("svg");
+    font-family: "Roboto-Light";
+    src: url(/assets/roboto-light.eot);
+    src: url(/assets/roboto-light.ttf) format("truetype"), url(/assets/roboto-light.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-light.woff) format("woff"), url(/assets/webfont.svg#svgroboto-light) format("svg");
 }
-
 @font-face {
-  font-family: "Roboto";
-  src: url(/assets/roboto-regular.eot);
-  src: url(/assets/roboto-regular.ttf) format("truetype"),
-       url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"),
-       url(/assets/roboto-regular.woff) format("woff"),
-       url(/assets/webfont.svg#svgroboto-regular) format("svg");
+    font-family: "Roboto";
+    src: url(/assets/roboto-regular.eot);
+    src: url(/assets/roboto-regular.ttf) format("truetype"), url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-regular.woff) format("woff"), url(/assets/webfont.svg#svgroboto-regular) format("svg");
 }
-
-
 .twitter {
-  font-family: "socialico";
-  font-size: 30px;
-  margin-top: -5px;
+    font-family: "socialico";
+    font-size: 30px;
+    margin-top: -5px;
 }
-
 .facebook {
-  font-family: "socialico";
-  font-size: 30px;
-  margin-top: -6px;
+    font-family: "socialico";
+    font-size: 30px;
+    margin-top: -6px;
 }
-
-
+body {
+    background: none repeat scroll 0 0 #fff;
+    color: #2e2e2e;
+    font-family: "Questrial", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
 .navbar-default {
-  background-color: #186B95;
-  border-color: #e7e7e7;
-  z-index: 9;
-  margin-bottom: 0; 
-  border-top: 0;
-  border-bottom: 0;
-  border-left:0;
-  border-right:0;
-  border-radius: 0;
-  font-size:18px;
-  -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-  -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-  box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-  font-size: 20px;
-  font-family: Roboto-Thin;
+    background-color: #186B95;
+    border-color: #e7e7e7;
+    z-index: 9;
+    margin-bottom: 0;
+    border-top: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-radius: 0;
+    font-size: 18px;
+    -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    font-size: 20px;
+    font-family: Roboto-Thin;
 }
-
-.navbar .container { 
-margin-top: 0px;
-height: 5.0em; 
+.navbar .container {
+    margin-top: 0px;
+    height: 5.0em;
 }
-
-.navbar-brand img{  
+.navbar-brand img {
     overflow: visible;
     display: inline;
     max-width: 50%;
     height: auto;
     margin-top: -5px;
 }
-
-
-/*TEXT COLOR OF UN-SELECTED NAV BAR BUTTONS*/
 .navbar .nav > li > a {
-    color:  white;
-    display:inline;
+    color: white;
+    display: inline;
 }
-
-/*BACKGROUND AND TEXT COLOR OF SELECTED NAVBAR BUTTONS ON THE RIGHT*/ 
- .navbar-default .navbar-nav > .active > a, 
- .navbar-default .navbar-nav > .active > a:hover, 
- .navbar-default .navbar-nav > .active > a:focus {
-      color: #00B0F0;
-      background: rgba(0,0,0,0);
- }
-
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+    color: #00B0F0;
+    background: rgba(0, 0, 0, 0);
+}
 .navbar-default .navbar-toggle .icon-bar {
     background-color: white;
 }
-
 .navbar-default .navbar-toggle {
-    border-color: #186B95;    
+    border-color: #186B95;
 }
-
 .navbar-default .navbar-toggle:hover,
 .navbar-default .navbar-toggle:focus {
-  background-color: #186B95;
+    background-color: #186B95;
 }
-
-
 #header {
     background: url(nyc_map_lights.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
     background-size: cover;
@@ -153,283 +103,207 @@ height: 5.0em;
     width: 100%;
     z-index: 1;
 }
-
 #header .container {
     position: relative;
 }
-
-
-
-
 .footer-area .footer-right {
     text-align: right;
 }
-
-.feature-icon-2{
-  margin-top: 50px;
+.feature-icon-2 {
+    margin-top: 50px;
 }
-
- .feature-icon-3{
-  margin-top: 50px;
-  }
-
-  .feature-icon-4{
-  margin-top: 50px;
-  }
-
+.feature-icon-3 {
+    margin-top: 50px;
+}
+.feature-icon-4 {
+    margin-top: 50px;
+}
 @media (max-width: 1024px) {
-#header {
-    background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-    background-size: contain;
+    #header {
+        background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background-size: contain;
+    }
 }
-}
-
-@media(max-width:992px)
-{
-  .footer-area .footer-right {
-    text-align: center;
-}
-
+@media(max-width:992px) {
+    .footer-area .footer-right {
+        text-align: center;
+    }
     .navbar .container {
-      margin-top: -15px; 
-      height: 6.0em; 
-      font-size: 20px;
-  }
-     .navbar-brand img{  
-    overflow: visible;
-    display: inline;
-    max-width: 50%;
-    height: auto;
-    margin-top: 10px;
-  }
-
-  .navbar-default .navbar-toggle {
-    margin-top: 27px;   
-}
-
-
+        margin-top: -15px;
+        height: 6.0em;
+        font-size: 20px;
+    }
+    .navbar-brand img {
+        overflow: visible;
+        display: inline;
+        max-width: 50%;
+        height: auto;
+        margin-top: 10px;
+    }
+    .navbar-default .navbar-toggle {
+        margin-top: 27px;
+    }
     .navbar-right {
-      margin-top: -35px;
+        margin-top: -35px;
     }
-    .navbar-header:after 
-    {
-    clear: none;
-    margin-top: 69px;
+    .navbar-header:after {
+        clear: none;
+        margin-top: 69px;
     }
-
-    .navbar-nav.navbar-right > li { 
-    float: left;
-    margin-bottom: -15px;
+    .navbar-nav.navbar-right > li {
+        float: left;
+        margin-bottom: -15px;
     }
-
     .navbar-collapse:before {
-    clear:both;
+        clear: both;
     }
-
     .navbar-collapse {
-      overflow-y: hidden;
+        overflow-y: hidden;
     }
     .navbar-collapse.in {
-      overflow-y: visible;
+        overflow-y: visible;
     }
-
-  .gray-bg{
-      text-align: center;
-  }
-  .invert-mobile{
-    text-align: center;
-  }
-
-
+    .gray-bg {
+        text-align: center;
+    }
+    .invert-mobile {
+        text-align: center;
+    }
 }
-
 @media (max-width: 768px) {
-#header {
-    background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-    background-size: contain;
-}
-}
-
-@media (max-width: 760px) {
-
-.navbar-default {
-  height: 4.5em;
-}
-
-
-  .navbar .container {
-  margin-top: 0px; 
-  height: 1.0em; 
-  font-size: 18px;
-  }
-
-  .navbar-brand {
-   margin-top: -50px;
-  }
-
-  .navbar-brand img{  
-    overflow: visible;
-    display: inline;
-    max-width: 50%;
-    height: auto;
-    margin-top: 40px;
-  }
-
-   .navbar .nav > li > a {
-    color:  black;
-    display:inline;
-  }
-
-
-  .navbar-collapse{
-    float: left !important;
-    position: absolute;
-    width: 100%;
- 
-    margin-top: 21px;
-    background: white;
-    -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    box-shadow: 0px 10px 3px 3px rgba(0,0,0,0.25);
-  }
-
-
-
-.feature-icon-2{
-  margin-top: 30px;
-  }
-
-  .feature-icon-3{
-  margin-top: 30px;
-  }
-
-  .feature-icon-4{
-  margin-top: 30px;
-  }
-
-  .footer-area{
-  text-align: center;
-  }
-
-
-}
-
-@media (max-width: 660px) {
-#header {
-    background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-    background-size: contain;
-}
-}
-
-@media (max-width: 520px) {
-#header {
-    background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-    background-size: contain;
-}
-}
-
-@media (max-width: 410px) {
-  .navbar-default {
-    padding-top: 10px;
-    height: 4.0em;
-  }
-
-  .navbar-default .navbar-toggle {
-    margin-top: 10px;   
-  }
-
-  .navbar-brand {
-    margin-top: -35px;
-  
-  }
-
-  .navbar-brand img{  
-    overflow: visible;
-    display: inline;
-    max-width: 40%;
-    height: auto;
-    margin-top: -35px;
-  }
-
-  .navbar-nav.navbar-right > li { 
-  float: left;
-  margin-top: 1px;
-  margin-bottom: -10px;
-  }
-
- .navbar .nav > li {
-    margin-right: -7px;
-    margin-top: 5px;
-  }
-
-
-  .navbar-collapse{
-    float: right;
-    margin-top: 0px;
-    background: white;
-    -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-  }
-
-
-}
-
-
-
-
-.navbar-right {
-float: right !important;
-padding-top: 40px;
-}
-
-.catch-phrase{
-  margin-top: 50px;
-}
-
-.overview{
-  z-index: 10;
-  -webkit-box-shadow: 0px -10px 3px 0px rgba(0,0,0,0.25);
-  -moz-box-shadow: 0px -10px 3px 0px rgba(0,0,0,0.25);
-  box-shadow: 0px -10px 3px 0px rgba(0,0,0,0.25);
-}
-
-.heading{
-  text-align: center;
-}
-
-#contact_us_modal {
-  color: #000;
-  .modal-header {
-    padding-bottom: 10px;
-    padding-top: 10px;
-  }
-  .modal-body {
-    padding: 10px 20px 12px;
-    a {
-      color: #000;
-      &:hover {
-        color: #00CCFF;
-      }
+    #header {
+        background: url(nyc_map_lights_v7.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background-size: contain;
     }
-  }
-  .modal-dialog {
-    max-width: 350px;
-  }
 }
-
-
-/* ===============================================================> NEW */
-
-
-body {
-    background: none repeat scroll 0 0 #fff;
-    color: #2e2e2e;
-    font-family: "Questrial",sans-serif;
-    font-size: 14px;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
+@media (max-width: 760px) {
+    .navbar-default {
+        height: 4.5em;
+    }
+    .navbar .container {
+        margin-top: 0px;
+        height: 1.0em;
+        font-size: 18px;
+    }
+    .navbar-brand {
+        margin-top: -50px;
+    }
+    .navbar-brand img {
+        overflow: visible;
+        display: inline;
+        max-width: 50%;
+        height: auto;
+        margin-top: 40px;
+    }
+    .navbar .nav > li > a {
+        color: black;
+        display: inline;
+    }
+    .navbar-collapse {
+        float: left !important;
+        position: absolute;
+        width: 100%;
+        margin-top: 21px;
+        background: white;
+        -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+        -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+        box-shadow: 0px 10px 3px 3px rgba(0, 0, 0, 0.25);
+    }
+    .feature-icon-2 {
+        margin-top: 30px;
+    }
+    .feature-icon-3 {
+        margin-top: 30px;
+    }
+    .feature-icon-4 {
+        margin-top: 30px;
+    }
+    .footer-area {
+        text-align: center;
+    }
+}
+@media (max-width: 660px) {
+    #header {
+        background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background-size: contain;
+    }
+}
+@media (max-width: 520px) {
+    #header {
+        background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+        background-size: contain;
+    }
+}
+@media (max-width: 410px) {
+    .navbar-default {
+        padding-top: 10px;
+        height: 4.0em;
+    }
+    .navbar-default .navbar-toggle {
+        margin-top: 10px;
+    }
+    .navbar-brand {
+        margin-top: -35px;
+    }
+    .navbar-brand img {
+        overflow: visible;
+        display: inline;
+        max-width: 40%;
+        height: auto;
+        margin-top: -35px;
+    }
+    .navbar-nav.navbar-right > li {
+        float: left;
+        margin-top: 1px;
+        margin-bottom: -10px;
+    }
+    .navbar .nav > li {
+        margin-right: -7px;
+        margin-top: 5px;
+    }
+    .navbar-collapse {
+        float: right;
+        margin-top: 0px;
+        background: white;
+        -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+        -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+        box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    }
+}
+.navbar-right {
+    float: right !important;
+    padding-top: 40px;
+}
+.catch-phrase {
+    margin-top: 50px;
+}
+.overview {
+    z-index: 10;
+    -webkit-box-shadow: 0px -10px 3px 0px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px -10px 3px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px -10px 3px 0px rgba(0, 0, 0, 0.25);
+}
+.heading {
+    text-align: center;
+}
+#contact_us_modal {
+    color: #000;
+    .modal-header {
+        padding-bottom: 10px;
+        padding-top: 10px;
+    }
+    .modal-body {
+        padding: 10px 20px 12px;
+        a {
+            color: #000;
+            &:hover {
+                color: #00CCFF;
+            }
+        }
+    }
+    .modal-dialog {
+        max-width: 350px;
+    }
 }
 p {
     line-height: normal;
@@ -438,10 +312,14 @@ p {
 img {
     max-width: 100%;
 }
-input, textara {
+input,
+textara {
     font-family: "Open Sans";
 }
-a, a:focus, a:hover, a:active {
+a,
+a:focus,
+a:hover,
+a:active {
     outline: 0 none !important;
 }
 a {
@@ -449,14 +327,16 @@ a {
     text-decoration: none;
     transition: all 0.3s ease-in-out 0s;
 }
-a:hover, a:focus {
+a:hover,
+a:focus {
     color: #2e2e2e;
     text-decoration: none;
 }
-
-
-h2, h3, h4, h5 {
-    font-family: "Questrial",sans-serif;
+h2,
+h3,
+h4,
+h5 {
+    font-family: "Questrial", sans-serif;
     font-weight: normal;
     margin: 0 0 25px;
     text-shadow: none;
@@ -485,45 +365,10 @@ h5 {
 h6 {
     font-size: 14px;
 }
-
 .header-top {
     padding: 20px 0 9px;
     position: relative;
     width: 100%;
-}
-
-#logo {
-    color: #fff;
-    float: left;
-    font-family: "Open Sans",sans-serif;
-    font-size: 30px;
-    font-weight: 800;
-    letter-spacing: 9px;
-    margin: 6px 1px;
-    text-decoration: none;
-}
-#logo img {
-    display: inline-block;
-    margin-right: 20px;
-    margin-top: 1px;
-}
-.header-right {
-    color: #fff;
-    padding-top: 15px;
-    text-align: right;
-}
-.header-right a {
-    color: #fff;
-    letter-spacing: 0.4px;
-    margin-left: 10px;
-}
-.header-right span {
-    margin-left: 10px;
-    vertical-align: super;
-}
-.header-right a:hover {
-    color: #4cb0fb;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 .header-bottom {
     padding-bottom: 95px;
@@ -538,7 +383,6 @@ h6 {
     padding-bottom: 50px;
     text-shadow: 0px 10px 10px rgba(0, 0, 0, 0.9);
     opacity: 1;
-
 }
 .header-bottom p {
     color: white;
@@ -556,12 +400,10 @@ h6 {
 .header-bottom p a:hover {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
-.header-bottom p.appIconBox {
-    margin-top: 80px;
-}
 .header-bottom p.appStoreBtnBox {
     margin-top: -60px;
-    margin-bottom: 50px;;
+    margin-bottom: 50px;
+    ;
 }
 .header-bottom p.appStoreBtnBox a:hover {
     opacity: 0.5;
@@ -589,14 +431,12 @@ h6 {
 .leftPadding {
     padding-left: 2% !important;
 }
-.twitterIcon, .fbIcon {
+.twitterIcon,
+.fbIcon {
     color: #fff !important;
-    font-family: "socialico",sans-serif;
+    font-family: "socialico", sans-serif;
     font-size: 28px;
     vertical-align: middle;
-}
-.footer-area .twitterIcon, .footer-area .fbIcon {
-    color: #a3b1bf !important;
 }
 .twitterIcon:hover {
     color: #00aced !important;
@@ -609,9 +449,9 @@ h6 {
     float: left;
     width: 100%;
     position: relative;
-    -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0.25);
-    box-shadow:  0px -10px 3px 0px rgba(50, 50, 50, 0.25);
+    -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: 0px -10px 3px 0px rgba(50, 50, 50, 0.25);
 }
 .footer-area {
     background: none repeat scroll 0 0 #cbcbcb;
@@ -631,7 +471,6 @@ h6 {
 .footer-area p.copy-right {
     padding: 15px 0 4px;
 }
-
 .footer-area .footer-right ul {
     font-family: Roboto-Thin;
     list-style: outside none none;
@@ -644,10 +483,6 @@ h6 {
 }
 .footer-area .footer-right ul li:first-child {
     background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-}
-.footer-area .footer-right ul li.social-icon {
-    background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
-    padding-right: 0;
 }
 .footer-area .footer-right a {
     color: black;
@@ -665,7 +500,7 @@ h6 {
 }
 .home-top h2 {
     color: #00B0F0;
-    font-family: "Questrial",sans-serif;
+    font-family: "Questrial", sans-serif;
     font-size: 30px;
     text-transform: uppercase;
     margin-top: 30px;
@@ -677,7 +512,6 @@ h6 {
     line-height: 36px;
     padding-top: 15px;
 }
-
 .feature-box {
     padding: 60px 0 72px;
     position: relative;
@@ -705,122 +539,37 @@ h6 {
 .feature-box .iphone-img {
     padding-top: 18px;
 }
-
-
-.other-box-area {
-    padding-top: 118px;
-}
-.other-box {
-    padding-bottom: 20px;
-    padding-top: 12px;
-}
-.other-box p {
-    color: #fff;
-    font-size: 18px;
-    font-weight: 300;
-    line-height: 22px;
-    padding: 11px 3% 15px;
-}
-
-
-.inner-content {
-    padding-top: 80px;
-}
-.inner-content h1 {
-    font-size: 36px;
-    font-weight: 300;
-    padding: 10px 0;
-}
-.inner-content h2 {
-    font-size: 14px;
-    font-weight: 700;
-    margin-bottom: 19px;
-    padding-top: 2px;
-}
-.inner-content p {
-    line-height: 18px;
-    padding: 0 0 8px;
-}
-.inner-page-left {
-    padding-bottom: 20px;
-    padding-top: 15px;
-}
-.inner-page-left p {
-    padding-bottom: 2px;
-}
-.inner-page-left p a.active {
-    color: #4cb0fb;
-    font-weight: 700;
-}
-.inner-page-left p a:hover {
-    color: #4cb0fb;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
-}
-.inner-bottom {
-    background: url("images/inner-footer-bg.jpg") no-repeat scroll center 0 / cover rgba(0, 0, 0, 0);
-    margin-top: 62px;
-}
-.inner-bottom p.download-on-appstore {
-    line-height: normal;
-    padding: 166px 0 142px;
-}
-.inner-bottom p.download-on-appstore a {
-    background: none repeat scroll 0 0 #4cb0fb;
-    border-radius: 50px;
-    color: #fff;
-    display: inline-block;
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    padding: 31px 100px 28px;
-}
-.inner-bottom p.download-on-appstore a:hover {
-    opacity: 0.5;
-}
-
-
 /* LUMEN GAME SCREEN =======================> */
 
 .navbar-lumen {
-  background-color: white;
-  -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-  -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-  box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
+    background-color: white;
+    -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
 }
-
-   .navbar-lumen .nav > li > a {
+.navbar-lumen .nav > li > a {
     color: #186B95;
-    display:inline;
+    display: inline;
 }
-
-  .navbar-collapse-flat{
+.navbar-collapse-flat {
     color: black;
-    -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-    -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-    box-shadow: 0px 10px 3px 3px rgba(0,0,0,0);
-  }
-
-.navbar-lumen .navbar-toggle {
-    border-color: white;    
+    -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 3px 3px rgba(0, 0, 0, 0);
 }
-
+.navbar-lumen .navbar-toggle {
+    border-color: white;
+}
 .navbar-lumen .navbar-toggle .icon-bar {
     background-color: #186B95;
 }
-
-@media (max-width: 410px) {
+@media (max-width: 410px) {} .lumen-game-announcement {
+    font-family: Questrial;
+    text-align: center;
 }
-
-
-.lumen-game-announcement{
-  font-family: Questrial;
-  text-align: center;
+.trophy {
+    width: 40%;
 }
-
-.trophy{
-  width: 40%;
-}
-
 #header-lumens {
     background-color: white;
     float: left;
@@ -828,125 +577,93 @@ h6 {
     width: 100%;
     z-index: 1;
 }
-
 .header-bottom-lumens p.trophy {
     margin-top: 75px;
     margin-bottom: 50px;
     margin-left: auto;
     margin-right: auto;
 }
-
-
-.static_pages{
-  margin-left: 10%;
+.static_pages {
+    margin-left: 10%;
 }
-
-
 @media (max-width: 992px) {
-  .trophy{
-  width: 50%;
-  }
-
+    .trophy {
+        width: 50%;
+    }
 }
-
 @media (max-width: 410px) {
-  .navbar-collapse-flat{
-  margin-top: 1px;
-  }
-
-  .navbar-flat .nav > li {
-    margin-right: -7px;
-    margin-top: 5px;
-  }
-
-   .navbar-flat .nav > li > a {
-    color:  black;
-    display: inline;
-  }
-
-  .trophy{
-  width: 100%;
-  z-index: 15;
-  }
-
-  .header-bottom-lumens p.trophy {
-    margin-top: 35px;
-    margin-bottom: -25px;
-  }
-
-   .navbar-collapse-flat{
-    position: relative;
-  }
-
-    .static_pages{
-   margin-left: 0%;
+    .navbar-collapse-flat {
+        margin-top: 1px;
+    }
+    .navbar-flat .nav > li {
+        margin-right: -7px;
+        margin-top: 5px;
+    }
+    .navbar-flat .nav > li > a {
+        color: black;
+        display: inline;
+    }
+    .trophy {
+        width: 100%;
+        z-index: 15;
+    }
+    .header-bottom-lumens p.trophy {
+        margin-top: 35px;
+        margin-bottom: -25px;
+    }
+    .navbar-collapse-flat {
+        position: relative;
+    }
+    .static_pages {
+        margin-left: 0%;
+    }
 }
-
+.game-description {
+    font-size: 20px;
 }
-
-
-
-
-.game-description{
-  font-size: 20px;
+.game-rules {
+    margin-top: 50px;
+    text-transform: uppercase;
+    margin-left: 3%;
 }
-
-.game-rules{
-  margin-top: 50px;
-  text-transform: uppercase;
-  margin-left: 3%;
-  
-  
+.game-rules>a {
+    font-family: Roboto-Light;
+    text-transform: uppercase;
+    text-decoration: underline;
+    margin-right: 10px;
+    margin-left: 0px;
 }
-
-.game-rules>a{
-  font-family: Roboto-Light;
-  text-transform: uppercase;
-  text-decoration: underline;
-  margin-right: 10px;
-  margin-left: 0px;
+.game-rules>a:hover {
+    color: #00B0F0;
 }
-
-.game-rules>a:hover{
-  color: #00B0F0;
-}
-
 .game-description h2 {
     color: #00B0F0;
-    font-family: "Questrial",sans-serif;
+    font-family: "Questrial", sans-serif;
     font-size: 40px;
     text-transform: uppercase;
     margin-top: 100px;
 }
-
 .LinkToAppStore {
-   margin-top: 80px;
-   margin-bottom: 50px;
+    margin-top: 80px;
+    margin-bottom: 50px;
 }
-
 .LinkToAppStore2 {
-   margin-top: 80px;
-   margin-bottom: 50px;
-   margin-left: auto;
-   margin-right: auto;
-   width: 25%;
-   min-width: 234px;
+    margin-top: 80px;
+    margin-bottom: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 25%;
+    min-width: 234px;
 }
-
 .navbar-flat {
-  background-color: #186B95;
-  -webkit-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-  -moz-box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
-  box-shadow: 0px 10px 3px 0px rgba(0,0,0,0);
+    background-color: #186B95;
+    -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
+    box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
 }
-
-.tnc-list>li
-{
-    margin-left : 10px;
+.tnc-list>li {
+    margin-left: 10px;
 }
-
-.tnc-list-2>li
-{
+.tnc-list-2>li {
     list-style-type: none;
 }
-
