@@ -7706,23 +7706,29 @@ body.venue_manager {
   }
 }
 @media (max-width: 410px) {
-  /* line 283, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 284, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  #header {
+    background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+    background-size: contain;
+  }
+
+  /* line 289, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-default {
     padding-top: 10px;
     height: 4.0em;
   }
 
-  /* line 288, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 294, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-default .navbar-toggle {
     margin-top: 10px;
   }
 
-  /* line 292, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 298, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-brand {
     margin-top: -35px;
   }
 
-  /* line 297, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 303, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-brand img {
     overflow: visible;
     display: inline;
@@ -7731,14 +7737,20 @@ body.venue_manager {
     margin-top: -35px;
   }
 
-  /* line 305, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 311, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-nav.navbar-right > li {
     float: left;
     margin-top: 1px;
     margin-bottom: -10px;
   }
 
-  /* line 312, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 317, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  .navbar .nav > li {
+    margin-right: -7px;
+    margin-top: 5px;
+  }
+
+  /* line 323, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-collapse {
     float: right;
     margin-top: 0px;
@@ -7748,18 +7760,18 @@ body.venue_manager {
     box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
   }
 }
-/* line 327, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 338, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-right {
   float: right !important;
   padding-top: 40px;
 }
 
-/* line 332, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 343, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .catch-phrase {
   margin-top: 50px;
 }
 
-/* line 336, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 347, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .overview {
   z-index: 10;
   -webkit-box-shadow: 0px -10px 3px 0px rgba(0, 0, 0, 0.25);
@@ -7767,39 +7779,39 @@ body.venue_manager {
   box-shadow: 0px -10px 3px 0px rgba(0, 0, 0, 0.25);
 }
 
-/* line 343, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 354, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .heading {
   text-align: center;
 }
 
-/* line 347, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 358, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal {
   color: #000;
 }
-/* line 349, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 360, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal .modal-header {
   padding-bottom: 10px;
   padding-top: 10px;
 }
-/* line 353, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 364, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal .modal-body {
   padding: 10px 20px 12px;
 }
-/* line 355, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 366, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal .modal-body a {
   color: #000;
 }
-/* line 357, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 368, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal .modal-body a:hover {
   color: #00CCFF;
 }
-/* line 362, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 373, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #contact_us_modal .modal-dialog {
   max-width: 350px;
 }
 
 /* ===============================================================> NEW */
-/* line 371, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 382, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 body {
   background: none repeat scroll 0 0 #fff;
   color: #2e2e2e;
@@ -7810,41 +7822,41 @@ body {
   padding: 0;
 }
 
-/* line 380, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 391, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 p {
   line-height: normal;
   font-family: Roboto;
 }
 
-/* line 384, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 395, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 img {
   max-width: 100%;
 }
 
-/* line 387, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 398, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 input, textara {
   font-family: "Open Sans";
 }
 
-/* line 390, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 401, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 a, a:focus, a:hover, a:active {
   outline: 0 none !important;
 }
 
-/* line 393, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 404, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 a {
   color: #2e2e2e;
   text-decoration: none;
   transition: all 0.3s ease-in-out 0s;
 }
 
-/* line 398, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 409, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 a:hover, a:focus {
   color: #2e2e2e;
   text-decoration: none;
 }
 
-/* line 404, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 415, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h2, h3, h4, h5 {
   font-family: "Questrial",sans-serif;
   font-weight: normal;
@@ -7852,54 +7864,54 @@ h2, h3, h4, h5 {
   text-shadow: none;
 }
 
-/* line 410, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 421, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .fleft {
   float: left;
 }
 
-/* line 413, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 424, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .fright {
   float: right;
 }
 
-/* line 416, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 427, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h1 {
   font-size: 38px;
 }
 
-/* line 419, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 430, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h2 {
   font-size: 38px;
 }
 
-/* line 422, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 433, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h3 {
   font-size: 20px;
 }
 
-/* line 425, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 436, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h4 {
   font-size: 18px;
 }
 
-/* line 428, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 439, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h5 {
   font-size: 16px;
 }
 
-/* line 431, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 442, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 h6 {
   font-size: 14px;
 }
 
-/* line 435, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 446, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-top {
   padding: 20px 0 9px;
   position: relative;
   width: 100%;
 }
 
-/* line 441, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 452, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #logo {
   color: #fff;
   float: left;
@@ -7911,45 +7923,45 @@ h6 {
   text-decoration: none;
 }
 
-/* line 451, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 462, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #logo img {
   display: inline-block;
   margin-right: 20px;
   margin-top: 1px;
 }
 
-/* line 456, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 467, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-right {
   color: #fff;
   padding-top: 15px;
   text-align: right;
 }
 
-/* line 461, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 472, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-right a {
   color: #fff;
   letter-spacing: 0.4px;
   margin-left: 10px;
 }
 
-/* line 466, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 477, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-right span {
   margin-left: 10px;
   vertical-align: super;
 }
 
-/* line 470, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 481, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-right a:hover {
   color: #4cb0fb;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
-/* line 474, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 485, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom {
   padding-bottom: 95px;
 }
 
-/* line 477, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 488, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom h1 {
   color: white;
   font-family: 'Placelists';
@@ -7962,7 +7974,7 @@ h6 {
   opacity: 1;
 }
 
-/* line 489, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 500, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p {
   color: white;
   font-family: Questrial;
@@ -7974,33 +7986,33 @@ h6 {
   margin-top: -15px;
 }
 
-/* line 499, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 510, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p a {
   color: black;
 }
 
-/* line 502, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 513, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p a:hover {
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 
-/* line 505, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 516, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p.appIconBox {
   margin-top: 80px;
 }
 
-/* line 508, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 519, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p.appStoreBtnBox {
   margin-top: -60px;
   margin-bottom: 50px;
 }
 
-/* line 512, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 523, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom p.appStoreBtnBox a:hover {
   opacity: 0.5;
 }
 
-/* line 515, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 526, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .page-container {
   float: left;
   overflow: hidden;
@@ -8008,34 +8020,34 @@ h6 {
   width: 100%;
 }
 
-/* line 521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 532, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .container .row-fluid .main {
   margin-left: 0;
 }
 
-/* line 524, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 535, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .row .row {
   margin-left: 0;
   margin-right: 0;
 }
 
-/* line 528, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 539, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .row .row [class*="col-"] {
   padding-left: 0;
   padding-right: 0;
 }
 
-/* line 532, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .rightPadding {
   padding-right: 2% !important;
 }
 
-/* line 535, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 546, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .leftPadding {
   padding-left: 2% !important;
 }
 
-/* line 538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 549, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .twitterIcon, .fbIcon {
   color: #fff !important;
   font-family: "socialico",sans-serif;
@@ -8043,22 +8055,22 @@ h6 {
   vertical-align: middle;
 }
 
-/* line 544, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 555, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .twitterIcon, .footer-area .fbIcon {
   color: #a3b1bf !important;
 }
 
-/* line 547, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 558, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .twitterIcon:hover {
   color: #00aced !important;
 }
 
-/* line 550, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 561, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .fbIcon:hover {
   color: #4a6d9d !important;
 }
 
-/* line 553, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 564, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #content {
   z-index: 10;
   float: left;
@@ -8069,7 +8081,7 @@ h6 {
   box-shadow: 0px -10px 3px 0px rgba(50, 50, 50, 0.25);
 }
 
-/* line 562, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 573, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area {
   background: none repeat scroll 0 0 #cbcbcb;
   float: left;
@@ -8077,7 +8089,7 @@ h6 {
   width: 100%;
 }
 
-/* line 568, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 579, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area p {
   font-family: Roboto-Thin;
   color: white;
@@ -8088,12 +8100,12 @@ h6 {
   padding-top: 10px;
 }
 
-/* line 577, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 588, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area p.copy-right {
   padding: 15px 0 4px;
 }
 
-/* line 581, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 592, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .footer-right ul {
   font-family: Roboto-Thin;
   list-style: outside none none;
@@ -8101,24 +8113,24 @@ h6 {
   padding: 2px 0 0;
 }
 
-/* line 587, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 598, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .footer-right ul li {
   display: inline-block;
   padding: 1px 5px 0 12px;
 }
 
-/* line 591, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 602, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .footer-right ul li:first-child {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
 }
 
-/* line 594, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 605, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .footer-right ul li.social-icon {
   background: none repeat scroll 0 0 rgba(0, 0, 0, 0);
   padding-right: 0;
 }
 
-/* line 598, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 609, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area .footer-right a {
   color: black;
   display: inline-block;
@@ -8127,18 +8139,18 @@ h6 {
   font-size: 18px;
 }
 
-/* line 605, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 616, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .footer-area a:hover {
   color: #00B0F0;
 }
 
-/* line 608, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 619, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .home-top {
   background: url("images/map-bg.jpg") no-repeat scroll center bottom rgba(0, 0, 0, 0);
   padding: 10px 0 30px;
 }
 
-/* line 612, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 623, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .home-top h2 {
   color: #00B0F0;
   font-family: "Questrial",sans-serif;
@@ -8147,7 +8159,7 @@ h6 {
   margin-top: 30px;
 }
 
-/* line 619, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 630, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .home-top p {
   color: #222;
   font-size: 22px;
@@ -8156,18 +8168,18 @@ h6 {
   padding-top: 15px;
 }
 
-/* line 627, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 638, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box {
   padding: 60px 0 72px;
   position: relative;
 }
 
-/* line 631, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 642, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box.gray-bg {
   background: none repeat scroll 0 0 #f7f7f7;
 }
 
-/* line 634, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 645, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box h3 {
   font-size: 28px;
   font-weight: 700;
@@ -8176,40 +8188,40 @@ h6 {
   text-transform: uppercase;
 }
 
-/* line 641, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 652, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box p {
   font-family: Roboto-Light;
   font-size: 20px;
   line-height: 32px;
 }
 
-/* line 646, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 657, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box .feature-icon {
   margin-top: 180px;
 }
 
-/* line 649, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 660, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box .feature-icon.tea-icon {
   margin-left: -24px;
 }
 
-/* line 652, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 663, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .feature-box .iphone-img {
   padding-top: 18px;
 }
 
-/* line 657, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 668, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .other-box-area {
   padding-top: 118px;
 }
 
-/* line 660, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 671, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .other-box {
   padding-bottom: 20px;
   padding-top: 12px;
 }
 
-/* line 664, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 675, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .other-box p {
   color: #fff;
   font-size: 18px;
@@ -8218,19 +8230,19 @@ h6 {
   padding: 11px 3% 15px;
 }
 
-/* line 673, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 684, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-content {
   padding-top: 80px;
 }
 
-/* line 676, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 687, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-content h1 {
   font-size: 36px;
   font-weight: 300;
   padding: 10px 0;
 }
 
-/* line 681, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 692, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-content h2 {
   font-size: 14px;
   font-weight: 700;
@@ -8238,48 +8250,48 @@ h6 {
   padding-top: 2px;
 }
 
-/* line 687, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 698, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-content p {
   line-height: 18px;
   padding: 0 0 8px;
 }
 
-/* line 691, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 702, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-page-left {
   padding-bottom: 20px;
   padding-top: 15px;
 }
 
-/* line 695, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 706, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-page-left p {
   padding-bottom: 2px;
 }
 
-/* line 698, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 709, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-page-left p a.active {
   color: #4cb0fb;
   font-weight: 700;
 }
 
-/* line 702, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 713, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-page-left p a:hover {
   color: #4cb0fb;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.2);
 }
 
-/* line 706, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 717, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-bottom {
   background: url("images/inner-footer-bg.jpg") no-repeat scroll center 0/cover rgba(0, 0, 0, 0);
   margin-top: 62px;
 }
 
-/* line 710, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 721, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-bottom p.download-on-appstore {
   line-height: normal;
   padding: 166px 0 142px;
 }
 
-/* line 714, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 725, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-bottom p.download-on-appstore a {
   background: none repeat scroll 0 0 #4cb0fb;
   border-radius: 50px;
@@ -8291,13 +8303,13 @@ h6 {
   padding: 31px 100px 28px;
 }
 
-/* line 724, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 735, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .inner-bottom p.download-on-appstore a:hover {
   opacity: 0.5;
 }
 
 /* LUMEN GAME SCREEN =======================> */
-/* line 731, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 742, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-lumen {
   background-color: white;
   -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
@@ -8305,13 +8317,13 @@ h6 {
   box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
 }
 
-/* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 749, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-lumen .nav > li > a {
   color: #186B95;
   display: inline;
 }
 
-/* line 743, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 754, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-collapse-flat {
   color: black;
   -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
@@ -8319,28 +8331,28 @@ h6 {
   box-shadow: 0px 10px 3px 3px rgba(0, 0, 0, 0);
 }
 
-/* line 750, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 761, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-lumen .navbar-toggle {
   border-color: white;
 }
 
-/* line 754, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 765, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-lumen .navbar-toggle .icon-bar {
   background-color: #186B95;
 }
 
-/* line 762, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 773, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .lumen-game-announcement {
   font-family: Questrial;
   text-align: center;
 }
 
-/* line 767, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 778, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .trophy {
   width: 40%;
 }
 
-/* line 771, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 782, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 #header-lumens {
   background-color: white;
   float: left;
@@ -8349,7 +8361,7 @@ h6 {
   z-index: 1;
 }
 
-/* line 779, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 790, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .header-bottom-lumens p.trophy {
   margin-top: 75px;
   margin-bottom: 50px;
@@ -8357,64 +8369,70 @@ h6 {
   margin-right: auto;
 }
 
-/* line 787, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 798, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .static_pages {
   margin-left: 10%;
 }
 
 @media (max-width: 992px) {
-  /* line 793, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .trophy {
     width: 50%;
   }
 }
 @media (max-width: 410px) {
-  /* line 800, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 811, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-collapse-flat {
     margin-top: 1px;
   }
 
-  /* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
-  .navbar-lumen .nav > li > a {
+  /* line 815, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  .navbar-flat .nav > li {
+    margin-right: -7px;
+    margin-top: 5px;
+  }
+
+  /* line 820, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  .navbar-flat .nav > li > a {
     color: black;
     display: inline;
   }
 
-  /* line 809, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 825, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .trophy {
     width: 100%;
     z-index: 15;
   }
 
-  /* line 814, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 830, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .header-bottom-lumens p.trophy {
     margin-top: 35px;
     margin-bottom: -25px;
   }
 
-  /* line 819, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 835, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .navbar-collapse-flat {
     position: relative;
   }
 
-  /* line 823, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+  /* line 839, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
   .static_pages {
     margin-left: 0%;
   }
 }
-/* line 832, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 848, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .game-description {
   font-size: 20px;
 }
 
-/* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 852, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .game-rules {
   margin-top: 40px;
   text-transform: uppercase;
   text-decoration: underline;
 }
 
-/* line 842, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 858, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .game-description h2 {
   color: #00B0F0;
   font-family: "Questrial",sans-serif;
@@ -8423,13 +8441,13 @@ h6 {
   margin-top: 100px;
 }
 
-/* line 850, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 866, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .LinkToAppStore {
   margin-top: 80px;
   margin-bottom: 50px;
 }
 
-/* line 855, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 871, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .navbar-flat {
   background-color: #186B95;
   -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
@@ -8437,12 +8455,12 @@ h6 {
   box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
 }
 
-/* line 863, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 879, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .tnc-list > li {
   margin-left: 10px;
 }
 
-/* line 868, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
+/* line 884, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/AppWebMerger/app/assets/stylesheets/styles.css.scss */
 .tnc-list-2 > li {
   list-style-type: none;
 }
