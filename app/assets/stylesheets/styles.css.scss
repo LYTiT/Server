@@ -290,6 +290,13 @@ height: 5.0em;
 
 }
 
+@media (max-width: 660px) {
+#header {
+    background: url(nyc_map_lights_v3.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+    background-size: contain;
+}
+}
+
 @media (max-width: 520px) {
 #header {
     background: url(nyc_map_lights_v4.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
