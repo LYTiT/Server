@@ -172,6 +172,8 @@ GEM
       haml (>= 3.1, < 5.0)
       html2haml (>= 1.0.1)
       railties (>= 4.0.1)
+    heroku-deflater (0.5.3)
+      rack (>= 1.4.5)
     higcm (0.0.5)
       typhoeus (~> 0.3.3)
     high_voltage (2.2.1)
@@ -398,6 +400,7 @@ DEPENDENCIES
   geokit-rails
   google_places!
   haml-rails
+  heroku-deflater
   higcm
   high_voltage
   honeybadger
