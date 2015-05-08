@@ -47,6 +47,7 @@ gem 'pr_geohash'
 gem 'timezone'
 gem 'tzinfo'
 gem 'skylight'
+gem 'heroku-deflater', :group => :production
 
 group :development do
   gem 'better_errors'

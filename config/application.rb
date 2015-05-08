@@ -21,6 +21,7 @@ module LytitServer
     end
 
     config.assets.initialize_on_precompile = false
+    config.middleware.use Rack::Deflater
 
     config.action_mailer.default_options = {
       from: "LYTiT <noreply@lytit.com>"
