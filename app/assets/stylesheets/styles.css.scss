@@ -892,9 +892,23 @@ h6 {
 }
 
 .game-rules{
-  margin-top: 40px;
+  margin-top: 50px;
+  text-transform: uppercase;
+  margin-left: 3%;
+  
+  
+}
+
+.game-rules>a{
+  font-family: Roboto-Light;
   text-transform: uppercase;
   text-decoration: underline;
+  margin-right: 10px;
+  margin-left: 0px;
+}
+
+.game-rules>a:hover{
+  color: #00B0F0;
 }
 
 .game-description h2 {

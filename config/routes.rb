@@ -139,12 +139,13 @@ LytitServer::Application.routes.draw do
 
   get 'about-us' => 'pages#about_us'
   get 'about' => 'pages#about_us'
-  get 'terms-and-conditions' => 'pages#tnc'
+  get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
   get 'blog' => 'pages#blog'
   get 'lumen-game' => 'pages#lumen_game'
-  get 'lumen-game-rules' => 'pages#lumen_game_rules'
-  
+  get 'lumen-game/rules' => 'pages#lumen_game_rules'
+  get 'lumen-game/faq' => 'pages#lumen_game_faq'
+
   root :to => 'pages#home'
 
 end
