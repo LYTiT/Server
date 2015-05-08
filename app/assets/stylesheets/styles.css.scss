@@ -24,11 +24,11 @@
 
 @font-face {
     font-family: "socialico";
-    src: url(/assets/socialico.ttf) format("truetype");
     src: url(/assets/socialico.eot);
-    src: url(/assets/socialico.eot?#iefix) format('embedded-opentype');
-    src: url(/assets/socialico.woff) format('woff');
-    src: url(/assets/webfont.svg#svgsocialico) format('svg');
+    src: url(/assets/socialico.ttf) format("truetype"),
+         url(/assets/socialico.eot?#iefix) format("embedded-opentype"),
+         url(/assets/socialico.woff) format("woff"),
+         url(/assets/webfont.svg#svgsocialico) format("svg");
 }
 
 @font-face {
