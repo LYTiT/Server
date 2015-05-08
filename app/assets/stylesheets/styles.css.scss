@@ -115,6 +115,11 @@ height: 5.0em;
     border-color: #186B95;    
 }
 
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+  background-color: #186B95;
+}
+
 
 #header {
     background: url(nyc_map_lights.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
@@ -128,9 +133,6 @@ height: 5.0em;
 #header .container {
     position: relative;
 }
-
-
-
 
 
 
@@ -211,7 +213,7 @@ height: 5.0em;
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 760px) {
 
 .navbar-default {
   height: 4.5em;
