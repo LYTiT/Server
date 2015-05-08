@@ -307,6 +307,11 @@ height: 5.0em;
   margin-bottom: -10px;
   }
 
+ .navbar .nav > li {
+    margin-right: -7px;
+    margin-top: 5px;
+  }
+
 
   .navbar-collapse{
     float: right;
@@ -801,7 +806,8 @@ h6 {
   }
 
   .navbar-flat .nav > li {
-    margin-right: -10px;
+    margin-right: -7px;
+    margin-top: 5px;
   }
 
    .navbar-flat .nav > li > a {
