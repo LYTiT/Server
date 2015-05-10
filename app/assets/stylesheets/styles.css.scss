@@ -538,6 +538,7 @@ h6 {
 }
 .feature-box .iphone-img {
     padding-top: 18px;
+    max-width: 350px;
 }
 .navbar-collapse-flat {
     color: black;
@@ -577,8 +578,11 @@ h6 {
     .navbar-collapse-flat {
         position: relative;
     }
+    .feature-box .iphone-img {
+        margin-left: auto;
+        margin-right: auto;
+    }
 }
-
 @media (max-width: 410px) {
     .navbar-collapse-flat {
         margin-top: 1px;
