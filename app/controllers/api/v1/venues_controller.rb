@@ -128,6 +128,10 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 				end
 
+				if (@comment.media_type != 'text' and @comment.consider? == 1)
+					@user.delay.update_lumens_after_media(@comment)
+				end
+
 				#If the Venue Comment is a Bounty response we update bounty_id field
 				if params[:is_bounty_response] != nil
 					@comment.is_response = true

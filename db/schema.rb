@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150430232038) do
+ActiveRecord::Schema.define(version: 20150512173615) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -319,6 +319,7 @@ ActiveRecord::Schema.define(version: 20150430232038) do
     t.string   "rejection_reason"
   end
 
+  add_index "venue_comments", ["bounty_id"], name: "index_venue_comments_on_bounty_id", using: :btree
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
   add_index "venue_comments", ["venue_id"], name: "index_venue_comments_on_venue_id", using: :btree
 

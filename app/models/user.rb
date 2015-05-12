@@ -144,7 +144,6 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_text(text_id)
-    id = text_id
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
 
@@ -154,8 +153,29 @@ class User < ActiveRecord::Base
     update_columns(lumens: updated_lumens)
     #update_lumen_percentile
 
-    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => "text")
+    l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => text_id, :media_type => "text")
     l.save
+  end
+
+  #every media post gets at least the text value of Lumens and receives more Lumens when it gets viewed
+  def update_lumens_after_media(comment)
+    new_lumens = LumenConstants.text_media_weight
+    updated_lumens = self.lumens + new_lumens
+    update_columns(lumens: updated_lumens)
+
+    if comment.media_type == "image"
+      i_l = self.image_lumens
+      update_columns(image_lumens: (i_l + new_lumens).round(4))
+
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => "image")
+      l.save
+    else
+      v_l = self.video_lumens
+      update_columns(video_lumens: (v_l + new_lumens).round(4))
+
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => "video")
+      l.save
+    end
   end
 
   def update_lumens_after_view(comment)
