@@ -184,7 +184,6 @@ class User < ActiveRecord::Base
       save
     end
 
-    id = comment.id
     time = Time.now
     comment_time = comment.created_at
     time_delta = ((time - comment_time) / 1.minute) / (LumenConstants.views_halflife)
@@ -206,7 +205,7 @@ class User < ActiveRecord::Base
     #update_lumen_percentile
 
     if new_lumens > 0
-      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => id, :media_type => comment.media_type)
+      l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => comment.id, :media_type => comment.media_type)
       l.save
     end
   end

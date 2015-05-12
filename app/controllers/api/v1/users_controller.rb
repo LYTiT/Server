@@ -5,6 +5,11 @@ class Api::V1::UsersController < ApiBaseController
 	#Administrative Methods------------------>
 
 	def create
+		existing_temp_user = User.where("email = ?", params[:email]).first
+		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
+			existing_temp_user.destroy
+		end
+		
 		@user = User.new(user_params)
 		@user.adjusted_view_discount = LumenConstants.views_weight_adj
 
