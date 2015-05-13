@@ -6,6 +6,8 @@ class Api::V1::UsersController < ApiBaseController
 
 	def create
 		existing_temp_user = User.where("email = ?", params[:email]).first
+		puts "<---------->email: #{params[:email]}"
+		puts "***********************121212121212121212121212----->>>>>>> #{existing_temp_user.name}"
 		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
 			puts '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ USER HAS BEEN FOUND'
 			existing_temp_user.destroy
