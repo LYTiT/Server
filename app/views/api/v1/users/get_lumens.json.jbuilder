@@ -1,4 +1,5 @@
 json.lumen_value @user.lumens
+json.gross_lumen_value @user.monthly_gross_lumens
 
 json.video_count @user.total_video_comments
 json.photo_count @user.total_image_comments

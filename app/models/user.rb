@@ -119,7 +119,11 @@ class User < ActiveRecord::Base
   def global_feed
     days_back = 1
     responded_to_bounty_ids = "SELECT id FROM bounties WHERE (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    feed = VenueComment.where("(created_at >= ? AND bounty_id IS NULL AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
+    if self.version = "1.0.0"
+      feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
+    else
+      feed = VenueComment.where("(created_at >= ? AND bounty_id IS NULL AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
+    end
   end 
 
   def total_user_bounties
@@ -146,11 +150,13 @@ class User < ActiveRecord::Base
   def update_lumens_after_text(text_id)
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
+    gross_lumen_update = self.monthly_gross_lumens + new_lumens
 
     t_l = self.text_lumens
     update_columns(text_lumens: (t_l + new_lumens).round(4))
 
-    update_columns(lumens: updated_lumens)
+    update_columns(lumens: updated_lumens.round(4))
+    update_columns(lumens: gross_lumen_update.round(4))
     #update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => text_id, :media_type => "text")
@@ -161,7 +167,10 @@ class User < ActiveRecord::Base
   def update_lumens_after_media(comment)
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
-    update_columns(lumens: updated_lumens)
+    gross_lumen_update = self.monthly_gross_lumens + new_lumens
+
+    update_columns(lumens: updated_lumens.round(4))
+    update_columns(lumens: gross_lumen_update.round(4))
 
     if comment.media_type == "image"
       i_l = self.image_lumens
@@ -192,6 +201,7 @@ class User < ActiveRecord::Base
     previous_lumens = self.lumens
     new_lumens = comment.consider*(comment.weight*adjusted_view*adjusted_view_discount).round(4)
     updated_lumens = previous_lumens + new_lumens
+    gross_lumen_update = self.monthly_gross_lumens + new_lumens
 
     if comment.media_type == 'video'
       v_l = self.video_lumens
@@ -202,6 +212,7 @@ class User < ActiveRecord::Base
     end
 
     update_columns(lumens: updated_lumens.round(4))
+    update_columns(lumens: gross_lumen_update.round(4))
     #update_lumen_percentile
 
     if new_lumens > 0

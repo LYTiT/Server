@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150513155830) do
+ActiveRecord::Schema.define(version: 20150513174509) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -285,6 +285,7 @@ ActiveRecord::Schema.define(version: 20150513155830) do
     t.boolean  "email_confirmed",                    default: false
     t.boolean  "registered",                         default: false
     t.string   "vendor_id"
+    t.float    "monthly_gross_lumens",               default: 0.0
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree
