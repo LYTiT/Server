@@ -110,10 +110,12 @@ class LumenValue < ActiveRecord::Base
 			if ((user.lumens.floor % LumenConstants.view_discount_calibration_delta.to_i) == 0) && self.try(:venue_comment).media_type != 'text'
 				unique_viewers = CommentView.joins(:venue_comment).where('venue_comments.user_id = ?', user.id).uniq.pluck(:user_id)
 				total_viewers = CommentView.joins(:venue_comment).where('venue_comments.user_id = ?', user.id).pluck(:user_id)
-				unique_viewers_percentage = unique_viewers/total_viewers
+				if total_viewers != nil && total_viewers > 0
+					unique_viewers_percentage = unique_viewers/total_viewers
 
-				user.adjusted_view_discount = LumenConstants.views_weight_adj*(unique_viewers_percentage)**(1/LumenConstants.views_weight_adj_damping)
-				user.save
+					user.adjusted_view_discount = LumenConstants.views_weight_adj*(unique_viewers_percentage)**(1/LumenConstants.views_weight_adj_damping)
+					user.save
+				end
 			end
 		end
 	end
