@@ -139,6 +139,24 @@ class Api::V1::VenuesController < ApiBaseController
 					b = Bounty.find_by_id(params[:is_bounty_response])
 					b.response_received = true
 					b.increment!(:num_responses, 1)
+					#we keep track of the latest two responses for a bounty to display thumbnails in the happening(global) feed
+					#latest_response_2 is the older response thus why we copy over latest_response_1 into it in the 'else' part of the block
+					if b.latest_response_2 == nil
+						if @comment.media_type == text
+							b.latest_response_1 = @comment.comment
+						else
+							b.latest_response_1 = @comment.media_url
+						end
+					else	
+						b.latest_response_2 = b.latest_response_1
+						if @comment.media_type == text
+							b.latest_response_1 = @comment.comment
+						else
+							b.latest_response_1 = @comment.media_url
+						end
+					end
+					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response])
+					bounty_housing_comment.increment!(:views, 1)
 					@comment.save
 					b.save
 					@comment.delay.send_bounty_claim_notification

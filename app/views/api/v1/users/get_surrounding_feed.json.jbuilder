@@ -27,6 +27,8 @@ json.everything_moments(@surrounding_feed) do |entry|
   json.user_id entry.bounty.try(:user_id)
   json.response_received entry.bounty.try(:response_received)
   json.num_responses entry.bounty.try(:num_responses)
+  json.latest_response_1 entry.bounty.try(:latest_response_1)
+  json.latest_response_2 entry.bounty.try(:latest_response_2)
   json.did_respond @user.did_respond?(entry.bounty)
 
   json.compare_type entry.venue.type
