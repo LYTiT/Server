@@ -8,6 +8,7 @@ json.everything_moments(@area_feed) do |entry|
   json.country entry.venue.country
   json.latitude entry.venue.latitude
   json.longitude entry.venue.longitude
+  json.media_type entry.media_type
  
   json.bounty_id entry.bounty_id
   json.request_media_type entry.bounty.try(:media_type)
