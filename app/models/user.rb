@@ -156,7 +156,7 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: (t_l + new_lumens).round(4))
 
     update_columns(lumens: updated_lumens.round(4))
-    update_columns(lumens: gross_lumen_update.round(4))
+    update_columns(monthly_gross_lumens: gross_lumen_update.round(4))
     #update_lumen_percentile
 
     l = LumenValue.new(:value => new_lumens.round(4), :user_id => self.id, :venue_comment_id => text_id, :media_type => "text")
@@ -170,7 +170,7 @@ class User < ActiveRecord::Base
     gross_lumen_update = self.monthly_gross_lumens + new_lumens
 
     update_columns(lumens: updated_lumens.round(4))
-    update_columns(lumens: gross_lumen_update.round(4))
+    update_columns(monthly_gross_lumens: gross_lumen_update.round(4))
 
     if comment.media_type == "image"
       i_l = self.image_lumens
@@ -212,7 +212,7 @@ class User < ActiveRecord::Base
     end
 
     update_columns(lumens: updated_lumens.round(4))
-    update_columns(lumens: gross_lumen_update.round(4))
+    update_columns(monthly_gross_lumens: gross_lumen_update.round(4))
     #update_lumen_percentile
 
     if new_lumens > 0
