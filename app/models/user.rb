@@ -119,7 +119,7 @@ class User < ActiveRecord::Base
   def global_feed
     days_back = 1
     responded_to_bounty_ids = "SELECT id FROM bounties WHERE (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    if self.version = "1.0.0"
+    if self.version == "1.0.0"
       feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
     else
       feed = VenueComment.where("(created_at >= ? AND bounty_id IS NULL AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
