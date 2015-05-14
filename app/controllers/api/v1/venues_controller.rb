@@ -142,14 +142,14 @@ class Api::V1::VenuesController < ApiBaseController
 					#we keep track of the latest two responses for a bounty to display thumbnails in the happening(global) feed
 					#latest_response_2 is the older response thus why we copy over latest_response_1 into it in the 'else' part of the block
 					if b.latest_response_2 == nil
-						if @comment.media_type == text
+						if @comment.media_type == "text"
 							b.latest_response_1 = @comment.comment
 						else
 							b.latest_response_1 = @comment.media_url
 						end
 					else	
 						b.latest_response_2 = b.latest_response_1
-						if @comment.media_type == text
+						if @comment.media_type == "text"
 							b.latest_response_1 = @comment.comment
 						else
 							b.latest_response_1 = @comment.media_url
