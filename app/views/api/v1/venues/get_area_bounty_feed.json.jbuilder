@@ -1,4 +1,4 @@
-json.everything_moments(@surrounding_feed) do |entry|
+json.everything_moments(@area_feed) do |entry|
   json.id entry.id
   json.created_at entry.created_at
   json.venue_id entry.venue_id
