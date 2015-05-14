@@ -45,6 +45,11 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	#for a city, state, country in the venue page we return a bounty feed composed of bounties and claims instead of pure venue comments
+	def get_area_bounty_feed
+		feed = Venue.area_bounty_feed(params[:venue_id])
+	end
+
 	def add_comment
 		parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
 		assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment

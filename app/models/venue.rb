@@ -59,6 +59,13 @@ class Venue < ActiveRecord::Base
     return type
   end
 
+  #bounty feed of a city, state, or country
+  def self.area_bounty_feed(v_id)
+    days_back = 1
+    responded_to_bounty_ids = "SELECT id FROM bounties WHERE venue_id = #{v_id} AND (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
+    feed = VenueComment.where("bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
+  end
+
   #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
   def is_hot?
     last_posted_comment_time_wrapper = self.latest_posted_comment_time || (Time.now - 31.minute)
@@ -67,6 +74,14 @@ class Venue < ActiveRecord::Base
       true
     else
       false
+    end
+  end
+
+  def bonus_lumens
+    if self.is_hot? == true
+      return 1
+    else 
+      return nil
     end
   end
 
