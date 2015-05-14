@@ -1,6 +1,5 @@
 json.everything_moments(@surrounding_feed) do |entry|
   json.type entry.type
-  json.show_rating_screen 0
 
   json.id entry.id
   json.created_at entry.created_at
