@@ -155,7 +155,7 @@ class Api::V1::VenuesController < ApiBaseController
 							b.latest_response_1 = @comment.media_url
 						end
 					end
-					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response])
+					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response]).first
 					bounty_housing_comment.increment!(:views, 1)
 					@comment.save
 					b.save
