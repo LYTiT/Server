@@ -89,6 +89,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_bounties'
         post 'vote'
+        get 'get_area_bounty_feed'
       end
 
       controller :lytit_bar do
