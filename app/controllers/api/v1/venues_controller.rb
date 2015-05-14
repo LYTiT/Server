@@ -47,6 +47,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	#for a city, state, country in the venue page we return a bounty feed composed of bounties and claims instead of pure venue comments
 	def get_area_bounty_feed
+		@user = User.find_by_authentication_token(params[:auth_token])
 		feed = Venue.area_bounty_feed(params[:venue_id])
 		@area_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
 	end

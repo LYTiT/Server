@@ -30,6 +30,6 @@ json.everything_moments(@area_feed) do |entry|
 
 end
 json.pagination do
-  json.current_page @surrounding_feed.current_page
-  json.total_pages @surrounding_feed.total_pages
+  json.current_page @area_feed.current_page
+  json.total_pages @area_feed.total_pages
 end
