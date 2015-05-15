@@ -26,6 +26,7 @@ class Api::V1::UsersController < ApiBaseController
       			l.save
       			@user.lumens = 5.0
       			@user.bonus_lumens = 5.0
+      			@user.monthly_gross_lumens = 5.0
       			@user.save
       			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
       			v_id_tracker.save

@@ -659,24 +659,27 @@ h6 {
 .tnc-list-2>li {
     list-style-type: none;
 }
-.FAQ>h1{
+.LumenGameDetails{
+    font-family: Roboto-Light;
+    font-size: 18px;
+}
+.LumenGameDetails>h1{
     font-family: Roboto-Light;
     text-align: center;
     letter-spacing: 5px;
     margin-bottom: 50px;
 }
-.FAQ>h2{
+.LumenGameDetails>h2{
     font-family: Roboto-Light;
     text-transform: uppercase;
     font-size: 18px;
 }
-.FAQ>p{
+.LumenGameDetails>p{
     font-family: Roboto-Light;
     font-size: 18px;
 }
 @media (max-width: 410px) {
 .game-rules {
     margin-left: 8%;
-}
-    
+}    
 }
