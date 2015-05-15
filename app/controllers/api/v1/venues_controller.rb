@@ -45,6 +45,13 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	#for a city, state, country in the venue page we return a bounty feed composed of bounties and claims instead of pure venue comments
+	def get_area_bounty_feed
+		@user = User.find_by_authentication_token(params[:auth_token])
+		feed = Venue.area_bounty_feed(params[:venue_id])
+		@area_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
+	end
+
 	def add_comment
 		parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
 		assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
@@ -139,6 +146,24 @@ class Api::V1::VenuesController < ApiBaseController
 					b = Bounty.find_by_id(params[:is_bounty_response])
 					b.response_received = true
 					b.increment!(:num_responses, 1)
+					#we keep track of the latest two responses for a bounty to display thumbnails in the happening(global) feed
+					#latest_response_2 is the older response thus why we copy over latest_response_1 into it in the 'else' part of the block
+					if b.latest_response_2 == nil && b.latest_response_1 == nil
+						if @comment.media_type == "text"
+							b.latest_response_1 = @comment.comment
+						else
+							b.latest_response_1 = @comment.media_url
+						end
+					else	
+						b.latest_response_2 = b.latest_response_1
+						if @comment.media_type == "text"
+							b.latest_response_1 = @comment.comment
+						else
+							b.latest_response_1 = @comment.media_url
+						end
+					end
+					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response]).first
+					bounty_housing_comment.increment!(:views, 1)
 					@comment.save
 					b.save
 					@comment.delay.send_bounty_claim_notification

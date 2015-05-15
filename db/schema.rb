@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150512173615) do
+ActiveRecord::Schema.define(version: 20150513174509) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,8 @@ ActiveRecord::Schema.define(version: 20150512173615) do
     t.integer  "venue_comment_id"
     t.integer  "num_responses",                default: 0
     t.boolean  "decrement_venue_bounty_count", default: true
+    t.string   "latest_response_1"
+    t.string   "latest_response_2"
   end
 
   add_index "bounties", ["user_id"], name: "index_bounties_on_user_id", using: :btree
@@ -283,6 +285,7 @@ ActiveRecord::Schema.define(version: 20150512173615) do
     t.boolean  "email_confirmed",                    default: false
     t.boolean  "registered",                         default: false
     t.string   "vendor_id"
+    t.float    "monthly_gross_lumens",               default: 0.0
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree

@@ -5,6 +5,11 @@ class Api::V1::UsersController < ApiBaseController
 	#Administrative Methods------------------>
 
 	def create
+		existing_temp_user = User.where("email = ?", params[:email]).first
+		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
+			existing_temp_user.destroy
+		end
+
 		@user = User.new(user_params)
 		@user.adjusted_view_discount = LumenConstants.views_weight_adj
 
@@ -16,11 +21,12 @@ class Api::V1::UsersController < ApiBaseController
 				@user.save
 			end
 
-			if VendorIdTracker.where("used_vendor_id = ?", @user.vendor_id).first == nil
+			if VendorIdTracker.where("LOWER(used_vendor_id) = ?", @user.vendor_id.downcase).first == nil
 				l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
       			l.save
       			@user.lumens = 5.0
       			@user.bonus_lumens = 5.0
+      			@user.monthly_gross_lumens = 5.0
       			@user.save
       			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
       			v_id_tracker.save

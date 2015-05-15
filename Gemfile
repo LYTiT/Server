@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.2'
+ruby '2.2.2'
 
 gem 'bourbon'
 gem 'clearance'
@@ -48,6 +48,7 @@ gem 'timezone'
 gem 'tzinfo'
 gem 'skylight'
 gem 'heroku-deflater', :group => :production
+gem 'typhoeus'
 
 group :development do
   gem 'better_errors'

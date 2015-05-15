@@ -143,6 +143,8 @@ GEM
     email_validator (1.5.0)
       activemodel
     erubis (2.7.0)
+    ethon (0.7.3)
+      ffi (>= 1.3.0)
     execjs (2.2.2)
     factory_girl (4.5.0)
       activesupport (>= 3.0.0)
@@ -175,7 +177,6 @@ GEM
     heroku-deflater (0.5.3)
       rack (>= 1.4.5)
     higcm (0.0.5)
-      typhoeus (~> 0.3.3)
     high_voltage (2.2.1)
     hike (1.2.3)
     honeybadger (1.16.6)
@@ -355,8 +356,8 @@ GEM
     title (0.0.5)
       i18n
       rails (>= 3.1)
-    typhoeus (0.3.3)
-      mime-types
+    typhoeus (0.7.1)
+      ethon (>= 0.7.1)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     uglifier (2.6.0)
@@ -439,6 +440,7 @@ DEPENDENCIES
   timezone
   title
   twitter-bootstrap-rails!
+  typhoeus
   tzinfo
   uglifier
   unicorn

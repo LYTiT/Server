@@ -89,6 +89,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_bounties'
         post 'vote'
+        get 'get_area_bounty_feed'
       end
 
       controller :lytit_bar do
@@ -142,9 +143,9 @@ LytitServer::Application.routes.draw do
   get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
   get 'blog' => 'pages#blog'
-  get 'lumen-game' => 'pages#lumen_game'
-  get 'lumen-game/rules' => 'pages#lumen_game_rules'
-  get 'lumen-game/faq' => 'pages#lumen_game_faq'
+  get 'lumen_game' => 'pages#lumen_game'
+  get 'lumen_game/rules' => 'pages#lumen_game_rules'
+  get 'lumen_game/faq' => 'pages#lumen_game_faq'
 
   root :to => 'pages#home'
 

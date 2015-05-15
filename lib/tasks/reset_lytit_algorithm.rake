@@ -35,6 +35,7 @@ namespace :lytit do
       admin = User.find_by_name("team@lytit.com")
       Mailer.delay.notify_admins_of_monthly_winners(founder_1)
       Mailer.delay.notify_admins_of_monthly_winners(founder_2)
+      User..update_all(monthly_gross_lumens: 0.0)
       puts "Until next month."
     end
 
