@@ -122,7 +122,7 @@ class User < ActiveRecord::Base
     if self.version == "1.0.0"
       feed = VenueComment.where("(created_at >= ? AND (bounty_id NOT IN (#{responded_to_bounty_ids}) OR bounty_id IS NULL) AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}))", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("id desc")
     else
-      feed = VenueComment.where("(created_at >= ? AND bounty_id IS NULL AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
+      feed = VenueComment.where("(created_at >= ? AND bounty_id IS NULL AND user_id IS NOT NULL) OR (bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")
     end
   end 
 

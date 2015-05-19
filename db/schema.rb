@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150513174509) do
+ActiveRecord::Schema.define(version: 20150519040539) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -320,6 +320,8 @@ ActiveRecord::Schema.define(version: 20150513174509) do
     t.boolean  "is_response"
     t.boolean  "is_response_accepted"
     t.string   "rejection_reason"
+    t.string   "content_origin"
+    t.datetime "time_wrapper"
   end
 
   add_index "venue_comments", ["bounty_id"], name: "index_venue_comments_on_bounty_id", using: :btree
@@ -391,8 +393,10 @@ ActiveRecord::Schema.define(version: 20150513174509) do
     t.float    "popularity_percentile"
     t.integer  "page_views",                           default: 0
     t.integer  "user_id"
+    t.integer  "instagram_location_id"
   end
 
+  add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
   add_index "venues", ["l_sphere"], name: "index_venues_on_l_sphere", using: :btree
   add_index "venues", ["latitude"], name: "index_venues_on_latitude", using: :btree

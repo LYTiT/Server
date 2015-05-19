@@ -49,6 +49,8 @@ gem 'tzinfo'
 gem 'skylight'
 gem 'heroku-deflater', :group => :production
 gem 'typhoeus'
+gem 'instagram'
+gem 'httparty'
 
 group :development do
   gem 'better_errors'

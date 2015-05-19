@@ -223,6 +223,9 @@ class Venue < ActiveRecord::Base
         lookup.time_zone = timezone.active_support_time_zone
         lookup.save
       end
+      if lookup.instagram_location_id == nil
+        lookup.set_instagram_location_id
+      end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -502,6 +505,66 @@ class Venue < ActiveRecord::Base
     0
   end
 
+
+#Instagram API locational content pulls
+  def get_instagrams
+    instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    for posting in instagrams
+      vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => posting.created_time)
+      vc.save
+    end
+  end
+
+  def set_instagram_location_id
+    nearby_instagram_locations = Instagram.location_search(latitude,longitude, :distance => 100, :count => 30)
+    #HTTParty.get("https://api.instagram.com/v1/locations/search?lat=#{self.latitude}&lng=#{self.longitude}&access_token=1518251367.1677ed0.659af90862644bb8aa125e2b2701bc18&count=100")
+    #Instagram.location_search(self.latitude, self.longitude)
+
+    matching_locations = Hash.new
+    location_postings = Hash.new
+
+    for location in nearby_instagram_locations
+      puts "#{location.name}"
+      if location.name == self.name #Is there a direct string match?
+        recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+        if recent_postings.count > 0 
+          latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
+          matching_locations[latest_posting_time] = location.id
+          location_postings[location.id] = recent_postings
+        end
+
+      elsif ((location.name).include? self.name) || ((self.name).include? location.name)
+        recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+        if recent_postings.count > 0 
+          latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
+          matching_locations[latest_posting_time] = location.id
+          location_postings[location.id] = recent_postings
+        end
+
+      else
+        proximity = self.name.length >= location.name.length ? location.name.length : self.name.length
+        if ( Levenshtein.distance(location.name, self.name) <= (proximity/2)+2 ) #Levenshtein distance as a last resort
+          recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+          if recent_postings.count > 0  
+            latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
+            matching_locations[latest_posting_time] = location.id
+            location_postings[location.id] = recent_postings
+          end
+
+        end
+      end
+
+    end
+    i_l_d = matching_locations.max_by{|k,v| k}.last
+    self.update_columns(instagram_location_id: i_l_d)
+    latest_proper_postings = location_postings[i_l_d]
+    for posting in latest_proper_postings
+      vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+      vc.save
+    end
+
+  end
+
   private ##################################################################################################
 
   def valid_votes_timestamp
@@ -622,5 +685,3 @@ class Venue < ActiveRecord::Base
 
 end
 
-#@client.spots(-33.8670522, 151.1957362, :radius => 100, :name => 'italian')
-#@client.spots_by_query('italian', :radius => 1000, :lat => '-33.8670522', :lng => '151.1957362')

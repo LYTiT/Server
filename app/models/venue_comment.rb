@@ -364,9 +364,12 @@ class VenueComment < ActiveRecord::Base
 			:venue_comment_id => self.id
 		}
 	  }
-	end	
+	end
 
 
+#Instagram API Communication
+
+			
 end
 
 
