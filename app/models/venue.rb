@@ -559,6 +559,7 @@ class Venue < ActiveRecord::Base
 
     end
     if matching_locations.first != nil
+      puts ("COMMENTS COMMING!!!!!!")
       i_l_d = matching_locations.max_by{|k,v| k}.last
       self.update_columns(instagram_location_id: i_l_d)
       latest_proper_postings = location_postings[i_l_d]
@@ -566,6 +567,8 @@ class Venue < ActiveRecord::Base
         vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
         vc.save
       end
+    else
+      puts ("EMPTY :( !!!!")
     end
 
   end
