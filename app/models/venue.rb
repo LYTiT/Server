@@ -223,9 +223,9 @@ class Venue < ActiveRecord::Base
         lookup.time_zone = timezone.active_support_time_zone
         lookup.save
       end
-      if lookup.instagram_location_id == nil
-        lookup.set_instagram_location_id
-      end
+      #if lookup.instagram_location_id == nil
+      lookup.set_instagram_location_id
+      #end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -542,8 +542,11 @@ class Venue < ActiveRecord::Base
         end
 
       else
-        proximity = self.name.length >= location.name.length ? location.name.length : self.name.length
-        if ( Levenshtein.distance(location.name, self.name) <= (proximity/2)+2 ) #Levenshtein distance as a last resort
+       
+        require 'fuzzystringmatch'
+        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+        
+        if p jarow.getDistance(  location.name,      self.name ) >= 0.8 #Jaro Winkler String Algo comparison
           recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
           if recent_postings.count > 0  
             latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
@@ -555,12 +558,14 @@ class Venue < ActiveRecord::Base
       end
 
     end
-    i_l_d = matching_locations.max_by{|k,v| k}.last
-    self.update_columns(instagram_location_id: i_l_d)
-    latest_proper_postings = location_postings[i_l_d]
-    for posting in latest_proper_postings
-      vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
-      vc.save
+    if matching_locations.first != nil
+      i_l_d = matching_locations.max_by{|k,v| k}.last
+      self.update_columns(instagram_location_id: i_l_d)
+      latest_proper_postings = location_postings[i_l_d]
+      for posting in latest_proper_postings
+        vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+        vc.save
+      end
     end
 
   end

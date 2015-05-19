@@ -51,6 +51,8 @@ gem 'heroku-deflater', :group => :production
 gem 'typhoeus'
 gem 'instagram'
 gem 'httparty'
+gem 'text'
+gem 'fuzzy-string-match'
 
 group :development do
   gem 'better_errors'
