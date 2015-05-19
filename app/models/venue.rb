@@ -516,7 +516,7 @@ class Venue < ActiveRecord::Base
   end
 
   def set_instagram_location_id
-    nearby_instagram_locations = Instagram.location_search(latitude,longitude, :distance => 100, :count => 30)
+    nearby_instagram_locations = Instagram.location_search(latitude,longitude, :distance => 100, :count => 50)
     #HTTParty.get("https://api.instagram.com/v1/locations/search?lat=#{self.latitude}&lng=#{self.longitude}&access_token=1518251367.1677ed0.659af90862644bb8aa125e2b2701bc18&count=100")
     #Instagram.location_search(self.latitude, self.longitude)
 
@@ -547,6 +547,7 @@ class Venue < ActiveRecord::Base
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         
         if p jarow.getDistance(  location.name,      self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+          puts ("Jaro Winkler Comparison ENTERED---------> #{location.name}")
           recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
           if recent_postings.count > 0  
             latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
