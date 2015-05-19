@@ -516,7 +516,7 @@ class Venue < ActiveRecord::Base
   end
 
   def set_instagram_location_id
-    nearby_instagram_locations = Instagram.location_search(latitude,longitude, :distance => 150, :count => 50)
+    nearby_instagram_locations = Instagram.location_search(latitude,longitude, :distance => 150, :count => 100)
     #HTTParty.get("https://api.instagram.com/v1/locations/search?lat=#{self.latitude}&lng=#{self.longitude}&access_token=1518251367.1677ed0.659af90862644bb8aa125e2b2701bc18&count=100")
     #Instagram.location_search(self.latitude, self.longitude)
 
