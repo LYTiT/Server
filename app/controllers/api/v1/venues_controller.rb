@@ -222,7 +222,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue.delay.view(@user.id)
 			@venue.delay.increment!(:page_views, 1)
-			live_comments = @venue.venue_comments.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND user_id IS NOT NULL").includes(:user).order('id desc')
+			live_comments = @venue.venue_comments.where("(NOW() - time_wrapper) <= INTERVAL '1 DAY' AND ((user_id IS NOT NULL AND content_origin = ?) OR (content_origin = ?))", 'lytit', 'instagram').includes(:user).order('id desc')
 			@comments = live_comments.page(params[:page]).per(5)
 		end
 	end
