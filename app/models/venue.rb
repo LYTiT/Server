@@ -543,8 +543,8 @@ class Venue < ActiveRecord::Base
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
         if instagram.location.name != nil
+          puts("#{instagram.location.name},   #{instagram.location.id}")
           if wide_area_search == false
-            puts("#{instagram.location.name},   #{instagram.location.id}")
             if instagram.location.name.downcase == self.name.downcase #Is there a direct string match?
               self.update_columns(instagram_location_id: instagram.location.id)
               break
