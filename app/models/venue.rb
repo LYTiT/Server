@@ -558,10 +558,8 @@ class Venue < ActiveRecord::Base
               end
             end
           else #dealing with a wide area search so we select closest Jaro winkler comparison
-            jw_distance = p jarow.getDistance(instagram.location.name.downcase, self.name.downcase )
-            if jw_distance >= 0.8 
-              wide_area_hash[jw_distance] = instagram.location.id
-            end
+            jw_distance = p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) 
+            wide_area_hash[jw_distance] = instagram.location.id
           end
         end
       end
