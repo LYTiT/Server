@@ -531,7 +531,7 @@ class Venue < ActiveRecord::Base
     avg_inst_loc_distance_to_self = [0,0]
 
     for location in nearby_instagram_locations
-      puts "#{location.name}"
+      puts "#{location.name} - DISTANCE: #{self.distance_to([location.latitude, location.longitude])}"
       avg_inst_loc_distance_to_self[0] = avg_inst_loc_distance_to_self[0] + self.distance_to([location.latitude, location.longitude])
       avg_inst_loc_distance_to_self[1] = avg_inst_loc_distance_to_self[1] + 1
       if location.name == self.name #Is there a direct string match?
@@ -570,8 +570,9 @@ class Venue < ActiveRecord::Base
       puts ("COMMENTS COMMING!!!!!!")
       i_l_d = matching_locations.max_by{|k,v| k}.last
       latest_proper_postings = location_postings[i_l_d]
+      l_p_p_count = latest_proper_postings.count rescue 0
 
-      if latest_proper_postings.count < 2 && quadrant < 4
+      if l_p_p_count < 2 && quadrant < 4
         if quadrant == 1
           initial_radius = avg_inst_loc_distance_to_self[0]/avg_inst_loc_distance_to_self[1]
           external_radius = (initial_radius/(Math.sqrt(2)-1))
@@ -582,23 +583,29 @@ class Venue < ActiveRecord::Base
 
         abs_displacement = ( ((external_radius) ** 2) - initial_radius ** 2 ) / (2 * (1+initial_radius))
 
-        if quadrant == 1
-          displaced_lat = lat + external_radius - abs_displacement
-          displaced_long = long + external_radius - abs_displacement
+         if quadrant == 1
+          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         elsif quadrant == 2
-          displaced_lat = lat + external_radius - abs_displacement
-          displaced_long = long - external_radius + abs_displacement 
+          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         elsif quadrant == 3
-          displaced_lat = lat - external_radius + abs_displacement
-          displaced_long = long - external_radius + abs_displacement
+          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         else
-          displaced_lat = lat - external_radius + abs_displacement
-          displaced_long = long + external_radius - abs_displacement
+          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         end
 
         new_quadrant = quadrant + 1
 
-        if (latest_proper_postings.count - leading_instagrams.count) >= 0 && latest_proper_postings.first.created_time >= leading_instagrams.first.created_time
+        l_i_count = leading_instagrams.count rescue 0
+        l_p_p_first_created_time = latest_proper_postings.first.created_time rescue 0
+        l_i_first_created_time = leading_instagrams.first.created_time rescue 0
+
+        puts ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{displaced_lat}, #{displaced_long}")
+
+        if (l_p_p_count - l_i_count) >= 0 && l_p_p_first_created_time >= l_i_first_created_time
           set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, latest_proper_postings)
         else
           set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, leading_instagrams)
@@ -625,23 +632,29 @@ class Venue < ActiveRecord::Base
 
         abs_displacement = (((external_radius) ** 2) - initial_radius ** 2 ) / (2*(1+initial_radius))
 
-        if quadrant == 1
-          displaced_lat = lat + external_radius - abs_displacement
-          displaced_long = long + external_radius - abs_displacement
+         if quadrant == 1
+          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         elsif quadrant == 2
-          displaced_lat = lat + external_radius - abs_displacement
-          displaced_long = long - external_radius + abs_displacement 
+          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         elsif quadrant == 3
-          displaced_lat = lat - external_radius + abs_displacement
-          displaced_long = long - external_radius + abs_displacement
+          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         else
-          displaced_lat = lat - external_radius + abs_displacement
-          displaced_long = long + external_radius - abs_displacement
+          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
+          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
         end
 
         new_quadrant = quadrant + 1
 
-        if (latest_proper_postings.count - leading_instagrams.count) >= 0 && latest_proper_postings.first.created_time >= leading_instagrams.first.created_time
+        l_p_p_count = latest_proper_postings.count rescue 0
+        l_i_count = leading_instagrams.count rescue 0
+        l_p_p_first_created_time = latest_proper_postings.first.created_time rescue 0
+        l_i_first_created_time = leading_instagrams.first.created_time rescue 0
+
+        puts ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{displaced_lat}, #{displaced_long}")
+        if (l_p_p_count - l_i_count) >= 0 && l_p_p_first_created_time >= l_i_first_created_time
           set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, latest_proper_postings)
         else
           set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, leading_instagrams)
