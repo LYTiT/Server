@@ -223,7 +223,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue.delay.view(@user.id)
 			@venue.delay.increment!(:page_views, 1)
-			if (Time.now - 10.minutes)) > @venue.last_instagram_pull_time
+			if (Time.now - 10.minutes) >= @venue.last_instagram_pull_time
 				@venue.get_instagrams
 			end
 			live_comments = @venue.venue_comments.where("(NOW() - time_wrapper) <= INTERVAL '1 DAY' AND ((user_id IS NOT NULL AND content_origin = ?) OR (content_origin = ?))", 'lytit', 'instagram').includes(:user).order('time_wrapper desc')
