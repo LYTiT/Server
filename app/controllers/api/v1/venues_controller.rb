@@ -113,7 +113,6 @@ class Api::V1::VenuesController < ApiBaseController
 			@comment.venue = venue
 			@comment.user = @user
 			@comment.username_private = params[:username_private]
-			@comment.content_origin = "lytit"
 		end
 
 
@@ -126,6 +125,8 @@ class Api::V1::VenuesController < ApiBaseController
 				offset = @comment.created_at.in_time_zone(@comment.venue.time_zone).utc_offset
 				offset_time = @comment.created_at + offset
 				@comment.offset_created_at = offset_time
+				@comment.content_origin = "lytit"
+				@comment.time_wrapper = Time.now
 				@comment.save
 
 				venue.update_columns(latest_posted_comment_time: Time.now)
