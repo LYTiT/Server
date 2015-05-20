@@ -538,12 +538,14 @@ class Venue < ActiveRecord::Base
         end
       end
 
-      latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+      if instagram_location_id != nil
+        latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
-      if latest_location_postings.count >0  
-        for posting in latest_location_postings
-          vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
-          vc.save
+        if latest_location_postings.count >0  
+          for posting in latest_location_postings
+            vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+            vc.save
+          end
         end
       end
     end
