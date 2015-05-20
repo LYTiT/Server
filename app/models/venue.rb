@@ -520,18 +520,20 @@ class Venue < ActiveRecord::Base
 
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
-        if instagram.location.name == self.name #Is there a direct string match?
-          self.update_columns(instagram_location_id: instagram.location.id)
-          break
-        elsif ((instagram.location.name).include? self.name) || ((self.name).include? instagram.location.name)  
-          self.update_columns(instagram_location_id: instagram.location.id)
-          break
-        else
-          require 'fuzzystringmatch'
-          jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-          if p jarow.getDistance(instagram.location.name, self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+        if instagram.location.name != nil
+          if instagram.location.name == self.name #Is there a direct string match?
             self.update_columns(instagram_location_id: instagram.location.id)
             break
+          elsif ((instagram.location.name).include? self.name) || ((self.name).include? instagram.location.name)  
+            self.update_columns(instagram_location_id: instagram.location.id)
+            break
+          else
+            require 'fuzzystringmatch'
+            jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+            if p jarow.getDistance(instagram.location.name, self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+              self.update_columns(instagram_location_id: instagram.location.id)
+              break
+            end
           end
         end
       end
