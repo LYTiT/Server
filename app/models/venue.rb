@@ -223,9 +223,9 @@ class Venue < ActiveRecord::Base
         lookup.time_zone = timezone.active_support_time_zone
         lookup.save
       end
-      #if lookup.instagram_location_id == nil
-      lookup.set_instagram_location_id
-      #end
+      if lookup.instagram_location_id == nil
+        lookup.set_instagram_location_id
+      end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -508,11 +508,22 @@ class Venue < ActiveRecord::Base
 
 #Instagram API locational content pulls
   def get_instagrams
-    instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    latest_instagram = self.latest_instagram_venue_comment
+    if latest_instagram != nil
+      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i, :max_id => latest_instagram.instagram_id)
+    else
+      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
+    end
+
     for posting in instagrams
       vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => posting.created_time)
       vc.save
     end
+    self.update_columns(last_instagram_pull_time: Time.now)
+  end
+
+  def latest_instagram_venue_comment
+    self.venue_comments.where("content_origin = ? AND ", "instagram").order("time_wrapper desc").first
   end
 
   def set_instagram_location_id
@@ -544,10 +555,13 @@ class Venue < ActiveRecord::Base
 
         if latest_location_postings.count >0  
           for posting in latest_location_postings
-            vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+            vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
             vc.save
           end
+          self.update_columns(last_instagram_pull_time: Time.now)
         end
+      else
+        self.update_columns(instagram_location_id: -1)
       end
     end
   end
