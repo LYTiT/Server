@@ -523,7 +523,7 @@ class Venue < ActiveRecord::Base
   end
 
   def latest_instagram_venue_comment
-    self.venue_comments.where("content_origin = ? AND ", "instagram").order("time_wrapper desc").first
+    self.venue_comments.where("content_origin = ?", "instagram").order("time_wrapper desc").first
   end
 
   def set_instagram_location_id
