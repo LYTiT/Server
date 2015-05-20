@@ -529,27 +529,46 @@ class Venue < ActiveRecord::Base
   end
 
   def set_instagram_location_id
+              require 'fuzzystringmatch'
+              jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
     nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 50)
+    wide_area_search = false
+    wide_area_hash = Hash.new
+
+    if nearby_instagram_content.count == 0
+      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 50)
+      wide_area_search = true
+    end
 
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
         if instagram.location.name != nil
-          puts("#{instagram.location.name},   #{instagram.location.id}")
-          if instagram.location.name.downcase == self.name.downcase #Is there a direct string match?
-            self.update_columns(instagram_location_id: instagram.location.id)
-            break
-          elsif ((instagram.location.name.downcase).include? self.name.downcase) || ((self.name.downcase).include? instagram.location.name.downcase)  
-            self.update_columns(instagram_location_id: instagram.location.id)
-            break
-          else
-            require 'fuzzystringmatch'
-            jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-            if p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) >= 0.8 #Jaro Winkler String Algo comparison
+          if wide_area_search == false
+            puts("#{instagram.location.name},   #{instagram.location.id}")
+            if instagram.location.name.downcase == self.name.downcase #Is there a direct string match?
               self.update_columns(instagram_location_id: instagram.location.id)
               break
+            elsif ((instagram.location.name.downcase).include? self.name.downcase) || ((self.name.downcase).include? instagram.location.name.downcase)
+              self.update_columns(instagram_location_id: instagram.location.id)
+              break
+            else
+              if p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) >= 0.8 #Jaro Winkler String Algo comparison
+                self.update_columns(instagram_location_id: instagram.location.id)
+                break
+              end
+            end
+          else #dealing with a wide area search so we select closest Jaro winkler comparison
+            jw_distance = p jarow.getDistance(instagram.location.name.downcase, self.name.downcase )
+            if jw_distance >= 0.8 
+              wide_area_hash[jw_distance] = instagram.location.id
             end
           end
         end
+      end
+
+      if wide_area_search == true
+        best_location_match_id = hash.max_by{|k,v| k}.last
+        self.update_columns(instagram_location_id: best_location_match_id)
       end
 
       if instagram_location_id != nil
@@ -564,8 +583,9 @@ class Venue < ActiveRecord::Base
         end
       else
         self.update_columns(instagram_location_id: -1)
-      end
+      end    
     end
+
   end
 
 
