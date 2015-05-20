@@ -224,7 +224,7 @@ class Venue < ActiveRecord::Base
         lookup.save
       end
       #if lookup.instagram_location_id == nil
-      lookup.set_instagram_location_id(nil, nil, 50, nil, 1, nil)
+      lookup.set_instagram_location_id
       #end
       return lookup
     else
@@ -515,154 +515,34 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def set_instagram_location_id(lat, long, search_radius, initial_coverage_radius, quadrant, leading_instagrams)
-    if lat == nil and long == nil
-      lat = latitude
-      long = longitude
-    end
+  def set_instagram_location_id
+    nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 50)
 
-    nearby_instagram_locations = Instagram.location_search(lat,long, :distance => search_radius, :count => 50)
-    #HTTParty.get("https://api.instagram.com/v1/locations/search?lat=#{self.latitude}&lng=#{self.longitude}&access_token=1518251367.1677ed0.659af90862644bb8aa125e2b2701bc18&count=100")
-    #Instagram.location_search(self.latitude, self.longitude)
-
-    matching_locations = Hash.new
-    location_postings = Hash.new
-    avg_inst_loc_distance_to_self = []
-    avg_inst_loc_distance_to_self = [0,0]
-
-    for location in nearby_instagram_locations
-      puts "#{location.name} - DISTANCE: #{self.distance_to([location.latitude, location.longitude])}"
-      avg_inst_loc_distance_to_self[0] = avg_inst_loc_distance_to_self[0] + self.distance_to([location.latitude, location.longitude])
-      avg_inst_loc_distance_to_self[1] = avg_inst_loc_distance_to_self[1] + 1
-      if location.name == self.name #Is there a direct string match?
-        recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
-        if recent_postings.count > 0 
-          latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
-          matching_locations[latest_posting_time] = location.id
-          location_postings[location.id] = recent_postings
-        end
-
-      elsif ((location.name).include? self.name) || ((self.name).include? location.name)
-        recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
-        if recent_postings.count > 0 
-          latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
-          matching_locations[latest_posting_time] = location.id
-          location_postings[location.id] = recent_postings
-        end
+    for instagram in nearby_instagram_content
+      if instagram.location.name == self.name #Is there a direct string match?
+        self.update_columns(instagram_location_id: instagram.location.id)
+        break
+      elsif ((instagram.location.name).include? self.name) || ((self.name).include? instagram.location.name)  
+        self.update_columns(instagram_location_id: instagram.location.id)
+        break
       else
-       
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        
-        if p jarow.getDistance(  location.name,      self.name ) >= 0.8 #Jaro Winkler String Algo comparison
-          puts ("Jaro Winkler Comparison ENTERED---------> #{location.name}")
-          recent_postings = Instagram.location_recent_media(location.id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
-          if recent_postings.count > 0  
-            latest_posting_time = Instagram.location_recent_media(location.id).first.created_time
-            matching_locations[latest_posting_time] = location.id
-            location_postings[location.id] = recent_postings
-          end
+        if p jarow.getDistance(instagram.location.name, self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+          self.update_columns(instagram_location_id: instagram.location.id)
+          break
         end
       end
     end
 
-    if matching_locations.first != nil
-      puts ("COMMENTS COMMING!!!!!!")
-      i_l_d = matching_locations.max_by{|k,v| k}.last
-      latest_proper_postings = location_postings[i_l_d]
-      l_p_p_count = latest_proper_postings.count rescue 0
+    latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
-      if l_p_p_count < 2 && quadrant < 4
-        if quadrant == 1
-          initial_radius = avg_inst_loc_distance_to_self[0]/avg_inst_loc_distance_to_self[1]
-          external_radius = (initial_radius/(Math.sqrt(2)-1))
-        else
-          initial_radius = initial_coverage_radius
-          external_radius = search_radius
-        end
-
-        abs_displacement = ( ((external_radius) ** 2) - initial_radius ** 2 ) / (2 * (1+initial_radius))
-
-         if quadrant == 1
-          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        elsif quadrant == 2
-          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        elsif quadrant == 3
-          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        else
-          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        end
-
-        new_quadrant = quadrant + 1
-
-        l_i_count = leading_instagrams.count rescue 0
-        l_p_p_first_created_time = latest_proper_postings.first.created_time rescue 0
-        l_i_first_created_time = leading_instagrams.first.created_time rescue 0
-
-        puts ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{displaced_lat}, #{displaced_long}")
-
-        if (l_p_p_count - l_i_count) >= 0 && l_p_p_first_created_time >= l_i_first_created_time
-          set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, latest_proper_postings)
-        else
-          set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, leading_instagrams)
-        end
-
-      else
-        self.update_columns(instagram_location_id: i_l_d)
-        for posting in latest_proper_postings
-          vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
-          vc.save
-        end
-      end
-
-    else
-      puts ("EMPTY :( !!!!")
-      if quadrant < 4
-        if quadrant == 1
-          initial_radius = avg_inst_loc_distance_to_self[0]/avg_inst_loc_distance_to_self[1]
-          external_radius = (initial_radius/(Math.sqrt(2)-1))
-        else
-          initial_radius = initial_coverage_radius
-          external_radius = search_radius
-        end
-
-        abs_displacement = (((external_radius) ** 2) - initial_radius ** 2 ) / (2*(1+initial_radius))
-
-         if quadrant == 1
-          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        elsif quadrant == 2
-          displaced_lat = lat + (external_radius - abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        elsif quadrant == 3
-          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long - (external_radius + abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        else
-          displaced_lat = lat - (external_radius + abs_displacement)*(284.0 / 160.0) / (109.0 * 10)
-          displaced_long = long + (external_radius - abs_displacement)/(113.2 * 10 * Math.cos(lat.to_f * Math::PI / 180))
-        end
-
-        new_quadrant = quadrant + 1
-
-        l_p_p_count = latest_proper_postings.count rescue 0
-        l_i_count = leading_instagrams.count rescue 0
-        l_p_p_first_created_time = latest_proper_postings.first.created_time rescue 0
-        l_i_first_created_time = leading_instagrams.first.created_time rescue 0
-
-        puts ("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ #{displaced_lat}, #{displaced_long}")
-        if (l_p_p_count - l_i_count) >= 0 && l_p_p_first_created_time >= l_i_first_created_time
-          set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, latest_proper_postings)
-        else
-          set_instagram_location_id(displaced_lat, displaced_long, external_radius, initial_radius, new_quadrant, leading_instagrams)
-        end
-      
-      end
+    for posting in latest_location_postings
+      vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+      vc.save
     end
   end
+
 
   private ##################################################################################################
 
