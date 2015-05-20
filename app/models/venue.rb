@@ -567,7 +567,7 @@ class Venue < ActiveRecord::Base
       end
 
       if wide_area_search == true
-        best_location_match_id = hash.max_by{|k,v| k}.last
+        best_location_match_id = wide_area_hash.max_by{|k,v| k}.last
         self.update_columns(instagram_location_id: best_location_match_id)
       end
 
