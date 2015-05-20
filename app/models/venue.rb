@@ -518,29 +518,32 @@ class Venue < ActiveRecord::Base
   def set_instagram_location_id
     nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 50)
 
-    for instagram in nearby_instagram_content
-      if instagram.location.name == self.name #Is there a direct string match?
-        self.update_columns(instagram_location_id: instagram.location.id)
-        break
-      elsif ((instagram.location.name).include? self.name) || ((self.name).include? instagram.location.name)  
-        self.update_columns(instagram_location_id: instagram.location.id)
-        break
-      else
-        require 'fuzzystringmatch'
-        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        if p jarow.getDistance(instagram.location.name, self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+    if nearby_instagram_content.count > 0
+      for instagram in nearby_instagram_content
+        if instagram.location.name == self.name #Is there a direct string match?
           self.update_columns(instagram_location_id: instagram.location.id)
           break
+        elsif ((instagram.location.name).include? self.name) || ((self.name).include? instagram.location.name)  
+          self.update_columns(instagram_location_id: instagram.location.id)
+          break
+        else
+          require 'fuzzystringmatch'
+          jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+          if p jarow.getDistance(instagram.location.name, self.name ) >= 0.8 #Jaro Winkler String Algo comparison
+            self.update_columns(instagram_location_id: instagram.location.id)
+            break
+          end
         end
       end
-    end
 
-    latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+      latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
-    for posting in latest_location_postings
-      vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
-      vc.save
-    end
+      if latest_location_postings.count >0  
+        for posting in latest_location_postings
+          vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+          vc.save
+        end
+      end
   end
 
 
