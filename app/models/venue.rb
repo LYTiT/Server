@@ -515,12 +515,12 @@ class Venue < ActiveRecord::Base
       instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
     end
 
-    if instagrams.count > 0
+    if instagrams != nil and instagrams.count > 0
       for posting in instagrams
-        vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => posting.created_time)
+        vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
         vc.save
       end
-    end 
+    end
     self.update_columns(last_instagram_pull_time: Time.now)
   end
 
