@@ -544,6 +544,7 @@ class Venue < ActiveRecord::Base
           vc.save
         end
       end
+    end
   end
 
 
