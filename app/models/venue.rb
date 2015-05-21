@@ -273,7 +273,7 @@ class Venue < ActiveRecord::Base
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long)
     radius = 100
-    boundries = bounding_box(radius, vlatitude, vlongitude)
+    boundries = bounding_box(radius, lat, long)
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
 
     if venues.count != 0
