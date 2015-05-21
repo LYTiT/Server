@@ -22,7 +22,7 @@ class Venue < ActiveRecord::Base
 
   has_many :bounties, :dependent => :destroy
 
-  has_many :instagram_location_ids, :dependent => :destroy
+  has_many :instagram_location_id_trackers, :dependent => :destroy
 
   belongs_to :user
 
