@@ -271,7 +271,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.fetch_venues_for_instagram_pull(vname, lat, long)
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
     radius = 100
     boundries = bounding_box(radius, lat, long)
     venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
@@ -294,6 +294,10 @@ class Venue < ActiveRecord::Base
           lookup = venue
         end
       end
+    end
+    if lookup != nil and InstagramLocationIdTracker.find_by_venue_id(lookup.id).first == nil
+      i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
+      i_l_i_t.save
     end
     return lookup
   end

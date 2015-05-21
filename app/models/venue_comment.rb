@@ -126,7 +126,7 @@ class VenueComment < ActiveRecord::Base
 		long = instagram.location.longitude
 
 		if place_name != nil && place_name.downcase != place_name
-			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long)
+			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)
 			if lytit_venue != nil
 				inst_loc_track = InstagramLocationIdTracker.find_by_venue_id(lytit_venue.id)
 				
