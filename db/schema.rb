@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150521044801) do
+ActiveRecord::Schema.define(version: 20150521151419) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -169,6 +169,8 @@ ActiveRecord::Schema.define(version: 20150521044801) do
     t.datetime "last_instagram_pull_time"
     t.string   "city"
     t.float    "pull_radius"
+    t.boolean  "active"
+    t.string   "description"
   end
 
   create_table "lumen_constants", force: true do |t|

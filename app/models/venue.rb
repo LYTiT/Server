@@ -227,7 +227,7 @@ class Venue < ActiveRecord::Base
         lookup.time_zone = timezone.active_support_time_zone
         lookup.save
       end
-      if lookup.instagram_location_id == nil
+      if lookup.instagram_location_id == nil #Add instagram location id
         lookup.set_instagram_location_id
       end
       return lookup

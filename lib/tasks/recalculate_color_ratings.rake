@@ -78,7 +78,7 @@ namespace :lytit do
 
     #Instagram data pull
     puts "Pulling from Instagram"
-    vortexes = InstagramVortex.all
+    vortexes = InstagramVortex.where("active = ?", true)
     for vortex in vortexes
       vortex.update_columns(last_instagram_pull_time: Time.now)
       new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
