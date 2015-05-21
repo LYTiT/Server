@@ -22,6 +22,8 @@ class Venue < ActiveRecord::Base
 
   has_many :bounties, :dependent => :destroy
 
+  has_many :instagram_location_ids, :dependent => :destroy
+
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
@@ -187,10 +189,12 @@ class Venue < ActiveRecord::Base
         break
       end
 
-      proximity = vname.length >= venue.name.length ? venue.name.length : vname.length
-      if ( Levenshtein.distance(venue.name, vname) <= (proximity/3) ) && ( specific_address == false ) #Levenshtein distance as a last resort
+      require 'fuzzystringmatch'
+      jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
+      if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
         lookup = venue
       end
+
     end
 
     if lookup != nil
@@ -531,7 +535,7 @@ class Venue < ActiveRecord::Base
   def set_instagram_location_id
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
-    nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 100)
+    nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 150, :count => 100)
     wide_area_search = false
     wide_area_hash = Hash.new
 
@@ -583,6 +587,8 @@ class Venue < ActiveRecord::Base
           end
           self.update_columns(last_instagram_pull_time: Time.now)
         end
+        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => self.id, primary_instagram_location_id: self.instagram_location_id)
+        i_l_i_t.save
       else
         self.update_columns(instagram_location_id: -1)
       end    
@@ -661,7 +667,7 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:created_at), false) + 2.0 + get_k).round(4))
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, last.try(:time_wrapper), false) + 2.0 + get_k).round(4))
 
     #making sure down votes component is initialized (is set by default though to 1.0)
     if self.r_down_votes < 1.0
@@ -675,7 +681,7 @@ class Venue < ActiveRecord::Base
 
     # we sum 2 instead of 1 because the initial value of the R-vector is (1 + K, 1)
     # refer to the algo spec document
-    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:created_at), true) + 2.0).round(4))
+    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, last.try(:time_wrapper), true) + 2.0).round(4))
 
     #if first vote is a down vote up votes must be primed
     if self.r_up_votes <= 1.0 && get_k > 0
@@ -697,7 +703,7 @@ class Venue < ActiveRecord::Base
 
     old_votes_sum = 0
     for vote in votes
-      minutes_passed_since_vote = (timestamp_last_vote - vote.created_at) / 1.minute
+      minutes_passed_since_vote = (timestamp_last_vote - vote.time_wrapper) / 1.minute
 
       if is_down_vote
         old_votes_sum += 2 ** ((- minutes_passed_since_vote) / (2 * LytitConstants.vote_half_life_h))

@@ -6,22 +6,20 @@ namespace :lytit do
   task :scheduler => :environment do
     $scheduler = Rufus::Scheduler.singleton
     
+    #LYT Updating ------------------------------>
     $scheduler.every '5m' do
 
       puts "Scheduler run at #{Time.now}"
 
       start_time = Time.now
       
-      bar = LytitBar.instance
-      bar.recalculate_bar_position
-      puts 'Bar updated'
+      #bar = LytitBar.instance
+      #bar.recalculate_bar_position
+      #puts 'Bar updated'
 
       spheres = LytSphere.uniq.pluck(:sphere)
-
       puts "Recalculating venue colors"
-
       Venue.update_all(color_rating: -1.0)
-
 
       for entry in spheres
         sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
@@ -61,16 +59,29 @@ namespace :lytit do
             :color_rating => colors_map[rating]
           })
         end
-
       end
-
-
-
       end_time = Time.now
-
       puts "Done. Time Taken: #{end_time - start_time}s"
-
     end
+
+    #Instagram Pulling ------------------------------>
+    $scheduler.every '10m' do
+      puts "Scheduler run at #{Time.now}"
+      start_time = Time.now
+
+      puts "Pulling from Instagram"
+      vortexes = InstagramVortex.all
+      for vortex in vortexes
+        vortex.update_columns(last_instagram_pull_time: Time.now)
+        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+        for instagram in new_instagrams
+          VenueComment.convert_instagram_to_vc(instagram)
+        end
+      end
+      end_time = Time.now
+      puts "Done. Time Taken: #{end_time - start_time}s"
+    end
+
 
     $scheduler.join
   end

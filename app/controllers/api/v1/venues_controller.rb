@@ -179,7 +179,7 @@ class Api::V1::VenuesController < ApiBaseController
 				#LYTiT it UP!
 				rating = venue.rating
 				v = LytitVote.new(:value => 1, :venue_id => venue.id, :user_id => @user.id, :venue_rating => rating ? rating : 0, 
-													:prime => 0.0, :raw_value => 1.0)
+													:prime => 0.0, :raw_value => 1.0, :time_wrapper => Time.now)
 
 				if v.save
 					venue.delay.account_new_vote(1, v.id)

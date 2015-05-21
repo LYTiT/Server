@@ -76,6 +76,16 @@ namespace :lytit do
 
     end
 
+    #Instagram data pull
+    puts "Pulling from Instagram"
+    vortexes = InstagramVortex.all
+    for vortex in vortexes
+      vortex.update_columns(last_instagram_pull_time: Time.now)
+      new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+      for instagram in new_instagrams
+        VenueComment.convert_instagram_to_vc(instagram)
+      end
+    end
 
     end_time = Time.now
 

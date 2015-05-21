@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150520163416) do
+ActiveRecord::Schema.define(version: 20150521044801) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -148,6 +148,29 @@ ActiveRecord::Schema.define(version: 20150520163416) do
     t.datetime "updated_at"
   end
 
+  create_table "instagram_location_id_trackers", force: true do |t|
+    t.integer "venue_id"
+    t.string  "primary_instagram_location_id"
+    t.string  "secondary_instagram_location_id"
+    t.integer "primary_instagram_location_id_pings",        default: 0
+    t.integer "secondary_instagram_location_id_pings",      default: 0
+    t.integer "tertiary_instagram_location_id_pings",       default: 0
+    t.string  "tertiary_instagram_location_id"
+    t.integer "primary_instagram_location_id_miss_count",   default: 0
+    t.integer "secondary_instagram_location_id_miss_count", default: 0
+    t.integer "tertiary_instagram_location_id_miss_count",  default: 0
+  end
+
+  add_index "instagram_location_id_trackers", ["venue_id"], name: "index_instagram_location_id_trackers_on_venue_id", using: :btree
+
+  create_table "instagram_vortexes", force: true do |t|
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "last_instagram_pull_time"
+    t.string   "city"
+    t.float    "pull_radius"
+  end
+
   create_table "lumen_constants", force: true do |t|
     t.string   "constant_name"
     t.float    "constant_value"
@@ -210,6 +233,7 @@ ActiveRecord::Schema.define(version: 20150520163416) do
     t.float    "prime"
     t.float    "raw_value"
     t.float    "rating_after"
+    t.datetime "time_wrapper"
   end
 
   add_index "lytit_votes", ["user_id"], name: "index_lytit_votes_on_user_id", using: :btree
