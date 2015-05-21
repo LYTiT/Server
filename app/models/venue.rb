@@ -271,6 +271,33 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def self.fetch_venues_for_instagram_pull(vname, lat, long)
+    radius = 100
+    boundries = bounding_box(radius, vlatitude, vlongitude)
+    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+
+    if venues.count != 0
+      for venue in venues
+        if venue.name == vname #Is there a direct string match?
+          lookup = venue
+          break
+        end
+
+        if (((venue.name).include? vname) || ((vname).include? venue.name)) #Are they substrings?
+          lookup = venue
+          break
+        end
+
+        require 'fuzzystringmatch'
+        jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
+        if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
+          lookup = venue
+        end
+      end
+    end
+    return lookup
+  end
+
   #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
