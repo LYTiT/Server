@@ -125,41 +125,43 @@ class VenueComment < ActiveRecord::Base
 		lat = instagram.location.latitude
 		long = instagram.location.longitude
 
-		if place_name != nil
-			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)
-			inst_loc_track = InstagramLocationIdTracker.find_by_venue_id(lytit_venue.id)
-			
-			if lytit_venue.instagram_location_id != place_id
-				if inst_loc_track != nil
-					if inst_loc_track.secondary_instagram_location_id == place_id
-						inst_loc_track.increment!(:secondary_instagram_location_id_pings, 1)
-					elsif inst_loc_track.tertiary_instagram_location_id == place_id
-						inst_loc_track.increment!(:tertiary_instagram_location_id_pings, 1)
-					else
-						if inst_loc_track.secondary_instagram_location_id == nil
-							inst_loc_track.update_columns(secondary_instagram_location_id: place_id)
-						else 
-							inst_loc_track.update_columns(tertiary_instagram_location_id: place_id)
-						end
-					end
-				else
-					i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lytit_venue.id, primary_instagram_location_id: place_id)
-					i_l_i_t.save
-				end	
-			else
-				inst_loc_track.increment!(:primary_instagram_location_id_pings, 1)
-			end
-
+		if place_name != nil && place_name.downcase != place_name
+			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long)
 			if lytit_venue != nil
-				VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
-				v = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
-														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
-				v.save
+				inst_loc_track = InstagramLocationIdTracker.find_by_venue_id(lytit_venue.id)
+				
+				if lytit_venue.instagram_location_id != place_id
+					if inst_loc_track != nil
+						if inst_loc_track.secondary_instagram_location_id == place_id
+							inst_loc_track.increment!(:secondary_instagram_location_id_pings, 1)
+						elsif inst_loc_track.tertiary_instagram_location_id == place_id
+							inst_loc_track.increment!(:tertiary_instagram_location_id_pings, 1)
+						else
+							if inst_loc_track.secondary_instagram_location_id == nil
+								inst_loc_track.update_columns(secondary_instagram_location_id: place_id)
+							else 
+								inst_loc_track.update_columns(tertiary_instagram_location_id: place_id)
+							end
+						end
+					else
+						i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lytit_venue.id, primary_instagram_location_id: place_id)
+						i_l_i_t.save
+					end	
+				else
+					inst_loc_track.increment!(:primary_instagram_location_id_pings, 1)
+				end
 
-				lytit_venue.delay.account_new_vote(1, v.id)
+				vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
+				vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
+														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
+				vc.save
+				vote.save
+
+				lytit_venue.delay.account_new_vote(1, vote.id)
 				if LytSphere.where("venue_id = ?", lytit_venue.id).count == 0
 					LytSphere.delay.create_new_sphere(lytit_venue)
 				end
+			
 			end
 		end
 
