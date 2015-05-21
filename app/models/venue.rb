@@ -290,7 +290,7 @@ class Venue < ActiveRecord::Base
 
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
-        if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
+        if (p jarow.getDistance(venue.name, vname) >= 0.8)
           lookup = venue
         end
       end
