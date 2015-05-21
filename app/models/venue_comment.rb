@@ -156,7 +156,7 @@ class VenueComment < ActiveRecord::Base
 														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
 				v.save
 
-				lytit_venue.delay.account_new_vote(1, lytit_venue.id)
+				lytit_venue.delay.account_new_vote(1, v.id)
 				if LytSphere.where("venue_id = ?", lytit_venue.id).count == 0
 					LytSphere.delay.create_new_sphere(lytit_venue)
 				end
