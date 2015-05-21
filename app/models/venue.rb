@@ -514,7 +514,7 @@ class Venue < ActiveRecord::Base
   def get_instagrams
     latest_instagram = self.latest_instagram_venue_comment
     if latest_instagram != nil
-      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i, :max_id => latest_instagram.instagram_id)
+      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i, :min_id => latest_instagram.instagram_id)
     else
       instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
     end
