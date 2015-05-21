@@ -157,9 +157,9 @@ class VenueComment < ActiveRecord::Base
 				vc.save
 				vote.save
 
-				lytit_venue.delay.account_new_vote(1, vote.id)
+				lytit_venue.account_new_vote(1, vote.id)
 				if LytSphere.where("venue_id = ?", lytit_venue.id).count == 0
-					LytSphere.delay.create_new_sphere(lytit_venue)
+					LytSphere.create_new_sphere(lytit_venue)
 				end
 			
 			end

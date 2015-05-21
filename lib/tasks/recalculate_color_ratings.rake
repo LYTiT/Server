@@ -8,9 +8,21 @@ namespace :lytit do
   task :refresh_colors => :environment do
     
     puts "Scheduler run at #{Time.now}"
-
     start_time = Time.now
+
+    #Instagram data pull----------->
+    puts "Pulling from Instagram"
+    vortexes = InstagramVortex.where("active = ?", true)
+    for vortex in vortexes
+      vortex.update_columns(last_instagram_pull_time: Time.now)
+      new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+      for instagram in new_instagrams
+        VenueComment.convert_instagram_to_vc(instagram)
+      end
+    end
     
+
+    #LYT Updating------------------>
     bar = LytitBar.instance
     bar.recalculate_bar_position
     puts 'Bar updated'
@@ -33,7 +45,6 @@ namespace :lytit do
     puts "Recalculating venue colors"
 
     Venue.update_all(color_rating: -1.0)
-
 
     for entry in spheres
       sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
@@ -74,17 +85,6 @@ namespace :lytit do
         })
       end
 
-    end
-
-    #Instagram data pull
-    puts "Pulling from Instagram"
-    vortexes = InstagramVortex.where("active = ?", true)
-    for vortex in vortexes
-      vortex.update_columns(last_instagram_pull_time: Time.now)
-      new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
-      for instagram in new_instagrams
-        VenueComment.convert_instagram_to_vc(instagram)
-      end
     end
 
     end_time = Time.now
