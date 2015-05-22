@@ -418,6 +418,13 @@ class Venue < ActiveRecord::Base
     meter * 0.000621371
   end
 
+  def self.reset_venues
+    Venue.update_all(rating: 0.0)
+    Venue.update_all(r_up_votes: 0.0)
+    Venue.update_all(r_down_votes: 0.0)
+    Venue.update_all(color_rating: 0.0)
+  end
+
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, valid_votes_timestamp)
   end
