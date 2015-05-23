@@ -460,7 +460,7 @@ class Venue < ActiveRecord::Base
     Venue.update_all(rating: 0.0)
     Venue.update_all(r_up_votes: 0.0)
     Venue.update_all(r_down_votes: 0.0)
-    Venue.update_all(color_rating: 0.0)
+    Venue.update_all(color_rating: -1.0)
   end
 
   def v_up_votes
