@@ -240,13 +240,15 @@ class Api::V1::VenuesController < ApiBaseController
 		#for Lumen calcuation by default)
 
 		if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
-			poster = @comment.user
-			poster.update_total_views
 			@comment.update_views
-			if poster.id != @user.id
-				@comment.calculate_adj_view
-				if @comment.consider? == 1 
-					poster.update_lumens_after_view(@comment)
+			poster = @comment.user
+			if poster != nil
+				poster.update_total_views
+				if poster.id != @user.id
+					@comment.calculate_adj_view
+					if @comment.consider? == 1 
+						poster.update_lumens_after_view(@comment)
+					end
 				end
 			end
 		end
