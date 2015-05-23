@@ -647,7 +647,7 @@ class Venue < ActiveRecord::Base
               self.update_columns(instagram_location_id: instagram.location.id)
               break
             else
-              if p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) >= 0.8 #Jaro Winkler String Algo comparison
+              if p jarow.getDistance(instagram.location.name.downcase.gsub(/\s+/, ""), self.name.downcase.gsub(/\s+/, "")) >= 0.8 #Jaro Winkler String Algo comparison
                 self.update_columns(instagram_location_id: instagram.location.id)
                 break
               end
