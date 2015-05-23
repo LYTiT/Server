@@ -149,20 +149,22 @@ class VenueComment < ActiveRecord::Base
 					end	
 				else
 					inst_loc_track.increment!(:primary_instagram_location_id_pings, 1)
-				end
+				end	
+			end
 
+			if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )
 				vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
 				vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
 														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
 				vc.save
 				vote.save
-
 				lytit_venue.account_new_vote(1, vote.id)
 				if LytSphere.where("venue_id = ?", lytit_venue.id).count == 0
 					LytSphere.create_new_sphere(lytit_venue)
 				end
-			
+				puts "instagram venue comment created"
 			end
+
 		end
 
 	end
@@ -413,10 +415,6 @@ class VenueComment < ActiveRecord::Base
 		}
 	  }
 	end
-
-
-#Instagram API Communication
-
 			
 end
 

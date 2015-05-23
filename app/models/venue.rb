@@ -317,7 +317,11 @@ class Venue < ActiveRecord::Base
 
       query = lat.to_s + "," + long.to_s
       result = Geocoder.search(query).first 
-      venue.city = result.city || result.county
+
+      #Sometimes the Geocoder returns a city in the county field
+      result_city = result.city || result.county
+      venue.city = result_city.slice!(" County")
+
       venue.state = result.state
       venue.country = result.country
       venue.postal_code = result.postal_code
