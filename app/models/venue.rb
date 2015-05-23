@@ -320,7 +320,8 @@ class Venue < ActiveRecord::Base
 
       #Sometimes the Geocoder returns a city in the county field
       result_city = result.city || result.county
-      venue.city = result_city.slice!(" County")
+      result_city.slice!(" County")
+      venue.city = result_city 
 
       venue.state = result.state
       venue.country = result.country
@@ -598,7 +599,7 @@ class Venue < ActiveRecord::Base
     if instagrams != nil and instagrams.count > 0
       instagrams.each_with_index do |instagram, index|
         if index > 0      
-          vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
+          vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
           vc.save
         end
       end
