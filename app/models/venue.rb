@@ -267,6 +267,7 @@ class Venue < ActiveRecord::Base
       end
 
       venue.save
+      venue.set_instagram_location_id
       return venue
     end
   end
