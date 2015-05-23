@@ -596,9 +596,9 @@ class Venue < ActiveRecord::Base
     end
 
     if instagrams != nil and instagrams.count > 0
-      postings.each_with_index do |posting, index|
+      instagrams.each_with_index do |instagram, index|
         if index > 0      
-          vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+          vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))
           vc.save
         end
       end
