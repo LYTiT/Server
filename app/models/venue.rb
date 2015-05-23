@@ -322,7 +322,7 @@ class Venue < ActiveRecord::Base
       venue.country = result.country
       venue.postal_code = result.postal_code
       venue.time_zone = timezone.active_support_time_zone
-      if vcity != nil
+      if venue.city != nil
         venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
       end
       venue.fetched_at = Time.now
