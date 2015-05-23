@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150521151419) do
+ActiveRecord::Schema.define(version: 20150523002702) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -422,6 +422,7 @@ ActiveRecord::Schema.define(version: 20150521151419) do
     t.integer  "user_id"
     t.integer  "instagram_location_id"
     t.datetime "last_instagram_pull_time"
+    t.boolean  "verified",                             default: true
   end
 
   add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree

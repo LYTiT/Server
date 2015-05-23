@@ -300,6 +300,39 @@ class Venue < ActiveRecord::Base
       i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
       i_l_i_t.save
     end
+
+    #if location not found in LYTiT database create new venue
+    if lookup == nil
+      Timezone::Configure.begin do |c|
+        c.username = 'LYTiT'
+      end
+      timezone = Timezone::Zone.new :latlon => [lat, long]
+      
+      venue = Venue.new
+      venue.name = vname
+      venue.latitude = lat
+      venue.longitude = long
+      venue.instagram_location_id = inst_loc_id
+      venue.verified = false
+
+      query = lat.to_s + "," + long.to_s
+      result = Geocoder.search(query).first 
+      venue.city = result.city || result.county
+      venue.state = result.state
+      venue.country = result.country
+      venue.postal_code = result.postal_code
+      venue.time_zone = timezone.active_support_time_zone
+      if vcity != nil
+        venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+      end
+      venue.fetched_at = Time.now
+      venue.save
+      lookup = venue
+      i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
+      i_l_i_t.save
+    end
+
+
     return lookup
   end
 
@@ -559,9 +592,11 @@ class Venue < ActiveRecord::Base
     end
 
     if instagrams != nil and instagrams.count > 0
-      for posting in instagrams
-        vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
-        vc.save
+      postings.each_with_index do |posting, index|
+        if index > 0      
+          vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'))
+          vc.save
+        end
       end
     end
     self.update_columns(last_instagram_pull_time: Time.now)

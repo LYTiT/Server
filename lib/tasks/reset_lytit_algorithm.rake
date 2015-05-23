@@ -52,8 +52,10 @@ namespace :lytit do
         venue.save
         rank = rank + 1
       end
-
     end
+
+    #delete Instagram data daily
+    VenueComment.where("content_origin = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'").delete_all
 
     puts "done."
   end
