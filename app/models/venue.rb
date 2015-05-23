@@ -463,7 +463,7 @@ class Venue < ActiveRecord::Base
     Venue.update_all(color_rating: -1.0)
     VenueComment.where("content_origin = ?", "instagram").delete_all
     LytSphere.delete_all
-    LytVotes.where("user_id IS NULL").delete_all
+    LytitVote.where("user_id IS NULL").delete_all
   end
 
   def v_up_votes
