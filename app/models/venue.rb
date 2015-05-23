@@ -558,15 +558,20 @@ class Venue < ActiveRecord::Base
   end
 
   def is_visible?
+    visible = true
     if not self.rating || self.rating == 0.0
-      return false
+      visible = false
     end
 
     if minutes_since_last_vote >= LytitConstants.threshold_to_venue_be_shown_on_map
-      return false
+      visible = false
     end
 
-    true
+    if visible == false
+      LytSphere.find_by_venue_id(self.id).destroy
+    end
+
+    return visible
   end
 
   def reset_r_vector
