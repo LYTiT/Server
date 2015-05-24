@@ -338,7 +338,6 @@ class Venue < ActiveRecord::Base
       i_l_i_t.save
     end
 
-
     return lookup
   end
 
@@ -573,6 +572,9 @@ class Venue < ActiveRecord::Base
 
     if visible == false
       LytSphere.find_by_venue_id(self.id).destroy
+      self.update_columns(rating: 0.0)
+      self.update_columns(r_up_votes: 1.0)
+      self.update_columns(r_down_votes: 1.0)
     end
 
     return visible
