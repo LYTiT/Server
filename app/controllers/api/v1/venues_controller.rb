@@ -233,7 +233,7 @@ class Api::V1::VenuesController < ApiBaseController
 =end
 
 	def get_comments
-		venue_ids = params[:cluster_venue_ids].values.flatten
+		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
