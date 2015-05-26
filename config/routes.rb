@@ -74,7 +74,7 @@ LytitServer::Application.routes.draw do
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         #resources :venue_ratings, only: [:create]
-        post '/posts', :action => :get_comments
+        get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
         post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
 
