@@ -276,7 +276,7 @@ class Venue < ActiveRecord::Base
     radius = 200
     boundries = bounding_box(radius, lat, long)
     venues = Venue.where("name = ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", vname)
-    if venue.count == 0
+    if venues.count == 0
       venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
     end
 
