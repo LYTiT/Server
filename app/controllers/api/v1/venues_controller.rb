@@ -240,7 +240,8 @@ class Api::V1::VenuesController < ApiBaseController
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
 				@venue.delay.increment!(:page_views, 1)
-				if (@venue.last_instagram_pull_time != nil and (Time.now - 1.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
+				instagram_refresh_rate = 1
+				if (@venue.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
 					@venue.get_instagrams
 				end
 			end
@@ -284,7 +285,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
-		@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
+		#@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
+		@venues = Venue.where("color_rating > 0")
 		render 'display.json.jbuilder'
 	end
 
