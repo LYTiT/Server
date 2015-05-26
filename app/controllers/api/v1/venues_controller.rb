@@ -286,7 +286,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def refresh_map_view
 		#@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
-		@venues = Venue.where("color_rating > 0")
+		@venues = Venue.where("color_rating > -1.0").order("color_rating desc")
 		render 'display.json.jbuilder'
 	end
 
