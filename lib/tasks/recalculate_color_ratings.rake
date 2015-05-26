@@ -24,9 +24,9 @@ namespace :lytit do
     
 
     #LYT Updating------------------>
-    bar = LytitBar.instance
-    bar.recalculate_bar_position
-    puts 'Bar updated'
+    #bar = LytitBar.instance
+    #bar.recalculate_bar_position
+    #puts 'Bar updated'
 
     #venues = Venue.visible
     spheres = LytSphere.uniq.pluck(:sphere)

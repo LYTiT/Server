@@ -562,7 +562,7 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    if not self.rating || self.rating == 0.0
+    if not self.rating || self.rating.round(1) == 0.0
       visible = false
     end
 
@@ -571,7 +571,6 @@ class Venue < ActiveRecord::Base
     end
 
     if visible == false
-      LytSphere.find_by_venue_id(self.id).destroy
       self.update_columns(rating: 0.0)
       self.update_columns(r_up_votes: 1.0)
       self.update_columns(r_down_votes: 1.0)
@@ -609,7 +608,7 @@ class Venue < ActiveRecord::Base
 
     if instagrams != nil and instagrams.count > 0
       instagrams.each_with_index do |instagram, index|
-        if index > 0      
+        if index > 0 && VenueComment.where("instagram_id = ?", instagram.id).any? == false
           vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
           vc.save
         end

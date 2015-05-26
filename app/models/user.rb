@@ -131,6 +131,20 @@ class User < ActiveRecord::Base
     total_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND (NOW() <= expiration OR ((NOW() - created_at) <= INTERVAL '1 DAY' AND num_responses > 0))) OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
   end
 
+  def nearby_user_bounties(lat, long, city)
+    meter_radius = 400
+    #pull in venues in a 500x500 meter surrounding box of current location (lat,long) that have outstanding bounties
+    #nearby_bounty_venue_ids = "SELECT id FROM venues WHERE ABS(lat - latitude) <= 5555 AND ABS(long - longitude) <= 5555 AND outstanding_bounties > 0"
+    #venue_bounties = VenueComment.where("venue_id IN (?) AND created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
+    bounty_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("outstanding_bounties = 0").includes(:venue_comments).order('distance ASC')
+    nearby_bounties = []
+    for bounty_venue in bounty_venues
+      nearby_bounties << bounty_venues.venue_comments.where("created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
+    end
+
+    #.venue_comments.where("created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
+  end
+
   def is_subscribed_to_bounty?(target_bounty)
     if target_bounty != nil
       BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false

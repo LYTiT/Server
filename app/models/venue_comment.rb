@@ -119,6 +119,14 @@ class VenueComment < ActiveRecord::Base
 		return consider
 	end
 
+	def self.get_comments_for_cluster(venue_ids)
+		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")
+	end
+
+	def self.of_lytit_origin_present?(venue_ids)
+		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND content_origin = ?", venue_ids, "lytit").any?
+	end
+
 	def self.convert_instagram_to_vc(instagram)
 		place_name = instagram.location.name
 		place_id = instagram.location.id

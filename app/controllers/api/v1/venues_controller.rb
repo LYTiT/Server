@@ -214,7 +214,7 @@ class Api::V1::VenuesController < ApiBaseController
 		fc.save
 		render json: fc
 	end
-
+=begin
 	def get_comments
 		@venue = Venue.find_by_id(params[:venue_id])
 		@user = User.find_by_authentication_token(params[:auth_token])
@@ -227,6 +227,25 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue.get_instagrams
 			end
 			live_comments = @venue.venue_comments.where("(NOW() - time_wrapper) <= INTERVAL '1 DAY' AND ((user_id IS NOT NULL AND content_origin = ?) OR (content_origin = ?))", 'lytit', 'instagram').includes(:user).order('time_wrapper desc')
+			@comments = live_comments.page(params[:page]).per(5)
+		end
+	end
+=end
+
+	def get_comments
+		venue_ids = params[:venue_ids]
+		if not venue_ids 
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
+		else
+			if venue_ids.count == 1
+				@venue = Venue.find_by_id(venue_ids.first)
+				@venue.delay.increment!(:page_views, 1)
+				if (@venue.last_instagram_pull_time != nil and (Time.now - 1.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
+					@venue.get_instagrams
+				end
+			end
+			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
+			@lytit_presence = VenueComment.of_lytit_origin_present?(venue_ids)
 			@comments = live_comments.page(params[:page]).per(5)
 		end
 	end
