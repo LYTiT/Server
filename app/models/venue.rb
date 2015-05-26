@@ -273,9 +273,12 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
-    radius = 100
+    radius = 200
     boundries = bounding_box(radius, lat, long)
-    venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+    venues = Venue.where("name = ?", vname)
+    if venue.count == 0
+      venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+    end
 
     if venues.count != 0
       for venue in venues
