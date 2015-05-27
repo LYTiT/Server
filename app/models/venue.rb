@@ -35,6 +35,25 @@ class Venue < ActiveRecord::Base
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
 
+  def self.name_is_proper?(vname)
+    if not vname
+      result = false
+    elsif vname.downcase != vname
+      result = false
+    elsif vname =~ /[\u{1F600}-\u{1F6FF}]/ == 0
+      result = false
+    elsif vname.strip.last == "."
+      result = false
+    elsif vname.downcase.include? "www." || vname.downcase.include? ".com"
+      result = false
+    elsif vname.downcase.include? "|" || vname.downcase.include? "#" 
+      result = false
+    else
+      result = true
+    end
+    return result
+  end
+
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def type
     v_address = address || ""
