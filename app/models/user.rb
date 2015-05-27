@@ -131,18 +131,18 @@ class User < ActiveRecord::Base
     total_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND (NOW() <= expiration OR ((NOW() - created_at) <= INTERVAL '1 DAY' AND num_responses > 0))) OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
   end
 
-  def nearby_user_bounties(lat, long, city)
+  def nearby_user_bounties(lat, long, city, state, country)
     meter_radius = 400
-    #pull in venues in a 500x500 meter surrounding box of current location (lat,long) that have outstanding bounties
-    #nearby_bounty_venue_ids = "SELECT id FROM venues WHERE ABS(lat - latitude) <= 5555 AND ABS(long - longitude) <= 5555 AND outstanding_bounties > 0"
-    #venue_bounties = VenueComment.where("venue_id IN (?) AND created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
-    bounty_venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("outstanding_bounties = 0").includes(:venue_comments).order('distance ASC')
-    nearby_bounties = []
-    for bounty_venue in bounty_venues
-      nearby_bounties << bounty_venues.venue_comments.where("created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
-    end
+    mile_radius = meter_radius * 0.000621371
+    
+    #returns nearby venue bounties sorted by proximity
+    venue_bounties = VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) 
+      <= #{mile_radius} AND (outstanding_bounties = 0)").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.created_at >= ? 
+      AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day)
 
-    #.venue_comments.where("created_at >= ? AND bounty_id IS NOT NULL AND user_id IS NULL", nearby_bounty_venue_ids, Time.now-1.day)
+    #total surrounding bounties including surrounding geo (city, state, or country) bounties  
+    total_surrounding_bounties = VenueComment.joins(:venue).where("address IS NULL AND postal_code is NULL AND ((city = ? AND name = ?) OR (state = ? AND city IS NULL) OR (country = ? AND city IS NULL AND state IS NULL))", city, city, state, country).where("venue_comments.created_at >= ? 
+      AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day) << venue_bounties
   end
 
   def is_subscribed_to_bounty?(target_bounty)
