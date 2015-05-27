@@ -40,13 +40,13 @@ class Venue < ActiveRecord::Base
       result = false
     elsif vname.downcase != vname
       result = false
-    elsif vname =~ /[\u{1F600}-\u{1F6FF}]/ == 0
+    elsif (vname =~ /[\u{1F600}-\u{1F6FF}]/) == 0
       result = false
     elsif vname.strip.last == "."
       result = false
-    elsif vname.downcase.include? "www." || vname.downcase.include? ".com"
+    elsif (vname.downcase.include? "www.") || (vname.downcase.include? ".com")
       result = false
-    elsif vname.downcase.include? "|" || vname.downcase.include? "#" 
+    elsif (vname.downcase.include? "|") || (vname.downcase.include? "#")
       result = false
     else
       result = true
@@ -596,6 +596,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(rating: 0.0)
       self.update_columns(r_up_votes: 1.0)
       self.update_columns(r_down_votes: 1.0)
+      self.update_columns(color_rating: -1.0)
     end
 
     return visible
