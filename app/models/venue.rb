@@ -648,18 +648,18 @@ class Venue < ActiveRecord::Base
   def set_instagram_location_id
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
-    nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 250, :count => 100)
-    wide_area_search = false
+    nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100, :min_timestamp => (Time.now-48.hours).to_time.to_i)
+    wide_area_search = true
     wide_area_hash = Hash.new
 
-    if nearby_instagram_content.count == 0
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 500, :count => 100)
-    end
+    #if nearby_instagram_content.count == 0
+    #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 500, :count => 100)
+    #end
 
-    if nearby_instagram_content.count == 0
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100)
-      wide_area_search = true
-    end
+    #if nearby_instagram_content.count == 0
+    #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100)
+    #  wide_area_search = true
+    #end
 
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
