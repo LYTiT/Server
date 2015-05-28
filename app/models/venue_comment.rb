@@ -169,7 +169,7 @@ class VenueComment < ActiveRecord::Base
 															:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
 						vote.save
 						#lytit_venue.account_new_vote(1, vote.id)
-						if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false && lytit_venue.city != nil
+						if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 							LytSphere.create_new_sphere(lytit_venue)
 						end
 						puts "instagram venue comment created"

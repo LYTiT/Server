@@ -48,7 +48,7 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "www.") || (vname.downcase.include? ".com")
       result = false
-    elsif (vname.downcase.include? "|") || (vname.downcase.include? "#")
+    elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";")
       result = false
     else
       result = true
@@ -236,8 +236,17 @@ class Venue < ActiveRecord::Base
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
-      if lookup.l_sphere == nil && vcity != nil #Add LYT Sphere if not present
-        lookup.l_sphere = lookup.city.delete(" ")+(lookup.latitude.round(0).abs).to_s+(lookup.longitude.round(0).abs).to_s
+      if lookup.l_sphere == nil
+        if lookup.latitude < 0 && lookup.longitude >= 0
+          quadrant = "a"
+        elsif lookup.latitude < 0 && lookup.longitude < 0
+          quadrant = "b"
+        elsif lookup.latitude >= 0 && lookup.longitude < 0
+          quadrant = "c"
+        else
+          quadrant = "d"
+        end
+        lookup.l_sphere = quadrant+(lookup.latitude.round(1).abs).to_s+(lookup.longitude.round(1).abs).to_s
         lookup.save
       end
       if lookup.time_zone == nil #Add timezone of venue if not present
@@ -275,9 +284,19 @@ class Venue < ActiveRecord::Base
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude
       venue.longitude = vlongitude
-      if vcity != nil
-        venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+
+      if venue.latitude < 0 && venue.longitude >= 0
+        quadrant = "a"
+      elsif venue.latitude < 0 && venue.longitude < 0
+        quadrant = "b"
+      elsif venue.latitude >= 0 && venue.longitude < 0
+        quadrant = "c"
+      else
+        quadrant = "d"
       end
+      venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+      venue.save
+
       venue.time_zone = timezone.active_support_time_zone
       venue.fetched_at = Time.now
 
@@ -331,7 +350,7 @@ class Venue < ActiveRecord::Base
       Timezone::Configure.begin do |c|
         c.username = 'LYTiT'
       end
-      timezone = Timezone::Zone.new :latlon => [lat, long]
+      #timezone = Timezone::Zone.new :latlon => [lat, long]
       
       venue = Venue.new
       venue.name = vname
@@ -339,7 +358,7 @@ class Venue < ActiveRecord::Base
       venue.longitude = long
       venue.instagram_location_id = inst_loc_id
       venue.verified = false
-
+=begin
       query = lat.to_s + "," + long.to_s
       result = Geocoder.search(query).first 
 
@@ -352,9 +371,18 @@ class Venue < ActiveRecord::Base
       venue.country = result.country
       venue.postal_code = result.postal_code
       venue.time_zone = timezone.active_support_time_zone
-      if venue.city != nil
-        venue.l_sphere = venue.city.delete(" ")+(venue.latitude.round(0).abs).to_s+(venue.longitude.round(0).abs).to_s
+=end
+      if venue.latitude < 0 && venue.longitude >= 0
+        quadrant = "a"
+      elsif venue.latitude < 0 && venue.longitude < 0
+        quadrant = "b"
+      elsif venue.latitude >= 0 && venue.longitude < 0
+        quadrant = "c"
+      else
+        quadrant = "d"
       end
+      venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+
       venue.fetched_at = Time.now
       venue.save
       lookup = venue
@@ -388,6 +416,23 @@ class Venue < ActiveRecord::Base
 
   #RUN THIS ON BOLT BEFORE RELEASE 1.0
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  def self.reset_venue_lyt_spheres
+    target_venues = Venue.all
+    for v in target_venues
+      if v.latitude < 0 && v.longitude >= 0
+        quadrant = "a"
+      elsif v.latitude < 0 && v.longitude < 0
+        quadrant = "b"
+      elsif v.latitude >= 0 && v.longitude < 0
+        quadrant = "c"
+      else
+        quadrant = "d"
+      end
+      new_l_sphere = quadrant+(v.latitude.round(1).abs).to_s+(v.longitude.round(1).abs).to_s
+      v.update_columns(l_sphere: new_l_sphere)
+    end
+  end
+
   def self.set_is_address_and_votes_received
     target_venues = Venue.all
     for v in target_venues
