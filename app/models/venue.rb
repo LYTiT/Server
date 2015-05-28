@@ -494,7 +494,7 @@ class Venue < ActiveRecord::Base
   end
 
   def v_up_votes
-    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, valid_votes_timestamp)
+    LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end
 
   def v_down_votes
@@ -551,11 +551,12 @@ class Venue < ActiveRecord::Base
   end
 
   def update_rating()
+    #daily up_votes
     up_votes = self.v_up_votes.order('id ASC').to_a
     update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, nil, false) + 1.0 + get_k).round(4))
 
-    down_votes = self.v_down_votes.order('id ASC').to_a
-    update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, nil, true) + 1.0).round(4))
+    #down_votes = self.v_down_votes.order('id ASC').to_a
+    #update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, nil, true) + 1.0).round(4))
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
@@ -636,9 +637,12 @@ class Venue < ActiveRecord::Base
 
     if instagrams != nil and instagrams.count > 0
       instagrams.each_with_index do |instagram, index|
-        if index > 0 && VenueComment.where("instagram_id = ?", instagram.id).any? == false
+        if index > 0 && VenueComment.where("instagram_id = ?", instagram.id.to_s).any? == false
           vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
           vc.save
+          vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+                :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
+          vote.save
         end
       end
     end
@@ -661,7 +665,7 @@ class Venue < ActiveRecord::Base
       wide_area_search = true
       wide_area_hash = Hash.new 
     else
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 250, :count => 100)
+      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 100)
     end
     #if nearby_instagram_content.count == 0
     #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 500, :count => 100)
@@ -702,10 +706,10 @@ class Venue < ActiveRecord::Base
         self.update_columns(instagram_location_id: best_location_match_id)
       end
 
-      if instagram_location_id != nil
+      if instagram_location_id != nil && instagram_location_id != "-1"
         latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
-        if latest_location_postings.count >0  
+        if latest_location_postings.count > 0  
           for posting in latest_location_postings
             vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
             vc.save

@@ -240,10 +240,19 @@ class Api::V1::VenuesController < ApiBaseController
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
 				@venue.delay.increment!(:page_views, 1)
-				instagram_refresh_rate = 1
-				if (@venue.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
-					@venue.get_instagrams
-				end
+
+				instagram_refresh_rate = 1 #minutes
+				instagram_venue_id_ping_rate = 5 #days
+				if @venue.instagram_location_id != nil
+					if @venue.instagram_location_id == -1 && (Time.now - instagram_venue_id_ping_rate.days) >= @venue.last_instagram_pull_time)
+						@venue.set_instagram_location_id
+						@venue.update_columns(last_instagram_pull_time: Time.now)
+					end
+
+
+					if (@venue.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
+						@venue.get_instagrams
+					end
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@lytit_presence = VenueComment.of_lytit_origin_present?(venue_ids)
