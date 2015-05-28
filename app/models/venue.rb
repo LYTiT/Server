@@ -633,8 +633,8 @@ class Venue < ActiveRecord::Base
     end
 
     if instagrams != nil and instagrams.count > 0
-      instagrams.each_with_index do |instagram, index|
-        if index > 0 && VenueComment.where("instagram_id = ?", instagram.id.to_s).any? == false
+      for instagram in instagrams
+        if VenueComment.where("instagram_id = ?", instagram.id).any? == false
           vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
           vc.save
           vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
