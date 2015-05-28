@@ -244,8 +244,9 @@ class Api::V1::VenuesController < ApiBaseController
 				instagram_refresh_rate = 1 #minutes
 				instagram_venue_id_ping_rate = 5 #days
 				if @venue.instagram_location_id != nil
-					if @venue.instagram_location_id == "-1" && ((Time.now - instagram_venue_id_ping_rate.days) >= @venue.last_instagram_pull_time)
-						@venue.set_instagram_location_id
+					#try to establish instagram location id if previous attempts failed every 5 days
+					if @venue.instagram_location_id == "-1" && (@venue.last_instagram_pull_time != nil and (Time.now - instagram_venue_id_ping_rate.minutes) >= @venue.last_instagram_pull_time)
+						@venue.set_instagram_location_id(100)
 						@venue.update_columns(last_instagram_pull_time: Time.now)
 					end
 

@@ -252,7 +252,7 @@ class Venue < ActiveRecord::Base
         lookup.save
       end
       if lookup.instagram_location_id == nil #Add instagram location id
-        lookup.set_instagram_location_id
+        lookup.set_instagram_location_id(100)
       end
       return lookup
     else
@@ -291,7 +291,7 @@ class Venue < ActiveRecord::Base
       end
 
       venue.save
-      venue.set_instagram_location_id
+      venue.set_instagram_location_id(100)
       return venue
     end
   end
@@ -653,7 +653,10 @@ class Venue < ActiveRecord::Base
     self.venue_comments.where("content_origin = ?", "instagram").order("time_wrapper desc").first
   end
 
-  def set_instagram_location_id
+  def set_instagram_location_id(search_radius)
+    if search_radius == nil
+      search_radius = 100
+    end
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
     
@@ -665,7 +668,7 @@ class Venue < ActiveRecord::Base
       wide_area_search = true
       wide_area_hash = Hash.new 
     else
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 100, :count => 100)
+      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => search_radius, :count => 100)
     end
     #if nearby_instagram_content.count == 0
     #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 500, :count => 100)
@@ -719,7 +722,11 @@ class Venue < ActiveRecord::Base
         i_l_i_t = InstagramLocationIdTracker.new(:venue_id => self.id, primary_instagram_location_id: self.instagram_location_id)
         i_l_i_t.save
       else
-        self.update_columns(instagram_location_id: -1)
+        if search_radius != 250
+          set_instagram_location_id(250)
+        else
+          self.update_columns(instagram_location_id: -1)
+        end
       end    
     end
 
