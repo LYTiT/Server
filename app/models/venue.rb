@@ -158,64 +158,69 @@ class Venue < ActiveRecord::Base
       return
     end
 
-    #We need to determine the type of search being conducted whether it is venue specific or geographic
-    if vaddress == nil
-      if vcity != nil #city search
-        radius = 3000
+    direct_search = Venue.where("name = ? AND latitude = ? AND longitude = ?", vname, vlatitude, vlongitude).first
+    if direct_search != nil
+      lookup = direct_search
+    else
+      #We need to determine the type of search being conducted whether it is venue specific or geographic
+      if vaddress == nil
+        if vcity != nil #city search
+          radius = 3000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
+          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        end
+
+        if vstate != nil && vcity == nil #state search
+          radius = 30000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
+          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        end
+
+        if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+          radius = 300000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
+          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        end
+      else #venue search 
+        radius = 75
         boundries = bounding_box(radius, vlatitude, vlongitude)
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-          address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
-        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
 
-      if vstate != nil && vcity == nil #state search
-        radius = 30000
-        boundries = bounding_box(radius, vlatitude, vlongitude)
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-          address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
-        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+      lookup = nil 
+      specific_address = false 
+
+      #When a user searches for a specific address we should always take him/her to the venue page of that exact address; however
+      #when a pin is dropped, because a specific address is not established by the user
+      if ( vname == vaddress ) && ( pin_drop == "0" )
+        specific_address = true
       end
 
-      if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-        radius = 300000
-        boundries = bounding_box(radius, vlatitude, vlongitude)
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-          address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
-        vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+      #Iterate through venues in target area to find a string match by name
+      for venue in venues
+        if venue.name == vname #Is there a direct string match?
+          lookup = venue
+          break
+        end
+
+        if ( (((venue.name).include? vname) || ((vname).include? venue.name)) && (specific_address == false) ) && (venue.address == vaddress) #Are they substrings?
+          lookup = venue
+          break
+        end
+
+        require 'fuzzystringmatch'
+        jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
+        if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
+          lookup = venue
+        end
+
       end
-    else #venue search 
-      radius = 75
-      boundries = bounding_box(radius, vlatitude, vlongitude)
-      venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
-    end
-
-    lookup = nil 
-    specific_address = false 
-
-    #When a user searches for a specific address we should always take him/her to the venue page of that exact address; however
-    #when a pin is dropped, because a specific address is not established by the user
-    if ( vname == vaddress ) && ( pin_drop == "0" )
-      specific_address = true
-    end
-
-    #Iterate through venues in target area to find a string match by name
-    for venue in venues
-      if venue.name == vname #Is there a direct string match?
-        lookup = venue
-        break
-      end
-
-      if ( (((venue.name).include? vname) || ((vname).include? venue.name)) && (specific_address == false) ) && (venue.address == vaddress) #Are they substrings?
-        lookup = venue
-        break
-      end
-
-      require 'fuzzystringmatch'
-      jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
-      if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
-        lookup = venue
-      end
-
     end
 
     if lookup != nil
@@ -255,8 +260,22 @@ class Venue < ActiveRecord::Base
         end
         timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
         lookup.time_zone = timezone.active_support_time_zone
-        lookup.save
       end
+      
+      if lookup.name != vname
+        lookup.name = vname
+      end
+
+      if lookup.latitude != vlatitude
+        lookup.latitude = vlatitude
+      end
+
+      if lookup.longitude != vlongitude
+        lookup.longitude = vlongitude
+      end
+
+      lookup.save
+
       if lookup.instagram_location_id == nil #Add instagram location id
         lookup.set_instagram_location_id(100)
       end

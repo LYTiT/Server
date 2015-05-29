@@ -5,7 +5,8 @@ class Api::V1::VenuesController < ApiBaseController
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venue = Venue.find(params[:id])
-		venue = @venue.as_json(include: :venue_messages)
+=begin		
+		venue = @venue.as_json(include: :venue_messages)		
 		venue[:menu] = @venue.menu_sections.as_json(
 			only: [:id, :name], 
 			include: {
@@ -14,6 +15,7 @@ class Api::V1::VenuesController < ApiBaseController
 				}
 			}
 		)
+=end
 
 		if @venue.is_hot? == true
 			venue[:is_hot] = true

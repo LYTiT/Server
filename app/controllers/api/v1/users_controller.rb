@@ -33,6 +33,9 @@ class Api::V1::UsersController < ApiBaseController
       		end
 			sign_in @user
 
+			#check if there are lyts around a user and if not make an instagram pull to drop them (if there are any instagrams created in the area)
+			User.delay.instagram_content_pull([params[:latitude], params[:longitude])
+
 			render 'created.json.jbuilder'
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
