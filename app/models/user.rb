@@ -548,7 +548,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.instagram_content_pull(lat, long)
+  def instagram_content_pull(lat, long)
     if lat != nil && long != nil
         meter_radius = 20000
         if not Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
