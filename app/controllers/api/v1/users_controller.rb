@@ -9,6 +9,7 @@ class Api::V1::UsersController < ApiBaseController
 		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
 			existing_temp_user.destroy
 		end
+		#check if there are lyts around a user and if not make an instagram pull to drop them (if there are any instagrams created in the area)
 
 		@user = User.new(user_params)
 		@user.adjusted_view_discount = LumenConstants.views_weight_adj
@@ -32,9 +33,7 @@ class Api::V1::UsersController < ApiBaseController
       			v_id_tracker.save
       		end
 			sign_in @user
-
-			#check if there are lyts around a user and if not make an instagram pull to drop them (if there are any instagrams created in the area)
-			Venue.delay.instagram_content_pull([params[:latitude], params[:longitude])
+			Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
 
 			render 'created.json.jbuilder'
 		else
