@@ -364,6 +364,7 @@ class Venue < ActiveRecord::Base
         end
       end
     end
+
     if lookup != nil and InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
       lookup.update_columns(instagram_location_id: inst_loc_id)
       i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
@@ -712,6 +713,10 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
+            if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
+              LytSphere.create_new_sphere(lytit_venue)
+            end
+
           end
         end
       end
