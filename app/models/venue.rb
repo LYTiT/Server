@@ -791,6 +791,12 @@ class Venue < ActiveRecord::Base
             if VenueComment.where("instagram_id = ?", instagram.id).any? == false
               vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
               vc.save
+              vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+                    :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
+              vote.save
+              if LytSphere.where("venue_id = ?", self.id).any? == false
+                LytSphere.create_new_sphere(self)
+              end              
             end
           end
           self.update_columns(last_instagram_pull_time: Time.now)
