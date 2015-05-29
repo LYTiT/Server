@@ -713,8 +713,8 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
-            if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
-              LytSphere.create_new_sphere(lytit_venue)
+            if LytSphere.where("venue_id = ?", self.id).any? == false
+              LytSphere.create_new_sphere(self)
             end
 
           end
