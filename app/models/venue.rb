@@ -162,35 +162,41 @@ class Venue < ActiveRecord::Base
     if direct_search != nil
       lookup = direct_search
     else
-      #We need to determine the type of search being conducted whether it is venue specific or geographic
-      if vaddress == nil
-        if vcity != nil #city search
-          radius = 3000
+      #name proximity databse search
+      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
+      #iterartive search as resort
+      if venues.count == 0
+        #We need to determine the type of search being conducted whether it is venue specific or geographic
+        if vaddress == nil
+          if vcity != nil #city search
+            radius = 3000
+            boundries = bounding_box(radius, vlatitude, vlongitude)
+            venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+              address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
+            vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+          end
+
+          if vstate != nil && vcity == nil #state search
+            radius = 30000
+            boundries = bounding_box(radius, vlatitude, vlongitude)
+            venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+              address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
+            vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+          end
+
+          if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+            radius = 300000
+            boundries = bounding_box(radius, vlatitude, vlongitude)
+            venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+              address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
+            vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+          end
+        else #venue search 
+          radius = 75
           boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
-          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
         end
 
-        if vstate != nil && vcity == nil #state search
-          radius = 30000
-          boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
-          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
-        end
-
-        if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-          radius = 300000
-          boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
-          vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
-        end
-      else #venue search 
-        radius = 75
-        boundries = bounding_box(radius, vlatitude, vlongitude)
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
 
       lookup = nil 
@@ -332,11 +338,10 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
-    radius = 200
-    boundries = bounding_box(radius, lat, long)
-    venues = Venue.where("name = ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", vname)
+    meter_radius = 250
+    venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
     if venues.count == 0
-      venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+      venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long])
     end
 
     if venues.count != 0
