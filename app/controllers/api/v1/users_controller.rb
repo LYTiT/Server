@@ -33,7 +33,6 @@ class Api::V1::UsersController < ApiBaseController
       			v_id_tracker.save
       		end
 			sign_in @user
-			Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
 
 			render 'created.json.jbuilder'
 		else
