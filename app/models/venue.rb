@@ -280,6 +280,10 @@ class Venue < ActiveRecord::Base
         lookup.longitude = vlongitude
       end
 
+      if lookup.address != vaddress
+        lookup.address = vaddress
+      end
+
       lookup.save
 
       if lookup.instagram_location_id == nil #Add instagram location id
@@ -830,7 +834,7 @@ class Venue < ActiveRecord::Base
   end
 
 
-  private ##################################################################################################
+  private ##########################################################################################################################################################################
 
   def valid_votes_timestamp
     now = Time.now
