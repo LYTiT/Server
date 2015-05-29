@@ -549,11 +549,13 @@ class User < ActiveRecord::Base
   end
 
   def self.instagram_content_pull(lat, long)
-      meter_radius = 20000
-      if not Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
-        new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
-        for instagram in new_instagrams
-          VenueComment.convert_instagram_to_vc(instagram)
+    if lat != nil && long != nil
+        meter_radius = 20000
+        if not Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+          new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
+          for instagram in new_instagrams
+            VenueComment.convert_instagram_to_vc(instagram)
+          end
         end
       end
   end    
