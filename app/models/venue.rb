@@ -716,7 +716,6 @@ class Venue < ActiveRecord::Base
             if LytSphere.where("venue_id = ?", self.id).any? == false
               LytSphere.create_new_sphere(self)
             end
-
           end
         end
       end
@@ -789,8 +788,10 @@ class Venue < ActiveRecord::Base
 
         if latest_location_postings.count > 0  
           for posting in latest_location_postings
-            vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
-            vc.save
+            if VenueComment.where("instagram_id = ?", instagram.id).any? == false
+              vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
+              vc.save
+            end
           end
           self.update_columns(last_instagram_pull_time: Time.now)
         end
