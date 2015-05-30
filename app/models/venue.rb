@@ -222,7 +222,7 @@ class Venue < ActiveRecord::Base
 
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
-        if (p jarow.getDistance(venue.name, vname) >= 0.8) && (specific_address == false)
+        if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" ", "")) >= 0.8) && (specific_address == false)
           lookup = venue
         end
 
@@ -362,8 +362,8 @@ class Venue < ActiveRecord::Base
         end
 
         require 'fuzzystringmatch'
-        jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
-        if (p jarow.getDistance(venue.name, vname) >= 0.8)
+        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+        if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" ", "")) >= 0.8)
           lookup = venue
         end
       end
@@ -769,7 +769,7 @@ class Venue < ActiveRecord::Base
               self.update_columns(instagram_location_id: instagram.location.id)
               break
             else
-              if p jarow.getDistance(instagram.location.name.downcase.gsub(/\s+/, ""), self.name.downcase.gsub(/\s+/, "")) >= 0.8 #Jaro Winkler String Algo comparison
+              if p jarow.getDistance(instagram.location.name.downcase.gsub("the", "").gsub(" ", ""), self.name.downcase.downcase.gsub("the", "").gsub(" ", "")) >= 0.8 #Jaro Winkler String Algo comparison
                 self.update_columns(instagram_location_id: instagram.location.id)
                 break
               end
