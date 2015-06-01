@@ -58,14 +58,16 @@ class Api::V1::VenuesController < ApiBaseController
 		parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
 		assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
 
-		session = params[:session]
-		incoming_part_type = venue.id == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
+		session = params[:session]		
+		incoming_part_type = params[:venue_id] == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
 
 		completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
-		if venue.id == 14002
+		if params[:venue_id] == 14002
 			v_id = nil
+			venue = nil
 		else
-			v_id = venue.id
+			v_id = params[:venue_id]
+			venue = Venue.find_by_id(params[:venue_id])
 		end
 
 		if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
