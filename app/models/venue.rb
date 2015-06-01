@@ -239,8 +239,9 @@ class Venue < ActiveRecord::Base
         part3 = [part2, vpostal_code].compact.join(' ')
         part4 = [part3, vcountry].compact.join(', ')
 
-        lookup.formatted_address = part4
-        lookup.formatted_address.encode!("UTF-8")
+        if part4.encoding.name == "UTF-8"
+          lookup.formatted_address = part4
+        end
 
         lookup.city = vcity
         lookup.state = vstate
@@ -281,9 +282,8 @@ class Venue < ActiveRecord::Base
         lookup.longitude = vlongitude
       end
 
-      if lookup.address != vaddress
+      if lookup.address != vaddress && vaddress.encoding.name == "UTF-8"
         lookup.address = vaddress
-        lookup.address.encode!("UTF-8")
       end
 
       lookup.save
@@ -300,16 +300,19 @@ class Venue < ActiveRecord::Base
 
       venue = Venue.new
       venue.name = vname
-      venue.address = vaddress
-      venue.address.encode!("UTF-8")
+      if vaddress.encoding.name == "UTF-8"
+        venue.address = vaddress
+      end
       
       part1 = [vaddress, vcity].compact.join(', ')
       part2 = [part1, vstate].compact.join(', ')
       part3 = [part2, vpostal_code].compact.join(' ')
       part4 = [part3, vcountry].compact.join(', ')
 
-      venue.formatted_address = part4
-      venue.formatted_address.encode!("UTF-8")
+      if part4.encoding.name == "UTF-8"
+        venue.formatted_address = part4
+      end
+      
       venue.city = vcity
       venue.state = vstate
       venue.country = vcountry
