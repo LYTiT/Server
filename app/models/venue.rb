@@ -312,7 +312,7 @@ class Venue < ActiveRecord::Base
       if part4.encoding.name == "UTF-8"
         venue.formatted_address = part4
       end
-      
+       
       venue.city = vcity
       venue.state = vstate
       venue.country = vcountry
