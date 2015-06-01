@@ -241,6 +241,8 @@ class Venue < ActiveRecord::Base
         part4 = [part3, vcountry].compact.join(', ')
 
         lookup.formatted_address = part4
+        lookup.formatted_address.encode!("UTF-8")
+
         lookup.city = vcity
         lookup.state = vstate
         lookup.country = vcountry
@@ -308,6 +310,7 @@ class Venue < ActiveRecord::Base
       part4 = [part3, vcountry].compact.join(', ')
 
       venue.formatted_address = part4
+      venue.formatted_address.encode!("UTF-8")
       venue.city = vcity
       venue.state = vstate
       venue.country = vcountry
