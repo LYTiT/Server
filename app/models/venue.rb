@@ -809,13 +809,16 @@ class Venue < ActiveRecord::Base
 
         if latest_location_postings.count > 0  
           for posting in latest_location_postings
+
             puts('adding instagrams')
             if VenueComment.where("instagram_id = ?", instagram.id).any? == false
               vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
               vc.save
+
               vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                     :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
               vote.save
+
               if LytSphere.where("venue_id = ?", self.id).any? == false
                 LytSphere.create_new_sphere(self)
               end              
@@ -826,7 +829,7 @@ class Venue < ActiveRecord::Base
         i_l_i_t = InstagramLocationIdTracker.new(:venue_id => self.id, primary_instagram_location_id: self.instagram_location_id)
         i_l_i_t.save
       else
-        if search_radius != 250
+        if search_radius != 250 && wide_area_search != true
           set_instagram_location_id(250)
         else
           self.update_columns(instagram_location_id: -1)
