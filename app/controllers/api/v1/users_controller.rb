@@ -188,8 +188,12 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_surrounding_bounties
-		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country])
+		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country]).to_a.flatten
 		@surrounding_bounties = Kaminari.paginate_array(feed).page(params[:page]).per(10)
+	end
+
+	def search_for_bounties
+		@bounties = Bounty.joins(:venue).where("LOWER(name) like ? OR LOWER(city) like ? OR LOWER(state) like ? OR LOWER(country) like ?", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
 	end
 
 	def can_claim_bounties
