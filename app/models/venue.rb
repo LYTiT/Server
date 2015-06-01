@@ -251,10 +251,10 @@ class Venue < ActiveRecord::Base
         part4 = [part3, vcountry].compact.join(', ')
 
         
-        lookup.update_columns(formatted_address: part4) rescue lookup.update_columns(formatted_address: "N/A")
-        lookup.update_columns(city: vcity) rescue lookup.update_columns(city: "N/A")
-        lookup.update_columns(state: vstate) rescue lookup.update_columns(state: "N/A")
-        lookup.update_columns(country: vcountry) rescue lookup.update_columns(country: "N/A")
+        lookup.update_columns(formatted_address: part4) rescue lookup.formatted_address = "N/A"
+        lookup.update_columns(city: vcity) rescue lookup.city = "N/A"
+        lookup.update_columns(state: vstate) rescue lookup.state = "N/A"
+        lookup.update_columns(country: vcountry) rescue lookup.country = "N/A" 
 
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
@@ -293,7 +293,7 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.address != vaddress
-        lookup.update_columns(address: vaddress) rescue lookup.update_columns(address: "N/A")
+        lookup.update_columns(address: vaddress) rescue lookup.address = "N/A"
       end
 
       lookup.save
