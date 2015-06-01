@@ -52,6 +52,8 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "snapchat") || (vname.downcase.include? "whatsapp") || (vname.downcase.include? "viber") || (vname.downcase.include? "sms")
       result = false
+    elsif (vname.downcase.include? "❤")
+        result
     elsif vname != vname.titlecase
       result = false
     else
@@ -249,11 +251,11 @@ class Venue < ActiveRecord::Base
         part4 = [part3, vcountry].compact.join(', ')
 
         
-        lookup.update_columns(formatted_address: part4) rescue nil
+        lookup.update_columns(formatted_address: part4) rescue lookup.update_columns(formatted_address: "N/A")
+        lookup.update_columns(city: vcity) rescue lookup.update_columns(city: "N/A")
+        lookup.update_columns(state: vstate) rescue lookup.update_columns(state: "N/A")
+        lookup.update_columns(country: vcountry) rescue lookup.update_columns(country: "N/A")
 
-        lookup.city = vcity
-        lookup.state = vstate
-        lookup.country = vcountry
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
       end
@@ -291,7 +293,7 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.address != vaddress
-        lookup.update_columns(address: vaddress) rescue nil
+        lookup.update_columns(address: vaddress) rescue lookup.update_columns(address: "N/A")
       end
 
       lookup.save
@@ -310,17 +312,17 @@ class Venue < ActiveRecord::Base
       venue.name = vname
       venue.save
 
-      venue.update_columns(address: vaddress) rescue nil
+      venue.update_columns(address: vaddress) rescue venue.update_columns(address: "N/A")
       part1 = [vaddress, vcity].compact.join(', ')
       part2 = [part1, vstate].compact.join(', ')
       part3 = [part2, vpostal_code].compact.join(' ')
       part4 = [part3, vcountry].compact.join(', ')
 
-      venue.update_columns(formatted_address: part4) rescue nil
-
-      venue.city = vcity
-      venue.state = vstate
-      venue.country = vcountry
+      venue.update_columns(formatted_address: part4) rescue venue.update_columns(formatted_address: "N/A")
+      venue.update_columns(city: vcity) rescue venue.update_columns(city: "N/A")
+      venue.update_columns(state: vstate) rescue venue.update_columns(state: "N/A")
+      venue.update_columns(state: vcountry) rescue venue.update_columns(country: "N/A")
+  
       venue.postal_code = vpostal_code.to_s
       venue.phone_number = formatTelephone(vphone)
       venue.latitude = vlatitude

@@ -62,6 +62,7 @@ class Api::V1::VenuesController < ApiBaseController
 		incoming_part_type = params[:venue_id] == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
 
 		completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
+		#temp housing venue handling
 		if params[:venue_id] == 14002
 			v_id = nil
 			venue = nil
