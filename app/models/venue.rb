@@ -299,7 +299,8 @@ class Venue < ActiveRecord::Base
 
       venue = Venue.new
       venue.name = vname
-
+      venue.save
+      
       venue.update_columns(address: vaddress) rescue venue.update_columns(address: nil)
       
       part1 = [vaddress, vcity].compact.join(', ')
