@@ -37,6 +37,6 @@ json.everything_moments(@bounty_feed) do |entry|
 
 end
 json.pagination do
-  json.current_page @surrounding_feed.current_page
-  json.total_pages @surrounding_feed.total_pages
+  json.current_page @bounty_feed.current_page
+  json.total_pages @bounty_feed.total_pages
 end
