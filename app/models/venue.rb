@@ -50,7 +50,7 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";")
       result = false
-    elsif vname.downcase.include? "snapchat"
+    elsif vname.downcase.include? "snapchat" || vname.downcase.include? "whatsapp" || vname.downcase.include? "viber" || vname.downcase.include? "sms"
       result = false
     elsif vname != vname.titlecase
       result = false
@@ -792,7 +792,9 @@ class Venue < ActiveRecord::Base
           else #dealing with a wide area search so we select closest Jaro winkler comparison
             puts("#{instagram.location.name},   #{instagram.location.id}")
             jw_distance = p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) 
-            wide_area_hash[jw_distance] = instagram.location.id
+            if jw_distance > 0.75
+              wide_area_hash[jw_distance] = instagram.location.id
+            end
           end
         end
       end
@@ -807,6 +809,7 @@ class Venue < ActiveRecord::Base
 
         if latest_location_postings.count > 0  
           for posting in latest_location_postings
+            puts('adding instagrams')
             if VenueComment.where("instagram_id = ?", instagram.id).any? == false
               vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
               vc.save
