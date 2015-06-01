@@ -210,12 +210,12 @@ class Venue < ActiveRecord::Base
 
       #Iterate through venues in target area to find a string match by name
       for venue in venues
-        if venue.name == vname #Is there a direct string match?
+        if venue.name.downcase == vname.downcase #Is there a direct string match?
           lookup = venue
           break
         end
 
-        if ( (((venue.name).include? vname) || ((vname).include? venue.name)) && (specific_address == false) ) && (venue.address == vaddress) #Are they substrings?
+        if ( (((venue.name.downcase).include? vname.downcase) || ((vname.downcase).include? venue.name.downcase)) && (specific_address == false) ) # --&& (venue.address == vaddress)-- #Are they substrings?
           lookup = venue
           break
         end
@@ -354,12 +354,12 @@ class Venue < ActiveRecord::Base
 
     if venues.count != 0
       for venue in venues
-        if venue.name == vname #Is there a direct string match?
+        if venue.name.downcase == vname.downcase #Is there a direct string match?
           lookup = venue
           break
         end
 
-        if (((venue.name).include? vname) || ((vname).include? venue.name)) #Are they substrings?
+        if (((venue.name.downcase).include? vname.downcase) || ((vname.downcase).include? venue.name.downcase)) #Are they substrings?
           lookup = venue
           break
         end
