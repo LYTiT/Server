@@ -281,7 +281,8 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.address != vaddress
-        lookup.address = vaddress.encode("UTF-8")
+        lookup.address = vaddress
+        lookup.address.encode!("UTF-8")
       end
 
       lookup.save
@@ -298,7 +299,8 @@ class Venue < ActiveRecord::Base
 
       venue = Venue.new
       venue.name = vname
-      venue.address = vaddress.encode("UTF-8")
+      venue.address = vaddress
+      venue.address.encode!("UTF-8")
       
       part1 = [vaddress, vcity].compact.join(', ')
       part2 = [part1, vstate].compact.join(', ')
