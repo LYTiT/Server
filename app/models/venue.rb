@@ -234,6 +234,7 @@ class Venue < ActiveRecord::Base
       lookup.save
       if lookup.city == nil || lookup.state == nil #Add venue details if they are not present
         lookup.address = vaddress
+        lookup.address.force_encoding("UTF-8")
         
         part1 = [vaddress, vcity].compact.join(', ')
         part2 = [part1, vstate].compact.join(', ')
