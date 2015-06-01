@@ -240,7 +240,7 @@ class Venue < ActiveRecord::Base
         part4 = [part3, vcountry].compact.join(', ')
 
         
-        lookup.update_columns(formatted_address: part4) rescue lookup.update_columns(formatted_address: nil)
+        lookup.update_columns(formatted_address: part4) rescue nil
 
         lookup.city = vcity
         lookup.state = vstate
@@ -282,7 +282,7 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.address != vaddress
-        lookup.update_columns(address: vaddress) rescue lookup.update_columns(address: nil)
+        lookup.update_columns(address: vaddress) rescue nil
       end
 
       lookup.save
@@ -300,15 +300,14 @@ class Venue < ActiveRecord::Base
       venue = Venue.new
       venue.name = vname
       venue.save
-      
-      venue.update_columns(address: vaddress) rescue venue.update_columns(address: nil)
-      
+
+      venue.update_columns(address: vaddress) rescue nil
       part1 = [vaddress, vcity].compact.join(', ')
       part2 = [part1, vstate].compact.join(', ')
       part3 = [part2, vpostal_code].compact.join(' ')
       part4 = [part3, vcountry].compact.join(', ')
 
-      venue.update_columns(formatted_address: part4) rescue venue.update_columns(formatted_address: nil)
+      venue.update_columns(formatted_address: part4) rescue nil
 
       venue.city = vcity
       venue.state = vstate
