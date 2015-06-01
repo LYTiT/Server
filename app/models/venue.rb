@@ -296,7 +296,7 @@ class Venue < ActiveRecord::Base
 
       lookup.save
 
-      if lookup.instagram_location_id == nil #Add instagram location id
+      if lookup.instagram_location_id == nil && pin_drop != 1#Add instagram location id
         lookup.set_instagram_location_id(100)
       end
       return lookup
@@ -799,7 +799,7 @@ class Venue < ActiveRecord::Base
         end
       end
 
-      if wide_area_search == true
+      if wide_area_search == true && wide_area_hash.count > 0
         best_location_match_id = wide_area_hash.max_by{|k,v| k}.last
         self.update_columns(instagram_location_id: best_location_match_id)
       end
