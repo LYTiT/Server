@@ -281,7 +281,7 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.address != vaddress
-        lookup.address = vaddress
+        lookup.address = vaddress.encode("UTF-8")
       end
 
       lookup.save
