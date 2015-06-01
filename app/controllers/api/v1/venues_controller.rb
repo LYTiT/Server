@@ -62,13 +62,17 @@ class Api::V1::VenuesController < ApiBaseController
 		incoming_part_type = venue.id == 14002 ? "media" : "text" #we use the venue_id '14002' as a key to signal a posting by parts operation
 
 		completion = false #add_comment method is completed either once a Venue Comment or a Temp Posting Housing object is created
-		
+		if venue.id == 14002
+			v_id = nil
+		else
+			v_id = venue.id
+		end
 
 		if session != 0 #simple text comments have a session id = 0 and do not need to be seperated into parts
 			posting_parts = @user.temp_posting_housings.order('id ASC')
 
 			if posting_parts.count == 0 #if no parts are housed there is nothing to link
-				vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
+				vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :media_url => params[:media_url], 
 																			:session => session, :comment => params[:comment], :username_private => params[:username_private])
 				vc_part.save
 				completion = true
@@ -101,7 +105,7 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 
 				if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
-					vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => venue.id, :media_type => params[:media_type], :media_url => params[:media_url], 
+					vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :media_url => params[:media_url], 
 																				:session => session, :comment => params[:comment], :username_private => params[:username_private])          
 					vc_part.save
 					completion = true

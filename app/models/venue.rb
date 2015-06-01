@@ -755,7 +755,6 @@ class Venue < ActiveRecord::Base
     
     wide_area_search = false
     
-
     if (self.address == nil || self.city == nil) || self.postal_code == nil 
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100, :min_timestamp => (Time.now-48.hours).to_time.to_i)
       wide_area_search = true
