@@ -25,7 +25,8 @@ LytitServer::Application.routes.draw do
         collection do
           get 'search'
         end
-        get 'get_surrounding_feed'
+        get 'get_bounty_feed'
+        get 'get_surrounding_bounties'
         get 'get_map_details'
         get 'confirm_email'
         get 'get_bounty_claims'

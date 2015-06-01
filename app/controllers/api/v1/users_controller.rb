@@ -182,9 +182,14 @@ class Api::V1::UsersController < ApiBaseController
 		@venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
 	end
 
-	def get_surrounding_feed
-		feed = @user.global_feed
-		@surrounding_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
+	def get_bounty_feed
+		feed = @user.global_bounty_feed
+		@bounty_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
+	end
+
+	def get_surrounding_bounties
+		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country])
+		@surrounding_bounties = Kaminari.paginate_array(feed).page(params[:page]).per(10)
 	end
 
 	def can_claim_bounties

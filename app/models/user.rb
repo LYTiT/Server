@@ -116,7 +116,7 @@ class User < ActiveRecord::Base
   end
 
    #Global activity feed (venue comments, bounties, bounty responses)
-  def global_feed
+  def global_bounty_feed
     days_back = 1
     responded_to_bounty_ids = "SELECT id FROM bounties WHERE (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
     feed = VenueComment.where("(bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)").includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")

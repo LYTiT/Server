@@ -1,4 +1,4 @@
-json.everything_moments(@surrounding_feed) do |entry|
+json.everything_moments(@bounty_feed) do |entry|
   json.type entry.type
 
   json.id entry.id

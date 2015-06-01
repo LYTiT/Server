@@ -50,6 +50,10 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";")
       result = false
+    elsif vname.downcase.include? "snapchat"
+      result = false
+    elsif vname != vname.titlecase
+      result = false
     else
       result = true
     end
@@ -162,11 +166,13 @@ class Venue < ActiveRecord::Base
     if direct_search != nil
       lookup = direct_search
     else
-      #name proximity databse search
+      #name proximity database search
       venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
-      #iterartive search as resort
+      
       if venues.count == 0
-          venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase.split.first + '%')
+        #substring proximity database search
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase.split.first + '%')
+        #iterartive search as resort  
         if venues.count == 0
           #We need to determine the type of search being conducted whether it is venue specific or geographic
           if vaddress == nil
