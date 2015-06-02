@@ -173,8 +173,16 @@ class Venue < ActiveRecord::Base
       venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
       
       if venues.count == 0
+        
         #substring proximity database search
-        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase.split.first + '%')
+        vname.to_s.downcase.split.each do |part| 
+          if not ['the', 'a', 'cafe', 'restaurant'].include? part
+            search_part = part
+            break
+          end
+        end
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + search_part + '%')
+
         #iterartive search as resort  
         if venues.count == 0
           #We need to determine the type of search being conducted whether it is venue specific or geographic
@@ -184,7 +192,6 @@ class Venue < ActiveRecord::Base
               boundries = bounding_box(radius, vlatitude, vlongitude)
               venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
                 address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
-              vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
             end
 
             if vstate != nil && vcity == nil #state search
@@ -192,7 +199,6 @@ class Venue < ActiveRecord::Base
               boundries = bounding_box(radius, vlatitude, vlongitude)
               venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
                 address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
-              vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
             end
 
             if (vcountry != nil && vstate == nil ) && vcity == nil #country search
@@ -200,7 +206,6 @@ class Venue < ActiveRecord::Base
               boundries = bounding_box(radius, vlatitude, vlongitude)
               venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
                 address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
-              vpostal_code = 0 #We use the postal code as a flag for the client to realize that the returned POI is not a venue and so should not have a venue page
             end
           else #venue search 
             radius = 75
@@ -361,7 +366,13 @@ class Venue < ActiveRecord::Base
     boundries = bounding_box(radius, lat, long)
     venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
     if venues.count == 0
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase.split.first + '%')
+      vname.to_s.downcase.split.each do |part| 
+        if not ['the', 'a', 'cafe', 'restaurant'].include? part
+          search_part = part
+          break
+        end
+      end
+      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + search_part + '%')
       if venues.count == 0
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end

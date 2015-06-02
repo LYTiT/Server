@@ -85,4 +85,29 @@ class Bounty < ActiveRecord::Base
 
 	end
 
+	def add_latest_response(comment)
+		responses = []
+		self.attributes.each_pair do |name, value|
+			if name.include? "latest_response"
+				responses<<value
+			end
+		end
+		if responses.length > 0
+			responses.each_with_index do |response, index|
+				position = index + 2 #arrays start at index 0 but responses start at 1
+				if position <= 10	
+					field = "latest_response_" + position.to_s
+					self.send(field+'=', response)
+				end
+			end
+		end
+
+		if comment.type == "text"
+			self.update_columns(latest_response_1: comment.comment)
+		else
+			self.update_columns(latest_response_1: comment.media_url)
+		end
+		
+	end
+
 end

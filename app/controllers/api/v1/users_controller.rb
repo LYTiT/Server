@@ -188,7 +188,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_surrounding_bounties
-		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country]).to_a.flatten
+		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country])
 		@surrounding_bounties = Kaminari.paginate_array(feed).page(params[:page]).per(10)
 	end
 
