@@ -164,7 +164,8 @@ class Venue < ActiveRecord::Base
       return
     end
 
-    direct_search = Venue.where("name = ? AND latitude = ? AND longitude = ?", vname, vlatitude, vlongitude).first
+    direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).first
+
     if direct_search != nil
       lookup = direct_search
     else
