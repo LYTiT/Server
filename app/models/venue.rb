@@ -281,9 +281,9 @@ class Venue < ActiveRecord::Base
         lookup.time_zone = timezone.active_support_time_zone
       end
       
-      if lookup.name != vname
-        lookup.name = vname
-      end
+      #if lookup.name != vname
+      #  lookup.name = vname
+      #end
 
       if lookup.latitude != vlatitude
         lookup.latitude = vlatitude
