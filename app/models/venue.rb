@@ -293,9 +293,9 @@ class Venue < ActiveRecord::Base
         lookup.longitude = vlongitude
       end
 
-      if lookup.address != vaddress
-        lookup.update_columns(address: vaddress) rescue lookup.address = "N/A"
-      end
+      #if lookup.address != vaddress
+      #  lookup.update_columns(address: vaddress) rescue lookup.address = "N/A"
+      #end
 
       lookup.save
 
