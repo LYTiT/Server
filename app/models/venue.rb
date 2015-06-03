@@ -343,6 +343,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
+    search_part = nil
     radius = 250
     boundries = bounding_box(radius, lat, long)
     venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
@@ -357,7 +358,7 @@ class Venue < ActiveRecord::Base
       if search_part != nil
         venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + search_part + '%')
       end
-      
+
       if venues.count == 0
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
