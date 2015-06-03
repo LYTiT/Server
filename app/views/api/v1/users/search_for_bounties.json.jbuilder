@@ -14,7 +14,7 @@ json.array! @bounties do |bounty|
   json.minutes_left bounty.try(:minutes_left)
   json.details bounty.try(:detail)
   json.validity bounty.try(:validity)
-  json.is_subscribed @user.is_subscribed_to_bounty?(entry.bounty)
+  json.is_subscribed @user.is_subscribed_to_bounty?(bounty)
   json.num_subscribed bounty.try(:num_subscribed)
   json.user_id bounty.try(:user_id)
   json.response_received bounty.try(:response_received)
@@ -29,7 +29,7 @@ json.array! @bounties do |bounty|
   json.latest_response_8 bounty.try(:latest_response_8)
   json.latest_response_9 bounty.try(:latest_response_9)
   json.latest_response_10 bounty.try(:latest_response_10)
-  json.did_respond @user.did_respond?(entry.bounty)
+  json.did_respond @user.did_respond?(bounty)
 
   json.compare_type bounty.venue.type
 
