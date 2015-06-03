@@ -169,51 +169,32 @@ class Venue < ActiveRecord::Base
     if direct_search != nil
       lookup = direct_search
     else
-      #name proximity database search
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
-      
-      if venues.count == 0
-        
-        #substring proximity database search
-        vname.to_s.downcase.split.each do |part| 
-          if not ['the', 'a', 'cafe', 'restaurant'].include? part
-            search_part = part
-            break
-          end
-        end
-        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 1.0 AND ABS(#{vlongitude} - longitude) <= 1.0", '%' + search_part + '%')
-
-        #iterartive search as resort  
-        if venues.count == 0
-          #We need to determine the type of search being conducted whether it is venue specific or geographic
-          if vaddress == nil
-            if vcity != nil #city search
-              radius = 3000
-              boundries = bounding_box(radius, vlatitude, vlongitude)
-              venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-                address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
-            end
-
-            if vstate != nil && vcity == nil #state search
-              radius = 30000
-              boundries = bounding_box(radius, vlatitude, vlongitude)
-              venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-                address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
-            end
-
-            if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-              radius = 300000
-              boundries = bounding_box(radius, vlatitude, vlongitude)
-              venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-                address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
-            end
-          else #venue search 
-            radius = 75
-            boundries = bounding_box(radius, vlatitude, vlongitude)
-            venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
-          end
+      #We need to determine the type of search being conducted whether it is venue specific or geographic
+      if vaddress == nil
+        if vcity != nil #city search
+          radius = 3000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
         end
 
+        if vstate != nil && vcity == nil #state search
+          radius = 30000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
+        end
+
+        if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+          radius = 300000
+          boundries = bounding_box(radius, vlatitude, vlongitude)
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
+        end
+      else #venue search 
+        radius = 75
+        boundries = bounding_box(radius, vlatitude, vlongitude)
+        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
 
       lookup = nil 
@@ -225,7 +206,7 @@ class Venue < ActiveRecord::Base
         specific_address = true
       end
 
-      #Iterate through venues in target area to find a string match by name
+      #Iterate through venues in target area to find a string match by name. If venues were selected by name search we consider proximity as a determing factor for a match as well.
       for venue in venues
         if venue.name.downcase == vname.downcase #Is there a direct string match?
           lookup = venue
@@ -372,7 +353,11 @@ class Venue < ActiveRecord::Base
           break
         end
       end
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + search_part + '%')
+
+      if search_part != nil
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + search_part + '%')
+      end
+      
       if venues.count == 0
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
@@ -726,15 +711,10 @@ class Venue < ActiveRecord::Base
     0
   end
 
-
-#Instagram API locational content pulls
+#Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
+#need access to all recent instagrams
   def get_instagrams
-    latest_instagram = self.latest_instagram_venue_comment
-    if latest_instagram != nil
-      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i, :min_id => latest_instagram.instagram_id)
-    else
-      instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
-    end
+    instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
 
     if instagrams != nil and instagrams.count > 0
       for instagram in instagrams
@@ -746,7 +726,7 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
-            if LytSphere.where("venue_id = ?", self.id).any? == false
+            if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
             end
           end
@@ -761,95 +741,97 @@ class Venue < ActiveRecord::Base
   end
 
   def set_instagram_location_id(search_radius)
+    #Set-up of tools to be used
+    require 'fuzzystringmatch'
+    jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
     if search_radius == nil
       search_radius = 100
     end
-    require 'fuzzystringmatch'
-    jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
-    
+    search_hash = Hash.new #has the from [match_strength] => instagram_location_id where match_strength is a function of a returned instagrams
     wide_area_search = false
+    occurence_multiplier = 1.15 #if a location shows up more than once in the instagram pull return statement and is of certain string closeness to an entry we amplify it match_score
     
+    #We must identify landmarks, parks, etc. because of their large areas and pull instagrams from a bigger radius. Most of these types
+    #of locations will not have a specific address, city or particularly postal code because of their size.
     if (self.address == nil || self.city == nil) || self.postal_code == nil 
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100, :min_timestamp => (Time.now-48.hours).to_time.to_i)
+      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100) #, :min_timestamp => (Time.now-48.hours).to_time.to_i)
       wide_area_search = true
-      wide_area_hash = Hash.new 
     else
+      #Dealing with an establishment so can affor a smaller pull radius.
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => search_radius, :count => 100)
     end
-    #if nearby_instagram_content.count == 0
-    #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 500, :count => 100)
-    #end
-
-    #if nearby_instagram_content.count == 0
-    #  nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100)
-    #  wide_area_search = true
-    #end
 
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
         if instagram.location.name != nil
-          puts("#{instagram.location.name},   #{instagram.location.id}")
-          if wide_area_search == false
-            if instagram.location.name.downcase == self.name.downcase #Is there a direct string match?
-              self.update_columns(instagram_location_id: instagram.location.id)
-              break
-            elsif ((instagram.location.name.downcase).include? self.name.downcase) || ((self.name.downcase).include? instagram.location.name.downcase)
-              self.update_columns(instagram_location_id: instagram.location.id)
-              break
+          puts("#{instagram.location.name}, #{instagram.location.id}")
+          #when working with proper names words like "the" and "a" hinder accuracy    
+          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub(" a ", "").gsub(" ", "")
+          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub(" ", "")
+          jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
+
+          if jarow_winkler_proximity >= 0.8
+            if not search_hash[instagram.location.id]
+              search_hash[instagram.location.id] = jarow_winkler_proximity
             else
-              if p jarow.getDistance(instagram.location.name.downcase.gsub("the", "").gsub(" ", ""), self.name.downcase.downcase.gsub("the", "").gsub(" ", "")) >= 0.8 #Jaro Winkler String Algo comparison
-                self.update_columns(instagram_location_id: instagram.location.id)
-                break
-              end
+              previous_score = search_hash[instagram.location.id]
+              search_hash[instagram.location.id] = previous_score * occurence_multiplier
             end
-          else #dealing with a wide area search so we select closest Jaro winkler comparison
-            puts("#{instagram.location.name},   #{instagram.location.id}")
-            jw_distance = p jarow.getDistance(instagram.location.name.downcase, self.name.downcase ) 
-            if jw_distance > 0.75
-              wide_area_hash[jw_distance] = instagram.location.id
-            end
+          
           end
         end
       end
 
-      if wide_area_search == true && wide_area_hash.count > 0
-        best_location_match_id = wide_area_hash.max_by{|k,v| k}.last
+      if search_hash.count > 0
+        best_location_match_id = search_hash.max_by{|k,v| v}.first
         self.update_columns(instagram_location_id: best_location_match_id)
-      end
-
-      if instagram_location_id != nil && instagram_location_id != "-1"
-        latest_location_postings = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
-
-        if latest_location_postings.count > 0  
-          for posting in latest_location_postings
-
-            puts('adding instagrams')
-            if VenueComment.where("instagram_id = ?", instagram.id).any? == false
-              vc = VenueComment.new(:venue_id => self.id, :media_url => posting.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{posting.created_time}",'%s'), :instagram_id => posting.id)
-              vc.save
-
-              vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                    :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
-              vote.save
-
-              if LytSphere.where("venue_id = ?", self.id).any? == false
-                LytSphere.create_new_sphere(self)
-              end              
-            end
-          end
-          self.update_columns(last_instagram_pull_time: Time.now)
-        end
         i_l_i_t = InstagramLocationIdTracker.new(:venue_id => self.id, primary_instagram_location_id: self.instagram_location_id)
         i_l_i_t.save
+
+        #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the 
+        #we need and create venue comments
+        venue_comments_created = 0
+        for instagram in nearby_instagram_content
+          if (instagram.location.id == self.instagram_location_id && VenueComment.where("instagram_id = ?", instagram.id).any? == false) && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
+            puts("converting instagram to #{self.name} Venue Comment")
+            vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
+            vc.save
+            venue_comments_created += 1
+            vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+                  :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
+            vote.save
+            
+            if not LytSphere.where("venue_id = ?", self.id).any?
+              LytSphere.create_new_sphere(self)
+            end            
+          end
+        end
+
+        #if little content is offered on the geo pull make a venue specific pull
+        if venue_comments_created < 3
+          puts ("making a venue get instagrams calls")
+          self.get_instagrams
+          #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
+          self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
+        else
+          self.update_columns(last_instagram_pull_time: Time.now)
+        end
       else
+        #recursive call with slightly bigger radius for venue searches
         if search_radius != 250 && wide_area_search != true
           set_instagram_location_id(250)
         else
           self.update_columns(instagram_location_id: -1)
         end
-      end    
+      end
+    else
+      #recursive call with slightly bigger radius for venue searches
+      if search_radius != 250 && wide_area_search != true
+        set_instagram_location_id(250)
+      else
+        self.update_columns(instagram_location_id: -1)
+      end
     end
-
   end
 
   def self.instagram_content_pull(lat, long)
