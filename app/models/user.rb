@@ -131,12 +131,13 @@ class User < ActiveRecord::Base
     meter_radius = 400
     mile_radius = meter_radius * 0.000621371
     
-    #returns nearby venue bounties sorted by proximity
-    venue_bounties = VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) 
-      <= #{mile_radius} AND (outstanding_bounties > 0)").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day)
+    #bounties from city, state and country
+    geo_bounties = VenueComment.joins(:venue).where("address IS NULL AND (postal_code is NULL OR postal_code = ?) AND ((city = ?) OR (state = ? AND city IS NULL) OR (country = ? AND city IS NULL AND state IS NULL))","", city, state, country).where("venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day)
 
-    #total surrounding bounties including surrounding geo (city, state, or country) bounties  
-    total_surrounding_bounties = VenueComment.joins(:venue).where("address IS NULL AND (postal_code is NULL OR postal_code = ?) AND ((city = ?) OR (state = ? AND city IS NULL) OR (country = ? AND city IS NULL AND state IS NULL))","", city, state, country).where("venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day) << venue_bounties
+    #total surrounding bounties including venue bounties sorted by proximity
+    total_surrounding_bounties = VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) 
+      <= #{mile_radius} AND (outstanding_bounties > 0)").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where(
+      "venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day) << geo_bounties
     total_surrounding_bounties.flatten!
   end
 
