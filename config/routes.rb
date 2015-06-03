@@ -38,6 +38,7 @@ LytitServer::Application.routes.draw do
         get 'email_availability'
         get 'is_user_confirmed'
         get 'get_surprise_image'
+        get 'search_for_bounties'
       end
 
       resources :announcement do
