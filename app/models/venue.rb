@@ -238,10 +238,10 @@ class Venue < ActiveRecord::Base
         part4 = [part3, vcountry].compact.join(', ')
 
         
-        lookup.update_columns(formatted_address: part4) rescue lookup.formatted_address = "N/A"
-        lookup.update_columns(city: vcity) rescue lookup.city = "N/A"
-        lookup.update_columns(state: vstate) rescue lookup.state = "N/A"
-        lookup.update_columns(country: vcountry) rescue lookup.country = "N/A" 
+        lookup.update_columns(formatted_address: part4) #rescue lookup.formatted_address = "N/A"
+        lookup.update_columns(city: vcity) #rescue lookup.city = "N/A"
+        lookup.update_columns(state: vstate) #rescue lookup.state = "N/A"
+        lookup.update_columns(country: vcountry) #rescue lookup.country = "N/A" 
 
         lookup.phone_number = formatTelephone(vphone)
         lookup.save
@@ -299,16 +299,16 @@ class Venue < ActiveRecord::Base
       venue.name = vname
       venue.save
 
-      venue.update_columns(address: vaddress) rescue venue.address = "N/A"
+      venue.update_columns(address: vaddress) #rescue venue.address = "N/A"
       part1 = [vaddress, vcity].compact.join(', ')
       part2 = [part1, vstate].compact.join(', ')
       part3 = [part2, vpostal_code].compact.join(' ')
       part4 = [part3, vcountry].compact.join(', ')
 
-      venue.update_columns(formatted_address: part4) rescue venue.formatted_address = "N/A"
-      venue.update_columns(city: vcity) rescue venue.city = "N/A"
-      venue.update_columns(state: vstate) rescue venue.state = "N/A"
-      venue.update_columns(state: vcountry) rescue venue.country = "N/A"
+      venue.update_columns(formatted_address: part4) #rescue venue.formatted_address = "N/A"
+      venue.update_columns(city: vcity) #rescue venue.city = "N/A"
+      venue.update_columns(state: vstate) #rescue venue.state = "N/A"
+      venue.update_columns(state: vcountry) #rescue venue.country = "N/A"
   
       venue.postal_code = vpostal_code.to_s
       venue.phone_number = formatTelephone(vphone)
