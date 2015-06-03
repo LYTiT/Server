@@ -350,6 +350,7 @@ class Venue < ActiveRecord::Base
     if venues.count == 0
       vname.to_s.downcase.split.each do |part| 
         if not ['the', 'a', 'cafe', 'restaurant'].include? part
+          puts "search part extracted"
           search_part = part
           break
         end
