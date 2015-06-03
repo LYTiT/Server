@@ -1,4 +1,4 @@
 json.array! @bounties do |bounty|
-  json.id bounty.venue.name
-  json.name bounty.venue.id
+  json.id bounty.venue.id
+  json.name bounty.venue.name
 end
