@@ -297,6 +297,8 @@ class Venue < ActiveRecord::Base
 
       venue = Venue.new
       venue.name = vname
+      venue.latitude = vlatitude
+      venue.longitude = vlongitude
       venue.save
 
       venue.update_columns(address: vaddress) #rescue venue.address = "N/A"
@@ -308,12 +310,10 @@ class Venue < ActiveRecord::Base
       venue.update_columns(formatted_address: part4) #rescue venue.formatted_address = "N/A"
       venue.update_columns(city: vcity) #rescue venue.city = "N/A"
       venue.update_columns(state: vstate) #rescue venue.state = "N/A"
-      venue.update_columns(state: vcountry) #rescue venue.country = "N/A"
+      venue.update_columns(country: vcountry) #rescue venue.country = "N/A"
   
       venue.postal_code = vpostal_code.to_s
       venue.phone_number = formatTelephone(vphone)
-      venue.latitude = vlatitude
-      venue.longitude = vlongitude
 
       if venue.latitude < 0 && venue.longitude >= 0
         quadrant = "a"
