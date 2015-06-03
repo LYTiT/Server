@@ -1,4 +1,4 @@
-json.array! @bounties do |bounty| 
+json.everything_moments(@bounties) do |bounty| 
   json.created_at bounty.created_at
   json.venue_id bounty.venue_id
   json.venue_name bounty.venue.name
@@ -28,7 +28,8 @@ json.array! @bounties do |bounty|
   json.latest_response_8 bounty.try(:latest_response_8)
   json.latest_response_9 bounty.try(:latest_response_9)
   json.latest_response_10 bounty.try(:latest_response_10)
-
+  json.is_subscribed @user.is_subscribed_to_bounty?(bounty)
+  json.did_respond @user.did_respond?(bounty)
 
   json.compare_type bounty.venue.type
 end
