@@ -193,7 +193,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def search_for_bounties
-		search = Bounty.joins(:venue).where("LOWER(name) like ? OR LOWER(city) like ? OR LOWER(state) like ? OR LOWER(country) like ? AND outstanding_bounties > 0", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%')
+		search = Bounty.joins(:venue).where("LOWER(name) like ? OR LOWER(city) like ? OR LOWER(state) like ? OR LOWER(country) like ? AND outstanding_bounties > 0", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%').where("bounties.validity = TRUE").order("id desc")
 		@bounties = Kaminari.paginate_array(search).page(params[:page]).per(10)
 	end
 
