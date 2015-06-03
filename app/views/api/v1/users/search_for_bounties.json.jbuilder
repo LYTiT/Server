@@ -32,9 +32,6 @@ json.array! @bounties do |bounty|
   json.did_respond @user.did_respond?(bounty)
 
   json.compare_type bounty.venue.type
-
-  json.status bounty.status
-
 end
 json.pagination do
   json.current_page @bounties.current_page
