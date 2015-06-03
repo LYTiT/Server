@@ -120,7 +120,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.get_comments_for_cluster(venue_ids)
-		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND (comment != ?)", venue_ids, "This is a Moment Request").includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")
+		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND (comment IS NULL OR comment != ?)", venue_ids, "This is a Moment Request").includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")
 	end
 
 	def self.of_lytit_origin_present?(venue_ids)
