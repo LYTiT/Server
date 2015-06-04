@@ -88,7 +88,7 @@ class Bounty < ActiveRecord::Base
 	def add_latest_response(comment)
 		responses = []
 		self.attributes.each_pair do |name, value|
-			if name.include? "latest_response"
+			if name.include? "latest_response" && value != nil
 				responses<<value
 			end
 		end
@@ -98,6 +98,7 @@ class Bounty < ActiveRecord::Base
 				if position <= 10	
 					field = "latest_response_" + position.to_s
 					self.send(field+'=', response)
+					save
 				end
 			end
 		end
