@@ -103,7 +103,7 @@ class Bounty < ActiveRecord::Base
 			end
 		end
 
-		if comment.type == "text"
+		if comment.media_type == "text"
 			self.update_columns(latest_response_1: comment.comment)
 		else
 			self.update_columns(latest_response_1: comment.media_url)
