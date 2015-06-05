@@ -138,7 +138,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@comment.time_wrapper = Time.now
 				@comment.save
 
-				venue.update_columns(latest_posted_comment_time: Time.now)
+				@comment.venue.update_columns(latest_posted_comment_time: Time.now)
 
 				if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
 					if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
