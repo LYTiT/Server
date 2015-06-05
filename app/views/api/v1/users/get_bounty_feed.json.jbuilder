@@ -29,6 +29,14 @@ json.everything_moments(@bounty_feed) do |entry|
   json.num_responses entry.bounty.try(:num_responses)
   json.latest_response_1 entry.bounty.try(:latest_response_1)
   json.latest_response_2 entry.bounty.try(:latest_response_2)
+  json.latest_response_3 entry.bounty.try(:latest_response_3)
+  json.latest_response_4 entry.bounty.try(:latest_response_4)
+  json.latest_response_5 entry.bounty.try(:latest_response_5)
+  json.latest_response_6 entry.bounty.try(:latest_response_6)
+  json.latest_response_7 entry.bounty.try(:latest_response_7)
+  json.latest_response_8 entry.bounty.try(:latest_response_8)
+  json.latest_response_9 entry.bounty.try(:latest_response_9)
+  json.latest_response_10 entry.bounty.try(:latest_response_10)
   json.did_respond @user.did_respond?(entry.bounty)
 
   json.compare_type entry.venue.type
