@@ -68,15 +68,6 @@ class Announcement < ActiveRecord::Base
 				APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end
 
-			if member.gcm_token
-				gcm_payload = payload.dup
-				gcm_payload[:message] = message
-				options = {
-					:data => gcm_payload
-				}
-				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-				request.send([member.gcm_token], options)
-			end
 		end
 	end
 

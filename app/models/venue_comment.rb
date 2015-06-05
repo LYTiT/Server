@@ -282,15 +282,6 @@ class VenueComment < ActiveRecord::Base
 				APNS.delay.send_notification(bounty.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end
 
-			if recipient.gcm_token
-				gcm_payload = payload.dup
-				gcm_payload[:message] = message
-				options = {
-					:data => gcm_payload
-				}
-				request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-				request.send([recipient.gcm_token], options)
-			end
 		end
 	end
 
@@ -336,15 +327,6 @@ class VenueComment < ActiveRecord::Base
 			APNS.delay.send_notification(self.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
-		if bounty.user.gcm_token
-			gcm_payload = payload.dup
-			gcm_payload[:message] = message
-			options = {
-				:data => gcm_payload
-			}
-			request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-			request.send([bounty.user.gcm_token], options)
-		end
 	end
 
 	def store_new_bounty_claim_acceptance_notification(payload, response_user, message)
@@ -392,15 +374,6 @@ class VenueComment < ActiveRecord::Base
 		  APNS.delay.send_notification(self.user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
-		if self.user.gcm_token
-		  gcm_payload = payload.dup
-		  gcm_payload[:message] = message
-		  options = {
-		    :data => gcm_payload
-		  }
-		  request = HiGCM::Sender.new(ENV['GCM_API_KEY'])
-		  request.send([self.user.gcm_token], options)
-		end
 	end
 
 	def store_new_bounty_claim_rejection_notification(payload, response_user, message)

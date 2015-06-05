@@ -154,7 +154,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 				#If the Venue Comment is a Bounty response we update bounty_id field
 				if params[:is_bounty_response] != nil
-					puts("ENTERED_______________*********************______________> THE ID IS: #{params[:is_bounty_response]}")
 					@comment.is_response = true
 					@comment.bounty_id = params[:is_bounty_response]
 					b = Bounty.find_by_id(params[:is_bounty_response])
@@ -162,7 +161,6 @@ class Api::V1::VenuesController < ApiBaseController
 					b.increment!(:num_responses, 1)
 					#we keep track of the latest 10 responses for a bounty to display thumbnails in the bounty feed
 					b.add_latest_response(@comment)
-					puts("No Issues with Bounty -----------------------------------------------------------$$$$$$$$$$$$$$$$$$$$$$$$$$$$>")
 					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response]).first
 					bounty_housing_comment.update_columns(time_wrapper: Time.now)
 					@comment.save
