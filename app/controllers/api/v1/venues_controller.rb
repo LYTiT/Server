@@ -320,6 +320,16 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'search.json.jbuilder'
 	end
 
+	def meta_search
+		lat = params[:latitude]
+		long = params[:longitude]
+		if params[:location] == nil
+			@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + params[:q].to_s.downcase + '%').order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
+		else
+			@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + params[:q].to_s.downcase + '%').where("venues.name = ? OR venues.city = ? OR venues.state = ? OR venues.country = ?", '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%')
+		end
+	end
+
 	def get_suggested_venues
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])

@@ -17,20 +17,18 @@ class Venue < ActiveRecord::Base
   has_many :venue_messages, :dependent => :destroy
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
-
   has_many :lyt_spheres, :dependent => :destroy
-
   has_many :bounties, :dependent => :destroy
-
   has_many :instagram_location_id_trackers, :dependent => :destroy
+  has_many :lytit_votes, :dependent => :destroy
+  has_many :meta_data, :dependent => :destroy
+
 
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
 
   MILE_RADIUS = 2
-
-  has_many :lytit_votes, :dependent => :destroy
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
@@ -728,6 +726,8 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
+            vc.extract_instagram_meta_data(instagram)
+
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
             end
@@ -798,6 +798,7 @@ class Venue < ActiveRecord::Base
             puts("converting instagram to #{self.name} Venue Comment")
             vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
             vc.save
+            vc.extract_instagram_meta_data(instagram)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     

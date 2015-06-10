@@ -8,6 +8,7 @@ class VenueComment < ActiveRecord::Base
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
+	has_many :meta_data, :dependent => :destroy
 
 	validate :comment_or_media
 	validate :proper_media_type_for_response
@@ -169,6 +170,8 @@ class VenueComment < ActiveRecord::Base
 															:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
 						vote.save
 						#lytit_venue.account_new_vote(1, vote.id)
+						vc.extract_instagram_meta_data(instagram)
+
 						if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 							LytSphere.create_new_sphere(lytit_venue)
 						end
@@ -179,6 +182,22 @@ class VenueComment < ActiveRecord::Base
 
 		end
 
+	end
+
+	def extract_instagram_meta_data(instagram)
+		inst_hashtags = instagram.tags
+		inst_comment = instagram.caption.text
+		inst_meta_data = (inst_hashtags << inst_comment.split).flatten
+
+		inst_meta_data.each do |data|
+			lower_case_data = data.downcase
+			if data.length>2 && ["the", "their", "there"].include?(lower_case_data) == false
+				if MetaData.where("venue_id = ? and meta = ?", lytit_venue.id, lower_case_data).any? == false	
+					venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => lower_case_data)
+					venue_meta_data.save
+				end
+			end
+		end		
 	end
 
 	#Bounty Responses Methods ----------------------------------------------------------------------------------------

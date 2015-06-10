@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150602193418) do
+ActiveRecord::Schema.define(version: 20150610133455) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -271,6 +271,16 @@ ActiveRecord::Schema.define(version: 20150602193418) do
   end
 
   add_index "menu_sections", ["venue_id"], name: "index_menu_sections_on_venue_id", using: :btree
+
+  create_table "meta_data", force: true do |t|
+    t.string   "meta"
+    t.integer  "venue_id"
+    t.integer  "venue_comment_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
 
   create_table "roles", force: true do |t|
     t.string "name"
