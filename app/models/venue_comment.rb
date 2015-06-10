@@ -203,7 +203,7 @@ class VenueComment < ActiveRecord::Base
 				end
 			end
 		rescue
-			nil
+			puts "No Meta Data!"
 		end		
 	end
 
