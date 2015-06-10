@@ -189,8 +189,7 @@ class VenueComment < ActiveRecord::Base
 		inst_comment = instagram.caption.text.split rescue nil
 		inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
-		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put",
-			"such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not"]
+		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not"]
 		begin
 			inst_meta_data.each do |data|
 				clean_data = data.downcase.gsub(/[^0-9A-Za-z]/, '')
