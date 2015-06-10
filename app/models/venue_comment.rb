@@ -186,8 +186,8 @@ class VenueComment < ActiveRecord::Base
 
 	def extract_instagram_meta_data(instagram)
 		inst_hashtags = instagram.tags
-		inst_comment = instagram.caption.text rescue nil
-		inst_meta_data = (inst_hashtags << inst_comment.split).flatten
+		inst_comment = instagram.caption.text.split rescue nil
+		inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
 		begin
 			inst_meta_data.each do |data|
