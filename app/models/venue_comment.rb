@@ -8,7 +8,7 @@ class VenueComment < ActiveRecord::Base
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
-	has_many :meta_data, :dependent => :destroy
+	has_many :meta_datas, :dependent => :destroy
 
 	validate :comment_or_media
 	validate :proper_media_type_for_response
