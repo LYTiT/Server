@@ -189,12 +189,14 @@ class VenueComment < ActiveRecord::Base
 		inst_comment = instagram.caption.text.split rescue nil
 		inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
+		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put",
+			"such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not"]
 		begin
 			inst_meta_data.each do |data|
-				lower_case_data = data.downcase
-				if data.length>2 && ["the", "their", "there"].include?(lower_case_data) == false
+				clean_data = data.downcase.gsub(/[^0-9A-Za-z]/, '')
+				if clean_data.length>2 && junk_words.include?(clean_data) == false
 					if MetaData.where("venue_id = ? and meta = ?", venue_id, lower_case_data).any? == false	
-						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => lower_case_data)
+						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
 						venue_meta_data.save
 					end
 				end
