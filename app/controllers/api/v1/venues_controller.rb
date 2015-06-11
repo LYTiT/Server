@@ -6,16 +6,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venue = Venue.find(params[:id])		
 		venue = @venue.as_json(include: :venue_messages)
-=begin			
-		venue[:menu] = @venue.menu_sections.as_json(
-			only: [:id, :name], 
-			include: {
-				:menu_section_items => {
-					only: [:id, :name, :price, :description]
-				}
-			}
-		)
-=end
 
 		if @venue.is_hot? == true
 			venue[:is_hot] = true
@@ -211,23 +201,6 @@ class Api::V1::VenuesController < ApiBaseController
 		fc.save
 		render json: fc
 	end
-=begin
-	def get_comments
-		@venue = Venue.find_by_id(params[:venue_id])
-		@user = User.find_by_authentication_token(params[:auth_token])
-		if not @venue
-			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue not found"] } }, :status => :not_found
-		else
-			@venue.delay.view(@user.id)
-			@venue.delay.increment!(:page_views, 1)
-			if (@venue.last_instagram_pull_time != nil and (Time.now - 1.minutes) >= @venue.last_instagram_pull_time) && @venue.instagram_location_id != nil
-				@venue.get_instagrams
-			end
-			live_comments = @venue.venue_comments.where("(NOW() - time_wrapper) <= INTERVAL '1 DAY' AND ((user_id IS NOT NULL AND content_origin = ?) OR (content_origin = ?))", 'lytit', 'instagram').includes(:user).order('time_wrapper desc')
-			@comments = live_comments.page(params[:page]).per(5)
-		end
-	end
-=end
 
 	def get_comments
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
@@ -292,7 +265,6 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
-		#@venues = Venue.venues_in_view(params[:sw_latitude], params[:sw_longitude], params[:ne_latitude], params[:ne_longitude])
 		@venues = Venue.where("color_rating > -1.0").order("color_rating desc")
 		render 'display.json.jbuilder'
 	end
@@ -323,17 +295,14 @@ class Api::V1::VenuesController < ApiBaseController
 	def meta_search
 		lat = params[:latitude]
 		long = params[:longitude]
-		search_lat = params[:search_latitude]
-		search_long = params[:longitude_latitude]
-		#location returned from apple
-		search_location = params[:search_name]
+		sw_lat = params[:sw_latitude]
+		sw_long = params[:sw_longitude]
+		ne_lat = params[:nw_latitude]
+		nw_long = params[:nw_longitude]
 		
-		#location as user has typed it
-		query_location = params[:q_location]
+		#Cleaning the search term
 		query = params[:q].downcase.gsub(" ","").gsub(/[^0-9A-Za-z]/, '')
-
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
-
 		junk_words.each{|word| query.gsub!(word, "")}
 
 		#Plurals singularized for searching purposes (ie "dogs" returns the same things as "dog")
@@ -344,15 +313,11 @@ class Api::V1::VenuesController < ApiBaseController
 			query = query[0...-3]
 		end
 
-		if params[:location] == nil
-			@venues = Venue.meta_search(query, lat, long)
-		else
-			nil#@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + query + '%').where("venues.name = ? OR venues.city = ? OR venues.state = ? OR venues.country = ?", '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%')
-		end
+		@venues = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
 	end
 
 	def get_trending_venues
-
+		@venues = Venue.all.order("trend_score DESC limit 10")
 	end
 
 	def get_suggested_venues
