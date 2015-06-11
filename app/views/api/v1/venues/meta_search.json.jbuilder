@@ -1,4 +1,4 @@
-json.array! @venues do |v|
+json.meta_places(@venues) do |v|
   json.id v.id
   json.name v.name
   json.latitude v.latitude
