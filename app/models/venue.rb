@@ -188,7 +188,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result != nil
-      puts "A direct match has been found!"
+      puts "A direct match has been found - name:#{result.name}, id:#{result.id} "
       lookup = result
     else
       #We need to determine the type of search being conducted whether it is venue specific or geographic
