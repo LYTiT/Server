@@ -166,7 +166,7 @@ class Venue < ActiveRecord::Base
 
     direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude)
     result = nil
-    if direct_search != nil
+    if direct_search.count != 0
       if direct_search.count > 1
         best_match = nil
         best_match_score = 0.75
