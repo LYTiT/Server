@@ -313,7 +313,8 @@ class Api::V1::VenuesController < ApiBaseController
 			query = query[0...-3]
 		end
 
-		@venues = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+		results = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+		@venues = results.page(params[:page]).per(10)
 	end
 
 	def get_trending_venues

@@ -8,3 +8,7 @@ json.array! @venues do |v|
   json.comment_2 v.venue_comments.order("id desc limit 3")[1]
   json.comment_3 v.venue_comments.order("id desc limit 3")[2]
 end
+json.pagination do 
+  json.current_page @venues.current_page
+  json.total_pages @venues.total_pages
+end
