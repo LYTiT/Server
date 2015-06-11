@@ -171,11 +171,11 @@ class Venue < ActiveRecord::Base
         best_match = nil
         best_match_score = 0.75
         for entry in direct_search
-          text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
-          if text_comparison_score > best_match_score
-            best_match = entry
-            best_match_score = text_comparison_score 
-          end
+            text_comparison_score = (p jarow.getDistance(entry.name, vname))
+            if text_comparison_score > best_match_score
+              best_match = entry
+              best_match_score = text_comparison_score 
+            end
         end
         if best_match != nil
           result = best_match
