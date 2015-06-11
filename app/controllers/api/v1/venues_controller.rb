@@ -315,7 +315,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		end
 
-		results = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+		results = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long).to_a
 		@venues = results.page(params[:page]).per(10)
 	end
 
