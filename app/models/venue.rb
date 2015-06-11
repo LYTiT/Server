@@ -158,16 +158,17 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
+    require 'fuzzystringmatch'
+    jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
     if vname == nil && vcountry == nil
       return
     end
 
     direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude)
+    result = nil
     if direct_search.count > 1
       best_match = nil
       best_match_score = 0.6
-      require 'fuzzystringmatch'
-      jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
       for entry in direct_search
         text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
         if text_comparison_score > best_match_score
@@ -179,7 +180,9 @@ class Venue < ActiveRecord::Base
         result = best_match
       end
     else
-      result = direct_search.first
+        if (p jarow.getDistance(direct_search.first.name, vname)) >= 0.8
+          result = direct_search.first
+        end
     end
 
     if result != nil
@@ -234,8 +237,6 @@ class Venue < ActiveRecord::Base
           break
         end
 
-        require 'fuzzystringmatch'
-        jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
         if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" ", "")) >= 0.8) && (specific_address == false)
           lookup = venue
         end
