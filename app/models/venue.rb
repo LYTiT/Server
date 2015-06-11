@@ -162,10 +162,28 @@ class Venue < ActiveRecord::Base
       return
     end
 
-    direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).first
+    direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude)
+    if direct_search.count > 1
+      best_match = nil
+      best_match_score = 0.6
+      require 'fuzzystringmatch'
+      jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
+      for entry in direct_search
+        text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
+        if text_comparison_score > best_match_score
+          best_match = entry
+          best_match_score = text_comparison_score 
+        end
+      end
+      if best_match != nil
+        result = best_match
+      end
+    else
+      result = direct_search.first
+    end
 
-    if direct_search != nil
-      lookup = direct_search
+    if result != nil
+      lookup = result
     else
       #We need to determine the type of search being conducted whether it is venue specific or geographic
       if vaddress == nil
@@ -574,7 +592,7 @@ class Venue < ActiveRecord::Base
     Venue.update_all(r_up_votes: 0.0)
     Venue.update_all(r_down_votes: 0.0)
     Venue.update_all(color_rating: -1.0)
-    VenueComment.where("content_origin = ?", "instagram").delete_all
+    VenueComment.where("content_origin = ?", "instagram").destroy_all
     LytSphere.delete_all
     LytitVote.where("user_id IS NULL").delete_all
   end
@@ -852,6 +870,20 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  #no location specified
+  def self.meta_search(query, lat, long)
+    query = '%'+query+'%'
+  
+    meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
+    result_venues = Venue.includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments).order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").to_a
+  end
+
+  def self.locational_meta_search(query, query_location, search_location, search_lat, search_long)
+    query = '%'+query+'%'
+
+    meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
+    result_venues = Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments)
+  end
 
   private ##########################################################################################################################################################################
 

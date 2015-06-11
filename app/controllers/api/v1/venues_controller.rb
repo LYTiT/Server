@@ -323,11 +323,36 @@ class Api::V1::VenuesController < ApiBaseController
 	def meta_search
 		lat = params[:latitude]
 		long = params[:longitude]
-		if params[:location] == nil
-			@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + params[:q].to_s.downcase + '%').order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
-		else
-			@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + params[:q].to_s.downcase + '%').where("venues.name = ? OR venues.city = ? OR venues.state = ? OR venues.country = ?", '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%')
+		search_lat = params[:search_latitude]
+		search_long = params[:longitude_latitude]
+		#location returned from apple
+		search_location = params[:search_name]
+		
+		#location as user has typed it
+		query_location = params[:q_location]
+		query = params[:q].downcase.gsub(" ","").gsub(/[^0-9A-Za-z]/, '')
+
+		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
+
+		junk_words.each{|word| query.gsub!(word, "")}
+
+		#Plurals singularized for searching purposes (ie "dogs" returns the same things as "dog")
+		if (query.last(3) != "ies" && query.last(1) == "s") 
+			query = query[0...-1]
 		end
+		if (query.length > 3 && query.last(3) == "ies")
+			query = query[0...-3]
+		end
+
+		if params[:location] == nil
+			@venues = Venue.meta_search(query, lat, long)
+		else
+			nil#@venues = Venue.joins(:meta_data).where("LOWER(meta) like ?", '%' + query + '%').where("venues.name = ? OR venues.city = ? OR venues.state = ? OR venues.country = ?", '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%', '%' + params[:location].to_s.downcase + '%')
+		end
+	end
+
+	def get_trending_venues
+
 	end
 
 	def get_suggested_venues
