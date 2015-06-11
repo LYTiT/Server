@@ -876,7 +876,7 @@ class Venue < ActiveRecord::Base
 
   #no location specified
   def self.meta_search(query, lat, long)
-    query = '%'+query+'%'
+    query = query+'%'
   
     meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
     result_venues = Venue.includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments).order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").to_a
