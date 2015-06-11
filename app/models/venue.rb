@@ -814,7 +814,7 @@ class Venue < ActiveRecord::Base
         venue_comments_created = 0
         for instagram in nearby_instagram_content
           if (instagram.location.id == self.instagram_location_id && VenueComment.where("instagram_id = ?", instagram.id).any? == false) && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
-            puts("converting instagram to #{self.name} Venue Comment")
+            puts("converting instagram to #{self.name} Venue Comment from #{instagram.location.name}")
             vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id)
             vc.save
             vc.extract_instagram_meta_data(instagram)
