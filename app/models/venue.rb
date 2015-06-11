@@ -661,7 +661,7 @@ class Venue < ActiveRecord::Base
   def update_rating()
     #daily up_votes
     up_votes = self.v_up_votes.order('id ASC').to_a
-    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, nil, false) + 1.0 + get_k).round(4))
+    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, nil, false) + 1.0).round(4))
 
     #down_votes = self.v_down_votes.order('id ASC').to_a
     #update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, nil, true) + 1.0).round(4))
@@ -749,6 +749,7 @@ class Venue < ActiveRecord::Base
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
             vc.extract_instagram_meta_data(instagram)
+            self.update_columns(latest_posted_comment_time: Time.now)
 
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
@@ -825,6 +826,7 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
+            self.update_columns(latest_posted_comment_time: Time.now)
             
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)

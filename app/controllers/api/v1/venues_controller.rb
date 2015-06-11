@@ -298,7 +298,7 @@ class Api::V1::VenuesController < ApiBaseController
 		sw_lat = params[:sw_latitude]
 		sw_long = params[:sw_longitude]
 		ne_lat = params[:nw_latitude]
-		nw_long = params[:nw_longitude]
+		ne_long = params[:nw_longitude]
 		
 		#Cleaning the search term
 		query = params[:q].downcase.gsub(" ","").gsub(/[^0-9A-Za-z]/, '')

@@ -171,6 +171,7 @@ class VenueComment < ActiveRecord::Base
 						vote.save
 						#lytit_venue.account_new_vote(1, vote.id)
 						vc.extract_instagram_meta_data(instagram)
+						lytit_venue.update_columns(latest_posted_comment_time: Time.now)
 
 						if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 							LytSphere.create_new_sphere(lytit_venue)
