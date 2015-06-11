@@ -792,7 +792,7 @@ class Venue < ActiveRecord::Base
           venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
-          if jarow_winkler_proximity > 0.6
+          if jarow_winkler_proximity > 0.65
             if not search_hash[instagram.location.id]
               search_hash[instagram.location.id] = jarow_winkler_proximity
             else
