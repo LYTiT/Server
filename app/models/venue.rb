@@ -168,7 +168,7 @@ class Venue < ActiveRecord::Base
     result = nil
     if direct_search.count > 1
       best_match = nil
-      best_match_score = 0.6
+      best_match_score = 0.75
       for entry in direct_search
         text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
         if text_comparison_score > best_match_score
@@ -186,6 +186,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result != nil
+      puts "A direct match has been found!"
       lookup = result
     else
       #We need to determine the type of search being conducted whether it is venue specific or geographic
