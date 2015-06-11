@@ -166,23 +166,25 @@ class Venue < ActiveRecord::Base
 
     direct_search = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude)
     result = nil
-    if direct_search.count > 1
-      best_match = nil
-      best_match_score = 0.75
-      for entry in direct_search
-        text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
-        if text_comparison_score > best_match_score
-          best_match = entry
-          best_match_score = text_comparison_score 
+    if direct_search != nil
+      if direct_search.count > 1
+        best_match = nil
+        best_match_score = 0.75
+        for entry in direct_search
+          text_comparison_score = (p jarow.getDistance(entry.name, best_match.name))
+          if text_comparison_score > best_match_score
+            best_match = entry
+            best_match_score = text_comparison_score 
+          end
         end
-      end
-      if best_match != nil
-        result = best_match
-      end
-    else
-        if (p jarow.getDistance(direct_search.first.name, vname)) >= 0.8
-          result = direct_search.first
+        if best_match != nil
+          result = best_match
         end
+      else
+          if (p jarow.getDistance(direct_search.first.name, vname)) >= 0.8
+            result = direct_search.first
+          end
+      end
     end
 
     if result != nil
