@@ -884,7 +884,7 @@ class Venue < ActiveRecord::Base
 
     #user searching around himself as determined by centered positioning on map screen
     if sw_lat == 0 && ne_long == 0
-      result_venues = Venue.includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments).order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").to_a
+      result_venues = Venue.includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments).order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
     
     #user searching over an area of view
     else

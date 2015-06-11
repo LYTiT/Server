@@ -306,11 +306,13 @@ class Api::V1::VenuesController < ApiBaseController
 		junk_words.each{|word| query.gsub!(word, "")}
 
 		#Plurals singularized for searching purposes (ie "dogs" returns the same things as "dog")
-		if (query.last(3) != "ies" && query.last(1) == "s") 
-			query = query[0...-1]
-		end
-		if (query.length > 3 && query.last(3) == "ies")
-			query = query[0...-3]
+		if query.length > 3
+			if (query.last(3) != "ies" && query.last(1) == "s") 
+				query = query[0...-1]
+			end
+			if (query.last(3) == "ies")
+				query = query[0...-3]
+			end
 		end
 
 		results = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
