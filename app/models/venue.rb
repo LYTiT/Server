@@ -430,7 +430,6 @@ class Venue < ActiveRecord::Base
       venue.name = vname
       venue.latitude = lat
       venue.longitude = long
-      venue.instagram_location_id = inst_loc_id
       venue.verified = false
 =begin
       query = lat.to_s + "," + long.to_s
@@ -460,6 +459,7 @@ class Venue < ActiveRecord::Base
       venue.fetched_at = Time.now
       venue.save
       lookup = venue
+      lookup.update_columns(instagram_location_id: inst_loc_id)
       i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
       i_l_i_t.save
     end
