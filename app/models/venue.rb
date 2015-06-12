@@ -862,7 +862,7 @@ class Venue < ActiveRecord::Base
         if search_radius != 250 && wide_area_search != true
           set_instagram_location_id(250)
         else
-          self.update_columns(instagram_location_id: "-1")
+          self.update_columns(instagram_location_id: 0)
         end
       end
     else
@@ -870,7 +870,7 @@ class Venue < ActiveRecord::Base
       if search_radius != 250 && wide_area_search != true
         set_instagram_location_id(250)
       else
-        self.update_columns(instagram_location_id: "-1")
+        self.update_columns(instagram_location_id: 0)
       end
     end
   end
