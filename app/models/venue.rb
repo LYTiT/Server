@@ -53,7 +53,7 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "snapchat") || (vname.downcase.include? "whatsapp") || (vname.downcase.include? "viber") || (vname.downcase.include? "sms")
       result = false
-    elsif (vname.downcase.split && emoji_and_symbols) != nil
+    elsif (vname.downcase.split & emoji_and_symbols).count != 0
       result = false
     elsif vname != vname.titlecase
       result = false
@@ -409,10 +409,6 @@ class Venue < ActiveRecord::Base
     end
 
     if lookup != nil 
-      if lookup.instagram_location_id == nil
-        lookup.update_columns(instagram_location_id: inst_loc_id)
-      end
-
       if InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
         i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
         i_l_i_t.save
@@ -445,11 +441,11 @@ class Venue < ActiveRecord::Base
       venue.postal_code = result.postal_code
       venue.time_zone = timezone.active_support_time_zone
 =end
-      if venue.latitude < 0 && venue.longitude >= 0
+      if lat < 0 && long >= 0
         quadrant = "a"
-      elsif venue.latitude < 0 && venue.longitude < 0
+      elsif lat < 0 && long < 0
         quadrant = "b"
-      elsif venue.latitude >= 0 && venue.longitude < 0
+      elsif lat >= 0 && long < 0
         quadrant = "c"
       else
         quadrant = "d"

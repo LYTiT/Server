@@ -120,10 +120,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if not @comment.save
 				render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
 			else
-				#based off of the position an adjusted hour time is assigned to the venue comment which is used in Spotlyt
-				offset = @comment.created_at.in_time_zone(@comment.venue.time_zone).utc_offset
-				offset_time = @comment.created_at + offset
-				@comment.offset_created_at = offset_time
+				
 				@comment.content_origin = "lytit"
 				@comment.time_wrapper = Time.now
 				@comment.save
