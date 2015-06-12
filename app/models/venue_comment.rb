@@ -194,7 +194,7 @@ class VenueComment < ActiveRecord::Base
 
 		for data in comment_meta_data
 			jarow_distance = p jarow.getDistance(data, query)
-			if jarow_distance > 45
+			if jarow_distance > 0.45
 				pass = true
 				break
 			end
