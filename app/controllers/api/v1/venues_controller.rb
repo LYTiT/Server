@@ -169,7 +169,8 @@ class Api::V1::VenuesController < ApiBaseController
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => Time.now)
 
 				if v.save
-					venue.delay.account_new_vote(1, v.id)
+					venue.update_r_up_votes(Time.now)
+            		venue.update_columns(latest_posted_comment_time: Time.now)
 
 					if LytSphere.where("venue_id = ?", venue.id).count == 0
 						LytSphere.delay.create_new_sphere(venue)

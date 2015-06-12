@@ -377,7 +377,7 @@ class Venue < ActiveRecord::Base
       end
 
       if search_part != nil
-        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + search_part + '%')
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
       end
 
       if venues.count == 0
@@ -658,23 +658,21 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def update_r_up_votes(time_wrapped_posting_time)
+    new_r_up_vote_count = (self.r_up_votes * 2**((-(time_wrapped_posting_time - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))+1.0).round(4)
+    self.update_columns(r_up_votes: new_r_up_vote_count)
+  end
+
   def update_rating()
-    #daily up_votes
-    up_votes = self.v_up_votes.order('id ASC').to_a
-    update_columns(r_up_votes: (get_sum_of_past_votes(up_votes, nil, false) + 1.0).round(4))
-
-    #down_votes = self.v_down_votes.order('id ASC').to_a
-    #update_columns(r_down_votes: (get_sum_of_past_votes(down_votes, nil, true) + 1.0).round(4))
-
+    new_r_up_vote_count = (self.r_up_votes * 2**((-(Time.now - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
+    self.update_columns(r_up_votes: new_r_up_vote_count)
+    
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
-    r_up_votes = self.r_up_votes
-    r_down_votes = self.r_down_votes
+    a = self.r_up_votes >= 1.0 ? r_up_votes : 1.0
+    b = 1.0
 
-    a = r_up_votes >= 1 ? r_up_votes : (1.0 + get_k)
-    b = r_down_votes >= 1 ? r_down_votes : 1.0
-
-    if (a - 1.0 - get_k).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
+    if (a - 1.0).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
       update_columns(rating: 0.0)
     else
       puts "A = #{a}, B = #{b}, Y = #{y}"
@@ -702,7 +700,7 @@ class Venue < ActiveRecord::Base
       visible = false
     end
 
-    if minutes_since_last_vote >= LytitConstants.threshold_to_venue_be_shown_on_map
+    if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
       visible = false
     end
 
@@ -749,7 +747,8 @@ class Venue < ActiveRecord::Base
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
             vc.extract_instagram_meta_data(instagram)
-            self.update_columns(latest_posted_comment_time: Time.now)
+            self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
+            self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
 
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
@@ -826,7 +825,8 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
-            self.update_columns(latest_posted_comment_time: Time.now)
+            self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
+            self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
             
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
