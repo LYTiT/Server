@@ -186,6 +186,27 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
+	def meta_search_sanity_check(query)
+		require 'fuzzystringmatch'
+    	jarow = FuzzyStringMatch::JaroWinkler.create( :native )   
+		pass = false
+		comment_meta_data = self.meta_datas.pluck(:meta)
+
+		for data in comment_meta_data
+			jarow_distance = p jarow.getDistance(data, query)
+			if jarow_distance > 45
+				pass = true
+				break
+			end
+		end
+
+		if pass == true
+			return self
+		else
+			return nil
+		end
+	end
+
 	def extract_instagram_meta_data(instagram)
 		inst_hashtags = instagram.tags
 		inst_comment = instagram.caption.text.split rescue nil
