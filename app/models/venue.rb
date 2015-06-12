@@ -405,10 +405,15 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    if lookup != nil and InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
-      lookup.update_columns(instagram_location_id: inst_loc_id)
-      i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
-      i_l_i_t.save
+    if lookup != nil 
+      if lookup.instagram_location_id == nil
+        lookup.update_columns(instagram_location_id: inst_loc_id)
+      end
+
+      if InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
+        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
+        i_l_i_t.save
+      end
     end
 
     #if location not found in LYTiT database create new venue
