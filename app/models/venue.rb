@@ -913,7 +913,7 @@ class Venue < ActiveRecord::Base
       end
 
       if pass == true
-        return self
+        return vc
       else
         return nil
       end
