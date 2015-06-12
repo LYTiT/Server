@@ -854,7 +854,7 @@ class Venue < ActiveRecord::Base
         if search_radius != 250 && wide_area_search != true
           set_instagram_location_id(250)
         else
-          self.update_columns(instagram_location_id: -1)
+          self.update_columns(instagram_location_id: "-1")
         end
       end
     else
@@ -862,7 +862,7 @@ class Venue < ActiveRecord::Base
       if search_radius != 250 && wide_area_search != true
         set_instagram_location_id(250)
       else
-        self.update_columns(instagram_location_id: -1)
+        self.update_columns(instagram_location_id: "-1")
       end
     end
   end
@@ -884,6 +884,10 @@ class Venue < ActiveRecord::Base
 
   #no location specified
   def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+    #no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
+    if query[0..2].downcase == "insta"
+      return nil
+    end
     query = '%'+query+'%'
   
     meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"

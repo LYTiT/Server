@@ -186,27 +186,6 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
-	def meta_search_sanity_check(query)
-		require 'fuzzystringmatch'
-    	jarow = FuzzyStringMatch::JaroWinkler.create( :native )   
-		pass = false
-		comment_meta_data = self.meta_datas.pluck(:meta)
-
-		for data in comment_meta_data
-			jarow_distance = p jarow.getDistance(data, query)
-			if jarow_distance > 0.45
-				pass = true
-				break
-			end
-		end
-
-		if pass == true
-			return self
-		else
-			return nil
-		end
-	end
-
 	def extract_instagram_meta_data(instagram)
 		inst_hashtags = instagram.tags
 		inst_comment = instagram.caption.text.split rescue nil
@@ -215,12 +194,16 @@ class VenueComment < ActiveRecord::Base
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
 		begin
 			inst_meta_data.each do |data|
-				clean_data = data.downcase.gsub(/[^0-9A-Za-z]/, '')
-				puts "Dirty Data: #{data}...Clean Data: #{clean_data}"
-				if clean_data.length>2 && junk_words.include?(clean_data) == false
-					if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
-						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
-						venue_meta_data.save
+				#sub_entries are for CamelCase handling if any
+				sub_entries = data.split /(?=[A-Z])/
+				sub_entries.each do |sub_entry|
+					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
+					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
+					if clean_data.length>2 && junk_words.include?(clean_data) == false
+						if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
+							venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
+							venue_meta_data.save
+						end
 					end
 				end
 			end
