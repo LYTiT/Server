@@ -53,8 +53,6 @@ gem 'instagram'
 gem 'httparty'
 gem 'text'
 gem 'fuzzy-string-match'
-gem 'sunspot_rails'
-gem 'sunspot_solr'
 
 group :development do
   gem 'better_errors'
