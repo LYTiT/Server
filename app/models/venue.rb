@@ -593,8 +593,8 @@ class Venue < ActiveRecord::Base
 
   def self.reset_venues
     Venue.update_all(rating: 0.0)
-    Venue.update_all(r_up_votes: 0.0)
-    Venue.update_all(r_down_votes: 0.0)
+    Venue.update_all(r_up_votes: 1.0)
+    Venue.update_all(r_down_votes: 1.0)
     Venue.update_all(color_rating: -1.0)
     VenueComment.where("content_origin = ?", "instagram").delete_all
     MetaData.delete_all
