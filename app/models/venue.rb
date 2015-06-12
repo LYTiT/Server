@@ -884,7 +884,7 @@ class Venue < ActiveRecord::Base
 
   #no location specified
   def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-    query = '%'+query+'___'
+    query = query+'%'
   
     meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
 
