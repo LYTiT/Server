@@ -214,7 +214,7 @@ class Venue < ActiveRecord::Base
             address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
         end
       else #venue search 
-        radius = 75
+        radius = 250
         boundries = bounding_box(radius, vlatitude, vlongitude)
         venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
       end
