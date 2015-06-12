@@ -897,6 +897,31 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def meta_search_sanity_check(vc, query)
+    if vc != nil
+      require 'fuzzystringmatch'
+      jarow = FuzzyStringMatch::JaroWinkler.create( :native )   
+      pass = false
+      comment_meta_data = vc.meta_datas.pluck(:meta)
+
+      for data in comment_meta_data
+        jarow_distance = p jarow.getDistance(data, query)
+        if jarow_distance > 0.45
+          pass = true
+          break
+        end
+      end
+
+      if pass == true
+        return self
+      else
+        return nil
+      end
+    else
+      return nil
+    end
+  end
+
   private ##########################################################################################################################################################################
 
   def valid_votes_timestamp
