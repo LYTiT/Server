@@ -659,14 +659,14 @@ class Venue < ActiveRecord::Base
   end
 
   def update_r_up_votes(time_wrapped_posting_time)
-    new_r_up_vote_count = (self.r_up_votes * 2**((-(time_wrapped_posting_time - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))+1.0).round(4)
+    new_r_up_vote_count = (self.r_up_votes * 2**((-(time_wrapped_posting_time.to_datetime - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))+1.0).round(4)
     self.update_columns(r_up_votes: new_r_up_vote_count)
   end
 
   def update_rating()
     new_r_up_vote_count = (self.r_up_votes * 2**((-(Time.now - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     self.update_columns(r_up_votes: new_r_up_vote_count)
-    
+
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
     a = self.r_up_votes >= 1.0 ? r_up_votes : 1.0
