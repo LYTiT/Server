@@ -887,7 +887,7 @@ class Venue < ActiveRecord::Base
     query = query
     fuzzy_query_1 = '_'+query+'_'
   
-    meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) = '#{query}' OR LOWER(meta) LIKE '#{fuzzy_query}'"
+    meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) = '#{query}' OR LOWER(meta) LIKE '#{fuzzy_query_1}'"
 
     #user searching around himself as determined by centered positioning on map screen
     if (sw_lat.to_i == 0 && ne_long.to_i == 0)
