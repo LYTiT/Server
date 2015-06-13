@@ -95,6 +95,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'meta_search'
         end
+        get 'get_trending_venues'
       end
 
       controller :lytit_bar do
