@@ -12,7 +12,5 @@ json.array! @venues do |v|
   json.phone_number v.phone_number
   json.color_rating v.color_rating
   json.outstanding_bounties v.outstanding_bounties
-  json.is_hot v.is_hot?
-  json.bonus_lumens v.bonus_lumens
   json.compare_type v.type
 end

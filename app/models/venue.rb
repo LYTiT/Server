@@ -47,7 +47,7 @@ class Venue < ActiveRecord::Base
       result = false
     elsif vname.strip.last == "."
       result = false
-    elsif (vname.downcase.include? "www.") || (vname.downcase.include? ".com")
+    elsif (vname.downcase.include? "www.") || (vname.downcase.include? ".com") || (vname.downcase.include? "http://") || (vname.downcase.include? "https://")
       result = false
     elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";")
       result = false
@@ -89,37 +89,22 @@ class Venue < ActiveRecord::Base
     return type
   end
 
-  #bounty feed of a city, state, or country
-  def self.area_bounty_feed(v_id)
-    days_back = 1
-    responded_to_bounty_ids = "SELECT id FROM bounties WHERE venue_id = #{v_id} AND (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    feed = VenueComment.where("bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL", (Time.now - days_back.days)).includes(:venue, :bounty, bounty: :bounty_subscribers).order("updated_at desc")
-  end
-
-  #venues that are viewed often are "hot" and as a result reward users for posting if no posts present
-  def is_hot?
-    last_posted_comment_time_wrapper = self.latest_posted_comment_time || (Time.now - 31.minute)
-    popularity_percentile_wrapper = self.popularity_percentile || 0.0
-    if popularity_percentile_wrapper >= 75.0 && (Time.now - last_posted_comment_time_wrapper) >= 30.minutes
-      true
-    else
-      false
-    end
-  end
-
-  def bonus_lumens
-    if self.is_hot? == true
-      return 1
-    else 
-      return nil
-    end
-  end
-
   def view(user_id)
     view = VenuePageView.new(:user_id => user_id, :venue_id => self.id, :venue_lyt_sphere =>  self.l_sphere)
     view.save
   end
 
+  def account_page_view
+    view_half_life = 120.0 #minutes
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time)/60.0) / (view_half_life))).round(4)+1.0
+
+    self.update_columns(page_views: new_page_view_count)
+    self.update_columns(latest_page_view_time: Time.now)
+  end
+
+  def update_popularity_rank
+    self.update_columns(page_rank: (self.page_views * self.rating))
+  end
 
   def menu_link=(val)
     if val.present?
@@ -427,20 +412,7 @@ class Venue < ActiveRecord::Base
       venue.latitude = lat
       venue.longitude = long
       venue.verified = false
-=begin
-      query = lat.to_s + "," + long.to_s
-      result = Geocoder.search(query).first 
 
-      #Sometimes the Geocoder returns a city in the county field
-      result_city = result.city || result.county
-      result_city.slice!(" County")
-      venue.city = result_city 
-
-      venue.state = result.state
-      venue.country = result.country
-      venue.postal_code = result.postal_code
-      venue.time_zone = timezone.active_support_time_zone
-=end
       if lat < 0 && long >= 0
         quadrant = "a"
       elsif lat < 0 && long < 0

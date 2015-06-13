@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150610133455) do
+ActiveRecord::Schema.define(version: 20150613030906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -436,13 +436,14 @@ ActiveRecord::Schema.define(version: 20150610133455) do
     t.boolean  "is_address",                           default: false
     t.boolean  "has_been_voted_at",                    default: false
     t.datetime "latest_placed_bounty_time"
-    t.integer  "popularity_rank"
+    t.float    "popularity_rank"
     t.float    "popularity_percentile"
-    t.integer  "page_views",                           default: 0
+    t.float    "page_views",                           default: 0.0
     t.integer  "user_id"
     t.integer  "instagram_location_id"
     t.datetime "last_instagram_pull_time"
     t.boolean  "verified",                             default: true
+    t.datetime "last_page_view_time"
   end
 
   add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree

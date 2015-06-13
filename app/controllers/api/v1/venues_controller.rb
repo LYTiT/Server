@@ -7,13 +7,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@venue = Venue.find(params[:id])		
 		venue = @venue.as_json(include: :venue_messages)
 
-		if @venue.is_hot? == true
-			venue[:is_hot] = true
-			venue[:bonus_lumens] = 1
-		else
-			venue[:is_hot] = false
-			venue[:bonus_lumens] = nil
-		end
 		venue[:compare_type] = @venue.type
 
 		render json: venue
@@ -207,7 +200,8 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				@venue.delay.increment!(:page_views, 1)
+
+				@venue.account_page_view
 
 				instagram_refresh_rate = 1 #minutes
 				instagram_venue_id_ping_rate = 5 #days
@@ -318,7 +312,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_trending_venues
-		@venues = Venue.all.order("trend_score DESC limit 10")
+		@venues = Venue.all.order("popularity_rank DESC limit 10")
 	end
 
 	def get_suggested_venues

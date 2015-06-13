@@ -39,21 +39,6 @@ namespace :lytit do
       puts "Until next month."
     end
 
-    #update venue popularity rank and percentile as determined by number of views of the venue page
-    spheres = VenuePageView.uniq.pluck(:venue_lyt_sphere)
-    for sphere in spheres
-      rank = 1
-      target_venues = Venue.where("l_sphere = ? AND page_views > 0", sphere).order("page_views desc")
-      target_venue_count = target_venues.count
-
-      for venue in target_venues
-        venue.popularity_rank = rank
-        venue.popularity_percentile = 100.0*(target_venue_count.to_f-rank.to_f)/target_venue_count.to_f
-        venue.save
-        rank = rank + 1
-      end
-    end
-
     #delete Instagram data daily
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
 

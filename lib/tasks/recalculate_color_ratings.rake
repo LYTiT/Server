@@ -64,6 +64,7 @@ namespace :lytit do
       diff_ratings = Set.new
       for venue in sphericles
         venue.update_rating()
+        venue.update_popularity_rank
         if venue.is_visible? #venue.rating != nil && venue.rating > 0.0
           rat = venue.rating.round(2)
           diff_ratings.add(rat)
@@ -91,10 +92,6 @@ namespace :lytit do
       for venue in sphericles
         rating = venue.rating ? venue.rating.round(2) : 0.0
         venue.update_columns(color_rating: colors_map[rating])
-        #VenueColorRating.create({
-        #  :venue_id => venue.id,
-        #  :color_rating => colors_map[rating]
-        #})
       end
 
     end
