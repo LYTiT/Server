@@ -96,7 +96,8 @@ class Venue < ActiveRecord::Base
 
   def account_page_view
     view_half_life = 120.0 #minutes
-    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time)/60.0) / (view_half_life))).round(4)+1.0
+    latest_page_view_time_wrapper = latest_page_view_time || Time.now
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)+1.0
 
     self.update_columns(page_views: new_page_view_count)
     self.update_columns(latest_page_view_time: Time.now)
@@ -646,7 +647,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_rating()
-    new_r_up_vote_count = ((self.r_up_votes-1.0) * 2**((-(Time.now - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+    new_r_up_vote_count = ((self.r_up_votes-1.0) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     self.update_columns(r_up_votes: new_r_up_vote_count)
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
