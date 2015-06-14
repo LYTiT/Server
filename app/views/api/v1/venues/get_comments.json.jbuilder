@@ -11,6 +11,7 @@ json.comments(@comments) do |comment|
   json.total_views comment.views
   json.created_at comment.time_wrapper
   json.updated_at comment.updated_at
+  json.content_origin comment.content_origin
 end
 json.pagination do 
   json.current_page @comments.current_page
