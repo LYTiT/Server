@@ -408,7 +408,7 @@ class Venue < ActiveRecord::Base
         Timezone::Configure.begin do |c|
           c.username = 'LYTiT'
         end
-        timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+        timezone = Timezone::Zone.new :latlon => [lat, long]
         lookup.time_zone = timezone.active_support_time_zone
       end
 

@@ -16,28 +16,6 @@ namespace :lytit do
     #  venue.reset_r_vector
     #end
 
-    Bounty.all.each do |bounty|
-      bounty.check_validity
-    end
-
-    #End of month Lumen Game Winner's determining
-    yesterday = Time.now - 1.day
-    if yesterday.month != (Time.now).month
-      final_winners = LumenGameWinner.joins(:user).where("email_confirmed = TRUE").where("lumen_game_winners.created_at >= ?", yesterday.beginning_of_month).order("id desc").first(50)
-      for champ in final_winners
-        puts "#{champ.user.name}-#{champ.user.email}"
-        champ.user.send_email_validation
-        champ.email_sent = true
-        champ.save
-      end
-      founder_1 = User.find_by_email("leonid@lytit.com")
-      founder_2 = User.find_by_name("tim@lytit.com")
-      admin = User.find_by_name("team@lytit.com")
-      Mailer.delay.notify_admins_of_monthly_winners(founder_1)
-      Mailer.delay.notify_admins_of_monthly_winners(founder_2)
-      User..update_all(monthly_gross_lumens: 0.0)
-      puts "Until next month."
-    end
 
     #delete Instagram data daily
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
