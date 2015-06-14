@@ -275,6 +275,9 @@ class Venue < ActiveRecord::Base
         timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
         lookup.time_zone = timezone.active_support_time_zone
       end
+      if lookup.time_zone_offset == nil
+        lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 
+      end
       
       #if lookup.name != vname
       #  lookup.name = vname
@@ -337,6 +340,7 @@ class Venue < ActiveRecord::Base
       venue.save
 
       venue.time_zone = timezone.active_support_time_zone
+      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0
       venue.fetched_at = Time.now
 
       if vaddress != nil && vname != nil
@@ -399,6 +403,18 @@ class Venue < ActiveRecord::Base
         i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
         i_l_i_t.save
       end
+
+      if lookup.time_zone == nil #Add timezone of venue if not present
+        Timezone::Configure.begin do |c|
+          c.username = 'LYTiT'
+        end
+        timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+        lookup.time_zone = timezone.active_support_time_zone
+      end
+
+      if lookup.time_zone_offset == nil
+        lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 
+      end
     end
 
     #if location not found in LYTiT database create new venue
@@ -406,12 +422,14 @@ class Venue < ActiveRecord::Base
       Timezone::Configure.begin do |c|
         c.username = 'LYTiT'
       end
-      #timezone = Timezone::Zone.new :latlon => [lat, long]
+      timezone = Timezone::Zone.new :latlon => [lat, long]
       
       venue = Venue.new
       venue.name = vname
       venue.latitude = lat
       venue.longitude = long
+      venue.time_zone = timezone.active_support_time_zone
+      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 
       venue.verified = false
 
       if lat < 0 && long >= 0
