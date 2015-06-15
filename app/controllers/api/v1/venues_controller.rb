@@ -219,7 +219,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@lytit_presence = VenueComment.of_lytit_origin_present?(venue_ids)
-			@comments = live_comments.page(params[:page]).per(10)
+			@comments = live_comments.page(params[:page]).per(200)
 		end
 	end
 

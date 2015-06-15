@@ -96,6 +96,12 @@ namespace :lytit do
 
     end
 
+    #reset_lytit_algo runs only in production so to clear 24 hour Venue Comments we use the work around below 
+    if Time.now.hour == 23 && Time.now.min > 30
+      VenueComment.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+      MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+    end
+
     end_time = Time.now
 
     puts "Done. Time Taken: #{end_time - start_time}s"
