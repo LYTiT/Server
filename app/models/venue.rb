@@ -386,8 +386,11 @@ class Venue < ActiveRecord::Base
         end
 
         if (((venue.name.downcase).include? vname.downcase) || ((vname.downcase).include? venue.name.downcase)) #Are they substrings?
-          lookup = venue
-          break
+          #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
+          if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") != false && vname.downcase.include?("park") != false)
+            lookup = venue
+            break
+          end
         end
 
         require 'fuzzystringmatch'
