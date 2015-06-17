@@ -218,7 +218,7 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
-			@comments = live_comments.page(params[:page]).per(200)
+			@comments = live_comments.page(params[:page]).per(25)
 		end
 	end
 

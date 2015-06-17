@@ -305,7 +305,7 @@ class Venue < ActiveRecord::Base
       Timezone::Configure.begin do |c|
         c.username = 'LYTiT'
       end
-      timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude]
+      timezone = Timezone::Zone.new :latlon => [vlatitude, vlongitude] rescue nil
 
       venue = Venue.new
       venue.name = vname
