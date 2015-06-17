@@ -676,7 +676,7 @@ class Venue < ActiveRecord::Base
     a = self.r_up_votes >= 1.0 ? r_up_votes : 1.0
     b = 1.0
 
-    if (a - 1.0).round(4) == 0.0 and (b - 1.0).round(4) == 0.0
+    if (a - 1.0).round(4) == 0.0
       update_columns(rating: 0.0)
     else
       puts "A = #{a}, B = #{b}, Y = #{y}"
@@ -700,9 +700,9 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    if not self.rating || self.rating.round(1) == 0.0
-      visible = false
-    end
+    #if not self.rating || self.rating.round(1) == 0.0
+    #  visible = false
+    #end
 
     if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
       visible = false
