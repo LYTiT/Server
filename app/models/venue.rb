@@ -880,7 +880,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  #no location specified
+  #Returns venues that have Venue Comments corresponding to the meta search
   def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
     #no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
     if query[0..2].downcase == "insta"
