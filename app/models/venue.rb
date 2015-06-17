@@ -340,7 +340,7 @@ class Venue < ActiveRecord::Base
       venue.save
 
       venue.time_zone = timezone.active_support_time_zone rescue nil
-      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0
+      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
       venue.fetched_at = Time.now
 
       if vaddress != nil && vname != nil
@@ -416,7 +416,7 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup.time_zone_offset == nil
-        lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 
+        lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
       end
     end
 
@@ -425,14 +425,14 @@ class Venue < ActiveRecord::Base
       Timezone::Configure.begin do |c|
         c.username = 'LYTiT'
       end
-      timezone = Timezone::Zone.new :latlon => [lat, long]
+      timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
       
       venue = Venue.new
       venue.name = vname
       venue.latitude = lat
       venue.longitude = long
-      venue.time_zone = timezone.active_support_time_zone
-      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 
+      venue.time_zone = timezone.active_support_time_zone rescue nil
+      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
       venue.verified = false
 
       if lat < 0 && long >= 0
