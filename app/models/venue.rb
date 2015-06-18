@@ -21,6 +21,7 @@ class Venue < ActiveRecord::Base
   has_many :bounties, :dependent => :destroy
   has_many :lytit_votes, :dependent => :destroy
   has_many :meta_datas, :dependent => :destroy
+  has_many :instagram_location_id_lookups, :dependent => :destroy
 
 
   belongs_to :user
@@ -405,11 +406,6 @@ class Venue < ActiveRecord::Base
       end
 
       if lookup != nil 
-        if InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
-          i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
-          i_l_i_t.save
-        end
-
         if lookup.time_zone == nil #Add timezone of venue if not present
           Timezone::Configure.begin do |c|
             c.username = 'LYTiT'
@@ -453,8 +449,9 @@ class Venue < ActiveRecord::Base
         venue.save
         lookup = venue
         lookup.update_columns(instagram_location_id: inst_loc_id)
-        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
-        i_l_i_t.save
+
+        inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
+        inst_location_id_tracker_lookup_entry.save
       end
 
       return lookup
@@ -817,8 +814,6 @@ class Venue < ActiveRecord::Base
       if search_hash.count > 0
         best_location_match_id = search_hash.max_by{|k,v| v}.first
         self.update_columns(instagram_location_id: best_location_match_id)
-        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => self.id, primary_instagram_location_id: self.instagram_location_id)
-        i_l_i_t.save
 
         #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the 
         #we need and create venue comments

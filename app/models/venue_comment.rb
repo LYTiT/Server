@@ -136,32 +136,7 @@ class VenueComment < ActiveRecord::Base
 
 		if Venue.name_is_proper?(place_name) == true
 			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)
-=begin			
-			if lytit_venue != nil && (lytit_venue.last_instagram_pull_time != nil and DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )
-				inst_loc_track = InstagramLocationIdTracker.find_by_venue_id(lytit_venue.id)
-				
-				if lytit_venue.instagram_location_id != place_id
-					if inst_loc_track != nil
-						if inst_loc_track.secondary_instagram_location_id == place_id
-							inst_loc_track.increment!(:secondary_instagram_location_id_pings, 1)
-						elsif inst_loc_track.tertiary_instagram_location_id == place_id
-							inst_loc_track.increment!(:tertiary_instagram_location_id_pings, 1)
-						else
-							if inst_loc_track.secondary_instagram_location_id == nil
-								inst_loc_track.update_columns(secondary_instagram_location_id: place_id)
-							else 
-								inst_loc_track.update_columns(tertiary_instagram_location_id: place_id)
-							end
-						end
-					else
-						i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lytit_venue.id, primary_instagram_location_id: place_id)
-						i_l_i_t.save
-					end	
-				else
-					inst_loc_track.increment!(:primary_instagram_location_id_pings, 1)
-				end	
-			end
-=end
+
 			#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
 			if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )
 				if not VenueComment.where("instagram_id = ?", instagram.id).any?
