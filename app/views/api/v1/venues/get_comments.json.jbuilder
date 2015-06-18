@@ -6,6 +6,7 @@ json.comments(@comments) do |comment|
   json.user_id comment.user_id
   json.user_name comment.user.try(:name)
   json.username_private comment.username_private
+  json.user_lumens comment.user.lumens
   json.venue_id comment.venue_id
   json.venue_name comment.venue.try(:name)
   json.total_views comment.views
