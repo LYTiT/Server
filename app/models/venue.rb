@@ -69,6 +69,7 @@ class Venue < ActiveRecord::Base
       if not InstagramLocationIdLookup.where("venue_id = ?", v.id).any?
         InstagramLocationIdLookup.create!(:venue_id => v.id, :instagram_location_id => v.instagram_location_id)
       end
+    end
   end
 
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
