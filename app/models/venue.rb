@@ -66,8 +66,8 @@ class Venue < ActiveRecord::Base
   def self.populate_lookup_ids
     v = Venue.where("instagram_location_id IS NOT NULL")
     for v_hat in v 
-      if not InstagramLocationIdLookup.where("venue_id = ?", v.id).any?
-        InstagramLocationIdLookup.create!(:venue_id => v.id, :instagram_location_id => v.instagram_location_id)
+      if not InstagramLocationIdLookup.where("venue_id = ?", v_hat.id).any?
+        InstagramLocationIdLookup.create!(:venue_id => v_hat.id, :instagram_location_id => v_hat.instagram_location_id)
       end
     end
   end
