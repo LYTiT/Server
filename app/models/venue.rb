@@ -19,7 +19,6 @@ class Venue < ActiveRecord::Base
   has_many :menu_section_items, :through => :menu_sections
   has_many :lyt_spheres, :dependent => :destroy
   has_many :bounties, :dependent => :destroy
-  has_many :instagram_location_id_trackers, :dependent => :destroy
   has_many :lytit_votes, :dependent => :destroy
   has_many :meta_datas, :dependent => :destroy
 
@@ -356,105 +355,110 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
-    search_part = nil
-    radius = 250
-    boundries = bounding_box(radius, lat, long)
-    venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
-    if venues.count == 0
-      vname.to_s.downcase.split.each do |part| 
-        if not ['the', 'a', 'cafe', 'restaurant'].include? part
-          puts "search part extracted"
-          search_part = part
-          break
-        end
-      end
-
-      if search_part != nil
-        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
-      end
-
+    lookup = Venue.find_by_instagram_location_id(inst_loc_id)
+    if lookup != nil
+      return lookup
+    else
+      search_part = nil
+      radius = 250
+      boundries = bounding_box(radius, lat, long)
+      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
       if venues.count == 0
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
-      end
-    end
-
-    if venues.count != 0
-      for venue in venues
-        if venue.name.downcase == vname.downcase #Is there a direct string match?
-          lookup = venue
-          break
-        end
-
-        if (((venue.name.downcase).include? vname.downcase) || ((vname.downcase).include? venue.name.downcase)) #Are they substrings?
-          #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
-          if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") != false && vname.downcase.include?("park") != false)
-            lookup = venue
+        vname.to_s.downcase.split.each do |part| 
+          if not ['the', 'a', 'cafe', 'restaurant'].include? part
+            puts "search part extracted"
+            search_part = part
             break
           end
         end
 
-        require 'fuzzystringmatch'
-        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")) >= 0.8)
-          lookup = venue
+        if search_part != nil
+          venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
+        end
+
+        if venues.count == 0
+          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
         end
       end
-    end
 
-    if lookup != nil 
-      if InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
-        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
-        i_l_i_t.save
+      if venues.count != 0
+        for venue in venues
+          if venue.name.downcase == vname.downcase #Is there a direct string match?
+            lookup = venue
+            break
+          end
+
+          if (((venue.name.downcase).include? vname.downcase) || ((vname.downcase).include? venue.name.downcase)) #Are they substrings?
+            #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
+            if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") != false && vname.downcase.include?("park") != false)
+              lookup = venue
+              break
+            end
+          end
+
+          require 'fuzzystringmatch'
+          jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")) >= 0.8)
+            lookup = venue
+          end
+        end
       end
 
-      if lookup.time_zone == nil #Add timezone of venue if not present
+      if lookup != nil 
+        if InstagramLocationIdTracker.find_by_venue_id(lookup.id) == nil
+          i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
+          i_l_i_t.save
+        end
+
+        if lookup.time_zone == nil #Add timezone of venue if not present
+          Timezone::Configure.begin do |c|
+            c.username = 'LYTiT'
+          end
+          timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
+          lookup.time_zone = timezone.active_support_time_zone rescue nil
+        end
+
+        if lookup.time_zone_offset == nil
+          lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
+        end
+      end
+
+      #if location not found in LYTiT database create new venue
+      if lookup == nil
         Timezone::Configure.begin do |c|
           c.username = 'LYTiT'
         end
         timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-        lookup.time_zone = timezone.active_support_time_zone rescue nil
+        
+        venue = Venue.new
+        venue.name = vname
+        venue.latitude = lat
+        venue.longitude = long
+        venue.time_zone = timezone.active_support_time_zone rescue nil
+        venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+        venue.verified = false
+
+        if lat < 0 && long >= 0
+          quadrant = "a"
+        elsif lat < 0 && long < 0
+          quadrant = "b"
+        elsif lat >= 0 && long < 0
+          quadrant = "c"
+        else
+          quadrant = "d"
+        end
+        venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+
+        venue.fetched_at = Time.now
+        venue.save
+        lookup = venue
+        lookup.update_columns(instagram_location_id: inst_loc_id)
+        i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
+        i_l_i_t.save
       end
 
-      if lookup.time_zone_offset == nil
-        lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
-      end
+      return lookup
     end
-
-    #if location not found in LYTiT database create new venue
-    if lookup == nil
-      Timezone::Configure.begin do |c|
-        c.username = 'LYTiT'
-      end
-      timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-      
-      venue = Venue.new
-      venue.name = vname
-      venue.latitude = lat
-      venue.longitude = long
-      venue.time_zone = timezone.active_support_time_zone rescue nil
-      venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
-      venue.verified = false
-
-      if lat < 0 && long >= 0
-        quadrant = "a"
-      elsif lat < 0 && long < 0
-        quadrant = "b"
-      elsif lat >= 0 && long < 0
-        quadrant = "c"
-      else
-        quadrant = "d"
-      end
-      venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
-
-      venue.fetched_at = Time.now
-      venue.save
-      lookup = venue
-      lookup.update_columns(instagram_location_id: inst_loc_id)
-      i_l_i_t = InstagramLocationIdTracker.new(:venue_id => lookup.id, primary_instagram_location_id: inst_loc_id)
-      i_l_i_t.save
-    end
-
-    return lookup
   end
 
   #Bounding area in which to search for a venue as determined by target lat and long.
