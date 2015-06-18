@@ -63,6 +63,14 @@ class Venue < ActiveRecord::Base
     return result
   end
 
+  def self.populate_lookup_ids
+    v = Venue.where("instagram_location_id IS NOT NULL")
+    for v_hat in v 
+      if not InstagramLocationIdLookup.where("venue_id = ?", v.id).any?
+        InstagramLocationIdLookup.create!(:venue_id => v.id, :instagram_location_id => v.instagram_location_id)
+      end
+  end
+
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def type
     v_address = address || ""
