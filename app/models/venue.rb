@@ -814,6 +814,10 @@ class Venue < ActiveRecord::Base
       if search_hash.count > 0
         best_location_match_id = search_hash.max_by{|k,v| v}.first
         self.update_columns(instagram_location_id: best_location_match_id)
+        if InstagramLocationIdLookup.find_by_instagram_location_id(best_location_match_id) == nil
+          inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => self.id, :instagram_location_id => best_location_match_id)
+          inst_location_id_tracker_lookup_entry.save
+        end
 
         #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the 
         #we need and create venue comments
