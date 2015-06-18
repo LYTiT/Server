@@ -12,6 +12,7 @@ json.comments(@comments) do |comment|
   json.created_at comment.time_wrapper
   json.updated_at comment.updated_at
   json.content_origin comment.content_origin
+  json.thirdparty_username comment.thirdparty_username
 end
 json.pagination do 
   json.current_page @comments.current_page
