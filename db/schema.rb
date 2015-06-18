@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150618012324) do
+ActiveRecord::Schema.define(version: 20150618054845) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -158,7 +158,7 @@ ActiveRecord::Schema.define(version: 20150618012324) do
 
   create_table "instagram_location_id_lookups", force: true do |t|
     t.integer "venue_id"
-    t.string  "instagram_location_id"
+    t.integer "instagram_location_id"
   end
 
   add_index "instagram_location_id_lookups", ["instagram_location_id"], name: "index_instagram_location_id_lookups_on_instagram_location_id", using: :btree
