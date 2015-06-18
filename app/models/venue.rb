@@ -365,7 +365,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
-    lookup = Venue.find_by_instagram_location_id(inst_loc_id)
+    lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
     if lookup != nil
       return lookup
     else
