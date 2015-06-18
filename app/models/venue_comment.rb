@@ -188,6 +188,29 @@ class VenueComment < ActiveRecord::Base
 		end		
 	end
 
+	def extract_venue_comment_meta_data
+		text = self.comment.split rescue nil
+		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
+		begin
+			text.each do |data|
+				#sub_entries are for CamelCase handling if any
+				sub_entries = data.split /(?=[A-Z])/
+				sub_entries.each do |sub_entry|
+					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
+					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
+					if clean_data.length>2 && junk_words.include?(clean_data) == false
+						if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
+							venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
+							venue_meta_data.save
+						end
+					end
+				end
+			end
+		rescue
+			puts "No Meta Data!"
+		end
+	end
+
 	#Bounty Responses Methods ----------------------------------------------------------------------------------------
 	def response_index
 		bounty.venue_comments.order("id desc").index(self)+1

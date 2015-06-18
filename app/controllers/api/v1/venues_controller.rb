@@ -167,6 +167,7 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 
 				end
+				@comment.extract_venue_comment_meta_data
 
 			end
 
