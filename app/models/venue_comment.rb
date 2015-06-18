@@ -153,7 +153,7 @@ class VenueComment < ActiveRecord::Base
 							LytSphere.create_new_sphere(lytit_venue)
 						end
 						puts "instagram venue comment created"
-						vc.delay.extract_instagram_meta_data(instagram)
+						vc.extract_instagram_meta_data(instagram)
 					end
 				end
 			end
