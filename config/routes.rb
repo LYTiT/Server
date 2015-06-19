@@ -144,14 +144,9 @@ LytitServer::Application.routes.draw do
     resource :password, controller: 'passwords', only: [:create, :edit, :update]
   end
 
-  get 'about-us' => 'pages#about_us'
-  get 'about' => 'pages#about_us'
   get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
-  get 'blog' => 'pages#blog'
-  get 'lumen_game' => 'pages#lumen_game'
-  get 'lumen_game/rules' => 'pages#lumen_game_rules'
-  get 'lumen_game/faq' => 'pages#lumen_game_faq'
+
 
   root :to => 'pages#home'
 

@@ -1,149 +1,122 @@
-<% provide(:home, "active") %>
-<% provide(:title, "Home") %>
 <%= favicon_link_tag "favicon.ico"%>
-<nav class="navbar navbar-default">
-   <div class="container">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
-         <span class="sr-only">Toggle navigation</span>
-         <span class="icon-bar"></span>
-         <span class="icon-bar"></span>
-         <span class="icon-bar"></span>
-         </button>
-         <div class="navbar-brand" href="/"><%= image_tag "lytit_official_white_resized.png"%> </div>
-      </div>
-      <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="navbar-collapse collapse">
-         <ul class="nav navbar-nav navbar-right">
-            <li class="<%= yield(:home) %>"><%= link_to "HOME", root_path %></li>
-            <li class="<%= yield(:lumen_game) %>"><%= link_to "LUMEN GAME", lumen_game_path %></li>
-            <!--<li class="<%= yield(:blog) %>"><%= link_to "BLOG", blog_path %></li>-->
-            <li class="<%= yield(:contact) %>"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a>
-            <li class="twitter" href="/"><%= link_to "L", "https://twitter.com/LYTiTApp"%></li>
-            <li class="facebook" href="/"><%= link_to "F", "https://facebook.com/LYTiTApp" %></li>
-         </ul>
-      </div>
-      <!-- /.navbar-collapse -->
-   </div>
-   <!-- /.container-fluid -->
-</nav>
+
 <div class="page-container">
-   <div id="header">
+   <div class="header">
+         <div class = "header-top">
+            <div class="container">
+               <div class = "col-sm-7 col-sm-offset-5"> 
+                    <ul class="nav navbar-nav navbar-right">
+                     <li class="contact-us"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a></li>
+                     <li class="twitter" href="/"><%= link_to "t", "https://twitter.com/lytitapp" %></li>
+                     <li class="facebook" href="/"><%= link_to "f", "https://facebook.com/LYTiTApp" %></li>
+                  </ul>
+               </div><!--col-sm-7-->         
+         </div><!--header-top-->
+      </div><!--header-->
       <div class="header-bottom">
          <div class="container">
-            <div class="central-image">
                <div class="col-sm-10 col-sm-offset-1 text-center">
-                  <h1>Map the Moment</h1>
-                  <p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownload.png"%></a></p>
-               </div>
-               <!-- /col-md-10 -->
-            </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
-      </div>
-      <!--/header-bottom -->
+                  <div id="logo"><%= image_tag src="LytitWhite.png"%>
+                  </div>
+                  <p class="appStoreBtnBox"><%= image_tag "AppStoreDownloadClear.png"%></p>
+                  <!--<p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownloadClear.png"%></a></p>-->
+                  <p id="comingSoon"> COMING SOON!</p>
+               </div><!--col-sm-10-->
+         </div><!--container-->
+      </div><!--header-bottom-->
    </div>
+   
+   <!--OVERVIEW-->
    <div id="content">
       <div class="home-top text-center">
          <div class="container">
             <div class="row">
                <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
-                  <h2>Request & share Moments with people in real-time</h2>
-                  <p>Anonymously capture what's happening around you to contribute to a live picture  of our surroundings. No Moment is too big or too small on LYTiT since all of them dissappear after a day. If you wish to see something specific from an area or a place - use a Moment Request!</p>
-               </div>
-               <!--/col-sm-10 -->
-            </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
-      </div>
-      <!--/home-top --> 
-      <div class="feature-box gray-bg">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <div class="feature-icon-2"><%= image_tag "lytit_icon.png"%></div>
-                  <h3>LYTiT UP</h3>
-                  <p>Everytime you post a Moment on LYTiT you Map it to your location which in turn brightens its LYT. The more recent the Moments at a place, the more vibrantly it glows on the Map.</p>
-               </div>
-               <!--/col-sm-6 -->
-               <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="iphone-img"><%= image_tag "iphone_lyt_map.png"%></p>
-               </div>
-               <!--/col-sm-6 -->
-            </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
-      </div>
-      <!--/feature-box -->
+                  <h2>View what's happening around the world in real-time</h2>
+                  <p>Countless Moments are shared through social media every second. LYTiT Maps them to locations allowing you to easily search for live content from anywhere, whether it's the coffee shop down the street or a landmark thousands of miles away.</p>
+               </div><!--col-sm-10-->
+            </div><!--row-->
+         </div><!--container-->
+      </div><!--home-top-->
+
+      <!--FEATURES-->
       <div class="feature-box invert-mobile">
          <div class="container">
             <div class="row">
                <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="iphone-img"><%= image_tag "iphone_lumens.png"%></p>
+                  <div class="feature-icon-2"><%= image_tag "LYTFlat.png"%></div>
+                  <h3>LYT MAP</h3>
+                  <p>A quick overview of a specific place or a wider area is provided by its lyt. The brighter it glows the greater the amount of recent acitivity at that location.</p>
                </div>
-               <!--/col-sm-6 -->
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="feature-icon-3"><%= image_tag "Lumens.png"%></p>
-                  <h3>EARN LUMENS</h3>
-                  <p>Mapping Moments makes you informative to others and for that you receive Lumens! Spend your Lumens on Requests to notify everyone of Moments you want to see.</p>
+                  <p class="iphone-img"><%= image_tag "iPhone_LYTMap.png"%></p>
                </div>
-               <!--/col-sm-6 -->
-            </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
-      </div>
-      <!--/feature-box -->
+            </div><!--row-->
+         </div><!--container-->
+      </div><!--feature-box-->
       <div class="feature-box gray-bg">
          <div class="container">
             <div class="row">
                <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="feature-icon-4"><%= image_tag "Requests.png"%></p>
-                  <h3>PLACE REQUESTS</h3>
-                  <p>Request a Moment from a location, whether it's to find out how crowded a cafe is or to see the sunset from the other side of town. Claim Lumens by responding to the Requests of others.</p>
+                  <p class="iphone-img"><%= image_tag "iPhone_VenuePage.png"%></p>
                </div>
-               <!--/col-sm-6 -->
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="iphone-img"><%= image_tag "iphone_requests.png"%></p>
-               </div>
-               <!--/col-sm-6 -->
-            </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
-      </div>
-      <!--/feature-box -->
+                  <p class="feature-icon-3"><%= image_tag "VenuePage.png"%></p>
+                  <h3>VENUE PAGES</h3>
+                  <p>Searching for places or tapping on lyts pulls up Venue Pages that house live  Moments. Upon zooming-out lyts group into clusters that can be selected to show content from multiples places in one feed.</p>
+                  <br>
+                  <p>All Moments on LYTiT clear after a day guaranteeing that what you see is always recent!</p>
+               </div><!--col-sm-6-->
+            </div><!--row-->
+         </div><!--container-->
+      </div><!--feature-box-->
       <div class="feature-box invert-mobile">
          <div class="container">
             <div class="row">
                <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="iphone-img"><%= image_tag "iphone_happening_feed.png"%></p>
+                  <p class="feature-icon-4"><%= image_tag "MomentSearch.png"%></p>
+                  <h3>MOMENT SEARCH</h3>
+                  <p>On top of finding Moments by location you can also search directly for the live Moments that you want to see. Search for anything - dogs, hanstands, icecream, and if you wish you can even easily do query searches over a specific area.</p>
                </div>
-               <!--/col-sm-6 -->
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="feature-icon-3"><%= image_tag "Happening.png"%></p>
-                  <h3>DISCOVER MOMENTS</h3>
-                  <p>Easily see the day's Moments and Requests by checking out the Happening Feed.</p>
+                  <p class="iphone-img"><%= image_tag "iPhone_MomentSearch.png"%></p>
                </div>
-               <!--/col-sm-6 -->
+            </div><!--row-->
+         </div><!--container-->
+      </div><!--feature-box-->
+      <div class="feature-box gray-bg">
+         <div class="container">
+            <div class="row">
+               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
+                  <p class="iphone-img"><%= image_tag "flat_iphone6.png"%></p>
+               </div>
+               <div class="col-sm-6 col-md-4 leftPadding">
+                  <p class="feature-icon-3"><%= image_tag "MomentMapping.png"%></p>
+                  <h3>MOMENT MAPPING</h3>
+                  <p>Whenver you publicly geo-tag your social media activity you automatically contribute to the real-time picture on LYTiT. You can however capture Moments directly within the application.</p>
+                  <br>
+                  <p>There are no accounts nor registrations so LYTiT Moments are completely anonymous.</p>
+               </div>
+            </div><!--row-->
+         </div><!--container-->
+      </div><!--feature-box-->
+
+      <!--MAP THE MOMENT CLOSING-->
+      <div class="closing">
+            <div class="col-sm-10 col-sm-offset-1 text-center">
+               <h1>Map the Moment</a></h1>
+               <!--<h1><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8">Map the Moment</a></h1>-->
             </div>
-            <!--/row -->
-         </div>
-         <!--/container -->
       </div>
-      <!--/feature-box -->
    </div>
+
+   <!--FOOTER-->
    <div class="footer-area">
       <div class="container">
          <div class="row">
             <div class="col-sm-4">
                <p class="copy-right">© 2015 LYTiT, INC.</p>
             </div>
-            <!--/col-sm-5 -->
             <div class="col-sm-8 footer-right">
                <ul>
                   <li><%= link_to "Terms & Conditions", tnc_path %></li>
@@ -151,11 +124,7 @@
                   <li><a href="mailto:support@lytit.com">Support</a></li>
                </ul>
             </div>
-            <!--/col-sm-7 -->
-         </div>
-         <!--/row -->
-      </div>
-      <!--/container -->
-   </div>
-   <!--/footer-area -->
-</div>
+         </div><!--row-->
+      </div><!--container-->
+   </div><!--footer-area-->
+</div><!--page-container-->

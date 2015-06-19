@@ -28,16 +28,6 @@
     src: url(/assets/roboto-regular.eot);
     src: url(/assets/roboto-regular.ttf) format("truetype"), url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-regular.woff) format("woff"), url(/assets/webfont.svg#svgroboto-regular) format("svg");
 }
-.twitter {
-    font-family: "socialico";
-    font-size: 30px;
-    margin-top: -5px;
-}
-.facebook {
-    font-family: "socialico";
-    font-size: 30px;
-    margin-top: -6px;
-}
 body {
     background: none repeat scroll 0 0 #fff;
     color: #2e2e2e;
@@ -47,6 +37,56 @@ body {
     margin: 0;
     padding: 0;
 }
+
+.contact-us {
+    font-family: "Questrial";
+    font-size: 21px;
+}
+.contact-us a{
+    margin-top: -23px;
+    color: white;
+}
+.contact-us a:hover{
+    color: #00B0F0;
+}
+.contact-us a:active{
+    background-color: transparent;
+}
+.twitter {
+    font-family: "socialico";
+    font-size: 60px;
+    margin-top: -20px;
+}
+.twitter a {
+    color: white;
+}
+.twitter a:hover{
+    color: #4099FF;
+}
+.facebook {
+    font-family: "socialico";
+    font-size: 60px;
+    margin-top: -20px;
+    color: white !important;
+}
+.facebook a {
+    color: white;
+}
+.facebook a:hover{
+    color: #3b5998;
+}
+
+.navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    background-color: transparent;
+    
+}
+
+#logo{
+    margin-top: 150px;
+    margin-right: auto;
+    margin-left: auto;
+ }
+
 .navbar-default {
     background-color: #186B95;
     border-color: #e7e7e7;
@@ -75,16 +115,7 @@ body {
     height: auto;
     margin-top: -5px;
 }
-.navbar .nav > li > a {
-    color: white;
-    display: inline;
-}
-.navbar-default .navbar-nav > .active > a,
-.navbar-default .navbar-nav > .active > a:hover,
-.navbar-default .navbar-nav > .active > a:focus {
-    color: #00B0F0;
-    background: rgba(0, 0, 0, 0);
-}
+
 .navbar-default .navbar-toggle .icon-bar {
     background-color: white;
 }
@@ -95,16 +126,332 @@ body {
 .navbar-default .navbar-toggle:focus {
     background-color: #186B95;
 }
-#header {
-    background: url(nyc_map_lights_xl.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
+.header {
+    background: url(US_EU_zoomed.png) no-repeat center center ; /*repeat-x fixed center 0 rgba(0, 0, 0, 0);*/
     background-size: cover;
-    float: left;
     position: relative;
+    height: 100%;
     width: 100%;
-    z-index: 1;
+    z-index: 0;
+    filter: none; 
+    -webkit-filter: blur(0px); 
+    -moz-filter: blur(0px); 
+    -ms-filter: blur(0px);
+     filter:progid:DXImageTransform.Microsoft.Blur(PixelRadius='0');
 }
-#header .container {
+.header .container {
     position: relative;
+}
+.left-map{
+    margin-top: 15%;
+    padding-right: 50px;
+}
+/*New York*/
+.lyt01 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Miami*/
+.lyt02 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Chicago*/
+.lyt03 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Dallas*/
+.lyt04 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv34.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Denver*/
+.lyt05 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv50.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*San Francisco*/
+.lyt06 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Seattle*/
+.lyt07 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv50.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Mexico City*/
+.lyt08 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Caracas*/
+.lyt09 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*London*/
+.lyt10 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Madrid*/
+.lyt11 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv34.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Stockholm*/
+.lyt12 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Rome*/
+.lyt13 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Berlin*/
+.lyt14 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv50.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Bucharest*/
+.lyt15 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv34.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Moscow*/
+.lyt16 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Dubai*/
+.lyt17 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv50.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Cairo*/
+.lyt18 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Tunis*/
+.lyt19 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv50.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Casa Blanca*/
+.lyt20 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Agadez*/
+.lyt21 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv34.png);
+    height: 40px;
+    width:50px;
+    visibility: hidden;
+}
+/*Warsaw*/
+.lyt22 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Las Vegas*/
+.lyt23 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Atlanta*/
+.lyt24 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Quebec*/
+.lyt25 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Paris*/
+.lyt26 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Antalya*/
+.lyt27 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv01.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Kiev*/
+.lyt28 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv23.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+/*Algiers*/
+.lyt29 {
+    position: absolute;
+    color: rgba(0,0,0,0);
+    margin: 0;
+    background: url(lv11.png);
+    height: 40px;
+    width:50px;
+    z-index: -1;
+    visibility: hidden;
+}
+#comingSoon{
+    padding-top: 10px;
+    font-size: 20px;
+    color: white;
 }
 .footer-area .footer-right {
     text-align: right;
@@ -119,10 +466,7 @@ body {
     margin-top: 50px;
 }
 @media (max-width: 1024px) {
-    #header {
-        background: url(nyc_map_lights_l.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-        background-size: contain;
-    }
+
 }
 @media(max-width:992px) {
     .footer-area .footer-right {
@@ -143,9 +487,6 @@ body {
     .navbar-default .navbar-toggle {
         margin-top: 27px;
     }
-    .navbar-right {
-        margin-top: -35px;
-    }
     .navbar-header:after {
         clear: none;
         margin-top: 69px;
@@ -153,6 +494,7 @@ body {
     .navbar-nav.navbar-right > li {
         float: left;
         margin-bottom: -15px;
+        z-index:100;
     }
     .navbar-collapse:before {
         clear: both;
@@ -190,20 +532,6 @@ body {
         height: auto;
         margin-top: 40px;
     }
-    .navbar .nav > li > a {
-        color: black;
-        display: inline;
-    }
-    .navbar-collapse {
-        float: left !important;
-        position: absolute;
-        width: 100%;
-        margin-top: 21px;
-        background: white;
-        -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
-        -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
-        box-shadow: 0px 10px 3px 3px rgba(0, 0, 0, 0.25);
-    }
     .feature-icon-2 {
         margin-top: 30px;
     }
@@ -218,16 +546,10 @@ body {
     }
 }
 @media (max-width: 660px) {
-    #header {
-        background: url(nyc_map_lights_m.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-        background-size: contain;
-    }
+
 }
 @media (max-width: 520px) {
-    #header {
-        background: url(nyc_map_lights_s.png) repeat-x fixed center 0 rgba(0, 0, 0, 0);
-        background-size: contain;
-    }
+
 }
 @media (max-width: 410px) {
     .navbar-default {
@@ -238,36 +560,29 @@ body {
         margin-top: 10px;
     }
     .navbar-brand {
-        margin-top: -35px;
+        margin-top: -60px;
     }
-    .navbar-brand img {
-        overflow: visible;
-        display: inline;
-        max-width: 40%;
-        height: auto;
-        margin-top: -35px;
-    }
+
     .navbar-nav.navbar-right > li {
         float: left;
-        margin-top: 1px;
-        margin-bottom: -10px;
+        margin-top: -1px;
     }
+
     .navbar .nav > li {
         margin-right: -7px;
         margin-top: 5px;
     }
-    .navbar-collapse {
-        float: right;
-        margin-top: 0px;
-        background: white;
-        -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
-        -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
-        box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
+    .twitter a{
+    margin-top: -19px;
+    }
+    .facebook a{
+    margin-top: -19px;
     }
 }
 .navbar-right {
     float: right !important;
     padding-top: 40px;
+    z-index: 100;
 }
 .catch-phrase {
     margin-top: 50px;
@@ -360,11 +675,7 @@ h5 {
 h6 {
     font-size: 14px;
 }
-.header-top {
-    padding: 20px 0 9px;
-    position: relative;
-    width: 100%;
-}
+
 .header-bottom {
     padding-bottom: 95px;
 }
@@ -396,9 +707,8 @@ h6 {
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);
 }
 .header-bottom p.appStoreBtnBox {
-    margin-top: -60px;
-    margin-bottom: 50px;
-    ;
+    margin-top: 50px;
+    margin-bottom: 10px;
 }
 .header-bottom p.appStoreBtnBox a:hover {
     opacity: 0.5;
@@ -431,19 +741,7 @@ h6 {
 .leftPadding {
     padding-left: 2% !important;
 }
-.twitterIcon,
-.fbIcon {
-    color: #fff !important;
-    font-family: "socialico", sans-serif;
-    font-size: 28px;
-    vertical-align: middle;
-}
-.twitterIcon:hover {
-    color: #00aced !important;
-}
-.fbIcon:hover {
-    color: #4a6d9d !important;
-}
+
 #content {
     z-index: 10;
     float: left;
@@ -452,6 +750,30 @@ h6 {
     -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
     -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0.25);
     box-shadow: 0px -10px 3px 0px rgba(50, 50, 50, 0.25);
+}
+.closing {
+    margin-top: 0%;
+    padding-top: 75px;
+    margin-bottom: 0%;
+    padding-bottom: 82px;
+    background: none repeat scroll 0 0 #f7f7f7;
+}
+.closing h1 {
+    font-family: 'Placelists';
+    font-size: 75px;
+    margin-bottom: 2%;
+    margin-top: -2%;
+}
+.closing h1 a{
+    color: #00B0F0;
+}
+.closing h1 a:hover {
+    opacity: 0.5;
+}
+.lytit-icon-img{
+    margin-top: -30px;
+    margin-right: auto;
+    margin-left: auto;
 }
 .footer-area {
     background: none repeat scroll 0 0 #cbcbcb;
@@ -495,7 +817,7 @@ h6 {
     color: #00B0F0;
 }
 .home-top {
-    background: url("images/map-bg.jpg") no-repeat scroll center bottom rgba(0, 0, 0, 0);
+    background: none;
     padding: 10px 0 30px;
 }
 .home-top h2 {
@@ -515,6 +837,7 @@ h6 {
 .feature-box {
     padding: 60px 0 72px;
     position: relative;
+    background: none repeat scroll 0 0 #f7f7f7;
 }
 .feature-box.gray-bg {
     background: none repeat scroll 0 0 #f7f7f7;
@@ -546,26 +869,6 @@ h6 {
     -moz-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
     box-shadow: 0px 10px 3px 3px rgba(0, 0, 0, 0);
 }
-.lumen-game-announcement {
-    font-family: Questrial;
-    text-align: center;
-}
-.trophy {
-    width: 40%;
-}
-#header-lumens {
-    background-color: white;
-    float: left;
-    position: relative;
-    width: 100%;
-    z-index: 1;
-}
-.header-bottom-lumens p.trophy {
-    margin-top: 75px;
-    margin-bottom: 50px;
-    margin-left: auto;
-    margin-right: auto;
-}
 .static_pages {
     margin-left: 10%;
 }
@@ -592,12 +895,8 @@ h6 {
         margin-top: 5px;
     }
     .navbar-flat .nav > li > a {
-        color: black;
+        color: red;
         display: inline;
-    }
-    .trophy {
-        width: 100%;
-        z-index: 15;
     }
     .header-bottom-lumens p.trophy {
         margin-top: 35px;
@@ -610,43 +909,6 @@ h6 {
         margin-left: 0%;
     }
 }
-.game-description {
-    font-size: 20px;
-}
-.game-rules {
-    margin-top: 50px;
-    text-transform: uppercase;
-    margin-left: 3%;
-}
-.game-rules>a {
-    font-family: Roboto-Light;
-    text-transform: uppercase;
-    text-decoration: underline;
-    margin-right: 10px;
-    margin-left: 0px;
-}
-.game-rules>a:hover {
-    color: #00B0F0;
-}
-.game-description h2 {
-    color: #00B0F0;
-    font-family: "Questrial", sans-serif;
-    font-size: 40px;
-    text-transform: uppercase;
-    margin-top: 100px;
-}
-.LinkToAppStore {
-    margin-top: 80px;
-    margin-bottom: 50px;
-}
-.LinkToAppStore2 {
-    margin-top: 80px;
-    margin-bottom: 50px;
-    margin-left: auto;
-    margin-right: auto;
-    width: 25%;
-    min-width: 234px;
-}
 .navbar-flat {
     background-color: #186B95;
     -webkit-box-shadow: 0px 10px 3px 0px rgba(0, 0, 0, 0);
@@ -658,25 +920,6 @@ h6 {
 }
 .tnc-list-2>li {
     list-style-type: none;
-}
-.LumenGameDetails{
-    font-family: Roboto-Light;
-    font-size: 18px;
-}
-.LumenGameDetails>h1{
-    font-family: Roboto-Light;
-    text-align: center;
-    letter-spacing: 5px;
-    margin-bottom: 50px;
-}
-.LumenGameDetails>h2{
-    font-family: Roboto-Light;
-    text-transform: uppercase;
-    font-size: 18px;
-}
-.LumenGameDetails>p{
-    font-family: Roboto-Light;
-    font-size: 18px;
 }
 @media (max-width: 410px) {
 .game-rules {
