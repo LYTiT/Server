@@ -179,7 +179,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_comments
-		@comments = VenueComment.where("user_id = ?", params[:id]).order("id desc")
+		venue_comments = VenueComment.where("user_id = ?", params[:id]).order("id desc")
+		@comments = venue_comments.page(params[:page]).per(25)
 	end
 
 	def get_bounty_feed
