@@ -312,7 +312,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_trending_venues
-		@venues = Venue.all.order("popularity_rank DESC limit 10")
+		@venues = Venue.all.includes(:venue_comments).order("popularity_rank DESC limit 10")
+		@venue_hash = Hash[@venues.map.with_index.to_a]
 	end
 
 	def get_suggested_venues

@@ -116,6 +116,23 @@ class Venue < ActiveRecord::Base
     self.update_columns(popularity_rank: (self.page_views * self.rating))
   end
 
+  def ranking_change(new_ranking)
+    current_ranking = self.trend_position
+    if not current_ranking
+      self.update_columns(trend_position: new_ranking)
+      return 1
+    else
+      if new_ranking == current_ranking
+        return 0
+      elsif new_ranking > current_ranking
+        self.update_columns(trend_position: new_ranking)
+        return 1
+      else
+        self.update_columns(trend_position: new_ranking)
+        return -1
+    end
+  end
+
   def menu_link=(val)
     if val.present?
       unless (val.start_with?("http://") or val.start_with?("https://"))
