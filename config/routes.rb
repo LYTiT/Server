@@ -39,6 +39,7 @@ LytitServer::Application.routes.draw do
         get 'is_user_confirmed'
         get 'get_surprise_image'
         get 'search_for_bounties'
+        get 'get_comments'
       end
 
       resources :announcement do
