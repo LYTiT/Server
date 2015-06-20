@@ -113,7 +113,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_popularity_rank
-    self.update_columns(popularity_rank: (self.page_views * self.rating))
+    self.update_columns(popularity_rank: ((self.page_views+1) * self.rating))
   end
 
   def ranking_change(new_ranking)
