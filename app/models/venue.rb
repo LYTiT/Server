@@ -113,6 +113,9 @@ class Venue < ActiveRecord::Base
   end
 
   def update_popularity_rank
+    view_half_life = 120.0 #minutes
+    latest_page_view_time_wrapper = latest_page_view_time || Time.now
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
     self.update_columns(popularity_rank: ((self.page_views+1) * self.rating))
   end
 
