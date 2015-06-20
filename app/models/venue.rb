@@ -130,6 +130,7 @@ class Venue < ActiveRecord::Base
       else
         self.update_columns(trend_position: new_ranking)
         return -1
+      end
     end
   end
 
