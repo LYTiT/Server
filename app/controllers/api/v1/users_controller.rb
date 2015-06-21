@@ -178,8 +178,13 @@ class Api::V1::UsersController < ApiBaseController
 		@bounty_claims = VenueComment.where("is_response = TRUE and user_id = #{params[:user_id]} AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:bounty, :venue).order('id DESC')
 	end
 
-	def get_comments
-		venue_comments = VenueComment.where("user_id = ?", params[:id]).order("id desc")
+	def get_comments_by_time
+		venue_comments = @user.venue_comments.includes(:venue).order("id desc")
+		@comments = venue_comments.page(params[:page]).per(25)
+	end
+
+	def get_comments_by_venue
+		venue_comments = @user.venue_comments.order("id desc").joins(:venue).order("name desc")
 		@comments = venue_comments.page(params[:page]).per(25)
 	end
 
