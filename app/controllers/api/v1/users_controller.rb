@@ -184,7 +184,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_comments_by_venue
-		venue_comments = @user.venue_comments.order("id desc").joins(:venue).order("name asc")
+		venue_comments = @user.venue_comments.joins(:venue).order("venues.name asc").order("id desc")
 		@comments = venue_comments.page(params[:page]).per(25)
 	end
 
