@@ -393,10 +393,10 @@ class Venue < ActiveRecord::Base
       search_part = nil
       radius = 250
       boundries = bounding_box(radius, lat, long)
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 1.0 AND ABS(#{long} - longitude) <= 1.0", '%' + vname.to_s.downcase + '%')
+      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
       if venues.count == 0
         vname.to_s.downcase.split.each do |part| 
-          if not ['the', 'a', 'cafe', 'restaurant'].include? part
+          if not ['the', 'a', 'cafe', 'restaurant', 'club'].include? part
             puts "search part extracted"
             search_part = part
             break
@@ -429,7 +429,7 @@ class Venue < ActiveRecord::Base
 
           require 'fuzzystringmatch'
           jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")) >= 0.8)
+          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", "")) >= 0.8)
             lookup = venue
           end
         end
