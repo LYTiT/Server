@@ -180,12 +180,12 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_comments_by_time
 		venue_comments = @user.venue_comments.includes(:venue).order("id desc")
-		@comments = Kaminari.paginate_array(venue_comments).page(params[:page]).per(25)
+		@comments = venue_comments.page(params[:page]).per(25)
 	end
 
 	def get_comments_by_venue
-		venue_comments = @user.venue_comments.order("id desc").joins(:venue).order("name desc")
-		@comments = Kaminari.paginate_array(venue_comments).page(params[:page]).per(25)
+		venue_comments = @user.venue_comments.order("id desc").joins(:venue).order("name asc")
+		@comments = venue_comments.page(params[:page]).per(25)
 	end
 
 	def get_bounty_feed
