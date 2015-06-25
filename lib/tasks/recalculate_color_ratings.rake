@@ -57,7 +57,7 @@ namespace :lytit do
     puts "Recalculating venue colors"
 
     #Venue.update_all(color_rating: -1.0)
-
+    Venue.update_all(trend_position: nil)
     for entry in spheres
       sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
 
