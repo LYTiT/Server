@@ -481,6 +481,15 @@ class User < ActiveRecord::Base
     end
   end
 
+  def mapped_places_radius
+    num_places_mapped = self.venue_comments.uniq.pluck(:venue_id).count
+    if num_places_mapped == 0
+      70
+    else
+      [Math::log(num_places_mapped) + 72, 85].min
+    end
+  end
+
   #Used for color assignment of Lumen contribution categories in the Lumen breakout screen
   def lumen_video_contribution_rank
     rank = radius_assignment.keys.index("video") + 1
