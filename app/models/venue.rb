@@ -122,7 +122,6 @@ class Venue < ActiveRecord::Base
   def ranking_change(new_ranking)
     current_ranking = self.trend_position
     if current_ranking == nil
-      self.update_columns(trend_position: new_ranking.to_i)
       return 1
     else
       if new_ranking.to_i == current_ranking.to_i
