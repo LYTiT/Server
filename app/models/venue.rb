@@ -127,7 +127,7 @@ class Venue < ActiveRecord::Base
     else
       if new_ranking == current_ranking
         return 0
-      elsif new_ranking > current_ranking
+      elsif new_ranking < current_ranking
         return 1
       else
         return -1
