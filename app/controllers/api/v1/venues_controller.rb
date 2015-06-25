@@ -185,13 +185,15 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def report_comment
-		venue_comment = VenueComment.find(params[:comment_id])
-		fc = FlaggedComment.new
-		fc.user_id = @user.id
-		fc.message = params[:message]
-		fc.venue_comment_id = venue_comment.id
-		fc.save
-		render json: fc
+		if FlaggedComment.where("user_id = ? AND venue_comment_id = ? AND message = ?", @user.id, params[:comment_id], params[:message]).any? == false
+			venue_comment = VenueComment.find(params[:comment_id])
+			fc = FlaggedComment.new
+			fc.user_id = @user.id
+			fc.message = params[:message]
+			fc.venue_comment_id = venue_comment.id
+			fc.save
+			render json: fc
+		end
 	end
 
 	def get_comments
