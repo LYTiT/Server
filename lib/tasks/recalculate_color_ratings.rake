@@ -59,11 +59,11 @@ namespace :lytit do
     #Venue.update_all(color_rating: -1.0)
     
     #used for determing which way top venues are trending
-    Venue.all.order("popularity_rank desc limit 10").each_with_index do |venue, index|
+    Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
       venue.update_columns(trend_position: index)
     end
 
-    Venue.all.order("popularity_rank asc limit #{Venue.all.count-10}").update_all(trend_position: nil)
+    Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{Venue.where("popularity_rank IS NOT NULL").count-10}").update_all(trend_position: nil)
     for entry in spheres
       sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
 
