@@ -482,7 +482,7 @@ class User < ActiveRecord::Base
   end
 
   def mapped_places_radius
-    num_places_mapped = self.venue_comments.uniq.pluck(:venue_id).count
+    num_places_mapped = VenueComment.where("user_id = ?", self.id).uniq.pluck(:venue_id).count
     if num_places_mapped == 0
       70
     else
@@ -491,7 +491,7 @@ class User < ActiveRecord::Base
   end
 
   def mapped_places_count
-    self.venue_comments.uniq.pluck(:venue_id).count
+    VenueComment.where("user_id = ?", self.id).uniq.pluck(:venue_id).count
   end
 
   #Used for color assignment of Lumen contribution categories in the Lumen breakout screen
