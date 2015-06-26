@@ -12,8 +12,7 @@ class Feed < ActiveRecord::Base
 		if v_id == nil 
 		 return nil
 		else
-			return FeedVenue.where("feed_id = ? AND venue_id = ?", self.id, v_id).any? || false : true
-
+			#return FeedVenue.where("feed_id = ? AND venue_id = ?", self.id, v_id).any? || false : true
 		end
 	end
 
