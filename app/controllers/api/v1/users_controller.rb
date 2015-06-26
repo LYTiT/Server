@@ -208,7 +208,9 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_user_feeds
-		@feeds = @user.feeds
+		#we use this method to also return list of feeds when inside a venue page and so must make a check if the venue is part of any of the user's feed.
+		@venue_id = params[:venue_id]
+		@feeds = @user.feeds.includes(:venues)
 	end
 
 	#As related to Lumens

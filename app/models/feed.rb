@@ -8,12 +8,4 @@ class Feed < ActiveRecord::Base
 		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id desc")
 	end
 
-	def venue_added?(v_id)
-		if v_id == nil 
-		 return nil
-		else
-			#return FeedVenue.where("feed_id = ? AND venue_id = ?", self.id, v_id).any? || false : true
-		end
-	end
-
 end
