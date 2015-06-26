@@ -4,7 +4,7 @@ class Feed < ActiveRecord::Base
 	has_many :venues, through: :feed_venues
 
 	def comments
-		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
+		venue_ids = "SELECT venue_ids FROM feeds WHERE id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).order("id desc")
 	end
 
