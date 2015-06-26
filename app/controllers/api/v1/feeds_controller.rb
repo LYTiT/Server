@@ -4,7 +4,7 @@ class Api::V1::FeedsController < ApiBaseController
 		feed = Feed.new(:name => params[:name], :user => params[:user_id])
 		feed.save
 
-		render json: { id: @feed.id }
+		render json: { id: feed.id }
 	end
 
 	def delete
