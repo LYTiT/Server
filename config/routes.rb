@@ -41,7 +41,7 @@ LytitServer::Application.routes.draw do
         get 'search_for_bounties'
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
-        get 'get_feeds'
+        get 'get_user_feeds'
       end
 
       resources :feeds, only: [:create] do
