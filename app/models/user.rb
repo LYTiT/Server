@@ -25,6 +25,8 @@ class User < ActiveRecord::Base
   has_many :bounties, :dependent => :destroy
   has_many :bounty_subscribers, :dependent => :destroy
 
+  has_many :feeds
+
   belongs_to :role
 
   before_save :ensure_authentication_token

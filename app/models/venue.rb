@@ -25,6 +25,7 @@ class Venue < ActiveRecord::Base
 
 
   belongs_to :user
+  belongs_to :feed_venue
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
 

@@ -207,6 +207,10 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { bool_response: @user.can_claim_bounties? } 
 	end
 
+	def get_user_feeds
+		@feeds = @user.feeds
+	end
+
 	#As related to Lumens
 	def calculate_lumens
 		@user = User.find(params[:user_id])
