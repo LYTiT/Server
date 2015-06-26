@@ -2,7 +2,7 @@ class Api::V1::FeedsController < ApiBaseController
 	skip_before_filter :set_user, only: [:create]
 
 	def create
-		feed = Feed.new(:name => params[:name], :user => params[:user_id])
+		feed = Feed.new(:name => params[:name], :user_id => params[:user_id])
 		feed.save
 
 		render json: { id: feed.id }
