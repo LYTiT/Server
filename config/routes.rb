@@ -45,7 +45,9 @@ LytitServer::Application.routes.draw do
       end
 
       resources :feed do
-        post 'create'
+        collection do
+          post 'create'
+        end
         post 'delete'
         post 'edit_name'
         post 'add_venue'
