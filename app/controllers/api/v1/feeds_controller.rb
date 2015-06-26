@@ -30,7 +30,7 @@ class Api::V1::FeedsController < ApiBaseController
 				render json: { success: true }
 			end
 		else
-			render { success: false }
+			render json: { success: false }
 		end
 	end
 
