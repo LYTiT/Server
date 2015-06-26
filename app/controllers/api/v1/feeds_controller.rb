@@ -24,9 +24,13 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_venue
-		new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id])
-		if new_feed_venue.save
-			render json: { success: true }
+		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
+			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id])
+			if new_feed_venue.save
+				render json: { success: true }
+			end
+		else
+			render { success: false }
 		end
 	end
 
