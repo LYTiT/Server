@@ -18,6 +18,10 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: feed.as_json
 	end
 
+	def get_venues
+		@venues = Feed.find_by_id(params[:id]).venues
+	end
+
 	def add_venue
 		new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id])
 		if new_feed_venue.save

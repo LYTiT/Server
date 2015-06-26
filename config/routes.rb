@@ -50,6 +50,7 @@ LytitServer::Application.routes.draw do
         post 'add_venue'
         post 'remove_venue'
         get 'get_comments' 
+        get 'get_venues'
       end
 
       resources :announcement do
