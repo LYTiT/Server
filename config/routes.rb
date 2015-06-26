@@ -44,7 +44,7 @@ LytitServer::Application.routes.draw do
         get 'get_feeds'
       end
 
-      resources :feed, only: [:create] do
+      resources :feeds, only: [:create] do
         post 'create'
         post 'delete'
         post 'edit_name'
