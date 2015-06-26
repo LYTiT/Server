@@ -22,10 +22,9 @@ class Venue < ActiveRecord::Base
   has_many :lytit_votes, :dependent => :destroy
   has_many :meta_datas, :dependent => :destroy
   has_many :instagram_location_id_lookups, :dependent => :destroy
-
+  has_many :feed_venues
 
   belongs_to :user
-  belongs_to :feed_venue
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
 
