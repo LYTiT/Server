@@ -42,9 +42,4 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def get_comments
-		feed = Feed.find_by_id(params[:id])
-		@comments = feed.comments.page(params[:page]).per(25)
-	end
-
 end
