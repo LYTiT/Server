@@ -15,7 +15,7 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def edit_name
+	def edit_feed
 		feed = Feed.find_by_id(params[:id])
 		feed.update_columns(name: params[:name])
 		render json: feed.as_json
