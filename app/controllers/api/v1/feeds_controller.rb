@@ -11,6 +11,8 @@ class Api::V1::FeedsController < ApiBaseController
 	def delete
 		feed = Feed.find_by_id(params[:id])
 		feed.destroy
+
+		render json: { success: true }
 	end
 
 	def edit_name
