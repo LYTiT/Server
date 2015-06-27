@@ -3,5 +3,5 @@ json.array! @feeds do |feed|
 	json.name feed.name
 	json.created_at feed.created_at
 	json.venue_added FeedVenue.where("feed_id = ? AND venue_id = ?", feed.id, @venue_id).any?
-	json.num_venues feed.venues.count
+	json.num_venues feed.num_venues
 end

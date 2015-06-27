@@ -5,6 +5,32 @@ namespace :lytit do
   desc "Scheduled Task for LYTiT"
   task :scheduler => :environment do
     $scheduler = Rufus::Scheduler.singleton
+
+    #Instagram Pulling ------------------------------>
+    $scheduler.every '15m' do
+
+      puts "Pulling from Instagram"
+      vortexes = InstagramVortex.where("active = ?", true)
+      for vortex in vortexes
+        puts "Entered vortex #{vortex.description}"
+        vortex.update_columns(last_instagram_pull_time: Time.now)
+        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+        for instagram in new_instagrams
+          VenueComment.convert_instagram_to_vc(instagram)
+        end
+        #if there are multiple vortexes in a city we traverse through them to save instagram API calls
+        if vortex.city_que != nil
+          vortex.update_columns(active: nil)
+          next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, vortex.city_que+1)
+          #if vortex is the last in que (no vortex exists with city_que+1) activate the first vortex in the city
+          if next_city_vortex == nil
+            next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, 1)
+          end
+          next_city_vortex.update_columns(active: true)
+          vortex.update_columns(active: false)
+        end
+      end
+    end
     
     #LYT Updating ------------------------------>
     $scheduler.every '5m' do
@@ -63,37 +89,6 @@ namespace :lytit do
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
-
-    #Instagram Pulling ------------------------------>
-    $scheduler.every '15m' do
-      puts "Scheduler run at #{Time.now}"
-      start_time = Time.now
-
-      puts "Pulling from Instagram"
-      vortexes = InstagramVortex.where("active = ?", true)
-      for vortex in vortexes
-        puts "Entered vortex #{vortex.description}"
-        vortex.update_columns(last_instagram_pull_time: Time.now)
-        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
-        for instagram in new_instagrams
-          VenueComment.convert_instagram_to_vc(instagram)
-        end
-        #if there are multiple vortexes in a city we traverse through them to save instagram API calls
-        if vortex.city_que != nil
-          vortex.update_columns(active: nil)
-          next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, vortex.city_que+1)
-          #if vortex is the last in que (no vortex exists with city_que+1) activate the first vortex in the city
-          if next_city_vortex == nil
-            next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, 1)
-          end
-          next_city_vortex.update_columns(active: true)
-          vortex.update_columns(active: false)
-        end
-      end
-      end_time = Time.now
-      puts "Done. Time Taken: #{end_time - start_time}s"
-    end
-
 
     $scheduler.join
   end

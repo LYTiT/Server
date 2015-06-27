@@ -159,6 +159,32 @@ class User < ActiveRecord::Base
     end
   end
 
+  #Sanity check if user is permited to claim Bounties based on his rejection history
+  def can_claim_bounties?
+    time_out = 1.0 #days
+    rejection_rate = 0.5
+
+    if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
+      return false
+    else
+      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
+      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", Time.now, (Time.now - 7.days)).count
+
+      if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
+        self.can_claim_bounty = false
+        BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).update_all(active: false)
+      else
+        self.can_claim_bounty = true
+      end
+
+      save
+      return self.can_claim_bounty
+
+    end
+  end 
+
+
+
   def update_lumens_after_text(text_id)
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
@@ -533,31 +559,7 @@ class User < ActiveRecord::Base
         vd.round
       end
     end
-  end
-
-  #Sanity check if user is permited to claim Bounties based on his rejection history
-  def can_claim_bounties?
-    time_out = 1.0 #days
-    rejection_rate = 0.5
-
-    if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
-      return false
-    else
-      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
-      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", Time.now, (Time.now - 7.days)).count
-
-      if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
-        self.can_claim_bounty = false
-        BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).update_all(active: false)
-      else
-        self.can_claim_bounty = true
-      end
-
-      save
-      return self.can_claim_bounty
-
-    end
-  end    
+  end   
 
   private ##################################################################################################
 

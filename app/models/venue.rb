@@ -541,14 +541,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.set_latest_placed_bounty_time
-    v_ids = "SELECT venue_id FROM bounties WHERE user_id > 0"
-    target_venues = Venue.where("id IN (#{v_ids})")
-    for v in target_venues
-      target_bounty = v.bounties.order("id desc").first
-      v.update_columns(latest_placed_bounty_time: target_bounty.created_at)
-    end
-  end
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
   #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
@@ -779,7 +771,7 @@ class Venue < ActiveRecord::Base
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
             vote.save
-            vc.extract_instagram_meta_data(instagram)
+            vc.delay.extract_instagram_meta_data(instagram)
             self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
             self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
 
@@ -814,7 +806,7 @@ class Venue < ActiveRecord::Base
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100) #, :min_timestamp => (Time.now-48.hours).to_time.to_i)
       wide_area_search = true
     else
-      #Dealing with an establishment so can affor a smaller pull radius.
+      #Dealing with an establishment so can afford a smaller pull radius.
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => search_radius, :count => 100)
     end
 
@@ -847,7 +839,7 @@ class Venue < ActiveRecord::Base
           inst_location_id_tracker_lookup_entry.save
         end
 
-        #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the 
+        #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the instagrams
         #we need and create venue comments
         venue_comments_created = 0
         for instagram in nearby_instagram_content
@@ -930,6 +922,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  #make sure that meta results are reasonable relative to the search term
   def meta_search_sanity_check(vc, query)
     if vc != nil
       require 'fuzzystringmatch'
