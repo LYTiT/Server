@@ -34,6 +34,14 @@ class User < ActiveRecord::Base
   before_save :generate_user_confirmation_token
   after_save :notify_venue_managers
 
+  def User.test_auth_instagram_call
+      lat = Venue.find_by_name("Bar Pitti").latitude
+      long = Venue.find_by_name("Bar Pitti").longitude
+      search_radius = 5000
+      client = Instagram.client(:access_token => "1968211760.a810f7f.a3ea981d0d3146e9b864e53d7c84dc86")
+      client.media_search(lat, long, :distance => search_radius, :count => 100)
+  end
+
   
   def surprise_image_url
     image_url = nil
