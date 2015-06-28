@@ -218,7 +218,7 @@ class Api::V1::UsersController < ApiBaseController
 		if existence_check != nil
 			existence_check.destroy
 		end
-		InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
+		instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
 		render json: { success: true }
 	end
 

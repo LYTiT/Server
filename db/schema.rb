@@ -179,7 +179,7 @@ ActiveRecord::Schema.define(version: 20150628200244) do
   create_table "instagram_auth_tokens", force: true do |t|
     t.string   "token"
     t.integer  "num_used",           default: 0
-    t.boolean  "valid"
+    t.boolean  "is_valid"
     t.integer  "instagram_user_id"
     t.string   "instagram_username"
     t.integer  "user_id"
