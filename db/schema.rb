@@ -162,6 +162,7 @@ ActiveRecord::Schema.define(version: 20150627065119) do
     t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "num_venues", default: 0
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree
@@ -459,7 +460,6 @@ ActiveRecord::Schema.define(version: 20150627065119) do
     t.datetime "latest_page_view_time"
     t.float    "time_zone_offset"
     t.integer  "trend_position"
-    t.integer  "num_venues",                           default: 0
   end
 
   add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree
