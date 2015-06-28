@@ -568,7 +568,15 @@ class User < ActiveRecord::Base
         vd.round
       end
     end
-  end   
+  end  
+
+  def update_user_feeds
+    for feed in feeds
+      for feed_venue in feed.venues
+        feed_venue.instagram_comment_pull
+      end
+    end
+  end 
 
   private ##################################################################################################
 

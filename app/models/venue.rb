@@ -756,8 +756,8 @@ class Venue < ActiveRecord::Base
     0
   end
 
-#Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
-#need access to all recent instagrams
+  #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
+  #need access to all recent instagrams
   def get_instagrams
     instagram_access_token = InstagramAuthToken.all.sample(1).first.token
     client = Instagram.client(:access_token => instagram_access_token)
@@ -777,7 +777,6 @@ class Venue < ActiveRecord::Base
             vc.delay.extract_instagram_meta_data(instagram)
             self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
             self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
-
             if not LytSphere.where("venue_id = ?", self.id).any?
               LytSphere.create_new_sphere(self)
             end
@@ -786,6 +785,22 @@ class Venue < ActiveRecord::Base
       end
     end
     self.update_columns(last_instagram_pull_time: Time.now)
+  end
+
+  def instagram_pull_check
+    instagram_refresh_rate = 1 #minutes
+    instagram_venue_id_ping_rate = 5 #days
+    if self.instagram_location_id != nil
+      #try to establish instagram location id if previous attempts failed every 5 days
+      if self.instagram_location_id == 0 && (self.last_instagram_pull_time != nil and (Time.now - instagram_venue_id_ping_rate.minutes) >= self.last_instagram_pull_time)
+        self.set_instagram_location_id(100)
+        self.update_columns(last_instagram_pull_time: Time.now)
+      end
+
+      if self.instagram_location_id != 0 && (self.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
+        self.get_instagrams
+      end
+    end 
   end
 
   def latest_instagram_venue_comment

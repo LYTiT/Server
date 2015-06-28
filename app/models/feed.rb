@@ -2,6 +2,7 @@ class Feed < ActiveRecord::Base
 	belongs_to :user
 	has_many :feed_venues, :dependent => :destroy
 	has_many :venues, through: :feed_venues
+	has_many :venue_comments, through: :venues
 
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
@@ -10,6 +11,15 @@ class Feed < ActiveRecord::Base
 
 	def is_venue_present?(v_id)
 		FeedVenue.where("feed_id = ? AND venue_id = ?", self.id, v_id).any?
+	end
+
+	def new_content_present?
+		latest_viewed_time_wrapper = latest_viewed_time || (Time.now + 1.minute)
+		if self.venue_comments.where("created_at > ?", latest_viewed_time_wrapper).count > 0
+			return true
+		else
+			return false
+		end
 	end
 
 end

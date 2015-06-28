@@ -197,6 +197,10 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments
+		if params[:feed_id] != nil
+			Feed.find_by_id(params[:feed_id]).first.update_columns(latest_viewed_time: Time.now)
+		end
+
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
@@ -205,20 +209,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.find_by_id(venue_ids.first)
 
 				@venue.account_page_view
-
-				instagram_refresh_rate = 1 #minutes
-				instagram_venue_id_ping_rate = 5 #days
-				if @venue.instagram_location_id != nil
-					#try to establish instagram location id if previous attempts failed every 5 days
-					if @venue.instagram_location_id == 0 && (@venue.last_instagram_pull_time != nil and (Time.now - instagram_venue_id_ping_rate.minutes) >= @venue.last_instagram_pull_time)
-						@venue.set_instagram_location_id(100)
-						@venue.update_columns(last_instagram_pull_time: Time.now)
-					end
-
-					if @venue.instagram_location_id != 0 && (@venue.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= @venue.last_instagram_pull_time)
-						@venue.get_instagrams
-					end
-				end
+				@venue.instagram_pull_check
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@comments = live_comments.page(params[:page]).per(25)
