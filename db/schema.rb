@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150627065119) do
+ActiveRecord::Schema.define(version: 20150628200244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -176,6 +176,19 @@ ActiveRecord::Schema.define(version: 20150627065119) do
     t.datetime "updated_at"
   end
 
+  create_table "instagram_auth_tokens", force: true do |t|
+    t.string   "token"
+    t.integer  "num_used",           default: 0
+    t.boolean  "valid"
+    t.integer  "instagram_user_id"
+    t.string   "instagram_username"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "instagram_auth_tokens", ["user_id"], name: "index_instagram_auth_tokens_on_user_id", using: :btree
+
   create_table "instagram_location_id_lookups", force: true do |t|
     t.integer "venue_id"
     t.integer "instagram_location_id"
@@ -315,35 +328,36 @@ ActiveRecord::Schema.define(version: 20150627065119) do
   add_index "temp_posting_housings", ["venue_id"], name: "index_temp_posting_housings_on_venue_id", using: :btree
 
   create_table "users", force: true do |t|
-    t.datetime "created_at",                                           null: false
-    t.datetime "updated_at",                                           null: false
-    t.string   "email",                                                null: false
-    t.string   "encrypted_password",     limit: 128,                   null: false
-    t.string   "confirmation_token",     limit: 128
-    t.string   "remember_token",         limit: 128,                   null: false
+    t.datetime "created_at",                                               null: false
+    t.datetime "updated_at",                                               null: false
+    t.string   "email",                                                    null: false
+    t.string   "encrypted_password",         limit: 128,                   null: false
+    t.string   "confirmation_token",         limit: 128
+    t.string   "remember_token",             limit: 128,                   null: false
     t.string   "name"
     t.string   "authentication_token"
     t.text     "push_token"
     t.integer  "role_id"
-    t.boolean  "username_private",                   default: false
+    t.boolean  "username_private",                       default: false
     t.string   "gcm_token"
-    t.float    "lumens",                             default: 0.0
+    t.float    "lumens",                                 default: 0.0
     t.float    "lumen_percentile"
-    t.float    "video_lumens",                       default: 0.0
-    t.float    "image_lumens",                       default: 0.0
-    t.float    "text_lumens",                        default: 0.0
-    t.float    "bonus_lumens",                       default: 0.0
-    t.integer  "total_views",                        default: 0
-    t.float    "lumen_notification",                 default: 0.0
-    t.string   "version",                            default: "1.0.0"
-    t.float    "bounty_lumens",                      default: 0.0
-    t.boolean  "can_claim_bounty",                   default: true
+    t.float    "video_lumens",                           default: 0.0
+    t.float    "image_lumens",                           default: 0.0
+    t.float    "text_lumens",                            default: 0.0
+    t.float    "bonus_lumens",                           default: 0.0
+    t.integer  "total_views",                            default: 0
+    t.float    "lumen_notification",                     default: 0.0
+    t.string   "version",                                default: "1.0.0"
+    t.float    "bounty_lumens",                          default: 0.0
+    t.boolean  "can_claim_bounty",                       default: true
     t.datetime "latest_rejection_time"
     t.float    "adjusted_view_discount"
-    t.boolean  "email_confirmed",                    default: false
-    t.boolean  "registered",                         default: false
+    t.boolean  "email_confirmed",                        default: false
+    t.boolean  "registered",                             default: false
     t.string   "vendor_id"
-    t.float    "monthly_gross_lumens",               default: 0.0
+    t.float    "monthly_gross_lumens",                   default: 0.0
+    t.boolean  "asked_instagram_permission",             default: false
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree

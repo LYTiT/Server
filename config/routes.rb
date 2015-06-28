@@ -42,6 +42,8 @@ LytitServer::Application.routes.draw do
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
         get 'get_user_feeds'
+        post 'add_instagram_auth_token'
+        post 'update_instgaram_permission'
       end
 
       resources :feeds, only: [:create] do

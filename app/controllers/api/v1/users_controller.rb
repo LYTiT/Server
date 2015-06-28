@@ -213,6 +213,21 @@ class Api::V1::UsersController < ApiBaseController
 		@feeds = @user.feeds.includes(:venues)
 	end
 
+	def add_instagram_auth_token
+		existence_check = InstagramAuthToken.where("instagram_user_id = ?", params[:instagram_user_id]).first
+		if existence_check != nil
+			existence_check.destroy
+		end
+		InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
+		render json: { success: true }
+	end
+
+	def update_instgaram_permission
+		user = User.find_by_authentication_token(params[:auth_token])
+		user.update_columns(asked_instagram_permsission: true)
+		render json: { success: true }
+	end
+
 	#As related to Lumens
 	def calculate_lumens
 		@user = User.find(params[:user_id])

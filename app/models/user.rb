@@ -26,6 +26,7 @@ class User < ActiveRecord::Base
   has_many :bounty_subscribers, :dependent => :destroy
 
   has_many :feeds
+  has_many :instagram_auth_tokens
 
   belongs_to :role
 

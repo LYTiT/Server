@@ -759,7 +759,10 @@ class Venue < ActiveRecord::Base
 #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
 #need access to all recent instagrams
   def get_instagrams
-    instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
+    instagram_access_token = InstagramAuthToken.all.sample(1).first.token
+    client = Instagram.client(:access_token => instagram_access_token)
+
+    instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
 
     if instagrams != nil and instagrams.count > 0
       for instagram in instagrams
