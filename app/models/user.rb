@@ -573,7 +573,7 @@ class User < ActiveRecord::Base
   def update_user_feeds
     for feed in feeds
       for feed_venue in feed.venues
-        feed_venue.instagram_comment_pull
+        feed_venue.instagram_pull_check
       end
     end
   end 
