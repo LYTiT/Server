@@ -378,7 +378,7 @@ class User < ActiveRecord::Base
   end
 
   def total_text_comments
-    self.venue_comments.where("media_type = ? AND created_at >= ?", 'image', DateTime.new(2015,4,30)).count
+    self.venue_comments.where("media_type = ? AND created_at >= ?", 'text', DateTime.new(2015,4,30)).count
   end
 
 
