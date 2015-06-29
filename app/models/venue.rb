@@ -23,7 +23,7 @@ class Venue < ActiveRecord::Base
   has_many :meta_datas, :dependent => :destroy
   has_many :instagram_location_id_lookups, :dependent => :destroy
   has_many :feed_venues
-  has_many :venues, through: :feed_venues
+  has_many :feeds, through: :feed_venues
 
   belongs_to :user
 
@@ -767,24 +767,7 @@ class Venue < ActiveRecord::Base
 
     if instagrams != nil and instagrams.count > 0
       for instagram in instagrams
-
-
-        if VenueComment.where("instagram_id = ?", instagram.id).any? == false
-          vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-          if not vc.save
-            puts "attempted duplicate creation"
-          else
-            vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                  :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
-            vote.save
-            vc.delay.extract_instagram_meta_data(instagram)
-            self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
-            self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
-            if not LytSphere.where("venue_id = ?", self.id).any?
-              LytSphere.create_new_sphere(self)
-            end
-          end
-        end
+        VenueComment.convert_instagram_to_vc(instagram, self)
       end
     end
     self.update_columns(last_instagram_pull_time: Time.now)

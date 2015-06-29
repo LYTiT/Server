@@ -151,8 +151,6 @@ class VenueComment < ActiveRecord::Base
 				if vc.save
 					if origin_venue == nil
 						lytit_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)#hackery, to make sure that all instagrams of a venue in pull are not excluded after the first one
-					else
-						lytit_venue.update_columns(last_instagram_pull_time: Time.now)
 					end
 					vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
 														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
@@ -164,7 +162,7 @@ class VenueComment < ActiveRecord::Base
 						LytSphere.create_new_sphere(lytit_venue)
 					end
 					puts "instagram venue comment created"
-					lytit_venue.delay.feeds.update_columns(new_media_present: true)
+					lytit_venue.delay.feeds.update_all(new_media_present: true)
 					vc.delay.extract_instagram_meta_data(instagram)
 				end
 			end
