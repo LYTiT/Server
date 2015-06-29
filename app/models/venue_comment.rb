@@ -128,36 +128,46 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND content_origin = ?", venue_ids, "lytit").any?
 	end
 
-	def self.convert_instagram_to_vc(instagram)
+	def self.convert_instagram_to_vc(instagram, origin_venue)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
 		lat = instagram.location.latitude
 		long = instagram.location.longitude
 
-		if Venue.name_is_proper?(place_name) == true
-			lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)
+		if origin_venue == nil
+			if Venue.name_is_proper?(place_name) == true
+				lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)	
+			else
+				return nil
+			end
+		else
+			lytit_venue = origin_venue
+		end
 
-			#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
-			if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )
-				if not VenueComment.where("instagram_id = ?", instagram.id).any?
-					vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-					if vc.save
+		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
+		if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )
+			if not VenueComment.where("instagram_id = ?", instagram.id).any?
+				vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+				if vc.save
+					if origin_venue == nil
 						lytit_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)#hackery, to make sure that all instagrams of a venue in pull are not excluded after the first one
-						vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
-															:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
-						vote.save
-						lytit_venue.update_r_up_votes(vote.time_wrapper)
-						lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
-						
-						if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
-							LytSphere.create_new_sphere(lytit_venue)
-						end
-						puts "instagram venue comment created"
-						vc.extract_instagram_meta_data(instagram)
+					else
+						lytit_venue.update_columns(last_instagram_pull_time: Time.now)
 					end
+					vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
+														:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
+					vote.save
+					lytit_venue.update_r_up_votes(vote.time_wrapper)
+					lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
+					
+					if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
+						LytSphere.create_new_sphere(lytit_venue)
+					end
+					puts "instagram venue comment created"
+					lytit_venue.delay.feeds.update_columns(new_media_present: true)
+					vc.delay.extract_instagram_meta_data(instagram)
 				end
 			end
-
 		end
 
 	end

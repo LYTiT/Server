@@ -23,6 +23,7 @@ class Venue < ActiveRecord::Base
   has_many :meta_datas, :dependent => :destroy
   has_many :instagram_location_id_lookups, :dependent => :destroy
   has_many :feed_venues
+  has_many :feed_venues, through: :venues
 
   belongs_to :user
 
@@ -766,6 +767,8 @@ class Venue < ActiveRecord::Base
 
     if instagrams != nil and instagrams.count > 0
       for instagram in instagrams
+
+
         if VenueComment.where("instagram_id = ?", instagram.id).any? == false
           vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
           if not vc.save
@@ -914,7 +917,7 @@ class Venue < ActiveRecord::Base
           new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
           for instagram in new_instagrams
-            VenueComment.convert_instagram_to_vc(instagram)
+            VenueComment.convert_instagram_to_vc(instagram, nil)
           end
 
         end
