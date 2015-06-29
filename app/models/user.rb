@@ -193,7 +193,6 @@ class User < ActiveRecord::Base
   end 
 
 
-
   def update_lumens_after_text(text_id)
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
@@ -571,9 +570,12 @@ class User < ActiveRecord::Base
   end  
 
   def update_user_feeds
-    for feed in feeds
+    non_checked_feeds = feeds.where("new_media_present IS FALSE")
+    for feed in non_checked_feeds
       for feed_venue in feed.venues
-        feed_venue.instagram_pull_check
+        if feed_venue.instagram_pull_check == true
+          feed.update_columns(new_media_present: true)
+        end
       end
     end
   end 
