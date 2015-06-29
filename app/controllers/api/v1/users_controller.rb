@@ -222,7 +222,7 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def update_instgaram_permission
+	def update_instagram_permission
 		user = User.find_by_authentication_token(params[:auth_token])
 		user.update_columns(asked_instagram_permission: true)
 		render json: { success: true }
