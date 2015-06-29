@@ -198,7 +198,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_comments
 		if params[:feed_id] != nil
-			Feed.find_by_id(params[:feed_id]).first.update_columns(latest_viewed_time: Time.now)
+			Feed.find_by_id(params[:feed_id]).update_columns(latest_viewed_time: Time.now)
 		end
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
