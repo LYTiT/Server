@@ -18,4 +18,10 @@ class Feed < ActiveRecord::Base
 		self.venue_comments.where("venue_comments.created_at > ?", latest_viewed_time_wrapper).count
 	end
 
+	def update_media
+		self.venues.each do |v|
+			v.instagram_pull_check
+		end
+	end
+
 end
