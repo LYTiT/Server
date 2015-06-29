@@ -6,7 +6,6 @@ json.photo_count @user.total_image_comments
 json.text_count @user.total_text_comments
 json.bonus_count @user.total_bonuses
 json.view_count @user.total_views
-json.bounty_count @user.total_bounties
 json.mapped_places_count @user.mapped_places_count
 
 json.video_lumens @user.video_lumens
@@ -20,7 +19,7 @@ json.video_rank @user.lumen_video_contribution_rank
 json.photo_rank @user.lumen_image_contribution_rank
 json.text_rank @user.lumen_text_contribution_rank
 json.bonus_rank @user.lumen_bonus_contribution_rank
-json.bounty_rank @user.lumen_bounty_contribution_rank
+
 
 json.view_density @user.view_density
 
