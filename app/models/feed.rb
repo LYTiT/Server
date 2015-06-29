@@ -15,11 +15,7 @@ class Feed < ActiveRecord::Base
 
 	def new_content_present?
 		latest_viewed_time_wrapper = latest_viewed_time || (Time.now + 1.minute)
-		if self.venue_comments.where("venue_comments.created_at > ?", latest_viewed_time_wrapper).count > 0
-			return true
-		else
-			return false
-		end
+		self.venue_comments.where("venue_comments.created_at > ?", latest_viewed_time_wrapper).count
 	end
 
 end
