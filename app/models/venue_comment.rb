@@ -10,8 +10,6 @@ class VenueComment < ActiveRecord::Base
 	has_many :meta_datas, :dependent => :destroy
 
 	validate :comment_or_media
-	validate :proper_media_type_for_response
-
 
 
 	def comment_or_media
