@@ -22,9 +22,6 @@ class User < ActiveRecord::Base
 
   has_many :temp_posting_housings, :dependent => :destroy
 
-  has_many :bounties, :dependent => :destroy
-  has_many :bounty_subscribers, :dependent => :destroy
-
   has_many :feeds
   has_many :instagram_auth_tokens
 
@@ -35,24 +32,22 @@ class User < ActiveRecord::Base
   before_save :generate_user_confirmation_token
   after_save :notify_venue_managers
 
-  def User.test_auth_instagram_call
-      lat = Venue.find_by_name("Bar Pitti").latitude
-      long = Venue.find_by_name("Bar Pitti").longitude
-      search_radius = 5000
-      client = Instagram.client(:access_token => "1968211760.a810f7f.a3ea981d0d3146e9b864e53d7c84dc86")
-      client.media_search(lat, long, :distance => search_radius, :count => 100)
-  end
 
-  
-  def surprise_image_url
-    image_url = nil
-    if image_url == nil
-      return nil
-    else
-      return image_url
+  #I.
+  def update_user_feeds
+    non_checked_feeds = feeds.where("new_media_present IS FALSE")
+    for feed in non_checked_feeds
+      for feed_venue in feed.venues
+        if feed_venue.instagram_pull_check == true
+          feed.update_columns(new_media_present: true)
+        end
+      end
     end
-  end
+  end 
 
+
+  #II. Lumen Related Methods---------------------------------------->
+  
   #clear all outstanding user lumens
   def self.global_lumen_recalibration
     LumenValue.delete_all
@@ -71,127 +66,6 @@ class User < ActiveRecord::Base
       l.save
     end
   end
-
-  def send_email_validation
-    Mailer.delay.email_validation(self)
-  end
-
-  # This is to deal with S3.
-  def email_with_id
-    "#{email}-#{id}"
-  end
-
-  def set_version(v)
-    update_columns(version: v)
-  end
-
-  def validate_email
-    self.email_confirmed = true
-    self.confirmation_token = nil
-    self.save
-  end
-
-  def is_venue_manager?
-    role.try(:name) == "Venue Manager"
-  end
-
-  def is_admin?
-    role.try(:name) == "Admin"
-  end
-
-  def version_compatible?(ver)
-    version_split = self.version.split(".")
-    v0 = version_split[0].to_i
-    u0 = version_split[1].to_i || 0
-    p0 = version_split[2].to_i || 0 
-
-    target_version = ver.split(".")
-    v1 = target_version[0].to_i
-    u1 = target_version[1].to_i || 0
-    p1 = target_version[2].to_i || 0
-
-    if v0 > v1 
-      return true
-    elsif v0 >= v1 && u0 > u1
-      return true
-    elsif (v0 >= v1 && u0 >= u1) && (p0 >= p1)
-      return true
-    else
-      return false
-    end
-
-  end
-
-  def manages_any_venues?
-    venues.size > 0
-  end
-
-   #Global activity feed (venue comments, bounties, bounty responses)
-  def global_bounty_feed
-    days_back = 1
-    responded_to_bounty_ids = "SELECT id FROM bounties WHERE (expiration >= NOW() OR (expiration < NOW() AND num_responses > 0)) AND (NOW() - created_at) <= INTERVAL '1 DAY'"
-    feed = VenueComment.where("(bounty_id IN (#{responded_to_bounty_ids}) AND user_id IS NULL)").includes(:venue, :bounty, bounty: :bounty_subscribers).order("time_wrapper desc")
-  end 
-
-  def total_user_bounties
-    subcribed_bounty_ids = "SELECT bounty_id FROM bounty_subscribers WHERE user_id = #{self.id}"
-    total_bounties = Bounty.where("(id IN (#{subcribed_bounty_ids}) AND user_id != ? AND (NOW() <= expiration OR ((NOW() - created_at) <= INTERVAL '1 DAY' AND num_responses > 0))) OR (user_id = ? AND validity = TRUE AND (NOW() - created_at) <= INTERVAL '1 DAY')", self.id, self.id).includes(:venue).order('id DESC')
-  end
-
-  def nearby_user_bounties(lat, long, city, state, country)
-    meter_radius = 400
-    mile_radius = meter_radius * 0.000621371
-    
-    #bounties from city, state and country
-    geo_bounties = VenueComment.joins(:venue).where("address IS NULL AND (postal_code is NULL OR postal_code = ?) AND ((city = ?) OR (state = ? AND city IS NULL) OR (country = ? AND city IS NULL AND state IS NULL))","", city, state, country).where("venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day)
-
-    #total surrounding bounties including venue bounties sorted by proximity
-    total_surrounding_bounties = VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) 
-      <= #{mile_radius} AND (outstanding_bounties > 0)").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where(
-      "venue_comments.created_at >= ? AND venue_comments.bounty_id IS NOT NULL AND venue_comments.user_id IS NULL", Time.now-1.day) << geo_bounties
-    total_surrounding_bounties.flatten!
-  end
-
-  def is_subscribed_to_bounty?(target_bounty)
-    if target_bounty != nil
-      BountySubscriber.where("bounty_id = ? and user_id = ?", target_bounty.id, self.id).count > 0 ? true : false
-    else
-      nil
-    end
-  end
-
-  def did_respond?(target_bounty)
-    if target_bounty != nil
-      VenueComment.where("user_id = #{self.id} AND is_response = TRUE AND bounty_id = #{target_bounty.id}").first ? true : false
-    else
-      nil
-    end
-  end
-
-  #Sanity check if user is permited to claim Bounties based on his rejection history
-  def can_claim_bounties?
-    time_out = 1.0 #days
-    rejection_rate = 0.5
-
-    if can_claim_bounty == false and (Time.now - latest_rejection_time)/(60*60*24) < time_out
-      return false
-    else
-      total_rejections = BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", id,  Time.now, (Time.now - 7.days)).count
-      total_bounty_claims = VenueComment.where("user_id = #{self.id} AND created_at <= ? AND created_at >= ? AND bounty_id IS NOT NULL", Time.now, (Time.now - 7.days)).count
-
-      if total_bounty_claims >= 20 && (total_rejections.to_f / total_bounty_claims.to_f) > rejection_rate
-        self.can_claim_bounty = false
-        BountyClaimRejectionTracker.where("user_id = ? AND active = true AND created_at <= ? AND created_at >= ?", Time.now, (Time.now - 7.days)).update_all(active: false)
-      else
-        self.can_claim_bounty = true
-      end
-
-      save
-      return self.can_claim_bounty
-
-    end
-  end 
-
 
   def update_lumens_after_text(text_id)
     new_lumens = LumenConstants.text_media_weight
@@ -284,7 +158,6 @@ class User < ActiveRecord::Base
     update_columns(text_lumens: adjusted_text_lumens)
   end
 
-#====================================================================================================================================================================>
   #Extract acquired Lumens for user on a particulare date
   def lumens_on_date(date)
    lumens_of_date = LumenValue.where("user_id = ? AND created_at <= ? AND created_at >= ?", self.id, date.at_end_of_day, date.at_beginning_of_day).sum(:value)
@@ -335,14 +208,12 @@ class User < ActiveRecord::Base
   def lumen_package
     package = weekly_lumens.zip(weekly_lumen_color_values(weekly_lumens))
   end
-#===================================================================================================================================================================> 
 
   def lumen_percentile_calculation
     all_lumens = User.all.map { |user| user.lumens}
     percentile = all_lumens.percentile_rank(self.lumens)
   end
 
-  
   def update_lumen_percentile
     if self.lumens == 0
       update_columns(lumen_percentile: 0)
@@ -359,13 +230,13 @@ class User < ActiveRecord::Base
     self.lumen_percentile = 100.0*(total_number.to_f-rank.to_f)/total_number.to_f
     self.save
   end
+  #------------------------------------------------------------->
 
+
+
+  #III. Visual Graph Method------------------------------------------>
   def total_bonuses
     LumenValue.where("user_id = ? AND media_type = ? AND created_at >= ?", self.id, 'bonus', DateTime.new(2015,4,30)).count
-  end
-
-  def total_bounties
-    LumenValue.where("user_id = #{self.id} AND bounty_id IS NOT NULL").count
   end
 
   def total_video_comments
@@ -379,7 +250,6 @@ class User < ActiveRecord::Base
   def total_text_comments
     self.venue_comments.where("media_type = ? AND created_at >= ?", 'text', DateTime.new(2015,4,30)).count
   end
-
 
   def update_total_views
     current = total_views
@@ -409,7 +279,6 @@ class User < ActiveRecord::Base
     average_adj_views
   end
 
-
   #Radius assignment to Lumen contributing categories for Lumen breakout screen
   def radius_assignment
     radii = Hash.new
@@ -419,7 +288,6 @@ class User < ActiveRecord::Base
       radii["image"] = 0.0
       radii["text"] = 0.0
       radii["bonus"] = 0.0
-      radii["bounty"] = 0.0
       return radii
     else
       perc = lumen_percentile || 91.0
@@ -451,7 +319,6 @@ class User < ActiveRecord::Base
       total_lumens << image_lumens
       total_lumens << text_lumens
       total_lumens << bonus_lumens
-      total_lumens << bounty_lumens
 
       min_lumen = total_lumens.min
 
@@ -462,7 +329,6 @@ class User < ActiveRecord::Base
       radii["image"] = ((image_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((image_lumens / self.lumens) * range + radius)
       radii["text"] = ((text_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((text_lumens / self.lumens) * range + radius)
       radii["bonus"] = ((bonus_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((bonus_lumens / self.lumens) * range + radius)
-      radii["bounty"] = ((bounty_lumens / self.lumens) * range + radius) >= (range + radius) ? (range + radius) : ((bounty_lumens / self.lumens) * range + radius)
 
       radii2 = Hash[radii.sort_by {|k, v| v}]
       return radii2
@@ -498,14 +364,6 @@ class User < ActiveRecord::Base
       0
     else
       radius_assignment["bonus"]
-    end
-  end
-
-  def bounty_radius
-    if bounty_lumens == 0
-      0
-    else
-      radius_assignment["bounty"]
     end
   end
 
@@ -547,10 +405,6 @@ class User < ActiveRecord::Base
     rank = radius_assignment.keys.index("bonus") + 1
   end
 
-  def lumen_bounty_contribution_rank
-    rank = radius_assignment.keys.index("bounty") + 1
-  end 
-
   def lumen_views_contribution_rank
     return 5
   end 
@@ -567,20 +421,67 @@ class User < ActiveRecord::Base
         vd.round
       end
     end
-  end  
+  end
+  #------------------------------------------------------------->
 
-  def update_user_feeds
-    non_checked_feeds = feeds.where("new_media_present IS FALSE")
-    for feed in non_checked_feeds
-      for feed_venue in feed.venues
-        if feed_venue.instagram_pull_check == true
-          feed.update_columns(new_media_present: true)
-        end
-      end
+  #IV. Administrative/Creation Methods------------------------------>
+  def send_email_validation
+    Mailer.delay.email_validation(self)
+  end
+
+  # This is to deal with S3.
+  def email_with_id
+    "#{email}-#{id}"
+  end
+
+  def set_version(v)
+    update_columns(version: v)
+  end
+
+  def validate_email
+    self.email_confirmed = true
+    self.confirmation_token = nil
+    self.save
+  end
+
+  def is_venue_manager?
+    role.try(:name) == "Venue Manager"
+  end
+
+  def is_admin?
+    role.try(:name) == "Admin"
+  end
+
+  def version_compatible?(ver)
+    version_split = self.version.split(".")
+    v0 = version_split[0].to_i
+    u0 = version_split[1].to_i || 0
+    p0 = version_split[2].to_i || 0 
+
+    target_version = ver.split(".")
+    v1 = target_version[0].to_i
+    u1 = target_version[1].to_i || 0
+    p1 = target_version[2].to_i || 0
+
+    if v0 > v1 
+      return true
+    elsif v0 >= v1 && u0 > u1
+      return true
+    elsif (v0 >= v1 && u0 >= u1) && (p0 >= p1)
+      return true
+    else
+      return false
     end
-  end 
 
-  private ##################################################################################################
+  end
+
+  def manages_any_venues?
+    venues.size > 0
+  end
+  #-------------------------------------------------------------->
+
+
+  private 
 
   def generate_confirmation_token_for_venue_manager
     if role_id_changed?

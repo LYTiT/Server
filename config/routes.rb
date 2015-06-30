@@ -20,16 +20,11 @@ LytitServer::Application.routes.draw do
         get 'get_daily_lumens'
         post 'posting_kill_request'
         get 'get_lumen_notification_details'
-        get 'get_bounties'
-        post 'can_claim_bounties'
         collection do
           get 'search'
         end
-        get 'get_bounty_feed'
-        get 'get_surrounding_bounties'
         get 'get_map_details'
         get 'confirm_email'
-        get 'get_bounty_claims'
         get 'get_venue_comment'
         get 'username_availability'
         post 'register'
@@ -37,8 +32,6 @@ LytitServer::Application.routes.draw do
         get 'validate_coupon_code'
         get 'email_availability'
         get 'is_user_confirmed'
-        get 'get_surprise_image'
-        get 'search_for_bounties'
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
         get 'get_user_feeds'
@@ -60,24 +53,6 @@ LytitServer::Application.routes.draw do
 
       resources :lumen_game_winners do
         post 'update_winner_paypal_info'
-      end
-
-      resources :bounties do
-        get 'create'
-        get 'get_claims'
-        post 'viewed_claim'
-        get 'get_pricing_constants'
-        get 'get_bounty_claim_notification_details'
-        get 'get_bounty_claim_accept_notification_details'
-        get 'get_bounty_claim_rejection_notification_details'
-        post 'accept_bounty_claim'
-        post 'reject_bounty_claim'
-        post 'subscribe_to_bounty'
-        post 'update_bounty_details'
-        post 'remove_bounty'
-        post 'unsubscribe_from_bounty'
-        get 'get_claims_for_global_feed'
-        get 'get_response_index'
       end
 
       post '/register_push_token' => 'users#register_push_token'
@@ -102,9 +77,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_suggested_venues'
         end
-        get 'get_bounties'
         post 'vote'
-        get 'get_area_bounty_feed'
         collection do
           get 'meta_search'
         end

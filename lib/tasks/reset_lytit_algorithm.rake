@@ -17,8 +17,9 @@ namespace :lytit do
     #end
 
 
-    #delete Instagram data daily
+    #delete Instagrams and corresponding Meta Data daily
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
+    MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
 
     puts "done."
   end

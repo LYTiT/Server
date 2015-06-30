@@ -16,27 +16,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@venue = Venue.find(params[:id])
 	end
 
-	def get_bounties
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@venue = Venue.find_by_id(params[:venue_id])
-		raw_bounties = Bounty.where("venue_id = ? AND validity = true", @venue.id).order('id DESC')
-		@bounties = []
-		if raw_bounties.count > 0
-			for bounty in raw_bounties
-				if bounty.check_validity == true && bounty.expiration > Time.now
-					@bounties << bounty
-				end
-			end
-		end
-	end
-
-	#for a city, state, country in the venue page we return a bounty feed composed of bounties and claims instead of pure venue comments
-	def get_area_bounty_feed
-		@user = User.find_by_authentication_token(params[:auth_token])
-		feed = Venue.area_bounty_feed(params[:venue_id])
-		@area_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
-	end
-
 	def add_comment
 		parts_linked = false #becomes 'true' when Venue Comment is formed by two parts conjoining
 		assign_lumens = false #in v3.0.0 posting by parts makes sure that lumens are not assigned for the creation of the text part of a media Venue Comment
@@ -132,22 +111,6 @@ class Api::V1::VenuesController < ApiBaseController
 					@user.delay.update_lumens_after_media(@comment)
 				end
 
-				#If the Venue Comment is a Bounty response we update bounty_id field
-				if params[:is_bounty_response] != nil
-					@comment.is_response = true
-					@comment.bounty_id = params[:is_bounty_response]
-					b = Bounty.find_by_id(params[:is_bounty_response])
-					b.response_received = true
-					b.increment!(:num_responses, 1)
-					#we keep track of the latest 10 responses for a bounty to display thumbnails in the bounty feed
-					b.add_latest_response(@comment)
-					bounty_housing_comment = VenueComment.where("user_id IS NULL AND bounty_id = ?", params[:is_bounty_response]).first
-					bounty_housing_comment.update_columns(time_wrapper: Time.now)
-					@comment.save
-					b.save
-					@comment.delay.send_bounty_claim_notification
-				end
-
 				#if a hot venue and valid bonus post assign user bonus lumens
 				if params[:bonus_lumens] != nil
 					@user.delay.account_new_bonus_lumens(params[:bonus_lumens])
@@ -176,10 +139,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def delete_comment
 		vc = VenueComment.find_by_id(params[:id])
-		bounty = vc.bounty
-		if bounty != nil
-			bounty.decrement!(:num_responses, 1)
-		end
 		vc.destroy
 		render json: { success: true }
 	end
@@ -280,6 +239,12 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'search.json.jbuilder'
 	end
 
+	def get_suggested_venues
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
+		render 'get_suggested_venues.json.jbuilder'
+	end
+
 	def meta_search
 		lat = params[:latitude]
 		long = params[:longitude]
@@ -310,52 +275,6 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_trending_venues
 		@venues = Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
 		@venue_hash = Hash[@venues.map.with_index.to_a]
-	end
-
-	def get_suggested_venues
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
-		render 'get_suggested_venues.json.jbuilder'
-	end
-
-	def rate_venue
-		venue = Venue.find(params[:venue_id])
-		@venue_rating = VenueRating.new(params.permit(:rating))
-		@venue_rating.venue = venue
-		@venue_rating.user = @user
-
-		if @venue_rating.save
-			render json: venue
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @venue_rating.errors.full_messages } }, status: :unprocessable_entity
-		end
-	end
-
-	def vote
-		vote_value = params[:rating] > LytitBar.instance.position ? 1 : -1
-
-		venue = Venue.find(params[:venue_id])
-		rating = venue.rating
-		v = LytitVote.new(:value => vote_value, :venue_id => params[:venue_id], :user_id => @user.id, :venue_rating => rating ? rating : 0, 
-											:prime => 0, :raw_value => params[:rating])
-
-		if v.save
-			venue.delay.account_new_vote(vote_value, v.id)
-			
-			if venue.has_been_voted_at == false
-				venue.has_been_voted_at = true
-				venue.save
-			end
-
-			if LytSphere.where("venue_id = ?", params[:venue_id]).count == 0
-				lyt_sphere = LytSphere.new(:venue_id => venue.id, :sphere => venue.l_sphere)
-				lyt_sphere.save
-			end
-
-			render json: {"registered_vote" => vote_value, "venue_id" => params[:venue_id]}, status: :ok
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: v.errors.full_messages } }, status: :unprocessable_entity
-		end
 	end
 
 

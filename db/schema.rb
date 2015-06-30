@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150629183828) do
+ActiveRecord::Schema.define(version: 20150629235406) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,64 +35,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.string   "title"
   end
 
-  create_table "bounties", force: true do |t|
-    t.float    "lumen_reward"
-    t.integer  "user_id"
-    t.integer  "venue_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "validity",                     default: true
-    t.string   "media_type"
-    t.string   "detail"
-    t.boolean  "response_received",            default: false
-    t.datetime "expiration"
-    t.datetime "last_viewed_claim_time"
-    t.integer  "venue_comment_id"
-    t.integer  "num_responses",                default: 0
-    t.boolean  "decrement_venue_bounty_count", default: true
-    t.string   "latest_response_1"
-    t.string   "latest_response_2"
-    t.string   "latest_response_3"
-    t.string   "latest_response_4"
-    t.string   "latest_response_5"
-    t.string   "latest_response_6"
-    t.string   "latest_response_7"
-    t.string   "latest_response_8"
-    t.string   "latest_response_9"
-    t.string   "latest_response_10"
-  end
-
-  add_index "bounties", ["user_id"], name: "index_bounties_on_user_id", using: :btree
-  add_index "bounties", ["venue_id"], name: "index_bounties_on_venue_id", using: :btree
-
-  create_table "bounty_claim_rejection_trackers", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "venue_comment_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.boolean  "active",           default: true
-  end
-
-  add_index "bounty_claim_rejection_trackers", ["user_id"], name: "index_bounty_claim_rejection_trackers_on_user_id", using: :btree
-  add_index "bounty_claim_rejection_trackers", ["venue_comment_id"], name: "index_bounty_claim_rejection_trackers_on_venue_comment_id", using: :btree
-
-  create_table "bounty_pricing_constants", force: true do |t|
-    t.string   "constant_name"
-    t.float    "constant_value"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "bounty_subscribers", force: true do |t|
-    t.integer  "bounty_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "bounty_subscribers", ["bounty_id"], name: "index_bounty_subscribers_on_bounty_id", using: :btree
-  add_index "bounty_subscribers", ["user_id"], name: "index_bounty_subscribers_on_user_id", using: :btree
-
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
     t.integer  "user_id"
@@ -103,23 +45,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
   add_index "comment_views", ["user_id"], name: "index_comment_views_on_user_id", using: :btree
   add_index "comment_views", ["venue_comment_id", "user_id"], name: "index_comment_views_on_venue_comment_id_and_user_id", unique: true, using: :btree
   add_index "comment_views", ["venue_comment_id"], name: "index_comment_views_on_venue_comment_id", using: :btree
-
-  create_table "coupon_claimers", force: true do |t|
-    t.integer  "coupon_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "coupon_claimers", ["coupon_id"], name: "index_coupon_claimers_on_coupon_id", using: :btree
-
-  create_table "coupons", force: true do |t|
-    t.string   "code"
-    t.float    "lumen_gift"
-    t.integer  "supply"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
 
   create_table "delayed_jobs", force: true do |t|
     t.integer  "priority",   default: 0, null: false
@@ -217,18 +142,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.datetime "updated_at"
   end
 
-  create_table "lumen_game_winners", force: true do |t|
-    t.integer  "user_id"
-    t.integer  "winning_validation_code"
-    t.string   "paypal_info"
-    t.boolean  "payment_made"
-    t.boolean  "email_sent"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  add_index "lumen_game_winners", ["user_id"], name: "index_lumen_game_winners_on_user_id", using: :btree
-
   create_table "lumen_values", force: true do |t|
     t.float    "value"
     t.integer  "user_id"
@@ -237,7 +150,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.integer  "lytit_vote_id"
     t.integer  "venue_comment_id"
     t.string   "media_type"
-    t.integer  "bounty_id"
   end
 
   add_index "lumen_values", ["user_id"], name: "index_lumen_values_on_user_id", using: :btree
@@ -351,8 +263,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.integer  "total_views",                            default: 0
     t.float    "lumen_notification",                     default: 0.0
     t.string   "version",                                default: "1.0.0"
-    t.float    "bounty_lumens",                          default: 0.0
-    t.boolean  "can_claim_bounty",                       default: true
     t.datetime "latest_rejection_time"
     t.float    "adjusted_view_discount"
     t.boolean  "email_confirmed",                        default: false
@@ -390,7 +300,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.boolean  "from_user",            default: false
     t.integer  "session"
     t.string   "offset_created_at"
-    t.integer  "bounty_id"
     t.boolean  "is_response"
     t.boolean  "is_response_accepted"
     t.string   "rejection_reason"
@@ -400,7 +309,6 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.string   "thirdparty_username"
   end
 
-  add_index "venue_comments", ["bounty_id"], name: "index_venue_comments_on_bounty_id", using: :btree
   add_index "venue_comments", ["instagram_id"], name: "index_venue_comments_on_instagram_id", unique: true, using: :btree
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
   add_index "venue_comments", ["venue_id"], name: "index_venue_comments_on_venue_id", using: :btree
@@ -460,12 +368,10 @@ ActiveRecord::Schema.define(version: 20150629183828) do
     t.float    "color_rating",                         default: -1.0
     t.integer  "key",                        limit: 8
     t.string   "time_zone"
-    t.integer  "outstanding_bounties",                 default: 0
     t.string   "l_sphere"
     t.datetime "latest_posted_comment_time"
     t.boolean  "is_address",                           default: false
     t.boolean  "has_been_voted_at",                    default: false
-    t.datetime "latest_placed_bounty_time"
     t.float    "popularity_rank"
     t.float    "popularity_percentile"
     t.float    "page_views",                           default: 0.0

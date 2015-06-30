@@ -2,7 +2,17 @@ class Api::V1::UsersController < ApiBaseController
 	skip_before_filter :set_user, only: [:create, :get_comments, :get_groups, :forgot_password]
 
 
-	#Administrative Methods------------------>
+	#Administrative/Creation Methods------------------>
+
+	def username_availability
+		@response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
+		render json: { bool_response: @response }
+	end
+
+	def email_availability
+		@response = User.where("LOWER(email) = ?", params[:q].to_s.downcase).any?
+		render json: { bool_response: @response }
+	end
 
 	def create
 		existing_temp_user = User.where("email = ?", params[:email]).first
@@ -42,13 +52,6 @@ class Api::V1::UsersController < ApiBaseController
 
 	def destroy_previous_temp_user
 		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
-		user_bounties = previous_user.bounties
-		if user_bounties.count > 0
-			for bounty in user_bounties
-				bounty.venue.decrement!(:outstanding_bounties, 1)
-				bounty.destroy
-			end
-		end
 		previous_user.destroy
 		render json: { success: true }
 	end
@@ -86,16 +89,6 @@ class Api::V1::UsersController < ApiBaseController
 		render 'created.json.jbuilder'
 	end
 
-	def username_availability
-		@response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
-		render json: { bool_response: @response }
-	end
-
-	def email_availability
-		@response = User.where("LOWER(email) = ?", params[:q].to_s.downcase).any?
-		render json: { bool_response: @response }
-	end
-
 	def change_password
 		if User.authenticate(@user.email, params[:old_password])
 			if @user.update_password(params[:new_password])
@@ -105,25 +98,6 @@ class Api::V1::UsersController < ApiBaseController
 			end
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Old password do not match']}  }, status: :unprocessable_entity
-		end
-	end	
-
-	def is_user_confirmed
-		@user = User.find_by_authentication_token(params[:auth_token])
-		confirmation_status = @user.email_confirmed
-		render json: {bool_response: confirmation_status }
-	end	
-
-	def validate_coupon_code
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@validation_message = Coupon.check_code(params[:coupon_code], @user)
-		render json: { validation_message: @validation_message }
-	end
-
-	def confirm_email
-		user = User.find_by_confirm_token(params[:id])
-		if user
-			user.email_activate
 		end
 	end
 
@@ -150,69 +124,17 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
-
-	#Usage Methods------------------>
-
-	def get_map_details
-		@user = User.find_by_id(params[:user_id])
-		render 'get_map_details.json.jbuilder'
-	end
-
-	def get_surprise_image
+	def is_user_confirmed
 		@user = User.find_by_authentication_token(params[:auth_token])
-		render json: { validation_message: @user.surprise_image_url }
-	end
+		confirmation_status = @user.email_confirmed
+		render json: {bool_response: confirmation_status }
+	end	
 
-	def get_bounties
-		@user = User.find_by_authentication_token(params[:auth_token])
-		total_bounties = @user.total_user_bounties
-		@bounties = []
-		for bounty in total_bounties
-			if (bounty.user_id == @user.id && bounty.check_validity == true) || (bounty.user_id != @user.id)
-				@bounties << bounty
-			end
+	def confirm_email
+		user = User.find_by_confirm_token(params[:id])
+		if user
+			user.email_activate
 		end
-	end
-
-	def get_bounty_claims
-		@bounty_claims = VenueComment.where("is_response = TRUE and user_id = #{params[:user_id]} AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:bounty, :venue).order('id DESC')
-	end
-
-	def get_comments_by_time
-		venue_comments = @user.venue_comments.includes(:venue).order("id desc")
-		@comments = venue_comments.page(params[:page]).per(25)
-	end
-
-	def get_comments_by_venue
-		venue_comments = @user.venue_comments.joins(:venue).order("venues.name asc").order("id desc")
-		@comments = venue_comments.page(params[:page]).per(25)
-	end
-
-	def get_bounty_feed
-		feed = @user.global_bounty_feed
-		@bounty_feed = Kaminari.paginate_array(feed).page(params[:page]).per(10)
-	end
-
-	def get_surrounding_bounties
-		feed = @user.nearby_user_bounties(params[:latitude], params[:longitude], params[:city], params[:state], params[:country])
-		@surrounding_bounties = Kaminari.paginate_array(feed).page(params[:page]).per(10)
-	end
-
-	def search_for_bounties
-		search = Bounty.joins(:venue).where("LOWER(name) like ? OR LOWER(city) like ? OR LOWER(state) like ? OR LOWER(country) like ? AND outstanding_bounties > 0", '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%', '%' + params[:q].to_s.downcase + '%').where("bounties.validity = TRUE").order("id desc")
-		@bounties = Kaminari.paginate_array(search).page(params[:page]).per(10)
-	end
-
-	def can_claim_bounties
-		render json: { bool_response: @user.can_claim_bounties? } 
-	end
-
-	def get_user_feeds
-		#we use this method to also return list of feeds when inside a venue page and so must make a check if the venue is part of any of the user's feed.
-		user = User.find_by_authentication_token(params[:auth_token])
-		user.update_user_feeds
-		@venue_id = params[:venue_id]
-		@feeds = @user.feeds.includes(:venues)
 	end
 
 	def add_instagram_auth_token
@@ -229,8 +151,33 @@ class Api::V1::UsersController < ApiBaseController
 		user.update_columns(asked_instagram_permission: true)
 		render json: { success: true }
 	end
+	#-------------------------------------------------->
 
-	#As related to Lumens
+
+	#Functionality Methods----------------------------->
+	def get_map_details
+		@user = User.find_by_id(params[:user_id])
+		render 'get_map_details.json.jbuilder'
+	end
+
+	def get_comments_by_time
+		venue_comments = @user.venue_comments.includes(:venue).order("id desc")
+		@comments = venue_comments.page(params[:page]).per(25)
+	end
+
+	def get_comments_by_venue
+		venue_comments = @user.venue_comments.joins(:venue).order("venues.name asc").order("id desc")
+		@comments = venue_comments.page(params[:page]).per(25)
+	end
+
+	def get_user_feeds
+		#we use this method to also return list of feeds when inside a venue page and so must make a check if the venue is part of any of the user's feed.
+		user = User.find_by_authentication_token(params[:auth_token])
+		user.update_user_feeds
+		@venue_id = params[:venue_id]
+		@feeds = @user.feeds.includes(:venues)
+	end
+
 	def calculate_lumens
 		@user = User.find(params[:user_id])
 		@user.calculate_lumens()
@@ -257,6 +204,7 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
 		end
 	end
+	#-------------------------------------------------->
 
 	private
 

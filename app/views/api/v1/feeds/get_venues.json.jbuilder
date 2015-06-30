@@ -11,7 +11,6 @@ json.array! @venues do |v|
   json.longitude v.longitude
   json.phone_number v.phone_number
   json.color_rating v.color_rating
-  json.outstanding_bounties v.outstanding_bounties
   json.compare_type v.type
   json.time_zone_offset v.time_zone_offset
 end

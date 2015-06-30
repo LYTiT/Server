@@ -12,7 +12,6 @@ json.video_lumens @user.video_lumens
 json.photo_lumens @user.image_lumens
 json.text_lumens @user.text_lumens
 json.bonus_lumens @user.bonus_lumens
-json.bounty_lumens @user.bounty_lumens
 
 json.view_rank @user.lumen_views_contribution_rank
 json.video_rank @user.lumen_video_contribution_rank
@@ -28,5 +27,4 @@ json.image_radius @user.image_radius
 json.text_radius @user.text_radius
 json.bonus_radius @user.bonus_radius
 json.view_radius @user.views_radius
-json.bounty_radius @user.bounty_radius
 json.mapped_places_radius @user.mapped_places_radius
