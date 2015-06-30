@@ -460,7 +460,7 @@ class Venue < ActiveRecord::Base
         #if little content is offered on the geo pull make a venue specific pull
         if venue_comments_created < 3
           puts ("making a venue get instagrams calls")
-          self.get_instagrams
+          self.delay.get_instagrams
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -618,7 +618,7 @@ class Venue < ActiveRecord::Base
       end
 
       if self.instagram_location_id != 0 && (self.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
-        new_media_created = self.get_instagrams
+        new_media_created = self.delay.get_instagrams
       end
     end 
     return new_media_created
