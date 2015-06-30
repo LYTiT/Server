@@ -68,8 +68,6 @@ class User < ActiveRecord::Base
   end
 
   def update_lumens_after_text(text_id)
-
-    puts "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ UPDATING AFTER TEXT ---- #{text_id}"
     new_lumens = LumenConstants.text_media_weight
     updated_lumens = self.lumens + new_lumens
     gross_lumen_update = self.monthly_gross_lumens + new_lumens

@@ -7,7 +7,7 @@ namespace :lytit do
     $scheduler = Rufus::Scheduler.singleton
 
     #Instagram Pulling ------------------------------>
-    $scheduler.every '15m' do
+    $scheduler.every '10m' do
 
       puts "Pulling from Instagram"
       vortexes = InstagramVortex.where("active = ?", true)
@@ -32,7 +32,7 @@ namespace :lytit do
       end
     end
     
-    #LYT Updating ------------------------------>
+    #LYT Updating ----------------------------------->
     $scheduler.every '5m' do
 
       puts "Scheduler run at #{Time.now}"
