@@ -37,9 +37,6 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def add_venues
-	end
-
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
 		feed_venue.destroy
