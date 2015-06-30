@@ -146,7 +146,7 @@ class VenueComment < ActiveRecord::Base
 					end
 					puts "instagram venue comment created"
 					lytit_venue.feeds.update_all(new_media_present: true)
-					vc.delay.extract_instagram_meta_data(instagram)
+					vc.extract_instagram_meta_data(instagram)
 				end
 			end
 		end
