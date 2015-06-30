@@ -92,16 +92,14 @@ class Api::V1::VenuesController < ApiBaseController
 			if not @comment.save
 				render json: { error: { code: ERROR_UNPROCESSABLE, messages: @comment.errors.full_messages } }, status: :unprocessable_entity
 			else
-				
 				@comment.content_origin = "lytit"
 				@comment.time_wrapper = Time.now
 				@comment.save
 
-
 				venue = @comment.venue
 				venue.update_columns(latest_posted_comment_time: Time.now)
 
-				if (@comment.media_type == 'text' and @comment.consider? == 1) and assign_lumens == true
+				if (@comment.media_type == 'text' and @comment.consider? == 1) && assign_lumens == true
 					if @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
 						@user.delay.update_lumens_after_text(@comment.id)
 					end
