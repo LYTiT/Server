@@ -165,8 +165,8 @@ class VenueComment < ActiveRecord::Base
 				clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
-						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
-						venue_meta_data.save
+					venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
+					venue_meta_data.save
 				end
 			end
 		end

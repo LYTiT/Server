@@ -618,7 +618,7 @@ class Venue < ActiveRecord::Base
       end
 
       if self.instagram_location_id != 0 && (self.last_instagram_pull_time != nil and (Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
-        new_media_created = self.delay.get_instagrams
+        new_media_created = self.get_instagrams
       end
     end 
     return new_media_created
