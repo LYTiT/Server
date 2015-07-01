@@ -52,7 +52,10 @@ namespace :lytit do
         venue.update_columns(trend_position: index)
       end
 
-      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{Venue.where("popularity_rank IS NOT NULL").count-10}").update_all(trend_position: nil)
+      total_popular_venues = Venue.where("popularity_rank IS NOT NULL").count
+      if total_popular_venues > 10
+        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(trend_position: nil)
+      end
 
       for entry in spheres
         sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
