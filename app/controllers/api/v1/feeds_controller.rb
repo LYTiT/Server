@@ -43,7 +43,7 @@ class Api::V1::FeedsController < ApiBaseController
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id)
 			if new_feed_venue.save
 				Feed.find_by_id(params[:feed_id]).increment!(:num_venues, 1)
-				render json: { success: true }
+				render json: { id: venue.id }
 			end
 		else
 			render json: { success: false }
