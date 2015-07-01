@@ -160,7 +160,7 @@ class VenueComment < ActiveRecord::Base
 
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
 
-		if inst_hashtags.count != 0
+		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
 				#sub_entries are for CamelCase handling if any
 				sub_entries = data.split /(?=[A-Z])/
@@ -177,7 +177,7 @@ class VenueComment < ActiveRecord::Base
 			end
 		end
 
-		if inst_comment.count != 0
+		if inst_comment != nil and inst_comment.count != 0
 			inst_comment.each do |data|
 				#sub_entries are for CamelCase handling if any
 				sub_entries = data.split /(?=[A-Z])/
