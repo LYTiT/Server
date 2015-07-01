@@ -157,9 +157,8 @@ class VenueComment < ActiveRecord::Base
 		inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
-		
-		begin
-			text.each do |data|
+	
+			inst_meta_data.each do |data|
 				#sub_entries are for CamelCase handling if any
 				sub_entries = data.split /(?=[A-Z])/
 				sub_entries.each do |sub_entry|
@@ -173,9 +172,7 @@ class VenueComment < ActiveRecord::Base
 					end
 				end
 			end
-		rescue
-			puts "No Meta Data!"
-		end
+	
 	end
 
 
