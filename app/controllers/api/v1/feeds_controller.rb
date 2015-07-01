@@ -38,6 +38,16 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_raw_venue
+		venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
+			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id)
+			if new_feed_venue.save
+				Feed.find_by_id(params[:feed_id]).increment!(:num_venues, 1)
+				render json: { success: true }
+			end
+		else
+			render json: { success: false }
+		end
 	end
 
 	def remove_venue
