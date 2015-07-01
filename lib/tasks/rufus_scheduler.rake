@@ -43,9 +43,16 @@ namespace :lytit do
       #bar.recalculate_bar_position
       #puts 'Bar updated'
 
+      
+      puts "Recalculating venue colors and trending indices"
       spheres = LytSphere.uniq.pluck(:sphere)
-      puts "Recalculating venue colors"
-      Venue.update_all(color_rating: -1.0)
+
+      #used for determing which way top venues are trending
+      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
+        venue.update_columns(trend_position: index)
+      end
+
+      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{Venue.where("popularity_rank IS NOT NULL").count-10}").update_all(trend_position: nil)
 
       for entry in spheres
         sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
@@ -53,7 +60,8 @@ namespace :lytit do
         diff_ratings = Set.new
         for venue in sphericles
           venue.update_rating()
-          if venue.is_visible? #venue.rating != nil && venue.rating > 0.0
+          venue.update_popularity_rank
+          if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0
             rat = venue.rating.round(2)
             diff_ratings.add(rat)
           else

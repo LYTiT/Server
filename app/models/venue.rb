@@ -638,7 +638,11 @@ class Venue < ActiveRecord::Base
         end
       end
     else
-      self.set_instagram_location_id(100)
+      if self.instagram_location_id == nil
+        self.set_instagram_location_id(100)
+      else
+        new_media_created = self.get_instagrams
+      end
     end
   end
 
