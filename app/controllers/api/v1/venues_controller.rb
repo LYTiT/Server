@@ -169,7 +169,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.find_by_id(venue_ids.first)
 
 				@venue.account_page_view
-				@venue.delay.instagram_pull_check
+				@venue.instagram_pull_check
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@comments = live_comments.page(params[:page]).per(25)

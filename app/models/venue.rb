@@ -443,7 +443,7 @@ class Venue < ActiveRecord::Base
             puts("converting instagram to #{self.name} Venue Comment from #{instagram.location.name}")
             vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
             vc.save
-            vc.delay.extract_instagram_meta_data(instagram)
+            vc.extract_instagram_meta_data(instagram)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
@@ -460,7 +460,7 @@ class Venue < ActiveRecord::Base
         #if little content is offered on the geo pull make a venue specific pull
         if venue_comments_created < 3
           puts ("making a venue get instagrams calls")
-          self.delay.get_instagrams
+          self.get_instagrams
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -595,7 +595,7 @@ class Venue < ActiveRecord::Base
     instagram_access_token = InstagramAuthToken.all.sample(1).first.token
     client = Instagram.client(:access_token => instagram_access_token)
 
-    instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
+    instagrams = Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)    
 
     if instagrams != nil and instagrams.count > 0
       new_media_created = true
