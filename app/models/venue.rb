@@ -597,7 +597,7 @@ class Venue < ActiveRecord::Base
     instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token
     client = Instagram.client(:access_token => instagram_access_token)
 
-    instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_check(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
     if instagrams != nil and instagrams.count > 0
       new_media_created = true
