@@ -610,7 +610,7 @@ class Venue < ActiveRecord::Base
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token)
-    invalid_instagram_access_token.update_columns(is_valid: false)
+    InstagramAuthToken.find_by_token(invalid_instagram_access_token).update_columns(is_valid: false)
     Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
   end
 

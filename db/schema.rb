@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150629235406) do
+ActiveRecord::Schema.define(version: 20150701220228) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,6 +90,7 @@ ActiveRecord::Schema.define(version: 20150629235406) do
     t.integer  "num_venues",         default: 0
     t.datetime "latest_viewed_time"
     t.boolean  "new_media_present",  default: false
+    t.string   "feed_color"
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree

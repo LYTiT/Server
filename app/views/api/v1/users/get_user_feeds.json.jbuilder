@@ -5,4 +5,5 @@ json.array! @feeds do |feed|
 	json.venue_added feed.is_venue_present?(@venue_id)
 	json.num_venues feed.num_venues
 	json.new_content feed.new_media_present
+	json.feed_color feed.feed_color
 end
