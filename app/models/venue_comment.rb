@@ -144,16 +144,18 @@ class VenueComment < ActiveRecord::Base
 					end
 					puts "instagram venue comment created"
 					lytit_venue.feeds.update_all(new_media_present: true)
-					vc.extract_instagram_meta_data(instagram)
+					instagram_tags = instagram.tags
+					instagram_captions = instagram.caption.text.split rescue nil
+					vc.extract_instagram_meta_data(instagram_tags, instagram_captions)
 				end
 			end
 		end
 
 	end
 
-	def extract_instagram_meta_data(instagram)
-		inst_hashtags = instagram.tags
-		inst_comment = instagram.caption.text.split rescue nil
+	def extract_instagram_meta_data(instagram_tags, instagram_captions)
+		inst_hashtags = instagram_tags
+		inst_comment = instagram_captions
 		#inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
