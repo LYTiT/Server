@@ -443,7 +443,9 @@ class Venue < ActiveRecord::Base
             puts("converting instagram to #{self.name} Venue Comment from #{instagram.location.name}")
             vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
             vc.save
-            vc.extract_instagram_meta_data(instagram)
+            instagram_tags = instagram.tags
+            instagram_captions = instagram.caption.text.split rescue nil
+            vc.extract_instagram_meta_data(instagram_tags, instagram_captions)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
