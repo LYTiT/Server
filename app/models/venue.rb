@@ -609,9 +609,9 @@ class Venue < ActiveRecord::Base
     return new_media_created
   end
 
-  def self.rescue_instagram_api_call(invalid_instagram_access_token)
+  def rescue_instagram_api_call(invalid_instagram_access_token)
     invalid_instagram_access_token.update_columns(is_valid: false)
-    Instagram.location_recent_media(inst_loc_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
   end
 
   def instagram_pull_check
