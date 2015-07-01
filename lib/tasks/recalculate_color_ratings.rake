@@ -54,7 +54,7 @@ namespace :lytit do
 
     #puts "Done."
 
-    puts "Recalculating venue colors"
+    puts "Recalculating venue colors (on Lumen)"
     
     #used for determing which way top venues are trending
     Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
