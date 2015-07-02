@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150701220228) do
+ActiveRecord::Schema.define(version: 20150702214157) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -221,6 +221,7 @@ ActiveRecord::Schema.define(version: 20150701220228) do
     t.datetime "updated_at"
   end
 
+  add_index "meta_data", ["meta", "venue_id"], name: "index_meta_data_on_meta_and_venue_id", unique: true, using: :btree
   add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
 
   create_table "roles", force: true do |t|

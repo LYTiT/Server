@@ -157,7 +157,7 @@ class VenueComment < ActiveRecord::Base
 					lytit_venue.feeds.update_all(new_media_present: true)
 					instagram_tags = instagram.tags
 					instagram_captions = instagram.caption.text.split rescue nil
-					vc.includes(:meta_datas).delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+					vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
 				end
 			end
 		end
@@ -197,9 +197,11 @@ class VenueComment < ActiveRecord::Base
 					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
+						begin
 							venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
 							venue_meta_data.save
+						rescue
+							puts "Duplicate Meta Data Entry Attempt!"
 						end
 					end
 				end
@@ -219,9 +221,11 @@ class VenueComment < ActiveRecord::Base
 				clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
-					if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
+					begin	
 						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
 						venue_meta_data.save
+					rescue
+						puts "Duplicate Meta Data Entry Attempt!"
 					end
 				end
 			end

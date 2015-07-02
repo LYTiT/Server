@@ -445,7 +445,7 @@ class Venue < ActiveRecord::Base
             vc.save
             instagram_tags = instagram.tags
             instagram_captions = instagram.caption.text.split rescue nil
-            vc.includes(:meta_datas).delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+            vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
