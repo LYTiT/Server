@@ -180,10 +180,7 @@ class VenueComment < ActiveRecord::Base
 					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						if MetaData.where("venue_id = ? and meta = ?", venue_id, clean_data).any? == false	
-							venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
-							venue_meta_data.save
-						end
+						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 					end
 				end
 			end
@@ -197,12 +194,7 @@ class VenueComment < ActiveRecord::Base
 					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						begin
-							venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
-							venue_meta_data.save
-						rescue
-							puts "Duplicate Meta Data Entry Attempt!"
-						end
+						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 					end
 				end
 			end
@@ -221,12 +213,7 @@ class VenueComment < ActiveRecord::Base
 				clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
-					begin	
-						venue_meta_data = MetaData.new(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data)
-						venue_meta_data.save
-					rescue
-						puts "Duplicate Meta Data Entry Attempt!"
-					end
+					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 				end
 			end
 		end
