@@ -123,6 +123,8 @@ class VenueComment < ActiveRecord::Base
 		lat = instagram.location.latitude
 		long = instagram.location.longitude
 
+		new_media_created = false
+
 		if origin_venue == nil
 			if Venue.name_is_proper?(place_name) == true
 				lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)	
@@ -138,6 +140,7 @@ class VenueComment < ActiveRecord::Base
 			if not VenueComment.where("instagram_id = ?", instagram.id).any?
 				vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
 				if vc.save
+					new_media_created = true
 					if origin_venue == nil
 						lytit_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)#hackery, to make sure that all instagrams of a venue in pull are not excluded after the first one
 					end
@@ -154,10 +157,11 @@ class VenueComment < ActiveRecord::Base
 					lytit_venue.feeds.update_all(new_media_present: true)
 					instagram_tags = instagram.tags
 					instagram_captions = instagram.caption.text.split rescue nil
-					vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+					vc.includes(:meta_datas).delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
 				end
 			end
 		end
+		return new_media_created
 
 	end
 

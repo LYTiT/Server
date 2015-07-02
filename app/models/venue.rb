@@ -445,7 +445,7 @@ class Venue < ActiveRecord::Base
             vc.save
             instagram_tags = instagram.tags
             instagram_captions = instagram.caption.text.split rescue nil
-            vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+            vc.includes(:meta_datas).delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
@@ -600,9 +600,8 @@ class Venue < ActiveRecord::Base
     instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
     if instagrams != nil and instagrams.count > 0
-      new_media_created = true
       for instagram in instagrams
-        VenueComment.convert_instagram_to_vc(instagram, self)
+        new_media_created = VenueComment.convert_instagram_to_vc(instagram, self)
       end
     end
     self.update_columns(last_instagram_pull_time: Time.now)
@@ -618,7 +617,7 @@ class Venue < ActiveRecord::Base
 
   def instagram_pull_check
     instagram_refresh_rate = 15 #minutes
-    instagram_venue_id_ping_rate = 5 #days
+    instagram_venue_id_ping_rate = 1 #days
 
     if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
       #try to establish instagram location id if previous attempts failed every 5 days
