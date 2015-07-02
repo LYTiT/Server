@@ -18,6 +18,14 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def username_for_trending_venue_view
+		if self.content_origin == "instagram"
+			self.thirdparty_username
+		else
+			self.user.name
+		end
+	end
+
 	def is_viewed?(user)
 		CommentView.find_by_user_id_and_venue_comment_id(user.id, self.id).present?
 	end
