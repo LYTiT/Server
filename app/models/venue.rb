@@ -645,7 +645,7 @@ class Venue < ActiveRecord::Base
       elsif self.instagram_location_id != 0
         new_media_created = self.get_instagrams
       else
-        puts 'Nothing to pull from Instagram API'
+        new_media_created = false
       end
     end
   end
