@@ -445,7 +445,7 @@ class Venue < ActiveRecord::Base
             vc.save
             instagram_tags = instagram.tags
             instagram_captions = instagram.caption.text.split rescue nil
-            vc.extract_instagram_meta_data(instagram_tags, instagram_captions)
+            vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
             venue_comments_created += 1
             vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                   :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
@@ -594,7 +594,7 @@ class Venue < ActiveRecord::Base
   #need access to all recent instagrams
   def get_instagrams
     new_media_created = false
-    instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token
+    instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token rescue nil
     client = Instagram.client(:access_token => instagram_access_token)
 
     instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
