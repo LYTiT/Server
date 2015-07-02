@@ -154,7 +154,7 @@ class VenueComment < ActiveRecord::Base
 					lytit_venue.feeds.update_all(new_media_present: true)
 					instagram_tags = instagram.tags
 					instagram_captions = instagram.caption.text.split rescue nil
-					vc.extract_instagram_meta_data(instagram_tags, instagram_captions)
+					vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
 				end
 			end
 		end
