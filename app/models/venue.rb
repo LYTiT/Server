@@ -411,8 +411,8 @@ class Venue < ActiveRecord::Base
         if instagram.location.name != nil
           puts("#{instagram.location.name}, #{instagram.location.id}")
           #when working with proper names words like "the" and "a" hinder accuracy    
-          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")
-          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub(" ", "")
+          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
+          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
           if jarow_winkler_proximity > 0.70
