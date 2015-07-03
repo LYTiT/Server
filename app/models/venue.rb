@@ -702,7 +702,7 @@ class Venue < ActiveRecord::Base
           clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
           clean_meta_length = entry.clean_meta.length
         else
-          implicit_clean_meta = VenueComment.remove_meta_data_prefixes_suffixes(entry.meta)
+          implicit_clean_meta = vc.remove_meta_data_prefixes_suffixes(entry.meta)
           clean_jarow_distance = p jarow.getDistance(implicit_clean_meta, query)
           clean_meta_length = implicit_clean_meta.length
         end

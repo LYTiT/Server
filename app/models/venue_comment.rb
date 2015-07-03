@@ -222,7 +222,7 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def self.remove_meta_data_prefixes_suffixes(data)
+	def remove_meta_data_prefixes_suffixes(data)
 		prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
 		suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]		  
 		
