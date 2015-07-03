@@ -700,11 +700,14 @@ class Venue < ActiveRecord::Base
         raw_jarow_distance = p jarow.getDistance(entry.meta, query)
         if entry.clean_meta != nil
           clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
+          clean_meta_length = entry.clean_meta.length
         else
-          clean_jarow_distance = p jarow.getDistance(VenueComment.remove_meta_data_prefixes_suffixes(entry.meta), query)
+          implicit_clean_meta = VenueComment.remove_meta_data_prefixes_suffixes(entry.meta)
+          clean_jarow_distance = p jarow.getDistance(implicit_clean_meta, query)
+          clean_meta_length = implicit_clean_meta.length
         end
         #we compare lengths because search results and meta data should have equal (or close to) roots
-        if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_data.length < query.length*2)
+        if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_meta_length < query.length*2)
           pass = true
           break
         end
