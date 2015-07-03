@@ -703,15 +703,15 @@ class Venue < ActiveRecord::Base
 
         if data.length > 5
           for prefix in prefixes
-              prefix_len = prefix.length
-              data_len = data.length
+            prefix_len = prefix.length
+            data_len = data.length
 
-              if data_len > prefix_len and data[0..prefix_len-1] == prefix
-                no_prefix_data = data[(data_len-prefix_len+2)..data_len]
-                break
-              else
-                no_prefix_data = data
-              end
+            if data_len > prefix_len and data[0..prefix_len-1] == prefix
+              no_prefix_data = data[(data_len-prefix_len+2)..data_len]
+              break
+            else
+              no_prefix_data = data
+            end
           end
 
           if no_prefix_data.length > 6
@@ -732,6 +732,7 @@ class Venue < ActiveRecord::Base
 
           if no_prefix_suffix_data != nil
             clean_data = no_prefix_suffix_data
+          end
         
         else
           clean_data = data
@@ -742,6 +743,7 @@ class Venue < ActiveRecord::Base
           pass = true
           break
         end
+
       end
 
       if pass == true
@@ -749,6 +751,7 @@ class Venue < ActiveRecord::Base
       else
         return nil
       end
+      
     else
       return nil
     end
