@@ -225,14 +225,13 @@ class VenueComment < ActiveRecord::Base
 
 		if data.length > 5
 			for prefix in prefixes
+				no_prefix_data = data
 				prefix_len = prefix.length
 				data_len = data.length
 
 				if data_len > prefix_len and data[0..prefix_len-1] == prefix
 					no_prefix_data = data[(data_len-prefix_len+2)..data_len]
 					break
-				else
-					no_prefix_data = data
 				end
 			end
 
@@ -242,7 +241,7 @@ class VenueComment < ActiveRecord::Base
 					no_prefix_data_len = no_prefix_data.length
 
 					if no_prefix_data_len > suffix_len and no_prefix_data[(no_prefix_data_len-suffix_len)..no_prefix_data_len] == suffix
-						no_prefix_suffix_data = no_prefix_data[0..suffix_len+1]
+						no_prefix_suffix_data = no_prefix_data[0..(no_prefix_data_len-suffix_len+2)]
 						break
 					else
 						no_prefix_suffix_data = no_prefix_data

@@ -157,9 +157,9 @@ class Api::V1::UsersController < ApiBaseController
 	def check_instagram_token_expiration
 		user = User.find_by_authentication_token(params[:auth_token]) 
 		if not user.instagram_auth_tokens.first.try(:is_valid)
-			render json: { success: true }
+			render json: { bool_response: true }
 		else
-			render json: { success: false }
+			render json: { bool_response: false }
 		end
 	end
 	#-------------------------------------------------->
