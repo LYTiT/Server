@@ -691,7 +691,7 @@ class Venue < ActiveRecord::Base
     if vc != nil && (vc.created_at + 1.day) >= Time.now
       require 'fuzzystringmatch'
       jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-      prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under", ""]
+      prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
       suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]
       
       pass = false
@@ -710,7 +710,7 @@ class Venue < ActiveRecord::Base
               end
           end
 
-          if no_prefix_data.length > 6
+          if no_prefix_data != nil and no_prefix_data.length > 6
             for suffix in suffixes
               suffix_len = suffix.length
               no_prefix_data_len = no_prefix_data.length
