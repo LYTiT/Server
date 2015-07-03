@@ -140,9 +140,11 @@ class Api::V1::UsersController < ApiBaseController
 	def add_instagram_auth_token
 		existence_check = InstagramAuthToken.where("instagram_user_id = ?", params[:instagram_user_id]).first
 		if existence_check != nil
-			existence_check.destroy
+			existence_check.update_columns(token: params[:instagram_user_token])
+			existence_check.update_columns(is_valid: true)
+		else
+			instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
 		end
-		instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
 		render json: { success: true }
 	end
 
@@ -150,6 +152,15 @@ class Api::V1::UsersController < ApiBaseController
 		user = User.find_by_authentication_token(params[:auth_token])
 		user.update_columns(asked_instagram_permission: true)
 		render json: { success: true }
+	end
+
+	def check_instagram_token_expiration
+		user = User.find_by_authentication_token(params[:auth_token]) 
+		if not user.instagram_auth_tokens.first.try(:is_valid)
+			render json: { success: true }
+		else
+			render json: { success: false }
+		end
 	end
 	#-------------------------------------------------->
 
@@ -204,15 +215,6 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
-		end
-	end
-
-	def check_instagram_token_expiration
-		user = User.find_by_authentication_token(params[:auth_token]) 
-		if not user.instagram_auth_token.is_valid
-			render json: { success: true }
-		else
-			render json: { success: false }
 		end
 	end
 	#-------------------------------------------------->

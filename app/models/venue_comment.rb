@@ -218,6 +218,49 @@ class VenueComment < ActiveRecord::Base
 			end
 		end
 	end
+
+	def self.remove_meta_data_prefixes_suffixes(data)
+		prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
+		suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]		  
+
+		if data.length > 5
+			for prefix in prefixes
+				prefix_len = prefix.length
+				data_len = data.length
+
+				if data_len > prefix_len and data[0..prefix_len-1] == prefix
+					no_prefix_data = data[(data_len-prefix_len+2)..data_len]
+					break
+				else
+					no_prefix_data = data
+				end
+			end
+
+			if no_prefix_data.length > 6
+				for suffix in suffixes
+					suffix_len = suffix.length
+					no_prefix_data_len = no_prefix_data.length
+
+					if no_prefix_data_len > suffix_len and no_prefix_data[(no_prefix_data_len-suffix_len)..no_prefix_data_len] == suffix
+						no_prefix_suffix_data = no_prefix_data[0..suffix_len+1]
+						break
+					else
+						no_prefix_suffix_data = no_prefix_data
+					end
+				end
+			else
+				clean_data = no_prefix_data
+			end
+
+			if no_prefix_suffix_data != nil
+				clean_data = no_prefix_suffix_data
+			end
+
+		else
+			clean_data = data
+		end					
+		return clean_data
+	end
 			
 end
 
