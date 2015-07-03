@@ -37,6 +37,7 @@ LytitServer::Application.routes.draw do
         get 'get_user_feeds'
         post 'add_instagram_auth_token'
         post 'update_instagram_permission'
+        post 'check_instagram_token_expiration'
       end
 
       resources :feeds, only: [:create] do

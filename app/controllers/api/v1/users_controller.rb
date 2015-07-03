@@ -206,6 +206,15 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
 		end
 	end
+
+	def check_instagram_token_expiration
+		user = User.find_by_authentication_token(params[:auth_token]) 
+		if not user.instagram_auth_token.is_valid
+			render json: { success: true }
+		else
+			render json: { success: false }
+		end
+	end
 	#-------------------------------------------------->
 
 	private
