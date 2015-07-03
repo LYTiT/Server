@@ -194,7 +194,8 @@ class VenueComment < ActiveRecord::Base
 					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data) rescue "Duplicate Meta Data Entry Attempt!"
+						extra_clean_data = self.remove_meta_data_prefixes_suffixes(clean_data)
+						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 					end
 				end
 			end
@@ -213,7 +214,8 @@ class VenueComment < ActiveRecord::Base
 				clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
-					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data) rescue "Duplicate Meta Data Entry Attempt!"
+					extra_clean_data = self.remove_meta_data_prefixes_suffixes(clean_data)
+					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 				end
 			end
 		end
@@ -222,7 +224,8 @@ class VenueComment < ActiveRecord::Base
 	def self.remove_meta_data_prefixes_suffixes(data)
 		prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
 		suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]		  
-
+		
+		no_prefix_suffix_data = nil
 		if data.length > 5
 			for prefix in prefixes
 				no_prefix_data = data
@@ -236,7 +239,6 @@ class VenueComment < ActiveRecord::Base
 			end
 
 			if no_prefix_data.length > 6
-				puts "no prefix: #{no_prefix_data}"
 				for suffix in suffixes
 					suffix_len = suffix.length
 					no_prefix_data_len = no_prefix_data.length

@@ -695,49 +695,14 @@ class Venue < ActiveRecord::Base
       suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]
         
       pass = false
-      comment_meta_data = vc.meta_datas.pluck(:meta)
 
-      no_prefix_suffix_data = nil
-      for data in comment_meta_data
-        #remove prefixes and suffixes of metadata for increased accuracy (ie car <> supercar BUT supercar </> car)
-        if data.length > 5
-          for prefix in prefixes
-            no_prefix_data = data
-            prefix_len = prefix.length
-            data_len = data.length
-
-            if data_len > prefix_len and data[0..prefix_len-1] == prefix
-              no_prefix_data = data[(prefix_len)..data_len+1]
-              break
-            end
-          end
-
-          if no_prefix_data.length > 6
-            puts "no prefix: #{no_prefix_data}"
-            for suffix in suffixes
-              suffix_len = suffix.length
-              no_prefix_data_len = no_prefix_data.length
-              no_prefix_suffix_data = no_prefix_data
-
-              if no_prefix_data_len > suffix_len and no_prefix_data[(no_prefix_data_len-suffix_len)..no_prefix_data_len] == suffix
-                no_prefix_suffix_data = no_prefix_data[0..(no_prefix_data_len-suffix_len)-1]
-                break
-              end
-            end
-          else
-            clean_data = no_prefix_data
-          end
-
-          if no_prefix_suffix_data != nil
-            clean_data = no_prefix_suffix_data
-          end
-
+      for entry in vc.meta_datas
+        raw_jarow_distance = p jarow.getDistance(entry.meta, query)
+        if entry.clean_meta != nil
+          clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
         else
-          clean_data = data
-        end         
-
-        raw_jarow_distance = p jarow.getDistance(data, query)
-        clean_jarow_distance = p jarow.getDistance(clean_data, query)
+          clean_jarow_distance = p jarow.getDistance(VenueComment.remove_meta_data_prefixes_suffixes(entry.meta), query)
+        end
         #we compare lengths because search results and meta data should have equal (or close to) roots
         if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_data.length < query.length*2)
           pass = true
