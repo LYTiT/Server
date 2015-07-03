@@ -692,7 +692,7 @@ class Venue < ActiveRecord::Base
       require 'fuzzystringmatch'
       jarow = FuzzyStringMatch::JaroWinkler.create( :native )
       prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under", ""]
-      suffixes = ["able". "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]
+      suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]
       
       pass = false
       comment_meta_data = vc.meta_datas.pluck(:meta)
