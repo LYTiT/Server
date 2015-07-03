@@ -739,7 +739,8 @@ class Venue < ActiveRecord::Base
         end
 
         jarow_distance = p jarow.getDistance(clean_data, query)
-        if jarow_distance > 0.7
+        #we compare lengths because search results and meta data should have equal (or close to) roots
+        if jarow_distance > 0.7 && clean_data.length < query.length*2
           pass = true
           break
         end
@@ -751,7 +752,7 @@ class Venue < ActiveRecord::Base
       else
         return nil
       end
-      
+
     else
       return nil
     end
