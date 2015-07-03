@@ -222,7 +222,7 @@ ActiveRecord::Schema.define(version: 20150703053142) do
     t.string   "clean_meta"
   end
 
-  add_index "meta_data", ["meta", "venue_id"], name: "index_meta_data_on_meta_and_venue_id", unique: true, using: :btree
+  add_index "meta_data", ["meta", "venue_comment_id"], name: "index_meta_data_on_meta_and_venue_comment_id", unique: true, using: :btree
   add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
 
   create_table "roles", force: true do |t|

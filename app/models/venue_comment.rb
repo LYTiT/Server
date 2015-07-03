@@ -194,7 +194,7 @@ class VenueComment < ActiveRecord::Base
 					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						extra_clean_data = self.remove_meta_data_prefixes_suffixes(clean_data)
+						extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
 						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 					end
 				end
@@ -214,7 +214,7 @@ class VenueComment < ActiveRecord::Base
 				clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
-					extra_clean_data = self.remove_meta_data_prefixes_suffixes(clean_data)
+					extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
 					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
 				end
 			end
