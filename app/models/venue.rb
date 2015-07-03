@@ -700,30 +700,28 @@ class Venue < ActiveRecord::Base
       no_prefix_suffix_data = nil
       for data in comment_meta_data
         #remove prefixes and suffixes of metadata for increased accuracy (ie car <> supercar BUT supercar </> car)
-
         if data.length > 5
           for prefix in prefixes
+            no_prefix_data = data
             prefix_len = prefix.length
             data_len = data.length
 
             if data_len > prefix_len and data[0..prefix_len-1] == prefix
-              no_prefix_data = data[(data_len-prefix_len+2)..data_len]
+              no_prefix_data = data[(prefix_len)..data_len+1]
               break
-            else
-              no_prefix_data = data
             end
           end
 
           if no_prefix_data.length > 6
+            puts "no prefix: #{no_prefix_data}"
             for suffix in suffixes
               suffix_len = suffix.length
               no_prefix_data_len = no_prefix_data.length
+              no_prefix_suffix_data = no_prefix_data
 
               if no_prefix_data_len > suffix_len and no_prefix_data[(no_prefix_data_len-suffix_len)..no_prefix_data_len] == suffix
-                no_prefix_suffix_data = no_prefix_data[0..suffix_len+1]
+                no_prefix_suffix_data = no_prefix_data[0..(no_prefix_data_len-suffix_len)-1]
                 break
-              else
-                no_prefix_suffix_data = no_prefix_data
               end
             end
           else
@@ -733,10 +731,10 @@ class Venue < ActiveRecord::Base
           if no_prefix_suffix_data != nil
             clean_data = no_prefix_suffix_data
           end
-        
+
         else
           clean_data = data
-        end
+        end         
 
         raw_jarow_distance = p jarow.getDistance(data, query)
         clean_jarow_distance = p jarow.getDistance(clean_data, query)
