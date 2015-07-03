@@ -101,17 +101,17 @@ class Api::V1::VenuesController < ApiBaseController
 
 				if (@comment.media_type == 'text' and @comment.consider? == 1)
 					if assign_lumens == true and @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
-						@user.delay.update_lumens_after_text(@comment.id)
+						@user.update_lumens_after_text(@comment.id)
 					end
 				end
 
 				if (@comment.media_type != 'text' and @comment.consider? == 1)
-					@user.delay.update_lumens_after_media(@comment)
+					@user.update_lumens_after_media(@comment)
 				end
 
 				#if a hot venue and valid bonus post assign user bonus lumens
 				if params[:bonus_lumens] != nil
-					@user.delay.account_new_bonus_lumens(params[:bonus_lumens])
+					@user.account_new_bonus_lumens(params[:bonus_lumens])
 				end
 
 				#LYTiT it UP!
