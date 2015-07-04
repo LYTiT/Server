@@ -468,7 +468,7 @@ class Venue < ActiveRecord::Base
         #if little content is offered on the geo pull make a venue specific pull
         if venue_comments_created < 3
           puts ("making a venue get instagrams calls")
-          self.get_instagrams
+          self.get_instagrams(true)
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -598,27 +598,48 @@ class Venue < ActiveRecord::Base
 
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
-  def get_instagrams
+  def get_instagrams(day_pull)
     new_media_created = false
+    last_instagram_id = nil
+
     instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token rescue nil
     client = Instagram.client(:access_token => instagram_access_token)
 
-    instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    if day_pull == true || last_instagram_pull_time <= Time.now - 24.hours
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) 
+    else
+      last_instagram_post_wrapper = self.last_instagram_post || self.venue_comments.where("content_origin = ?", "instagram").order("id desc").first.instagram_id
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => last_instagram_post_wrapper) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+    end
+    
+    client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post)
 
-    if instagrams != nil and instagrams.count > 0
-      for instagram in instagrams
+    instagrams_count = instagrams.count
+
+    if instagrams != nil and instagrams_count > 0
+      instagrams.each_with_index do |instagram, index|
         new_media_created = VenueComment.convert_instagram_to_vc(instagram, self)
+        if index+1 == instagrams_count
+          last_instagram_id = new_media_created.instagram_id
+        end
       end
+      self.update_columns(last_instagram_post: last_instagram_id)  
     end
     self.update_columns(last_instagram_pull_time: Time.now)
     return new_media_created
   end
 
-  def rescue_instagram_api_call(invalid_instagram_access_token)
+  def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)
     if invalid_instagram_access_token != nil
       InstagramAuthToken.find_by_token(invalid_instagram_access_token).update_columns(is_valid: false)
     end
-    Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+
+    if day_pull == true
+      Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+    else
+      Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post)
+    end
+
   end
 
   def instagram_pull_check
@@ -636,19 +657,19 @@ class Venue < ActiveRecord::Base
         #if 5 minutes remain till the instagram refresh rate pause is met we make a delayed called since the content in the VP is fresh enough and we do not want to 
         #keep the client waiting for an Instagram API response
         if ((Time.now - (instagram_refresh_rate-5).minutes) > self.last_instagram_pull_time) && ((Time.now - instagram_refresh_rate.minutes) < self.last_instagram_pull_time)
-          new_media_created = self.delay.get_instagrams
+          new_media_created = self.delay.get_instagrams(false)
         end
 
         #if more than or equal to instagram refresh rate pause time has passed then we make the client wait a bit longer but deliver fresh content (no delayed job used)
         if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
-            new_media_created = self.get_instagrams
+            new_media_created = self.get_instagrams(false)
         end
       end
     else
       if self.instagram_location_id == nil
         self.set_instagram_location_id(100)
       elsif self.instagram_location_id != 0
-        new_media_created = self.get_instagrams
+        new_media_created = self.get_instagrams(false)
       else
         new_media_created = false
       end
