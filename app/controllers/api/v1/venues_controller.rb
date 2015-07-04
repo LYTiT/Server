@@ -273,7 +273,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_trending_venues
 		expires_in 5.minutes
-		@venues = Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
+		@venues = Venue.trending_venues
 		@venue_hash = Hash[@venues.map.with_index.to_a]
 	end
 
