@@ -137,8 +137,8 @@ class VenueComment < ActiveRecord::Base
 
 		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
 		if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )			
-			vc = VenueComment.new(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-			if vc.save
+			vc = VenueComment.create!(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username) rescue nil
+			if vc != nil
 				new_media_created = true
 				if origin_venue == nil
 					lytit_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)#hackery, to make sure that all instagrams of a venue in pull are not excluded after the first one
