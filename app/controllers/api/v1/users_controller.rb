@@ -188,7 +188,7 @@ class Api::V1::UsersController < ApiBaseController
 			user.update_user_feeds
 		end
 		@venue_id = params[:venue_id]
-		@feeds = @user.feeds.includes(:venues)
+		@feeds = @user.feeds.includes(:venues).order("name asc")
 	end
 
 	def calculate_lumens

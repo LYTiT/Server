@@ -53,6 +53,7 @@ gem 'instagram'
 gem 'httparty'
 gem 'text'
 gem 'fuzzy-string-match'
+gem 'dalli'
 
 group :development do
   gem 'better_errors'

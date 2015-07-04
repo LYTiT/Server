@@ -531,7 +531,7 @@ class Venue < ActiveRecord::Base
 
           require 'fuzzystringmatch'
           jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", "")) >= 0.8)
+          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", "")) >= 0.8 && (venue.name.downcase.include?("park") != false || vname.downcase.include?("park") != false))
             lookup = venue
           end
         end
@@ -972,6 +972,8 @@ class Venue < ActiveRecord::Base
       self.update_columns(r_up_votes: 1.0)
       self.update_columns(r_down_votes: 1.0)
       self.update_columns(color_rating: -1.0)
+      self.update_columns(trend_position: nil)
+      self.update_columns(popularity_rank: nil)
     end
 
     return visible
