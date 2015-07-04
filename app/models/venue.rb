@@ -606,7 +606,7 @@ class Venue < ActiveRecord::Base
     client = Instagram.client(:access_token => instagram_access_token)
 
     if day_pull == true || last_instagram_pull_time <= Time.now - 24.hours
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) 
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) 
     else
       last_instagram_post_wrapper = self.last_instagram_post || self.venue_comments.where("content_origin = ?", "instagram").order("id desc").first.instagram_id
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => last_instagram_post_wrapper) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
@@ -620,7 +620,7 @@ class Venue < ActiveRecord::Base
       instagrams.each_with_index do |instagram, index|
         new_media_created = VenueComment.convert_instagram_to_vc(instagram, self)
         if index+1 == instagrams_count
-          last_instagram_id = new_media_created.instagram_id
+          last_instagram_id = instagram.id
         end
       end
       self.update_columns(last_instagram_post: last_instagram_id)  
