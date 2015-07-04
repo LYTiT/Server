@@ -342,6 +342,12 @@ class Venue < ActiveRecord::Base
       end
     end
   end
+
+  def self.trending_venues
+    trending = Rails.cache.fetch(:trending) do 
+      Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
+    end
+  end
   #----------------------------------------------------------------------->
 
 
