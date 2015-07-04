@@ -272,7 +272,6 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_trending_venues
-		expires_in 5.minutes
 		@venues = Venue.trending_venues
 		@venue_hash = Hash[@venues.map.with_index.to_a]
 	end
