@@ -605,14 +605,11 @@ class Venue < ActiveRecord::Base
     instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token rescue nil
     client = Instagram.client(:access_token => instagram_access_token)
 
-    if day_pull == true || last_instagram_pull_time <= Time.now - 24.hours
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)#Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) 
+    if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
     else
-      last_instagram_post_wrapper = self.last_instagram_post || self.venue_comments.where("content_origin = ?", "instagram").order("id desc").first.instagram_id
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => last_instagram_post_wrapper) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
     end
-    
-    client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post)
 
     instagrams_count = instagrams.count
 
