@@ -421,7 +421,7 @@ class Venue < ActiveRecord::Base
           venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
-          if jarow_winkler_proximity > 0.70
+          if jarow_winkler_proximity > 0.70 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
             if not search_hash[instagram.location.id]
               search_hash[instagram.location.id] = jarow_winkler_proximity
             else
@@ -529,7 +529,7 @@ class Venue < ActiveRecord::Base
 
           if ( ((venue.name.downcase).include?(vname.downcase) && vname.length.to_f/venue.name.length.to_f > 0.5) || ((vname.downcase).include?(venue.name.downcase) && venue.name.length.to_f/vname.length.to_f > 0.5) ) #Are they substrings?
             #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
-            if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") != false && vname.downcase.include?("park") != false)
+            if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)
               lookup = venue
               break
             end
