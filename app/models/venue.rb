@@ -547,7 +547,7 @@ class Venue < ActiveRecord::Base
             end
           end          
         
-          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
+          if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
             lookup = venue
             break
           end
@@ -614,6 +614,9 @@ class Venue < ActiveRecord::Base
     last_instagram_id = nil
 
     instagram_access_token = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first.token rescue nil
+    if instagram_access_token != nil
+      instagram_access_token.increment!(:num_used, 1)
+    end
     client = Instagram.client(:access_token => instagram_access_token)
 
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)

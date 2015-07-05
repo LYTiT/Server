@@ -136,6 +136,7 @@ class Api::V1::UsersController < ApiBaseController
 		if existence_check != nil
 			existence_check.update_columns(token: params[:instagram_user_token])
 			existence_check.update_columns(is_valid: true)
+			existence_check.update_columns(user_id: params[:user_id])
 		else
 			instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
 		end
@@ -150,7 +151,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def check_instagram_token_expiration
 		user = User.find_by_authentication_token(params[:auth_token]) 
-		if not user.instagram_auth_tokens.first.try(:is_valid)
+		if user.instagram_auth_tokens.first.try(:is_valid) == false
 			render json: { bool_response: true }
 		else
 			render json: { bool_response: false }
