@@ -837,10 +837,14 @@ class Venue < ActiveRecord::Base
   def cord_to_city
     query = self.latitude.to_s + "," + self.longitude.to_s
     result = Geocoder.search(query).first 
-     if (result)
-      city = result.country
-    end
-    return city
+    result_city = result.city || result.county
+    result_city.slice!(" County")
+    self.update_columns(city: result_city)
+    return result_city
+  end
+
+  def get_city_implicitly
+    result = city || cord_to_city
   end
 
   def self.miles_to_meters(miles)
