@@ -539,9 +539,9 @@ class Venue < ActiveRecord::Base
           jarow = FuzzyStringMatch::JaroWinkler.create( :native )
 
           if vname.include?(',') || venue.name.include?(',')
-            no_comma_vname = vname.slice(0..(str.index(',')-1)) rescue vname
-            nomma_venue_name = venue.name.slice(0..(str.index(',')-1)) rescue venue.name
-            if p jarow.getDistance(no_comma_vname, nomma_venue_name) > 0.9
+            no_comma_vname = vname.slice(0..(vname.index(',')-1)) rescue vname
+            no_comma_venue_name = venue.name.slice(0..(venue.name.index(',')-1)) rescue venue.name
+            if p jarow.getDistance(no_comma_vname, no_comma_venue_name) > 0.9
               lookup = venue
               break
             end
