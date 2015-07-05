@@ -27,4 +27,4 @@ json.image_radius @user.image_radius
 json.text_radius @user.text_radius
 json.bonus_radius @user.bonus_radius
 json.view_radius @user.views_radius
-json.mapped_places_radius @user.mapped_places_radius
+

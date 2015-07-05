@@ -32,12 +32,6 @@ class Api::V1::UsersController < ApiBaseController
 			end
 
 			if VendorIdTracker.where("LOWER(used_vendor_id) = ?", @user.vendor_id.downcase).first == nil
-				l = LumenValue.new(:value => 5.0, :user_id => @user.id, :media_type => "bonus")
-      			l.save
-      			@user.lumens = 5.0
-      			@user.bonus_lumens = 5.0
-      			@user.monthly_gross_lumens = 5.0
-      			@user.save
       			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
       			v_id_tracker.save
       		end

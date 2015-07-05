@@ -537,8 +537,19 @@ class Venue < ActiveRecord::Base
 
           require 'fuzzystringmatch'
           jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub(" ", "")) >= 0.8 && (venue.name.downcase.include?("park") != false || vname.downcase.include?("park") != false))
+
+          if vname.include?(',') || venue.name.include?(',')
+            no_comma_vname = vname.slice(0..(str.index(',')-1)) rescue vname
+            nomma_venue_name = venue.name.slice(0..(str.index(',')-1)) rescue venue.name
+            if p jarow.getDistance(no_comma_vname, nomma_venue_name) > 0.9
+              lookup = venue
+              break
+            end
+          end          
+        
+          if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
             lookup = venue
+            break
           end
         end
       end

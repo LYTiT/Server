@@ -3,7 +3,7 @@ class LumenValue < ActiveRecord::Base
 	belongs_to :venue_comment
 	belongs_to :lytit_vote
 
-	after_create :new_lumens_notification
+	#after_create :new_lumens_notification
 
 
 	def new_lumens_notification

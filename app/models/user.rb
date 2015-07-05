@@ -369,18 +369,9 @@ class User < ActiveRecord::Base
 
   def views_radius
     if total_views == 0
-      70
+      0
     else
-      [Math::log(total_views) + 75, 85].min
-    end
-  end
-
-  def mapped_places_radius
-    num_places_mapped = VenueComment.where("user_id = ?", self.id).uniq.pluck(:venue_id).count
-    if num_places_mapped == 0
-      70
-    else
-      [Math::log(num_places_mapped) + 72, 85].min
+      [Math::log(total_views) + 70, 85].min
     end
   end
 
