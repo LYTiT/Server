@@ -85,5 +85,7 @@ LytitServer::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
+  config.cache_store = :dalli_store
+
   config.action_mailer.default_url_options = { host: ENV['HOST_DOMAIN'] }
 end

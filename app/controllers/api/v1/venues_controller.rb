@@ -155,7 +155,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments
-		expires_in 3.minutes
+		expires_in 3.minutes, :public => true
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
