@@ -62,6 +62,7 @@ class Api::V1::FeedsController < ApiBaseController
 		feed.update_columns(latest_viewed_time: Time.now)
 		feed.update_columns(new_media_present: false)
 		#feed.update_media	
+		render json: { success: true }
 	end
 
 end
