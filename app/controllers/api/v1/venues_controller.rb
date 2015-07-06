@@ -171,6 +171,12 @@ class Api::V1::VenuesController < ApiBaseController
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
+			if venue_ids.count == 1 && params[:feed_id] == nil
+				@venue = Venue.find_by_id(venue_ids.first)
+
+				@venue.account_page_view
+				@venue.instagram_pull_check
+			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@comments = live_comments.page(params[:page]).per(25)
 		end
