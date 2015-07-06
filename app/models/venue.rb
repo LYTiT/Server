@@ -343,10 +343,8 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.trending_venues
-    trending = Rails.cache.fetch(:trending) do 
-      Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
-    end
+  def self.trending_venues     
+    Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
   end
   #----------------------------------------------------------------------->
 
@@ -504,7 +502,7 @@ class Venue < ActiveRecord::Base
       venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
       if venues.count == 0
         vname.to_s.downcase.split.each do |part| 
-          if not ['the', 'a', 'cafe', 'restaurant', 'club'].include? part
+          if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
             puts "search part extracted"
             search_part = part
             break

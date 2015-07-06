@@ -272,7 +272,9 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_trending_venues
-		@venues = Venue.trending_venues
+		@venues = Rails.cache.fetch(:trending_venues) do 
+			Venue.trending_venues
+		end
 		@venue_hash = Hash[@venues.map.with_index.to_a]
 	end
 
