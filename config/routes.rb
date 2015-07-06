@@ -90,6 +90,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_comments'
         end
+        get 'get_comments_of_a_venue'
       end
 
       controller :lytit_bar do

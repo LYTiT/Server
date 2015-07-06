@@ -154,6 +154,15 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	def get_comments_of_a_venue
+		@venue = Venue.find_by_id(params[:venue_id])
+		@venue.account_page_view
+		@venue.instagram_pull_check
+		live_comments = VenueComment.get_comments_for_cluster(params[:venue_id].to_a)
+		@comments = live_comments.page(params[:page]).per(25)
+		render 'get_comments.json.jbuilder'
+	end
+
 	def get_comments
 		expires_in 3.minutes, :public => true
 
@@ -161,12 +170,6 @@ class Api::V1::VenuesController < ApiBaseController
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
-			if venue_ids.count == 1 && params[:feed_id] == nil
-				@venue = Venue.find_by_id(venue_ids.first)
-
-				@venue.account_page_view
-				@venue.instagram_pull_check
-			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			@comments = live_comments.page(params[:page]).per(25)
 		end

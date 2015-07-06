@@ -98,8 +98,7 @@ namespace :lytit do
           })
         end
       end
-      #clear trending cache
-      Rails.cache.delete(:trending)
+
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
