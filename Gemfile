@@ -54,6 +54,7 @@ gem 'httparty'
 gem 'text'
 gem 'fuzzy-string-match'
 gem 'dalli'
+gem 'memcachier'
 
 group :development do
   gem 'better_errors'
