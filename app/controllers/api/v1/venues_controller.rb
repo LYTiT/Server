@@ -156,12 +156,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_comments
 		expires_in 3.minutes
-		if params[:feed_id] != nil
-			feed = Feed.find_by_id(params[:feed_id])			
-			feed.update_columns(latest_viewed_time: Time.now)
-			feed.update_columns(new_media_present: false)
-			#feed.update_media
-		end
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 

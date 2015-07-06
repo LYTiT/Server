@@ -57,4 +57,11 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def register_open
+		feed = Feed.find_by_id(params[:feed_id])			
+		feed.update_columns(latest_viewed_time: Time.now)
+		feed.update_columns(new_media_present: false)
+		#feed.update_media	
+	end
+
 end
