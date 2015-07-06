@@ -344,7 +344,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.trending_venues     
-    Venue.where("popularity_rank IS NOT NULL").includes(:venue_comments).order("popularity_rank desc limit 10").to_a
+    Venue.all.includes(:venue_comments).where("venue_comments.time_wrapper >= ?", Time.now - 1.day).references(:venue_comments).order("popularity_rank desc limit 10").to_a
   end
   #----------------------------------------------------------------------->
 
