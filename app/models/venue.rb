@@ -497,7 +497,7 @@ class Venue < ActiveRecord::Base
       return lookup.venue
     else
       search_part = nil
-      radius = 250
+      radius = 500
       boundries = bounding_box(radius, lat, long)
       venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
       if venues.count == 0
