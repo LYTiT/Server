@@ -267,9 +267,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_trending_venues
-		@venues = Rails.cache.fetch(:trending_venues) do 
-			Venue.trending_venues
-		end
+		expires_in 5.minutes, :public => true
+		@venues = Venue.trending_venues
 		@venue_hash = Hash[@venues.map.with_index.to_a]
 	end
 
