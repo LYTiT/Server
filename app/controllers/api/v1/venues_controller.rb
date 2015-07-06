@@ -155,10 +155,11 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments_of_a_venue
+		v = [params[:venue_id]]
 		@venue = Venue.find_by_id(params[:venue_id])
 		@venue.account_page_view
 		@venue.instagram_pull_check
-		live_comments = VenueComment.get_comments_for_cluster(params[:venue_id].to_a)
+		live_comments = VenueComment.get_comments_for_cluster(v)
 		@comments = live_comments.page(params[:page]).per(25)
 		render 'get_comments.json.jbuilder'
 	end
