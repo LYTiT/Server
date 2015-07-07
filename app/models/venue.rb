@@ -343,8 +343,11 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.trending_venues     
-    Venue.where("popularity_rank IS NOT NULL").order('popularity_rank desc limit 10').includes(:venue_comments).to_a
+  def self.trending_venues
+    key = "trending_venues"
+    Rails.cache.fetch key, expires_in: 3.minutes do
+      Venue.where("popularity_rank IS NOT NULL").order('popularity_rank desc limit 10').includes(:venue_comments).to_a
+    end
   end
   #----------------------------------------------------------------------->
 
