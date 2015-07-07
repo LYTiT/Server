@@ -1,7 +1,7 @@
 class Api::V1::VenuesController < ApiBaseController
 
 	skip_before_filter :set_user, only: [:search, :index]
-	caches_page :get_trending_venues, expires_in: 5.minutes
+	caches_page :get_trending_venues
 
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
@@ -279,8 +279,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_trending_venues
 		#expires_in 5.minutes, :public => true
-		@venues = Venue.trending_venues
-		@venue_hash = Hash[@venues.map.with_index.to_a]
+		key = "trending_venues"
+		Rails.cache.fetch key, expires_in: 3.minutes do 
+			@venues = Venue.trending_venues
+			@venue_hash = Hash[@venues.map.with_index.to_a]
+		end
 	end
 
 
