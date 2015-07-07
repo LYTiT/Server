@@ -135,8 +135,10 @@ class VenueComment < ActiveRecord::Base
 			lytit_venue = origin_venue
 		end
 
-		if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
-			return nil
+		if vortex != nil
+			if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+				return nil
+			end
 		end
 
 		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
