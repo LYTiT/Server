@@ -631,7 +631,7 @@ class Venue < ActiveRecord::Base
 
     if instagrams != nil and instagrams_count > 0
       instagrams.each_with_index do |instagram, index|
-        new_media_created = VenueComment.convert_instagram_to_vc(instagram, self)
+        new_media_created = VenueComment.convert_instagram_to_vc(instagram, self, nil)
         if index+1 == instagrams_count
           last_instagram_id = instagram.id
         end
@@ -697,7 +697,7 @@ class Venue < ActiveRecord::Base
           new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
           for instagram in new_instagrams
-            VenueComment.convert_instagram_to_vc(instagram, nil)
+            VenueComment.convert_instagram_to_vc(instagram, nil, nil)
           end
 
         end

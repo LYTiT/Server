@@ -117,7 +117,7 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
 
-	def self.convert_instagram_to_vc(instagram, origin_venue)
+	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
 		lat = instagram.location.latitude
@@ -133,6 +133,10 @@ class VenueComment < ActiveRecord::Base
 			end
 		else
 			lytit_venue = origin_venue
+		end
+
+		if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+			return nil
 		end
 
 		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)

@@ -137,6 +137,7 @@ class Api::V1::UsersController < ApiBaseController
 			existence_check.update_columns(token: params[:instagram_user_token])
 			existence_check.update_columns(is_valid: true)
 			existence_check.update_columns(user_id: params[:user_id])
+			existence_check.update_columns(num_used: 0)
 		else
 			instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
 		end
