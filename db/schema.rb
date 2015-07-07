@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150704185121) do
+ActiveRecord::Schema.define(version: 20150707193459) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -376,7 +376,7 @@ ActiveRecord::Schema.define(version: 20150704185121) do
     t.datetime "latest_posted_comment_time"
     t.boolean  "is_address",                           default: false
     t.boolean  "has_been_voted_at",                    default: false
-    t.float    "popularity_rank"
+    t.float    "popularity_rank",                      default: 0.0
     t.float    "popularity_percentile"
     t.float    "page_views",                           default: 0.0
     t.integer  "user_id"
