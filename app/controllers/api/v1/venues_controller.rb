@@ -1,7 +1,6 @@
 class Api::V1::VenuesController < ApiBaseController
 
 	skip_before_filter :set_user, only: [:search, :index]
-	caches_page :get_trending_venues
 
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
