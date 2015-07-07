@@ -55,7 +55,7 @@ namespace :lytit do
       total_popular_venues = Venue.where("popularity_rank IS NOT NULL").count
       if total_popular_venues > 10
         Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(trend_position: nil)
-        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(popularity_rank: nil)
+        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(popularity_rank: 0.0)
       end
 
       for entry in spheres
