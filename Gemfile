@@ -55,6 +55,7 @@ gem 'text'
 gem 'fuzzy-string-match'
 gem 'dalli'
 gem 'memcachier'
+gem 'whacamole'
 
 group :development do
   gem 'better_errors'
