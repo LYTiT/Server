@@ -1021,7 +1021,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(r_down_votes: 1.0)
       self.update_columns(color_rating: -1.0)
       self.update_columns(trend_position: nil)
-      self.update_columns(popularity_rank: nil)
+      self.update_columns(popularity_rank: 0.0)
     end
 
     return visible

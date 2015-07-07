@@ -16,4 +16,5 @@ json.array! @venues do |v|
   json.comment_4_username v.venue_comments[3].try(:username_for_trending_venue_view)
   json.comment_5 v.venue_comments.order("id desc")[4]
   json.comment_5_username v.venue_comments[4].try(:username_for_trending_venue_view)
+  json.trend_position v.trend_position
 end

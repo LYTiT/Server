@@ -279,7 +279,7 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_trending_venues
 		#expires_in 5.minutes, :public => true 
 		@venues ||= Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
-			Venue.all.joins(:venue_comments).where("venue_comments.time_wrapper > ?", Time.now-1.day).order("popularity_rank desc limit 10")
+			Venue.includes(:venue_comments).order("popularity_rank desc limit 10")
 		end
 	end
 
