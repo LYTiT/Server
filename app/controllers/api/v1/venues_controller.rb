@@ -280,7 +280,6 @@ class Api::V1::VenuesController < ApiBaseController
 		#expires_in 5.minutes, :public => true 
 		@venues = Venue.trending_venues
 		@venue_hash = Hash[@venues.map.with_index.to_a]
-		end
 	end
 
 
