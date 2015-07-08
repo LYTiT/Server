@@ -38,6 +38,7 @@ LytitServer::Application.routes.draw do
         post 'add_instagram_auth_token'
         post 'update_instagram_permission'
         post 'check_instagram_token_expiration'
+        post 'remove_instagram_authentication'
       end
 
       resources :feeds, only: [:create] do
@@ -90,7 +91,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_comments'
         end
-        get 'get_comments_of_a_venue'
+        get 'get_comments_of_a_venue'        
       end
 
       controller :lytit_bar do

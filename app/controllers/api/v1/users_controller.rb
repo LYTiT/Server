@@ -144,6 +144,12 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def remove_instagram_authentication
+		inst_auth_token = InstagramAuthToken.where("instagram_user_id = ?", params[:instagram_user_id]).first
+		inst_auth_token.update_columns(instagram_user_id: nil)
+		render json: { success: true }
+	end
+
 	def update_instagram_permission
 		user = User.find_by_authentication_token(params[:auth_token])
 		user.update_columns(asked_instagram_permission: true)
