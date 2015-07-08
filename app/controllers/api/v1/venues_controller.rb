@@ -274,10 +274,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 		num_page_entries = 12
 
-		crude_results = Kaminari.paginate_array(VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long))
-		page_results = crude_results.page(params[:page]).per(num_page_entries)
 
-		previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]
+		crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+		page_results = crude_results[ (params[:page].to_i-1)*num_page_entries .. (params[:page].to_i-1)*num_page_entries+(num_page_entries-1) ]
+
+		previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]		
 
 		deletions = 0
 		if page_results != nil
@@ -288,10 +289,11 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 			end
 
-			if deletions > 0
+			if page_results.count != num_page_entries
 				pos = params[:page].to_i * num_page_entries
-				while (page_results.count != num_page_entries and pos <= crude_results.count) do
-					filler = crude_results[pos]				
+				puts "-------------------------------------------------------------------------------------------#{previous_results}"
+				while (page_results.count <= num_page_entries && pos < crude_results.count) do
+					filler = crude_results[pos]	
 					if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
 						page_results << filler
 					end
@@ -301,7 +303,8 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		#--------->>
-		@page_tracker = crude_results.page(params[:page]).per(num_page_entries)
+		crude_results_paginated = Kaminari.paginate_array(crude_results)
+		@page_tracker = crude_results_paginated.page(params[:page]).per(num_page_entries)
 		@comments = page_results
 	end
 

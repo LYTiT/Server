@@ -242,12 +242,6 @@ class VenueComment < ActiveRecord::Base
 		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})").to_a
 		end
 
-		#for result in results
-		#  if not result.meta_search_sanity_check(query) 
-		#	results.delete(result)
-		#  end
-		#end
-
 		return results
 	end
 
