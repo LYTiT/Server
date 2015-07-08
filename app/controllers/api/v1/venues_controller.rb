@@ -275,22 +275,24 @@ class Api::V1::VenuesController < ApiBaseController
 		page_results = crude_results.page(params[:page]).per(12)
 
 		deletions = 0
-		for result in page_results
-			if not result.meta_search_sanity_check(query) 
-				page_results.delete(result)
-				crude_results.delete(result)
-				deletions = deletions+1
-			end
-		end
-
-		if deletions > 0
-			pos = params[:page].to_i*12
-			while page_results.count != 12 do
-				filler = crude_results[pos]				
-				if filler.meta_search_sanity_check(query) == true
-					page_results << filler
+		if page_results != nil
+			for result in page_results
+				if result != nil and result.meta_search_sanity_check(query) == false
+					page_results.delete(result)
+					crude_results.delete(result)
+					deletions = deletions+1
 				end
-				pos = pos + 1
+			end
+
+			if deletions > 0
+				pos = params[:page].to_i*12
+				while (page_results.count != 12 || pos <= crude_results.count) do
+					filler = crude_results[pos]				
+					if filler != nil and filler.meta_search_sanity_check(query) == true
+						page_results << filler
+					end
+					pos = pos + 1
+				end
 			end
 		end
 
