@@ -292,7 +292,7 @@ class Api::V1::VenuesController < ApiBaseController
 				pos = params[:page].to_i * num_page_entries
 				while (page_results.count != num_page_entries and pos <= crude_results.count) do
 					filler = crude_results[pos]				
-					if filler != nil and filler.meta_search_sanity_check(query) == true
+					if filler != nil and (filler.meta_search_sanity_check(query) == true || previous_results.include?(filler.id.to_s) == false)
 						page_results << filler
 					end
 					pos = pos + 1
