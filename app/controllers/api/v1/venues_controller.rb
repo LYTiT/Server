@@ -282,13 +282,12 @@ class Api::V1::VenuesController < ApiBaseController
 			for result in page_results
 				if result != nil and result.meta_search_sanity_check(query) == false
 					page_results.delete(result)
-					crude_results.delete(result)
-					deletions = deletions+1
+					deletions = deletions + 1
 				end
 			end
 
 			if deletions > 0
-				pos = params[:page].to_i*num_page_entries
+				pos = params[:page].to_i * num_page_entries
 				while (page_results.count != num_page_entries and pos <= crude_results.count) do
 					filler = crude_results[pos]				
 					if filler != nil and filler.meta_search_sanity_check(query) == true
