@@ -271,7 +271,58 @@ class Api::V1::VenuesController < ApiBaseController
 				query = query[0...-3]
 			end
 		end
-		@comments = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long).page(params[:page]).per(24)
+		crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+
+		page_results = crude_results.page(params[:page]).per(12)
+
+		deletions = 0
+		for result in page_results
+			if not result.meta_search_sanity_check(query) 
+				page_results.delete(result)
+				crude_results.delete(result)
+				deletions = deletions+1
+			end
+		end
+
+		if deletions > 0
+			fillers = crude_results.page(params[:page]+1).per(12)
+			fillers.each_with_index do |filler, index|
+				if filler.meta_search_sanity_check(query) == true
+					page_results << filler
+				end
+				if index == deletions
+					break
+				end
+			end
+		end
+
+		#Just in case not enough valid fillers are found we make some more pulls
+		if page_results.count < 12
+			fillers = crude_results.page(params[:page]+2).per(12)
+			fillers.each_with_index do |filler, index|
+				if filler.meta_search_sanity_check(query) == true
+					page_results << filler
+				end
+				if index == deletions
+					break
+				end
+			end
+		end
+
+		if page_results.count < 12
+			fillers = crude_results.page(params[:page]+3).per(12)
+			fillers.each_with_index do |filler, index|
+				if filler.meta_search_sanity_check(query) == true
+					page_results << filler
+				end
+				if index == deletions
+					break
+				end
+			end
+		end
+		#--------->>
+		@page_tracker = crude_results.page(params[:page]).per(12)
+		@comments = page_results
 	end
 
 	def get_trending_venues 

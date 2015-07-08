@@ -15,6 +15,6 @@ json.comments(@comments) do |comment|
   json.thirdparty_username comment.thirdparty_username
 end
 json.pagination do 
-  json.current_page @comments.current_page
-  json.total_pages @comments.total_pages
+  json.current_page @page_tracker.current_page
+  json.total_pages @page_tracker.total_pages
 end
