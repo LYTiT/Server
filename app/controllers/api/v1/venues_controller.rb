@@ -271,8 +271,7 @@ class Api::V1::VenuesController < ApiBaseController
 				query = query[0...-3]
 			end
 		end
-		crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-
+		crude_results = Kaminari.paginate_array(VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long))
 		page_results = crude_results.page(params[:page]).per(12)
 
 		deletions = 0
