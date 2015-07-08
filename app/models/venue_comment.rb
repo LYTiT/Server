@@ -207,7 +207,6 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-
 	def extract_venue_comment_meta_data
 		text = self.comment.split rescue nil
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
@@ -225,6 +224,62 @@ class VenueComment < ActiveRecord::Base
 			end
 		end
 	end
+
+	def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+		#no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
+		if query[0..2].downcase == "insta"
+		  return nil
+		end
+		query = '%'+query+'%'
+
+		meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
+
+		#user searching around himself as determined by centered positioning on map screen
+		if (sw_lat.to_i == 0 && ne_long.to_i == 0)		  
+		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.id IN (#{meta_vc_ids})")    
+		#user searching over an area of view
+		else
+		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})")
+		end
+
+		for result in results
+		  if not result.meta_search_sanity_check(query) 
+			results.delete(result)
+		  end
+		end
+
+		return results
+	end
+
+	#Making sure that meta results are reasonable relative to the search term. Also we make sure the comment is not older than a day.
+	def meta_search_sanity_check(query)
+		passed = false
+		if (self.created_at + 1.day) >= Time.now
+			require 'fuzzystringmatch'
+			jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+			prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
+			suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]      
+
+			for entry in self.meta_datas
+				raw_jarow_distance = p jarow.getDistance(entry.meta, query)
+				if entry.clean_meta != nil
+					clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
+					clean_meta_length = entry.clean_meta.length
+				else
+					implicit_clean_meta = self.remove_meta_data_prefixes_suffixes(entry.meta)
+					clean_jarow_distance = p jarow.getDistance(implicit_clean_meta, query)
+					clean_meta_length = implicit_clean_meta.length
+				end
+				#we compare lengths because search results and meta data should have equal (or close to) roots
+				if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_meta_length < query.length*2)
+					passed = true
+					break
+				end	
+			end	
+
+		end
+		return passed
+	end 
 
 	def remove_meta_data_prefixes_suffixes(data)
 		prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]

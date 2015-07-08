@@ -1,20 +1,20 @@
-json.meta_places(@venues) do |v|
-  json.id v.id
-  json.name v.name
-  json.latitude v.latitude
-  json.longitude v.longitude
-  json.color_rating v.color_rating
-  json.comment_1 v.meta_search_sanity_check(v.venue_comments[0], @query)
-  json.comment_1_username v.venue_comments[0].user.try(:name)
-  json.comment_1_user_lumens v.venue_comments[0].user.try(:lumens)
-  json.comment_2 v.meta_search_sanity_check(v.venue_comments[1], @query)
-  json.comment_2_username v.venue_comments[0].user.try(:name)
-  json.comment_2_user_lumens v.venue_comments[0].user.try(:lumens)
-  json.comment_3 v.meta_search_sanity_check(v.venue_comments[2], @query)
-  json.comment_3_username v.venue_comments[0].user.try(:name)
-  json.comment_3_user_lumens v.venue_comments[0].user.try(:lumens)
+json.comments(@comments) do |comment|
+  json.id comment.id
+  json.comment comment.comment
+  json.media_type comment.media_type
+  json.media_url comment.media_url
+  json.user_id comment.user_id
+  json.user_name comment.user.try(:name)
+  json.username_private comment.username_private
+  json.user_lumens comment.user.try(:lumens)
+  json.venue_id comment.venue_id
+  json.venue_name comment.venue.try(:name)
+  json.created_at comment.time_wrapper
+  json.updated_at comment.updated_at
+  json.content_origin comment.content_origin
+  json.thirdparty_username comment.thirdparty_username
 end
 json.pagination do 
-  json.current_page @venues.current_page
-  json.total_pages @venues.total_pages
+  json.current_page @comments.current_page
+  json.total_pages @comments.total_pages
 end

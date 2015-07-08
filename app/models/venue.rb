@@ -706,69 +706,7 @@ class Venue < ActiveRecord::Base
   #----------------------------------------------------------------------------->
 
 
-  #VI. LYTiT Content Meta Search Algorithm------------------------------------------>
-  #Returns venues that have Venue Comments corresponding to the meta search
-  def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-    #no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
-    if query[0..2].downcase == "insta"
-      return nil
-    end
-    query = '%'+query+'%'
-  
-    meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
-
-    #user searching around himself as determined by centered positioning on map screen
-    if (sw_lat.to_i == 0 && ne_long.to_i == 0)
-      result_venues = Venue.includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments).order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
-    #user searching over an area of view
-    else
-      result_venues = Venue.in_bounds([[sw_lat,sw_long],[ne_lat,ne_long]]).includes(:venue_comments).where("venue_comments.id IN (#{meta_vc_ids})").references(:venue_comments)
-    end
-  end
-
-  #Making sure that meta results are reasonable relative to the search term. Also we make sure the comment is not older than a day.
-  def meta_search_sanity_check(vc, query)
-    if vc != nil && (vc.created_at + 1.day) >= Time.now
-      require 'fuzzystringmatch'
-      jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-      prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
-      suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]
-        
-      pass = false
-
-      for entry in vc.meta_datas
-        raw_jarow_distance = p jarow.getDistance(entry.meta, query)
-        if entry.clean_meta != nil
-          clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
-          clean_meta_length = entry.clean_meta.length
-        else
-          implicit_clean_meta = vc.remove_meta_data_prefixes_suffixes(entry.meta)
-          clean_jarow_distance = p jarow.getDistance(implicit_clean_meta, query)
-          clean_meta_length = implicit_clean_meta.length
-        end
-        #we compare lengths because search results and meta data should have equal (or close to) roots
-        if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_meta_length < query.length*2)
-          pass = true
-          break
-        end
-
-      end
-
-      if pass == true
-        return vc
-      else
-        return nil
-      end
-
-    else
-      return nil
-    end
-  end 
-  #----------------------------------------------------------------------------->
-
-
-
-  #V. Additional/Misc Functionalities ------------------------------------------->
+  #IV. Additional/Misc Functionalities ------------------------------------------->
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def last_post_time
     (Time.now - latest_posted_comment_time)
@@ -905,8 +843,7 @@ class Venue < ActiveRecord::Base
   #------------------------------------------------------------------------------>
 
 
-
-  #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
+  #V. LYT Algorithm Related Calculations and Calibrations ------------------------->
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end

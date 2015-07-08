@@ -271,9 +271,7 @@ class Api::V1::VenuesController < ApiBaseController
 				query = query[0...-3]
 			end
 		end
-		@query = query
-		results = Venue.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long).to_a
-		@venues = Kaminari.paginate_array(results).page(params[:page]).per(25)
+		@comments = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long).page(params[:page]).per(24)
 	end
 
 	def get_trending_venues 
