@@ -284,7 +284,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if deletions > 0
-			fillers = crude_results.page(params[:page]+1).per(12)
+			fillers = crude_results.page(params[:page].to_i+1).per(12)
 			fillers.each_with_index do |filler, index|
 				if filler.meta_search_sanity_check(query) == true
 					page_results << filler
@@ -297,7 +297,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		#Just in case not enough valid fillers are found we make some more pulls
 		if page_results.count < 12
-			fillers = crude_results.page(params[:page]+2).per(12)
+			fillers = crude_results.page(params[:page].to_i+2).per(12)
 			fillers.each_with_index do |filler, index|
 				if filler.meta_search_sanity_check(query) == true
 					page_results << filler
