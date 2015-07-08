@@ -277,10 +277,12 @@ class Api::V1::VenuesController < ApiBaseController
 		crude_results = Kaminari.paginate_array(VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long))
 		page_results = crude_results.page(params[:page]).per(num_page_entries)
 
+		previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]
+
 		deletions = 0
 		if page_results != nil
 			for result in page_results
-				if result != nil and (result.meta_search_sanity_check(query) == false || (params[:previous_results].to_a.include?(result.id.to_s) == true))
+				if result != nil and (result.meta_search_sanity_check(query) == false || previous_results.include?(result.id.to_s) == true)
 					page_results.delete(result)
 					deletions = deletions + 1
 				end
