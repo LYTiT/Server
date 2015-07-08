@@ -276,8 +276,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@venues = Kaminari.paginate_array(results).page(params[:page]).per(25)
 	end
 
-	def get_trending_venues
-		#expires_in 5.minutes, :public => true 
+	def get_trending_venues 
 		@venues ||= Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
 			Venue.includes(:venue_comments).order("popularity_rank desc limit 10")
 		end
