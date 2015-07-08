@@ -280,7 +280,7 @@ class Api::V1::VenuesController < ApiBaseController
 		deletions = 0
 		if page_results != nil
 			for result in page_results
-				if result != nil and (result.meta_search_sanity_check(query) == false || (params[:previous_results].to_a.include?(result.id.to_s) == true)
+				if result != nil and (result.meta_search_sanity_check(query) == false || (params[:previous_results].to_a.include?(result.id.to_s) == true))
 					page_results.delete(result)
 					deletions = deletions + 1
 				end
