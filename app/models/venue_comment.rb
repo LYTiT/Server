@@ -236,10 +236,10 @@ class VenueComment < ActiveRecord::Base
 
 		#user searching around himself as determined by centered positioning on map screen
 		if (sw_lat.to_i == 0 && ne_long.to_i == 0)		  
-		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.id IN (#{meta_vc_ids})")    
+		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.id IN (#{meta_vc_ids})").to_a
 		#user searching over an area of view
 		else
-		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})")
+		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})").to_a
 		end
 
 		for result in results
