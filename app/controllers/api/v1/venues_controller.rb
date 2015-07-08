@@ -271,8 +271,11 @@ class Api::V1::VenuesController < ApiBaseController
 				query = query[0...-3]
 			end
 		end
+
+		num_page_entries = 12
+
 		crude_results = Kaminari.paginate_array(VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long))
-		page_results = crude_results.page(params[:page]).per(12)
+		page_results = crude_results.page(params[:page]).per(num_page_entries)
 
 		deletions = 0
 		if page_results != nil
@@ -285,8 +288,8 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 
 			if deletions > 0
-				pos = params[:page].to_i*12
-				while (page_results.count != 12 || pos <= crude_results.count) do
+				pos = params[:page].to_i*num_page_entries
+				while (page_results.count != num_page_entries and pos <= crude_results.count) do
 					filler = crude_results[pos]				
 					if filler != nil and filler.meta_search_sanity_check(query) == true
 						page_results << filler
@@ -297,7 +300,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		#--------->>
-		@page_tracker = crude_results.page(params[:page]).per(12)
+		@page_tracker = crude_results.page(params[:page]).per(num_page_entries)
 		@comments = page_results
 	end
 
