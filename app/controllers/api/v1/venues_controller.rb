@@ -288,7 +288,7 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 				end
 
-				put"-------------------------------------------------------page restults--> #{page_results}"
+				puts "-------------------------------------------------------page restults--> #{page_results}"
 
 				if page_results.count != num_page_entries
 					pos = page * num_page_entries
