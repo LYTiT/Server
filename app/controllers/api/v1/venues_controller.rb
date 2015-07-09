@@ -279,7 +279,7 @@ class Api::V1::VenuesController < ApiBaseController
 			crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
 			page_results = crude_results[ (page-1)*num_page_entries .. (page-1)*num_page_entries+(num_page_entries-1) ]
 
-			previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]		
+			previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12], params[:previous_id_13], params[:previous_id_14], params[:previous_id_15], params[:previous_id_16], params[:previous_id_17], params[:previous_id_18], params[:previous_id_19], params[:previous_id_20], params[:previous_id_21], params[:previous_id_22], params[:previous_id_23], params[:previous_id_24]]
 
 			if page_results != nil
 				for result in page_results
@@ -288,18 +288,12 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 				end
 
-				puts "-------------------------------------------------------page restults--> #{page_results}"
-				puts "-------------------------------------------------------page restults COUNT--> #{page_results.count}"
-
 				if page_results.count != num_page_entries
-					puts "%%%%%%%%%%%%%%% ENTERED FILLER LOOP"
 					pos = page * num_page_entries
 					while (page_results.count <= num_page_entries && pos < crude_results.count) do
 						filler = crude_results[pos]
-						puts "-------------------------------------------------------filler -$$$$-> #{filler}"
 						if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
 							page_results << filler
-							puts "PAGE RESULT COUNT ****************** : #{page_results.count}"
 						end
 						pos = pos + 1
 					end
