@@ -289,14 +289,17 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 
 				puts "-------------------------------------------------------page restults--> #{page_results}"
+				puts "-------------------------------------------------------page restults COUNT--> #{page_results.count}"
 
 				if page_results.count != num_page_entries
+					puts "%%%%%%%%%%%%%%% ENTERED FILLER LOOP"
 					pos = page * num_page_entries
 					while (page_results.count <= num_page_entries && pos < crude_results.count) do
 						filler = crude_results[pos]
 						puts "-------------------------------------------------------filler -$$$$-> #{filler}"
 						if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
 							page_results << filler
+							puts "PAGE RESULT COUNT ****************** : #{page_results.count}"
 						end
 						pos = pos + 1
 					end
