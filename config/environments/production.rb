@@ -85,7 +85,7 @@ LytitServer::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  config.cache_store = config.cache_store = :dalli_store, 'mc4.dev.ec2.memcachier.com:11211'.split(","),
+  config.cache_store = :dalli_store, 'mc4.dev.ec2.memcachier.com:11211'.split(","),
                     {:username => '5c4679',
                      :password => '7eff960771',
                      :failover => true,
