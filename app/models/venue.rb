@@ -382,6 +382,8 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "snapchat") || (vname.downcase.include? "whatsapp") || (vname.downcase.include? "viber") || (vname.downcase.include? "sms")
       result = false
+    elsif (vname.downcase.include? ",") || (vname.downcase.include? "(") || (vname.downcase.include? ")")
+      result = false
     elsif (vname.downcase.split & emoji_and_symbols).count != 0
       result = false
     elsif vname != vname.titlecase
