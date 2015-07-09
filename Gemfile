@@ -56,6 +56,8 @@ gem 'fuzzy-string-match'
 gem 'dalli'
 gem 'memcachier'
 gem 'whacamole'
+gem 'heroku-api'
+gem 'jbuilder_cache_multi'
 
 group :development do
   gem 'better_errors'

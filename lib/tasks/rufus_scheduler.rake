@@ -6,6 +6,12 @@ namespace :lytit do
   task :scheduler => :environment do
     $scheduler = Rufus::Scheduler.singleton
 
+    #Heroku restart every 18 hours------------------->
+    $scheduler.every '18h' do
+      puts "Restarting Heroku Dynos"
+      Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
+    end
+
     #Instagram Pulling ------------------------------>
     $scheduler.every '10m' do
 

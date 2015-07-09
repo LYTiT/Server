@@ -21,9 +21,6 @@ namespace :lytit do
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
     MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
 
-    #restart Heroku dynos to clear memory
-    #Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
-
     puts "done."
   end
 
