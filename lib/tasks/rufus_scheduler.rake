@@ -99,6 +99,10 @@ namespace :lytit do
         end
       end
 
+      Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
+        Venue.order("popularity_rank desc limit 10").includes(:venue_comments)
+      end
+
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
