@@ -272,40 +272,43 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		end
 
-		num_page_entries = 12
+		if query.length > 2
+			num_page_entries = 12
+			page = params[:page].to_i
 
+			crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
+			page_results = crude_results[ (page-1)*num_page_entries .. (page-1)*num_page_entries+(num_page_entries-1) ]
 
-		crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-		page_results = crude_results[ (params[:page].to_i-1)*num_page_entries .. (params[:page].to_i-1)*num_page_entries+(num_page_entries-1) ]
+			previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]		
 
-		previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12]]		
-
-		deletions = 0
-		if page_results != nil
-			for result in page_results
-				if result != nil and (result.meta_search_sanity_check(query) == false || previous_results.include?(result.id.to_s) == true)
-					page_results.delete(result)
-					deletions = deletions + 1
-				end
-			end
-
-			if page_results.count != num_page_entries
-				pos = params[:page].to_i * num_page_entries
-				puts "-------------------------------------------------------------------------------------------#{previous_results}"
-				while (page_results.count <= num_page_entries && pos < crude_results.count) do
-					filler = crude_results[pos]	
-					if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
-						page_results << filler
+			if page_results != nil
+				for result in page_results
+					if result != nil and (result.meta_search_sanity_check(query) == false || previous_results.include?(result.id.to_s) == true)
+						page_results.delete(result)
 					end
-					pos = pos + 1
+				end
+
+				put"-------------------------------------------------------page restults--> #{page_results}"
+
+				if page_results.count != num_page_entries
+					pos = page * num_page_entries
+					while (page_results.count <= num_page_entries && pos < crude_results.count) do
+						filler = crude_results[pos]
+						puts "-------------------------------------------------------filler -$$$$-> #{filler}"
+						if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
+							page_results << filler
+						end
+						pos = pos + 1
+					end
 				end
 			end
-		end
 
-		#--------->>
-		crude_results_paginated = Kaminari.paginate_array(crude_results)
-		@page_tracker = crude_results_paginated.page(params[:page]).per(num_page_entries)
-		@comments = page_results
+			crude_results_paginated = Kaminari.paginate_array(crude_results)
+			@page_tracker = crude_results_paginated.page(page).per(num_page_entries)
+			@comments = page_results
+		else
+			@comments = nil
+		end
 	end
 
 	def get_trending_venues 
