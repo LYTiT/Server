@@ -273,7 +273,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if query.length > 2
-			num_page_entries = 18
+			num_page_entries = 12
 			page = params[:page].to_i
 
 			crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
