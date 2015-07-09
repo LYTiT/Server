@@ -87,7 +87,7 @@ LytitServer::Application.configure do
 
   config.cache_store = config.cache_store = :dalli_store, 'mc4.dev.ec2.memcachier.com:11211'.split(","),
                     {:username => '5c4679',
-                     :password => '7eff960771'
+                     :password => '7eff960771',
                      :failover => true,
                      :socket_timeout => 1.5,
                      :socket_failure_delay => 0.2
