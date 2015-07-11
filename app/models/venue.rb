@@ -116,7 +116,7 @@ class Venue < ActiveRecord::Base
           break
         end
 
-        if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" ", "")) >= 0.8) && (specific_address == false)
+        if (p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("café", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", ""), vname.downcase.downcase.gsub("the", "").gsub(" a ", "").gsub("café", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")) >= 0.8) && (specific_address == false)
           lookup = venue
         end
 
@@ -420,8 +420,8 @@ class Venue < ActiveRecord::Base
         if instagram.location.name != nil
           puts("#{instagram.location.name}, #{instagram.location.id}")
           #when working with proper names words like "the" and "a" hinder accuracy    
-          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
-          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
+          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub("café", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
+          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("café", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub(" ", "")
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
           if jarow_winkler_proximity > 0.70 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
