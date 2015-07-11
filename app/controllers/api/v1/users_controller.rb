@@ -45,8 +45,10 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def destroy_previous_temp_user
-		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first rescue nil
-		previous_user.destroy rescue nil
+		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
+		if previous_user != nil
+			previous_user.destroy
+		end
 		render json: { success: true }
 	end
 
