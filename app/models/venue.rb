@@ -63,6 +63,30 @@ class Venue < ActiveRecord::Base
       end
     end
 
+    if result == nil
+      name_search = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
+      if name_search.count != 0
+        if name_search.count > 1
+          best_match = nil
+          best_match_score = 0.75
+          for entry in name_search
+              text_comparison_score = (p jarow.getDistance(entry.name, vname))
+              if text_comparison_score > best_match_score
+                best_match = entry
+                best_match_score = text_comparison_score 
+              end
+          end
+          if best_match != nil
+            result = best_match
+          end
+        else
+            if (p jarow.getDistance(name_search.first.name, vname)) >= 0.8
+              result = name_search.first
+            end
+        end
+      end
+    end
+
     if result != nil
       puts "A direct match has been found - name:#{result.name}, id:#{result.id} "
       lookup = result
