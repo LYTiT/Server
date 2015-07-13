@@ -45,7 +45,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				for part in posting_parts #iterate through posting parts to find matching part (equivalent session id) of incoming Venue Comment part
 					
-					if part.session != nil and part.session == session
+					if (part.session != nil and part.session == session) && incoming_part_type != part.media_type
 						@comment = VenueComment.new(venue_comment_params)
 						@comment.user = @user
 						@comment.venue = venue
