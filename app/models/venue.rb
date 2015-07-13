@@ -64,7 +64,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result == nil
-      name_search = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
+      name_search = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 0.5 AND ABS(#{vlongitude} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
       if name_search.count != 0
         if name_search.count > 1
           best_match = nil
