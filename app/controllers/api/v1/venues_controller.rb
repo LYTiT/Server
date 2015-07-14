@@ -310,7 +310,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_trending_venues 
 		@venues = Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
-			Venue.order("popularity_rank desc limit 10").includes(:venue_comments)
+			Venue.where("trend_position IS NOT NULL").order("trend_position ASC limit 10").includes(:venue_comments)
 		end
 	end
 
