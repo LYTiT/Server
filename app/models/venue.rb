@@ -643,7 +643,7 @@ class Venue < ActiveRecord::Base
     instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first
     instagram_access_token = instagram_access_token_obj.token rescue nil
     if instagram_access_token != nil
-      instagram_access_token_obj.increment!(:num_used, 1)
+      instagram_access_token_obj.increment!(:num_used, 1) rescue nil
     end
     client = Instagram.client(:access_token => instagram_access_token)
 
