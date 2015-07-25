@@ -176,7 +176,7 @@ class VenueComment < ActiveRecord::Base
 
 		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
-				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => data) rescue MetaData.increment_relevance_score(data, venue_id)
+				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) rescue MetaData.increment_relevance_score(data, venue_id)
 			end
 		end
 	end
