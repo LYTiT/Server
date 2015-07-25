@@ -174,35 +174,9 @@ class VenueComment < ActiveRecord::Base
 		inst_comment = instagram_captions
 		#inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
-		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
-
 		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
-				#sub_entries are for CamelCase handling if any
-				sub_entries = data.split /(?=[A-Z])/
-				sub_entries.each do |sub_entry|
-					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
-					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
-					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
-						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
-					end
-				end
-			end
-		end
-
-		if inst_comment != nil and inst_comment.count != 0
-			inst_comment.each do |data|
-				#sub_entries are for CamelCase handling if any
-				sub_entries = data.split /(?=[A-Z])/
-				sub_entries.each do |sub_entry|
-					clean_data = sub_entry.downcase.gsub(/[^0-9A-Za-z]/, '')
-					puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
-					if clean_data.length>2 && junk_words.include?(clean_data) == false
-						extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
-						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
-					end
-				end
+				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => data) rescue MetaData.increment_relevance_score(clean_data, venue_id)
 			end
 		end
 	end

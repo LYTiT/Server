@@ -165,7 +165,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments
-		expires_in 3.minutes, :public => true
+		#expires_in 3.minutes, :public => true
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
@@ -312,6 +312,11 @@ class Api::V1::VenuesController < ApiBaseController
 		@venues = Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
 			Venue.where("trend_position IS NOT NULL").order("trend_position ASC limit 10").includes(:venue_comments)
 		end
+	end
+
+	def get_contexts
+		@venue = Venue.find_by_id(params[:venue_id])
+		@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
 	end
 
 

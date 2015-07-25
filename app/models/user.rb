@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
   end 
 
 
-  #II. Lumen Related Methods---------------------------------------->
+  #II. Lumen Related Methods------------------------------------------->
   
   #clear all outstanding user lumens
   def self.global_lumen_recalibration

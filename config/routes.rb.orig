@@ -37,8 +37,6 @@ LytitServer::Application.routes.draw do
         get 'get_user_feeds'
         post 'add_instagram_auth_token'
         post 'update_instagram_permission'
-        post 'check_instagram_token_expiration'
-        post 'remove_instagram_authentication'
       end
 
       resources :feeds, only: [:create] do
@@ -47,8 +45,6 @@ LytitServer::Application.routes.draw do
         post 'add_venue'
         post 'remove_venue'
         get 'get_venues'
-        post 'add_raw_venue'
-        post 'register_open'
       end
 
       resources :announcement do
@@ -68,7 +64,7 @@ LytitServer::Application.routes.draw do
       resources :sessions, only: :create
       resources :venues, only: [:index, :show] do
         #resources :venue_ratings, only: [:create]
-        #get '/posts', :action => :get_comments
+        get '/posts', :action => :get_comments
         get '/groups', :action => :get_groups
         post '/posts/:post_id/mark_as_viewed', :action => :mark_comment_as_viewed
 
@@ -88,11 +84,6 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_trending_venues'
         end
-        collection do
-          get 'get_comments'
-        end
-        get 'get_comments_of_a_venue'
-        get 'get_contexts'       
       end
 
       controller :lytit_bar do
@@ -141,9 +132,20 @@ LytitServer::Application.routes.draw do
     resource :password, controller: 'passwords', only: [:create, :edit, :update]
   end
 
+<<<<<<< HEAD
+  #get 'about-us' => 'pages#about_us'
+  #get 'about' => 'pages#about_us'
+  get 'tnc' => 'pages#tnc'
+  get 'privacy' => 'pages#privacy'
+  #get 'blog' => 'pages#blog'
+  #get 'lumen_game' => 'pages#lumen_game'
+  #get 'lumen_game/rules' => 'pages#lumen_game_rules'
+  #get 'lumen_game/faq' => 'pages#lumen_game_faq'
+=======
   get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
 
+>>>>>>> 081279f02b0a0a5eb2707f3563222ecc84e92832
 
   root :to => 'pages#home'
 
