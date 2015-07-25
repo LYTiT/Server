@@ -176,7 +176,7 @@ class VenueComment < ActiveRecord::Base
 
 		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
-				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => data) rescue MetaData.increment_relevance_score(clean_data, venue_id)
+				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => data) rescue MetaData.increment_relevance_score(data, venue_id)
 			end
 		end
 	end
@@ -193,7 +193,7 @@ class VenueComment < ActiveRecord::Base
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
 					extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
-					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue "Duplicate Meta Data Entry Attempt!"
+					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue MetaData.increment_relevance_score(data, venue_id)
 				end
 			end
 		end
