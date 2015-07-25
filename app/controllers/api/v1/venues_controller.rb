@@ -322,7 +322,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_contexts
-		#Hanlding both for individual venue and clusters
+		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
 			venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 			@contexts = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
