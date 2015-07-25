@@ -166,10 +166,10 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { bool_response: false }
 		end
 	end
-	#-------------------------------------------------->
+	#--------------------------------------------------->
 
 
-	#Functionality Methods----------------------------->
+	#Functionality Methods------------------------------>
 	def get_map_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_map_details.json.jbuilder'
