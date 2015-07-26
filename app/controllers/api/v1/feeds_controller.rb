@@ -2,8 +2,11 @@ class Api::V1::FeedsController < ApiBaseController
 	skip_before_filter :set_user, only: [:create]
 
 	def create
-		feed = Feed.new(:name => params[:name], :user_id => params[:user_id], :latest_viewed_time => Time.now, :feed_color => params[:feed_color])
+		feed = Feed.new(:name => params[:name], :user_id => params[:user_id], :latest_viewed_time => Time.now, :feed_color => params[:feed_color], :open => params[:open])
 		feed.save
+
+		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => true)
+		feed_user.save
 
 		render json: feed.as_json
 	end
@@ -19,6 +22,28 @@ class Api::V1::FeedsController < ApiBaseController
 		feed = Feed.find_by_id(params[:id])
 		feed.update_columns(name: params[:name])
 		render json: feed.as_json
+	end
+
+	def search
+		 @feeds = Feed.where("LOWER(name)", '%' + params[:q].to_s.downcase + '%')
+	end
+
+	def add_feed
+		feed = Feed.find_by_id(params[:feed_id])
+		feed_venue.increment!(:num_venues, 1)
+
+		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
+		feed_user.save
+		render json: { success: true }
+	end
+
+	def leave_feed
+		feed = Feed.find_by_id(params[:feed_id])
+		feed_venue.decrement!(:num_users, 1)
+
+		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
+		feed_user.destroy
+		render json: { success: true }
 	end
 
 	def get_venues

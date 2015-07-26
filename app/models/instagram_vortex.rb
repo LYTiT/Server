@@ -3,7 +3,7 @@ class InstagramVortex < ActiveRecord::Base
 
 	def move
 		#(109.0 * 1000) meters ~= 1 degree latitude
-		path = self.vortex_path
+		path = self.vortex_paths.first
 
 		if self.movement_direction == nil
 			#begin moving the vortex south 
@@ -22,7 +22,7 @@ class InstagramVortex < ActiveRecord::Base
 			else
 				if self.movement_direction == 270
 					new_lat = latitude - path.increment_distance / (109.0 * 1000)
-					if new_lat >= path.origin_lat - span / (109.0 * 1000)
+					if new_lat >= path.origin_lat - path.span / (109.0 * 1000)
 						#keep moving vortex south
 						update_columns(latitude: new_lat)
 					else

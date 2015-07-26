@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150726000918) do
+ActiveRecord::Schema.define(version: 20150726030506) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,6 +73,15 @@ ActiveRecord::Schema.define(version: 20150726000918) do
     t.integer  "job_id"
   end
 
+  create_table "feed_users", force: true do |t|
+    t.integer "user_id"
+    t.integer "feed_id"
+    t.boolean "creator", default: false
+  end
+
+  add_index "feed_users", ["feed_id"], name: "index_feed_users_on_feed_id", using: :btree
+  add_index "feed_users", ["user_id"], name: "index_feed_users_on_user_id", using: :btree
+
   create_table "feed_venues", force: true do |t|
     t.integer "feed_id"
     t.integer "venue_id"
@@ -84,17 +93,18 @@ ActiveRecord::Schema.define(version: 20150726000918) do
 
   create_table "feeds", force: true do |t|
     t.string   "name"
-    t.integer  "user_id"
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "num_venues",         default: 0
     t.datetime "latest_viewed_time"
     t.boolean  "new_media_present",  default: false
     t.string   "feed_color"
+    t.integer  "user_id"
+    t.boolean  "open",               default: true
+    t.integer  "num_users",          default: 1
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree
-  add_index "feeds", ["user_id"], name: "index_feeds_on_user_id", using: :btree
 
   create_table "flagged_comments", force: true do |t|
     t.integer  "venue_comment_id"

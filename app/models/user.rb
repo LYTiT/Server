@@ -22,7 +22,8 @@ class User < ActiveRecord::Base
 
   has_many :temp_posting_housings, :dependent => :destroy
 
-  has_many :feeds
+  has_many :feed_users, :dependent => :destroy
+  has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
 
   belongs_to :role

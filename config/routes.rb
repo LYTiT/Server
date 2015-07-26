@@ -49,14 +49,13 @@ LytitServer::Application.routes.draw do
         get 'get_venues'
         post 'add_raw_venue'
         post 'register_open'
+        get 'search'
+        post 'add_feed'
+        post 'leave_feed'
       end
 
       resources :announcement do
         get 'get_announcement_details'
-      end
-
-      resources :lumen_game_winners do
-        post 'update_winner_paypal_info'
       end
 
       post '/register_push_token' => 'users#register_push_token'
