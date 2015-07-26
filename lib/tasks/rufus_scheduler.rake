@@ -98,10 +98,10 @@ namespace :lytit do
         for venue in sphericles
           rating = venue.rating ? venue.rating.round(2) : 0.0
           venue.update_columns(color_rating: colors_map[rating])
-          VenueColorRating.create({
-            :venue_id => venue.id,
-            :color_rating => colors_map[rating]
-          })
+          #VenueColorRating.create({
+          #  :venue_id => venue.id,
+          #  :color_rating => colors_map[rating]
+          #})
         end
       end
 
