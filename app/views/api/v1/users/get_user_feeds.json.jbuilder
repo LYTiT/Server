@@ -7,6 +7,6 @@ json.array! @feeds do |feed|
 	json.new_content feed.new_media_present
 	json.feed_color feed.feed_color
 	json.open feed.open
-	json.creator_id feed.user_id
+	json.creator feed.user
 	json.has_added 1
 end
