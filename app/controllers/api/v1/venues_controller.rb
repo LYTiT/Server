@@ -160,7 +160,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@venue.account_page_view
 		@venue.instagram_pull_check
 		live_comments = VenueComment.get_comments_for_cluster(v)
-		@comments = live_comments.page(params[:page]).per(25)
+		@comments = live_comments.page(params[:page]).per(10)
 		render 'get_comments.json.jbuilder'
 	end
 
@@ -178,7 +178,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue.instagram_pull_check
 			end
 			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
-			@comments = live_comments.page(params[:page]).per(25)
+			@comments = live_comments.page(params[:page]).per(10)
 		end
 	end
 
@@ -324,7 +324,7 @@ class Api::V1::VenuesController < ApiBaseController
 		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
 			venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
-			@contexts = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
+			@contexts = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 15")
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
 			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
