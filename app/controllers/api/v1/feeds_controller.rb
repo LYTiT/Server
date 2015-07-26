@@ -40,7 +40,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def leave_feed
 		feed = Feed.find_by_id(params[:feed_id])
-		feed_venue.decrement!(:num_users, 1)
+		feed.decrement!(:num_users, 1)
 
 		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
 		feed_user.destroy
