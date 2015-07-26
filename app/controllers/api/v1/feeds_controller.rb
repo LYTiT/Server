@@ -60,7 +60,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_venue
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
-			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id])
+			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id])
 			if new_feed_venue.save
 				Feed.find_by_id(params[:id]).increment!(:num_venues, 1)
 				render json: { success: true }
