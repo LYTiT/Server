@@ -49,7 +49,9 @@ LytitServer::Application.routes.draw do
         get 'get_venues'
         post 'add_raw_venue'
         post 'register_open'
-        get 'search'
+        collection do
+          get 'search'
+        end
         post 'add_feed'
         post 'leave_feed'
       end
