@@ -26,7 +26,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def search
 		@user = User.find_by_id(params[:user_id])
-		@feeds = Feed.where("LOWER(name)", '%' + params[:q].to_s.downcase + '%')
+		@feeds = Feed.where("LOWER(name) LIKE ?", '%' + params[:q].to_s.downcase + '%')
 	end
 
 	def add_feed
