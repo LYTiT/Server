@@ -25,4 +25,8 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def has_added?(new_user)
+		FeedUser.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
+	end
+
 end
