@@ -96,7 +96,9 @@ LytitServer::Application.routes.draw do
           get 'get_comments'
         end
         get 'get_comments_of_a_venue'
-        get 'get_contexts'       
+        collection do
+          get 'get_contexts'       
+        end
       end
 
       controller :lytit_bar do
