@@ -89,7 +89,7 @@ LytitServer::Application.routes.draw do
           get 'get_trending_venues'
         end
         collection do
-          get 'get_trending_venue_content'
+          get 'get_trending_venues_details'
         end
         collection do
           get 'get_comments'

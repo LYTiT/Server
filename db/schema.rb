@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150725015211) do
+ActiveRecord::Schema.define(version: 20150726000918) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -134,6 +134,7 @@ ActiveRecord::Schema.define(version: 20150725015211) do
     t.boolean  "active"
     t.string   "description"
     t.integer  "city_que"
+    t.integer  "movement_direction"
   end
 
   create_table "lumen_constants", force: true do |t|
@@ -395,5 +396,15 @@ ActiveRecord::Schema.define(version: 20150725015211) do
   add_index "venues", ["l_sphere"], name: "index_venues_on_l_sphere", using: :btree
   add_index "venues", ["latitude"], name: "index_venues_on_latitude", using: :btree
   add_index "venues", ["longitude"], name: "index_venues_on_longitude", using: :btree
+
+  create_table "vortex_paths", force: true do |t|
+    t.integer "instagram_vortex_id"
+    t.float   "origin_lat"
+    t.float   "origin_long"
+    t.float   "span"
+    t.float   "increment_distance"
+  end
+
+  add_index "vortex_paths", ["instagram_vortex_id"], name: "index_vortex_paths_on_instagram_vortex_id", using: :btree
 
 end
