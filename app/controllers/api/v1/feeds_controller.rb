@@ -99,4 +99,9 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def get_feed
+		@feed = Feed.find_by_id(params[:feed_id])
+		render json: @feed
+	end
+
 end
