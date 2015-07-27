@@ -100,8 +100,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_feed
+		@user = User.find_by_id(params[:user_id])
 		@feed = Feed.find_by_id(params[:feed_id])
-		render json: @feed
 	end
 
 end

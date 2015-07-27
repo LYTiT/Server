@@ -53,10 +53,8 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
         post 'add_feed'
-        post 'leave_feed'
-        collection do
-          get 'get_feed'
-        end
+        post 'leave_feed'        
+        get 'get_feed'      
       end
 
       resources :announcement do
