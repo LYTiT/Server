@@ -169,7 +169,7 @@ class Api::V1::VenuesController < ApiBaseController
 			expires_in 3.minutes, :public => true
 		else
 			@user = User.find_by_authentication_token(params[:auth_token])
-			feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id])
+			feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id]).first
 			feeduser.update_columns(last_visit: Time.now)
 		end
 
