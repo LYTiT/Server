@@ -167,13 +167,17 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_comments
 		if params[:feed_id] == nil
 			expires_in 3.minutes, :public => true
+		else
+			@user = User.find_by_authentication_token(params[:auth_token])
+			feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id])
+			feeduser.update_columns(last_visit: Time.now)
 		end
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
-			if venue_ids.count == 1 && params[:feed_id] == nil
+			if venue_ids.count == 1 && params[:feed_id] == nil				
 				@venue = Venue.find_by_id(venue_ids.first)
 
 				@venue.account_page_view

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150726030506) do
+ActiveRecord::Schema.define(version: 20150728170038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -74,9 +74,10 @@ ActiveRecord::Schema.define(version: 20150726030506) do
   end
 
   create_table "feed_users", force: true do |t|
-    t.integer "user_id"
-    t.integer "feed_id"
-    t.boolean "creator", default: false
+    t.integer  "user_id"
+    t.integer  "feed_id"
+    t.boolean  "creator",    default: false
+    t.datetime "last_visit"
   end
 
   add_index "feed_users", ["feed_id"], name: "index_feed_users_on_feed_id", using: :btree
@@ -95,13 +96,14 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "num_venues",         default: 0
+    t.integer  "num_venues",          default: 0
     t.datetime "latest_viewed_time"
-    t.boolean  "new_media_present",  default: false
+    t.boolean  "new_media_present",   default: false
     t.string   "feed_color"
     t.integer  "user_id"
-    t.boolean  "open",               default: true
-    t.integer  "num_users",          default: 1
+    t.boolean  "open",                default: true
+    t.integer  "num_users",           default: 1
+    t.datetime "latest_content_time"
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree

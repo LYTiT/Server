@@ -187,9 +187,9 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_user_feeds
 		#we use this method to also return list of feeds when inside a venue page(params[:venue_id]) and so must make a check if the venue is part of any of the user's feed.
-		user = User.find_by_authentication_token(params[:auth_token])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:venue_id] == nil
-			user.update_user_feeds
+			@user.update_user_feeds
 		end
 		@venue_id = params[:venue_id]
 		@feeds = @user.feeds.includes(:venues).order("name asc")

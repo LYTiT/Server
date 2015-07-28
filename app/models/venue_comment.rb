@@ -160,6 +160,7 @@ class VenueComment < ActiveRecord::Base
 				end
 				puts "instagram venue comment created"
 				lytit_venue.feeds.update_all(new_media_present: true)
+				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
