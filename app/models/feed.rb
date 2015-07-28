@@ -33,6 +33,8 @@ class Feed < ActiveRecord::Base
 		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, self.id)
 		if self.latest_content_time == nil
 			false
+		elsif feeduser.last_visit == nil
+			true
 		else
 			if self.latest_content_time > feeduser.last_visit
 				true
