@@ -30,7 +30,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def new_content_for_user?(target_user)
-		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, self.id)
+		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, self.id).first
 		if self.latest_content_time == nil
 			false
 		elsif feeduser.last_visit == nil
