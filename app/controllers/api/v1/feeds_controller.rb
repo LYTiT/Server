@@ -38,7 +38,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_feed
 		feed = Feed.find_by_id(params[:feed_id])
-		feed.increment!(:num_venues, 1)
+		feed.increment!(:num_users, 1)
 
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
 		feed_user.save
