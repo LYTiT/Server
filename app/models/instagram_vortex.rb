@@ -7,7 +7,7 @@ class InstagramVortex < ActiveRecord::Base
 		if path != nil
 			if self.movement_direction == nil
 				#begin moving the vortex south 
-				update_columns(movement_direction: 270)
+				update_columns(movement_direction: 180)
 				
 				new_lat = latitude - path.increment_distance / (109.0 * 1000)
 				update_columns(latitude: new_lat)
@@ -24,7 +24,7 @@ class InstagramVortex < ActiveRecord::Base
 					update_columns(longitude: path.origin_long)
 					update_columns(turn_cycle: 1)
 				else
-					if self.movement_direction == 270
+					if self.movement_direction == 180
 						new_lat = latitude - path.increment_distance*self.turn_cycle / (109.0 * 1000)
 						if new_lat >= path.origin_lat - path.span / (109.0 * 1000)
 							#keep moving vortex south
@@ -37,10 +37,10 @@ class InstagramVortex < ActiveRecord::Base
 							puts "lat: #{latitude}, long: #{longitude}"
 							new_long = longitude + path.increment_distance / (113.2 * 1000 * Math.cos(latitude * Math::PI / 180))
 							update_columns(longitude: new_long)
-							update_columns(movement_direction: 360)
+							update_columns(movement_direction: 90)
 						end
 					
-					elsif self.movement_direction == 360
+					elsif self.movement_direction == 90
 						new_long = longitude + path.increment_distance*self.turn_cycle / (113.2 * 1000 * Math.cos(latitude * Math::PI / 180))
 						if new_long <= path.origin_long + path.span / (113.2 * 1000 * Math.cos(latitude * Math::PI / 180))
 							#keep moving vortex east
@@ -53,9 +53,9 @@ class InstagramVortex < ActiveRecord::Base
 							puts "lat: #{latitude}, long: #{longitude}"
 							new_lat = latitude + path.increment_distance / (109.0 * 1000)
 							update_columns(latitude: new_lat)
-							update_columns(movement_direction: 90)
+							update_columns(movement_direction: 0)
 						end
-					elsif self.movement_direction == 90
+					elsif self.movement_direction == 0
 						new_lat = latitude + path.increment_distance*self.turn_cycle / (109.0 * 1000)
 						if new_lat <= path.origin_lat
 							#keep moving vortex north
@@ -68,7 +68,7 @@ class InstagramVortex < ActiveRecord::Base
 							puts "lat: #{latitude}, long: #{longitude}"
 							new_long = longitude - path.increment_distance / (113.2 * 1000 * Math.cos(latitude * Math::PI / 180))
 							update_columns(longitude: new_long)
-							update_columns(movement_direction: 180)
+							update_columns(movement_direction: 270)
 						end
 					else #180
 						new_long = longitude - path.increment_distance*self.turn_cycle / (113.2 * 1000 * Math.cos(latitude * Math::PI / 180)) 
@@ -83,7 +83,7 @@ class InstagramVortex < ActiveRecord::Base
 							puts "lat: #{latitude}, long: #{longitude}"
 							new_lat = latitude - path.increment_distance / (109.0 * 1000)
 							update_columns(latitude: new_lat)
-							update_columns(movement_direction: 270)
+							update_columns(movement_direction: 180)
 							self.increment!(:turn_cycle, 1)
 						end
 					

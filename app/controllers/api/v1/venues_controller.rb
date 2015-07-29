@@ -226,6 +226,21 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display.json.jbuilder'
 	end
 
+	def refresh_map_view_by_parts
+		lat = params[:latitude]
+		long = params[:longitude]
+
+		if params[:page] == 1
+			num_page_entries = 500
+		else
+			num_page_entries = 1500
+		end
+
+		venues = Kaminari.paginate_array(Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC"))
+		@venues = venues.page(params[:page]).per(num_page_entries)
+		render 'display_by_parts.json.jbuilder'
+	end
+
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
 

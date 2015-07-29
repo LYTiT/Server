@@ -76,6 +76,9 @@ LytitServer::Application.routes.draw do
 
         collection do
           get 'refresh_map_view'
+        end
+        collection do
+          get 'refresh_map_view_by_parts'
         end 
         collection do
           get 'search'
