@@ -268,10 +268,10 @@ class Api::V1::VenuesController < ApiBaseController
 		position_lat = params[:latitude]
 		position_long = params[:longitude]
 
-		ne_lat = params[:ne_lat]
-		ne_long = params[:ne_long]
-		sw_lat = params[:sw_lat]
-		sw_long = params[:sw_long]
+		ne_lat = params[:ne_latitude]
+		ne_long = params[:ne_longitude]
+		sw_lat = params[:sw_latitude]
+		sw_long = params[:sw_longitude]
 
 		query = params[:q]
 
