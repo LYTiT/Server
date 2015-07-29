@@ -135,7 +135,7 @@ class VenueComment < ActiveRecord::Base
 			lytit_venue = origin_venue
 		end
 
-		if vortex != nil
+		if vortex != nil && lytit_venue != nil
 			if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
 				return nil
 			end
