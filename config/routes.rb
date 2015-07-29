@@ -84,7 +84,7 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
         collection do
-          get 'direct_search'
+          get 'direct_fetch'
         end
         collection do
           get 'get_suggested_venues'

@@ -32,7 +32,7 @@ class Venue < ActiveRecord::Base
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   #I. Search------------------------------------------------------->
-  def self.direct_search(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+  def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
 
     in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
             address IS NULL AND city IS NULL AND name LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query+"%")
