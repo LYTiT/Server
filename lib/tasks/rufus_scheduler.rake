@@ -24,6 +24,7 @@ namespace :lytit do
         for instagram in new_instagrams
           VenueComment.convert_instagram_to_vc(instagram, nil, vortex)
         end
+        vortex.move
         #if there are multiple vortexes in a city we traverse through them to save instagram API calls
         if vortex.city_que != nil
           vortex.update_columns(active: nil)
