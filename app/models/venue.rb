@@ -38,7 +38,7 @@ class Venue < ActiveRecord::Base
             address IS NULL AND city IS NULL AND name LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query+"%")
 
     if in_view_search == nil
-      name_search = Venue.where("name LIKE ?", "%"+query+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC"))
+      name_search = Venue.where("name LIKE ?", "%"+query+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
     end
 
   end
