@@ -32,6 +32,17 @@ class Venue < ActiveRecord::Base
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   #I. Search------------------------------------------------------->
+  def self.direct_search(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+
+    in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
+            address IS NULL AND city IS NULL AND name LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query+"%")
+
+    if in_view_search == nil
+      name_search = Venue.where("name LIKE ?", "%"+query+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC"))
+    end
+
+  end
+
   #LYTiT database venue match-search
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     require 'fuzzystringmatch'

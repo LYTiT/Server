@@ -84,6 +84,9 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
         collection do
+          get 'direct_search'
+        end
+        collection do
           get 'get_suggested_venues'
         end
         post 'vote'

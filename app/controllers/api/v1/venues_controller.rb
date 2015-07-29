@@ -264,6 +264,22 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'search.json.jbuilder'
 	end
 
+	def direct_search
+		position_lat = params[:latitude]
+		position_long = params[:longitude]
+
+		ne_lat = params[:ne_lat]
+		ne_long = params[:ne_long]
+		sw_lat = params[:sw_lat]
+		sw_long = params[:sw_long]
+
+		query = params[:q]
+
+		@venues = Venue.direct_search(position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+
+		render 'search.json.jbuilder'
+	end
+
 	def get_suggested_venues
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
