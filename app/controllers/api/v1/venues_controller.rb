@@ -227,8 +227,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view_by_parts
-		lat = params[:latitude]
-		long = params[:longitude]
+		lat = params[:latitude] || 40.741140
+		long = params[:longitude] || -73.981917
 
 		if params[:page] == 1
 			num_page_entries = 500
