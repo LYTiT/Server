@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150728170038) do
+ActiveRecord::Schema.define(version: 20150728194016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -147,6 +147,7 @@ ActiveRecord::Schema.define(version: 20150728170038) do
     t.string   "description"
     t.integer  "city_que"
     t.integer  "movement_direction"
+    t.integer  "turn_cycle"
   end
 
   create_table "lumen_constants", force: true do |t|
