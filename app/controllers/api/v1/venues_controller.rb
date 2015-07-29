@@ -264,7 +264,7 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'search.json.jbuilder'
 	end
 
-	def direct_search
+	def direct_fetch
 		position_lat = params[:latitude]
 		position_long = params[:longitude]
 
