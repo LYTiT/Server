@@ -275,7 +275,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		query = params[:q]
 
-		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long).to_a
 
 		render 'search.json.jbuilder'
 	end
