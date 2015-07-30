@@ -34,10 +34,13 @@ class Venue < ActiveRecord::Base
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
 
-    in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? LOWER(name) LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query.downcase+"%")
+    in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND LOWER(name) LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query.downcase+"%")
 
     if in_view_search == nil
       name_search = Venue.where("LOWER(name) LIKE ?", "%"+query+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC")
+      return name_search
+    else
+      return in_view_search
     end
 
   end
