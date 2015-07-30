@@ -170,7 +170,9 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@user = User.find_by_authentication_token(params[:auth_token])
 			feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id]).first
-			feeduser.update_columns(last_visit: Time.now)
+			if feeduser != nil
+				feeduser.update_columns(last_visit: Time.now)
+			end
 		end
 
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
