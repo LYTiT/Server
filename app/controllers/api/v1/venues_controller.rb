@@ -231,9 +231,9 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude] || -73.981917
 
 		if params[:page] == 1
-			num_page_entries = 50
+			num_page_entries = 500
 		else
-			num_page_entries = 150
+			num_page_entries = 1000
 		end
 
 		venues = Kaminari.paginate_array(Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC"))
