@@ -728,18 +728,30 @@ class Venue < ActiveRecord::Base
   end
 
   def self.instagram_content_pull(lat, long)
+
     if lat != nil && long != nil
-       
-        meter_radius = 20000
-        if not Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
-          new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
+      
+      surrounding_lyts_radius = 10000
+      if not Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+        new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
-          for instagram in new_instagrams
-            VenueComment.convert_instagram_to_vc(instagram, nil, nil)
-          end
-
+        for instagram in new_instagrams
+          VenueComment.convert_instagram_to_vc(instagram, nil, nil)
         end
+      end
+
+      nearby_vortex_radius = 20000
+      if not InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).any?
+        begin
+          iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")
+          vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
+        rescue
+          puts "Oops! Something went wrong in creating a vortex."
+        end
+      end
+      
     end
+
   end
   #----------------------------------------------------------------------------->
 
