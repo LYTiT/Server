@@ -182,7 +182,7 @@ class VenueComment < ActiveRecord::Base
 
 		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
-				if data.length > 2 && data.include?("inst") == false
+				if data.length > 2 && (data.include?("inst") == false && data.include?("gram") == false)
 					lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
 					if lookup == nil
 						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
