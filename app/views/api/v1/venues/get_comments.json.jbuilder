@@ -1,4 +1,4 @@
-json.cache_collection! @comments, expires_in: 5.minutes do |comment|
+json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
