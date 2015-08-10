@@ -177,12 +177,12 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_comments_by_time
 		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).includes(:venue).order("id desc")
-		@comments = venue_comments.page(params[:page]).per(12)
+		@comments = venue_comments.page(params[:page]).per(18)
 	end
 
 	def get_comments_by_venue
 		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).joins(:venue).order("venues.name asc").order("id desc")
-		@comments = venue_comments.page(params[:page]).per(12)
+		@comments = venue_comments.page(params[:page]).per(18)
 	end
 
 	def get_user_feeds
