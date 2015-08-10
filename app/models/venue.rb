@@ -1009,6 +1009,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(color_rating: -1.0)
       self.update_columns(trend_position: nil)
       self.update_columns(popularity_rank: 0.0)
+      self.lyt_spheres.delete_all
     end
 
     return visible
