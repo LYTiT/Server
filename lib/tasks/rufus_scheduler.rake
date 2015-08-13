@@ -52,9 +52,11 @@ namespace :lytit do
             venue.update_popularity_rank
           end
           
-          if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0
-            rat = venue.rating.round(2)
-            diff_ratings.add(rat)
+          if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0 
+            if venue.rating != nil
+              rat = venue.rating.round(2)
+              diff_ratings.add(rat)
+            end
           else
             #venues.delete(venue)
             sphericles.delete(venue)
