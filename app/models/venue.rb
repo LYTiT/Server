@@ -698,7 +698,7 @@ class Venue < ActiveRecord::Base
     instagram_venue_id_ping_rate = 1 #days
 
     if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
-      #try to establish instagram location id if previous attempts failed every 5 days
+      #try to establish instagram location id if previous attempts failed every 1 day
       if self.instagram_location_id == 0 
         if ((Time.now - instagram_venue_id_ping_rate.minutes) >= self.last_instagram_pull_time)
           self.set_instagram_location_id(100)
@@ -986,6 +986,12 @@ class Venue < ActiveRecord::Base
         new_rating = eval(x).round(4)
 
         update_columns(rating: new_rating)
+        #update the popularity rank as well if the last rating update was over 5 minutes ago
+        if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 5.minutes
+          update_popularity_rank
+        end
+
+        update_columns(latest_rating_update_time: Time.now)
       else
         puts "Could not calculate rating. Status: #{$?.to_i}"
       end

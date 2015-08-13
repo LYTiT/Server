@@ -12,8 +12,10 @@ namespace :lytit do
       Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
     end
 
-    #Instagram Pulling ------------------------------>
+    #Instagram Pulling and LYT Updating ------------------------------>
     $scheduler.every '10m' do
+      puts "Scheduler run at #{Time.now}"
+      start_time = Time.now
 
       puts "Pulling from Instagram"
       vortexes = InstagramVortex.where("active = ?", true)
@@ -36,41 +38,20 @@ namespace :lytit do
           next_city_vortex.update_columns(active: true)
         end
       end
-    end
-    
-    #LYT Updating ----------------------------------->
-    $scheduler.every '5m' do
 
-      puts "Scheduler run at #{Time.now}"
-
-      start_time = Time.now
-      
-      #bar = LytitBar.instance
-      #bar.recalculate_bar_position
-      #puts 'Bar updated'
-
-      
-      puts "Recalculating venue colors and trending indices"
+      puts("Recalculating color ratings")
       spheres = LytSphere.uniq.pluck(:sphere)
-
-      #used for determing which way top venues are trending
-      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
-        venue.update_columns(trend_position: index)
-      end
-
-      total_popular_venues = Venue.where("popularity_rank IS NOT NULL").count
-      if total_popular_venues > 10
-        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(trend_position: nil)
-        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(popularity_rank: 0.0)
-      end
 
       for entry in spheres
         sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
 
         diff_ratings = Set.new
         for venue in sphericles
-          venue.update_rating()
-          venue.update_popularity_rank
+          if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
+            venue.update_rating()
+            venue.update_popularity_rank
+          end
+          
           if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0
             rat = venue.rating.round(2)
             diff_ratings.add(rat)
@@ -102,7 +83,33 @@ namespace :lytit do
           #  :venue_id => venue.id,
           #  :color_rating => colors_map[rating]
           #})
+
         end
+      end
+      end_time = Time.now
+      puts "Done. Time Taken: #{end_time - start_time}s"
+    end
+    
+    #Trending Updating ----------------------------------->
+    $scheduler.every '5m' do
+      puts "Scheduler run at #{Time.now}"
+      start_time = Time.now
+      
+      #bar = LytitBar.instance
+      #bar.recalculate_bar_position
+      #puts 'Bar updated'
+
+      puts "Recalculating venue colors and trending indices"
+
+      #used for determing which way top venues are trending
+      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
+        venue.update_columns(trend_position: index)
+      end
+
+      total_popular_venues = Venue.where("popularity_rank IS NOT NULL").count
+      if total_popular_venues > 10
+        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(trend_position: nil)
+        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(popularity_rank: 0.0)
       end
 
       Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do

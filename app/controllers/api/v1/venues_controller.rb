@@ -130,7 +130,7 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 				#@comment.extract_venue_comment_meta_data
 				venue.feeds.delay.update_all(new_media_present: true)
-
+				venue.delay.update_rating()
 			end
 
 		end
