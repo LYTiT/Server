@@ -101,7 +101,7 @@ namespace :lytit do
       #bar.recalculate_bar_position
       #puts 'Bar updated'
 
-      puts "Recalculating venue colors and trending indices"
+      puts "Recalculating trending indices"
 
       #used for determing which way top venues are trending
       Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
