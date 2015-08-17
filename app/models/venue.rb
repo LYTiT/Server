@@ -537,112 +537,118 @@ class Venue < ActiveRecord::Base
     if lookup != nil
       return lookup.venue
     else
-      search_part = nil
-      radius = 500
-      boundries = bounding_box(radius, lat, long)
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
-      if venues.count == 0
-        vname.to_s.downcase.split.each do |part| 
-          if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
-            puts "search part extracted"
-            search_part = part
-            break
-          end
-        end
-
-        if search_part != nil
-          venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
-        end
-
+      #Check if there is a direct name match in proximity
+      name_lookup = Venue.where("LOWER(name) = ? AND ABS(#{lat} - latitude) <= 0.3 AND ABS(#{long} - longitude) <= 0.3", vname.to_s.downcase).first
+      if name_lookup != nil
+        return name_lookup
+      else
+        search_part = nil
+        radius = 500
+        boundries = bounding_box(radius, lat, long)
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
         if venues.count == 0
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
-        end
-      end
-
-      if venues.count != 0
-        for venue in venues
-          if venue.name.downcase == vname.downcase #Is there a direct string match?
-            lookup = venue
-            break
-          end
-
-          if ( ((venue.name.downcase).include?(vname.downcase) && vname.length.to_f/venue.name.length.to_f > 0.5) || ((vname.downcase).include?(venue.name.downcase) && venue.name.length.to_f/vname.length.to_f > 0.5) ) #Are they substrings?
-            #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
-            if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)
-              lookup = venue
+          vname.to_s.downcase.split.each do |part| 
+            if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
+              puts "search part extracted"
+              search_part = part
               break
             end
           end
 
-          require 'fuzzystringmatch'
-          jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+          if search_part != nil
+            venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
+          end
 
-          if vname.include?(',') || venue.name.include?(',')
-            no_comma_vname = vname.slice(0..(vname.index(',')-1)) rescue vname
-            no_comma_venue_name = venue.name.slice(0..(venue.name.index(',')-1)) rescue venue.name
-            if p jarow.getDistance(no_comma_vname, no_comma_venue_name) > 0.9
+          if venues.count == 0
+            venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+          end
+        end
+
+        if venues.count != 0
+          for venue in venues
+            if venue.name.downcase == vname.downcase #Is there a direct string match?
               lookup = venue
               break
             end
-          end          
-        
-          if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
-            lookup = venue
-            break
+
+            if ( ((venue.name.downcase).include?(vname.downcase) && vname.length.to_f/venue.name.length.to_f > 0.5) || ((vname.downcase).include?(venue.name.downcase) && venue.name.length.to_f/vname.length.to_f > 0.5) ) #Are they substrings?
+              #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
+              if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)
+                lookup = venue
+                break
+              end
+            end
+
+            require 'fuzzystringmatch'
+            jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+
+            if vname.include?(',') || venue.name.include?(',')
+              no_comma_vname = vname.slice(0..(vname.index(',')-1)) rescue vname
+              no_comma_venue_name = venue.name.slice(0..(venue.name.index(',')-1)) rescue venue.name
+              if p jarow.getDistance(no_comma_vname, no_comma_venue_name) > 0.9
+                lookup = venue
+                break
+              end
+            end          
+          
+            if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
+              lookup = venue
+              break
+            end
           end
         end
-      end
 
-      if lookup != nil 
-        if lookup.time_zone == nil #Add timezone of venue if not present
+        if lookup != nil 
+          if lookup.time_zone == nil #Add timezone of venue if not present
+            Timezone::Configure.begin do |c|
+              c.username = 'LYTiT'
+            end
+            timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
+            lookup.time_zone = timezone.active_support_time_zone rescue nil
+          end
+
+          if lookup.time_zone_offset == nil
+            lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
+          end
+        end
+
+        #if location not found in LYTiT database create new venue
+        if lookup == nil
           Timezone::Configure.begin do |c|
             c.username = 'LYTiT'
           end
           timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-          lookup.time_zone = timezone.active_support_time_zone rescue nil
+          
+          venue = Venue.new
+          venue.name = vname
+          venue.latitude = lat
+          venue.longitude = long
+          venue.time_zone = timezone.active_support_time_zone rescue nil
+          venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+          venue.verified = false
+
+          if lat < 0 && long >= 0
+            quadrant = "a"
+          elsif lat < 0 && long < 0
+            quadrant = "b"
+          elsif lat >= 0 && long < 0
+            quadrant = "c"
+          else
+            quadrant = "d"
+          end
+          venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+
+          venue.fetched_at = Time.now
+          venue.save
+          lookup = venue
+          lookup.update_columns(instagram_location_id: inst_loc_id)
+
+          inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
+          inst_location_id_tracker_lookup_entry.save
         end
 
-        if lookup.time_zone_offset == nil
-          lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
-        end
+        return lookup
       end
-
-      #if location not found in LYTiT database create new venue
-      if lookup == nil
-        Timezone::Configure.begin do |c|
-          c.username = 'LYTiT'
-        end
-        timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-        
-        venue = Venue.new
-        venue.name = vname
-        venue.latitude = lat
-        venue.longitude = long
-        venue.time_zone = timezone.active_support_time_zone rescue nil
-        venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
-        venue.verified = false
-
-        if lat < 0 && long >= 0
-          quadrant = "a"
-        elsif lat < 0 && long < 0
-          quadrant = "b"
-        elsif lat >= 0 && long < 0
-          quadrant = "c"
-        else
-          quadrant = "d"
-        end
-        venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
-
-        venue.fetched_at = Time.now
-        venue.save
-        lookup = venue
-        lookup.update_columns(instagram_location_id: inst_loc_id)
-
-        inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
-        inst_location_id_tracker_lookup_entry.save
-      end
-
-      return lookup
     end
   end
 
