@@ -26,6 +26,8 @@ class User < ActiveRecord::Base
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
 
+  has_many :feed_messages 
+
   belongs_to :role
 
   before_save :ensure_authentication_token

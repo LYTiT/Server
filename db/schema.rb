@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150811201837) do
+ActiveRecord::Schema.define(version: 20150831225529) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,11 +73,23 @@ ActiveRecord::Schema.define(version: 20150811201837) do
     t.integer  "job_id"
   end
 
+  create_table "feed_messages", force: true do |t|
+    t.text     "message"
+    t.integer  "feed_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_messages", ["feed_id"], name: "index_feed_messages_on_feed_id", using: :btree
+  add_index "feed_messages", ["user_id"], name: "index_feed_messages_on_user_id", using: :btree
+
   create_table "feed_users", force: true do |t|
     t.integer  "user_id"
     t.integer  "feed_id"
-    t.boolean  "creator",    default: false
+    t.boolean  "creator",       default: false
     t.datetime "last_visit"
+    t.boolean  "is_subscribed", default: true
   end
 
   add_index "feed_users", ["feed_id"], name: "index_feed_users_on_feed_id", using: :btree
@@ -104,6 +116,7 @@ ActiveRecord::Schema.define(version: 20150811201837) do
     t.boolean  "open",                default: true
     t.integer  "num_users",           default: 1
     t.datetime "latest_content_time"
+    t.text     "description"
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree
@@ -288,6 +301,7 @@ ActiveRecord::Schema.define(version: 20150811201837) do
     t.string   "vendor_id"
     t.float    "monthly_gross_lumens",                   default: 0.0
     t.boolean  "asked_instagram_permission",             default: false
+    t.string   "phone"
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree

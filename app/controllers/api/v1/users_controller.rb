@@ -73,6 +73,12 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end	
 
+	def set_phone
+		user = User.find_by_authentication_token(params[:auth_token])
+		user.update_columns(phone: params[:phone])
+		render json: { success: true }
+	end
+
 	def register_push_token
 		#User.where(push_token: params[:push_token]).update_all(push_token: nil)
 		@user.update_columns(push_token: params[:push_token])

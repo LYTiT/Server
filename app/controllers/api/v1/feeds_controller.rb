@@ -104,4 +104,22 @@ class Api::V1::FeedsController < ApiBaseController
 		@feed = Feed.find_by_id(params[:feed_id])
 	end
 
+	def send_message
+		new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => params[:feed_id], :user_id => params[:user_id])
+		render json: { success: true }
+	end
+
+	def get_chat
+		@messages = FeedMessage.find_by_feed_id(params[:feed_id]).order("id DESC")
+	end
+
+	def meta_search
+		#by tags
+		direct_results = Feed.where("name LIKE (?) OR description LIKE (?)", "%"+params[:q]+"%", "%"+params[:q]+"%")
+		Feed.joins(:feed_venues).joins(:venues => :meta_datas).where("meta LIKE (?)", params[:q]+"%")
+		#by name
+		#by description
+
+	end
+
 end

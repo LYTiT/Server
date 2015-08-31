@@ -54,7 +54,7 @@ class Announcement < ActiveRecord::Base
 		for member in members
 			payload = {
 				:object_id => self.id,
-				:type => 'announcement', 
+				:type => 'announcement_notification', 
 				:user_id => member.id,
 				:additional => for_lumen_games,
 				:surprise_image => for_background_update

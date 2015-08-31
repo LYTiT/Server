@@ -39,6 +39,7 @@ LytitServer::Application.routes.draw do
         post 'update_instagram_permission'
         post 'check_instagram_token_expiration'
         post 'remove_instagram_authentication'
+        post 'set_phone'
       end
 
       resources :feeds, only: [:create] do
@@ -54,7 +55,9 @@ LytitServer::Application.routes.draw do
         end
         post 'add_feed'
         post 'leave_feed'        
-        get 'get_feed'      
+        get 'get_feed'  
+        post 'send_message'
+        get 'get_chat'  
       end
 
       resources :announcement do

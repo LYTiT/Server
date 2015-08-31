@@ -16,7 +16,7 @@ class MetaData < ActiveRecord::Base
 	end
 
 	def increment_relevance_score
-		relevance_half_life = 360.0
+		relevance_half_life = 360.0 #minutes
 		old_score = relevance_score
 		new_score = old_score * 2 ** ((-(Time.now - updated_at)/60.0) / (relevance_half_life)).round(4)+1.0
 		update_columns(relevance_score: new_score)

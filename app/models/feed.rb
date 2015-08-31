@@ -3,6 +3,8 @@ class Feed < ActiveRecord::Base
 	has_many :venues, through: :feed_venues
 	has_many :venue_comments, through: :venues
 	has_many :feed_users, :dependent => :destroy
+	has_many :feed_messages, :dependent => :destroy
+
 	belongs_to :user
 
 	def comments
