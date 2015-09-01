@@ -46,4 +46,11 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def self.meta_search(query)
+		direct_results = Feed.where("name LIKE (?) OR description LIKE (?)", "%"+query+"%", "%"+query+"%").to_a
+		meta_results = Feed.joins(:feed_venues).joins(:venues => :meta_datas).where("meta LIKE (?)", query+"%").where("feeds.id NOT IN (?)", direct_results.map(&:id)).to_a.uniq{|x| x.id}.count
+		merge = direct_results << meta_results
+		results = merge.flatten.sort_by{|x| x.name}
+	end
+
 end

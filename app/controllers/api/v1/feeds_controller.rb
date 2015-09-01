@@ -114,12 +114,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def meta_search
-		#by tags
-		direct_results = Feed.where("name LIKE (?) OR description LIKE (?)", "%"+params[:q]+"%", "%"+params[:q]+"%")
-		Feed.joins(:feed_venues).joins(:venues => :meta_datas).where("meta LIKE (?)", params[:q]+"%")
-		#by name
-		#by description
-
+		@results = Feed.meta_search(params[:q])
 	end
 
 end
