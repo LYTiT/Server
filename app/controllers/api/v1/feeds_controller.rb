@@ -110,7 +110,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_chat
-		@messages = FeedMessage.where("feed_id = ?", params[:feed_id]).order("id asc")
+		@messages = FeedMessage.where("feed_id = ?", params[:feed_id]).order("id ASC")
 	end
 
 	def meta_search
