@@ -7,16 +7,16 @@ class FeedMessage < ActiveRecord::Base
 	def new_message_notification
 		feed_members = feed.feed_users
 
-		for feed_user in feed_members
-			if feed_user.is_subscribed == true
+		for member in feed_members
+			if member.is_subscribed == true
 				#might have to do a delay here/run on a seperate dyno
-				self.send_new_message_notification(feed_user)
+				self.send_new_message_notification(member)
 			end
 		end
 	end
 
 
-	def send_new_message_notification(feed_user)
+	def send_new_message_notification(member)
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'chat_notification', 
@@ -33,24 +33,24 @@ class FeedMessage < ActiveRecord::Base
 		#when there is an unread message
 		if Notification.where(message: "There are new messages in your #{self.feed.name} List", read: false, deleted: false).count == 0
 			message = "There are new messages in your #{self.feed.name} List"
-			notification = self.store_new_message_notification(payload, feed_user, message)
+			notification = self.store_new_message_notification(payload, member, message)
 			payload[:notification_id] = notification.id
 		end
 
-		if feed_user.push_token
-		  count = Notification.where(user_id: feed_user.id, read: false, deleted: false).count
-		  APNS.delay.send_notification(feed_user.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+		if member.push_token
+		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
+		  APNS.delay.send_notification(member.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
 	end
 
-	def store_new_message_notification(payload, feed_user, message)
+	def store_new_message_notification(payload, member, message)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
 		  :apns => user.push_token.present?,
 		  :response => notification_payload,
-		  :user_id => feed_user.id,
+		  :user_id => member.id,
 		  :read => false,
 		  :message => message,
 		  :deleted => false
