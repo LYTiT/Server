@@ -31,8 +31,8 @@ class FeedMessage < ActiveRecord::Base
 
 		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
 		#when there is an unread message
+		message = "There are new messages in your #{self.feed.name} List"
 		if Notification.where(user_id: member.id, message: "There are new messages in your #{self.feed.name} List", read: false, deleted: false).count == 0
-			message = "There are new messages in your #{self.feed.name} List"
 			notification = self.store_new_message_notification(payload, member, message)
 			payload[:notification_id] = notification.id
 		end
