@@ -39,6 +39,7 @@ class FeedMessage < ActiveRecord::Base
 
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
+		  puts "Sending chat to #{member.name} whose id is #{member.id}"
 		  APNS.delay.send_notification(member.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end
 
