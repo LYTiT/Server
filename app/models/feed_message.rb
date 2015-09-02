@@ -8,7 +8,7 @@ class FeedMessage < ActiveRecord::Base
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
-			if feed_user.is_subscribed == true
+			if feed_user.is_subscribed == true && feed_user.user != user
 				#might have to do a delay here/run on a seperate dyno
 				self.send_new_message_notification(feed_user.user)
 			end
