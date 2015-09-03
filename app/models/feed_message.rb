@@ -31,21 +31,22 @@ class FeedMessage < ActiveRecord::Base
 
 		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
 		#when there is an unread message
-		message = "There are new messages in your #{self.feed.name} List"
-		if Notification.where(user_id: member.id, message: "There are new messages in your #{self.feed.name} List", read: false, deleted: false).count == 0
-			notification = self.store_new_message_notification(payload, member, message)
+		type = "New message in #{self.feed.name} List"
+		if Notification.where(user_id: member.id, message: type, read: false, deleted: false).count == 0
+			notification = self.store_new_message_notification(payload, member, type)
 			payload[:notification_id] = notification.id
 		end
 
+		preview = "#{feed.name}(#{user.name}): #{message}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  puts "Sending chat to #{member.name} whose id is #{member.id}"
-		  APNS.delay.send_notification(member.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
+		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
 		end
 
 	end
 
-	def store_new_message_notification(payload, member, message)
+	def store_new_message_notification(payload, member, type)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
@@ -53,7 +54,7 @@ class FeedMessage < ActiveRecord::Base
 		  :response => notification_payload,
 		  :user_id => member.id,
 		  :read => false,
-		  :message => message,
+		  :message => type,
 		  :deleted => false
 		}
 		Notification.create(notification)
