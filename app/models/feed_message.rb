@@ -55,8 +55,7 @@ class FeedMessage < ActiveRecord::Base
 		  :user_id => member.id,
 		  :read => false,
 		  :message => message,
-		  :deleted => false,
-		  :feed_id => self.feed.id
+		  :deleted => false
 		}
 		Notification.create(notification)
 	end
