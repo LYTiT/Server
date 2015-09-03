@@ -13,6 +13,7 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
+          post 'mark_feedchat_as_read'
           post 'mark_as_responded_to'
         end
         post 'set_version'
