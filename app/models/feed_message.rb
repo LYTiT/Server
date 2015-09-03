@@ -26,7 +26,6 @@ class FeedMessage < ActiveRecord::Base
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :chat_message => self.message,
-		    :timestamp => self.created_at
 
 		}
 
