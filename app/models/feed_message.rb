@@ -25,7 +25,8 @@ class FeedMessage < ActiveRecord::Base
 		    :user_phone => user.phone,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
-		    :chat_message => self.message
+		    :chat_message => self.message,
+		    :timestamp => self.created_at
 
 		}
 
