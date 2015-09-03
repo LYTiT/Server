@@ -4,4 +4,5 @@ json.array! @messages do |message|
   json.user_name message.user.try(:name)
   json.user_phone message.user.try(:phone)
   json.chat_message message.message
+  json.created_at message.created_at
 end
