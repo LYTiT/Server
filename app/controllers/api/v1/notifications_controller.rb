@@ -29,7 +29,7 @@ class Api::V1::NotificationsController < ApiBaseController
 	def mark_feedchat_as_read
 		notifications = Notification.where(payload: {feed_id: params[:feed_id]}, user_id: @user.id, deleted: false)
 		for notification in notifications
-			notification[:read] = true
+			notification[:deleted] = true
 			notification.save
 		end
 		render json: { success: true }
