@@ -37,7 +37,7 @@ class FeedMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 
-		preview = "#{user.name} in '#{feed.name})':\n#{message}"
+		preview = "#{user.name}"+' "'+"#{feed.name}"+'" '+":\n#{message}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  puts "Sending chat to #{member.name} whose id is #{member.id}"
