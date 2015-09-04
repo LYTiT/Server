@@ -5,8 +5,12 @@ class FeedUser < ActiveRecord::Base
 	after_create :new_message_notification
 
 	def new_message_notification
-		if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true
-			self.send_new_message_notification
+		begin
+			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true
+				self.send_new_message_notification
+			end
+		rescue
+			puts "List has no admin"
 		end
 	end
 
