@@ -2,4 +2,63 @@ class FeedVenue < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :user
 	belongs_to :venue
+
+	after_create :new_message_notification
+
+	def new_message_notification
+		feed_members = feed.feed_users
+
+		for feed_user in feed_members
+			if feed_user.is_subscribed == true && feed_user.user.id != self.user.id
+				#might have to do a delay here/run on a seperate dyno
+				self.send_new_message_notification(feed_user.user)
+			end
+		end
+	end
+
+	def send_new_message_notification(member)
+		payload = {
+		    :object_id => self.id, 
+		    :type => 'added_place_notification', 
+		    :user_id => user.id,
+		    :user_name => user.name,
+		    :feed_id => feed.id,
+		    :feed_name => feed.name,
+		    :venue_id => venue.id,
+		    :venue_name => venue.name
+
+		}
+
+		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
+		#when there is an unread message
+		type = "#{venue.name} has been added to the #{self.name} List"
+
+		notification = self.store_new_message_notification(payload, member, type)
+		payload[:notification_id] = notification.id
+
+		if member.push_token
+		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
+		  APNS.send_notification(member.push_token, { :priority =>10, :alert => type, :content_available => 1, :other => payload, :badge => count})
+		end
+
+	end
+
+	def store_new_message_notification(payload, member, type)
+		notification = {
+		  :payload => payload,
+		  :gcm => user.gcm_token.present?,
+		  :apns => user.push_token.present?,
+		  :response => notification_payload,
+		  :user_id => member.id,
+		  :read => false,
+		  :message => type,
+		  :deleted => false
+		}
+		Notification.create(notification)
+	end
+
+	def notification_payload
+	  	nil
+	end
+
 end
