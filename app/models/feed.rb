@@ -59,7 +59,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def self.categories
-		default_categories = ["parks", "bars","coffee"]
+		default_categories = ["parks", "bars", "coffee"]
 		used_categories = FeedRecommendation.uniq.pluck(:category)
 		if used_categories.count == 0
 			return default_categories
@@ -73,7 +73,9 @@ class Feed < ActiveRecord::Base
 	end
 
 	def self.initial_recommendations(selected_categories)
-
+		if selected_categories != nil
+			FeedRecommendation.where("category IN (?) AND active IS TRUE" selected_categories)
+		end
 	end
 
 	def self.recommendations
