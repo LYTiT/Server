@@ -61,7 +61,20 @@ LytitServer::Application.routes.draw do
         get 'get_feed'  
         post 'send_message'
         get 'get_chat' 
-        get 'get_categories' 
+        get 'get_categories'
+        post 'edit_subscription'
+        collection do
+          get 'get_categories'
+        end
+        collection do
+          get 'get_initial_recommendations'
+        end
+        collection do
+          get 'get_recommendations'
+        end
+        collection do
+          get 'get_spotlyts'
+        end
       end
 
       resources :announcement do

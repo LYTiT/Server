@@ -39,6 +39,16 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
+	def edit_subscription
+		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
+		if feed_user != nil
+			feed_user.update_columns(is_subscribed: params[:subscribed])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['No such list user'] } }, status: :unprocessable_entity
+		end
+	end
+
 	def search
 		@user = User.find_by_id(params[:user_id])
 		@feeds = Feed.where("LOWER(name) LIKE ?", '%' + params[:q].to_s.downcase + '%').limit(15)
@@ -126,7 +136,18 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_categories
-		render json: Feed.categories
+		@categories = Feed.categories
+	end
+
+	def get_spotlyts
+	end
+
+	def get_initial_recommendations
+
+	end
+	
+	def get_recommendations
+
 	end
 
 end

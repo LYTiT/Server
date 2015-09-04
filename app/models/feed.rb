@@ -4,6 +4,7 @@ class Feed < ActiveRecord::Base
 	has_many :venue_comments, through: :venues
 	has_many :feed_users, :dependent => :destroy
 	has_many :feed_messages, :dependent => :destroy
+	has_many :feed_recommendations, :dependent => :destroy
 
 	belongs_to :user
 
@@ -58,10 +59,24 @@ class Feed < ActiveRecord::Base
 	end
 
 	def self.categories
-		categories = []
+		default_categories = ["parks", "bars","coffee"]
+		used_categories = FeedRecommendation.uniq.pluck(:category)
+		if used_categories.count == 0
+			return default_categories
+		else
+			return used_categories
+		end
 	end
 
 	def self.spotlyts
+
+	end
+
+	def self.initial_recommendations(selected_categories)
+
+	end
+
+	def self.recommendations
 
 	end
 
