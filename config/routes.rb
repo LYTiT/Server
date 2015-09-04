@@ -60,7 +60,8 @@ LytitServer::Application.routes.draw do
         post 'leave_feed'        
         get 'get_feed'  
         post 'send_message'
-        get 'get_chat'  
+        get 'get_chat' 
+        get 'get_categories' 
       end
 
       resources :announcement do

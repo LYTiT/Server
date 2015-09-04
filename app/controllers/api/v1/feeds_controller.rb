@@ -20,15 +20,23 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def edit_feed
 		feed = Feed.find_by_id(params[:id])
-		if params[:name] != nil
-			feed.update_columns(name: params[:name])
-		end
+		if feed 
+			if params[:name] != nil
+				feed.update_columns(name: params[:name])
+			end
 
-		if params[:open] != nil
-			feed.update_columns(open: params[:open])
-		end
+			if params[:open] != nil
+				feed.update_columns(open: params[:open])
+			end
 
-		render json: feed.as_json
+			if params[:description] != nil
+				feed.update_columns(description: params[:description])
+			end
+
+			render json: feed.as_json
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['No List found'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def search
@@ -115,6 +123,10 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def meta_search
 		@results = Feed.meta_search(params[:q])
+	end
+
+	def get_categories
+		render json: Feed.categories
 	end
 
 end

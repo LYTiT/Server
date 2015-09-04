@@ -31,6 +31,10 @@ class Feed < ActiveRecord::Base
 		FeedUser.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
 	end
 
+	def calibrate_num_members
+		self.update_columns(num_users: self.feed_users.count)
+	end
+
 	def new_content_for_user?(target_user)
 		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, self.id).first
 		if self.latest_content_time == nil
@@ -51,6 +55,14 @@ class Feed < ActiveRecord::Base
 		meta_results = Feed.joins(:feed_venues).joins(:venues => :meta_datas).where("meta LIKE (?)", query+"%").where("feeds.id NOT IN (?)", direct_results.map(&:id)).to_a.uniq{|x| x.id}.count
 		merge = direct_results << meta_results
 		results = merge.flatten.sort_by{|x| x.name}
+	end
+
+	def self.categories
+		categories = []
+	end
+
+	def self.spotlyts
+
 	end
 
 end
