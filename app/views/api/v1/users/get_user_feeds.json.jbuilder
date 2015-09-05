@@ -7,7 +7,9 @@ json.array! @feeds do |feed|
 	json.num_users	feed.num_users
 	json.new_content feed.new_content_for_user?(@user)
 	json.feed_color feed.feed_color
-	json.open feed.open
+	json.users_can_add_places feed.open
 	json.creator feed.user
 	json.has_added 1
+	json.list_description feed.description
+	json.private_list feed.is_private?
 end

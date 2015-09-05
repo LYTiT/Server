@@ -8,6 +8,10 @@ class Feed < ActiveRecord::Base
 
 	belongs_to :user
 
+	def is_private?
+		self.code != nil
+	end
+
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id desc")
@@ -30,6 +34,10 @@ class Feed < ActiveRecord::Base
 
 	def has_added?(new_user)
 		FeedUser.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
+	end
+
+	def is_subscribed?(target_user)
+		FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, id).is_subscribed
 	end
 
 	def calibrate_num_members
