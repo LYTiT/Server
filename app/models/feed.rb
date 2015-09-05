@@ -74,7 +74,7 @@ class Feed < ActiveRecord::Base
 
 	def self.initial_recommendations(selected_categories)
 		if selected_categories != nil
-			FeedRecommendation.where("category IN (?) AND active IS TRUE" selected_categories)
+			FeedRecommendation.where("category IN (?) AND active IS TRUE", selected_categories)
 		end
 	end
 
