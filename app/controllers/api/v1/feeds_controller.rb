@@ -2,7 +2,7 @@ class Api::V1::FeedsController < ApiBaseController
 	skip_before_filter :set_user, only: [:create]
 
 	def create
-		feed = Feed.new(:name => params[:name], :user_id => params[:user_id], :latest_viewed_time => Time.now, :feed_color => params[:feed_color], :open => params[:open], :description => params[:description])
+		feed = Feed.new(:name => params[:name], :user_id => params[:user_id], :latest_viewed_time => Time.now, :feed_color => params[:feed_color], :open => params[:open], :description => params[:list_description])
 		feed.save
 
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => true)
@@ -29,8 +29,12 @@ class Api::V1::FeedsController < ApiBaseController
 				feed.update_columns(open: params[:open])
 			end
 
-			if params[:description] != nil
-				feed.update_columns(description: params[:description])
+			if params[:list_description] != nil
+				feed.update_columns(description: params[:list_description])
+			end
+
+			if params[:feed_color] != nil
+				feed.update_columns(feed_color: params[:feed_color])
 			end
 
 			render json: feed.as_json

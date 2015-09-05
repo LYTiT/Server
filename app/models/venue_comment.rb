@@ -304,6 +304,19 @@ class VenueComment < ActiveRecord::Base
 		end					
 		return clean_data
 	end
+
+	def self.twitter_test
+		client = Twitter::REST::Client.new do |config|
+		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+		  config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+		  config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+		  config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+		end
+		
+		client.search("new york", result_type: "recent", geo_code: "40.733482,-73.992367,0.5mi").take(3).collect do |tweet|
+		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.geo}"
+		end
+	end
 			
 end
 
