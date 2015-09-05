@@ -362,8 +362,8 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_contexts
 		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
-			venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
-			@contexts = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 15")
+			#venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
+			@contexts = MetaData.cluster_top_meta_tags(params[:cluster_venue_ids])
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
 			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
