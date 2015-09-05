@@ -6,7 +6,7 @@ class FeedUser < ActiveRecord::Base
 
 	def new_message_notification
 		begin
-			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true
+			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id
 				self.send_new_message_notification
 			end
 		rescue
