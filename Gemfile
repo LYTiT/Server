@@ -58,6 +58,7 @@ gem 'memcachier'
 gem 'whacamole'
 gem 'heroku-api'
 gem 'jbuilder_cache_multi'
+gem 'twitter'
 
 group :development do
   gem 'better_errors'
