@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150905172640) do
+ActiveRecord::Schema.define(version: 20150905200942) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -281,6 +281,28 @@ ActiveRecord::Schema.define(version: 20150905172640) do
 
   add_index "temp_posting_housings", ["user_id"], name: "index_temp_posting_housings_on_user_id", using: :btree
   add_index "temp_posting_housings", ["venue_id"], name: "index_temp_posting_housings_on_venue_id", using: :btree
+
+  create_table "tweets", force: true do |t|
+    t.integer  "twitter_id",           limit: 8
+    t.string   "tweet_text"
+    t.string   "author_id"
+    t.string   "author_name"
+    t.string   "author_avatar"
+    t.datetime "timestamp"
+    t.integer  "venue_id"
+    t.boolean  "from_cluster"
+    t.float    "associated_zoomlevel"
+    t.integer  "cluster_min_venue_id"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "tweets", ["latitude"], name: "index_tweets_on_latitude", using: :btree
+  add_index "tweets", ["longitude"], name: "index_tweets_on_longitude", using: :btree
+  add_index "tweets", ["twitter_id"], name: "index_tweets_on_twitter_id", unique: true, using: :btree
+  add_index "tweets", ["venue_id"], name: "index_tweets_on_venue_id", using: :btree
 
   create_table "users", force: true do |t|
     t.datetime "created_at",                                               null: false

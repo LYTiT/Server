@@ -314,8 +314,10 @@ class VenueComment < ActiveRecord::Base
 		end
 		
 		client.search("new york", result_type: "recent", geo_code: "40.733482,-73.992367,0.5mi").take(3).collect do |tweet|
-		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.geo}"
+		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.user.profile_image_url}"
 		end
+
+		return client.search("new york", result_type: "recent", geo_code: "40.733482,-73.992367,0.5mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(10).collect
 	end
 			
 end

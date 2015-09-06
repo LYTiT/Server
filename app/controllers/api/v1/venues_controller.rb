@@ -190,6 +190,26 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	def get_tweets
+		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoomlevel = params[:zoomlevel]
+		map_scale = params[:map_scale]
+
+		if params[:feed_id] == nil
+			if venue_ids.count == 1
+				@venue = Venue.find_by_id(venue_ids.first)
+				@tweets = @venue.twitter_tweets
+			else
+				@tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale)
+			end
+		else
+			@feed = Feed.find_by_id(params[:feed_id])
+			@tweets = @feed.venue_tweets
+		end
+	end
+
 	def mark_comment_as_viewed
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@comment = VenueComment.find_by_id(params[:post_id])

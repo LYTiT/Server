@@ -13,6 +13,7 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
+  has_many :tweets, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
@@ -898,8 +899,55 @@ class Venue < ActiveRecord::Base
   end
   #------------------------------------------------------------------------------>
 
+  #V. Twitter Functionality ----------------------------------------------------->
+  def twitter_tweets
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+    end
 
-  #V. LYT Algorithm Related Calculations and Calibrations ------------------------->
+    radius = 0.1 #miles
+
+    last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
+    if last_tweet_id != nil
+      venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}", since_id: "#{last_tweet_id}").take(20).collect
+    else
+      venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
+    end
+
+    for venue_tweet in venue_tweets
+      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id)
+    end
+
+    Tweet.where("venue_id = ?", self.id).order("timestamp DESC")
+
+  end
+
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale)
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+    end
+
+    radius = Venue.meters_to_miles(map_scale/2)
+    cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
+    
+    for cluster_tweet in cluster_tweets
+      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long)
+    end
+
+    Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+      <= #{radius} AND associated_zoomlevel <= ?", cluster_venue_ids, zoomlevel).order("timestamp DESC")
+
+    radius = ((40075*1000)*grid_size)/268435456
+
+  end
+
+  #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end

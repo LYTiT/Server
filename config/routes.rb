@@ -126,6 +126,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_contexts'       
         end
+        collection do
+          get 'get_tweets'       
+        end
       end
 
       controller :lytit_bar do

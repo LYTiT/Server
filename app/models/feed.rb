@@ -90,4 +90,9 @@ class Feed < ActiveRecord::Base
 
 	end
 
+	def venue_tweets
+		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
+		Tweet.where("venue_id in (?)", venue_ids).order("timestamp DESC")
+	end
+
 end
