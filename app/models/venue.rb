@@ -918,11 +918,10 @@ class Venue < ActiveRecord::Base
     end
 
     for venue_tweet in venue_tweets
-      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id)
+      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_rank => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
     end
 
-    Tweet.where("venue_id = ?", self.id).order("timestamp DESC")
-
+    Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_rank DESC")
   end
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale)
@@ -937,11 +936,11 @@ class Venue < ActiveRecord::Base
     cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
     
     for cluster_tweet in cluster_tweets
-      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long)
+      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, popularity_rank => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
     end
 
     Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
-      <= #{radius} AND associated_zoomlevel <= ?", cluster_venue_ids, zoomlevel).order("timestamp DESC")
+      <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoomlevel).order("timestamp DESC").order("popularity_rank DESC")
 
     radius = ((40075*1000)*grid_size)/268435456
 
