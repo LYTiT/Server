@@ -10,6 +10,9 @@ namespace :lytit do
     puts "Scheduler run at #{Time.now}"
     start_time = Time.now
 
+    puts "Clearing clusters"
+    ClusterTracker.delete_all
+
     #Instagram data pull----------->
     puts "Pulling from Instagram"
     vortexes = InstagramVortex.where("active = ?", true)

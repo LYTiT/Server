@@ -901,49 +901,56 @@ class Venue < ActiveRecord::Base
 
   #V. Twitter Functionality ----------------------------------------------------->
   def twitter_tweets
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
-      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
-      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
-      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+    if self.last_twitter_pull_time == nil or Time.now - self.last_twitter_pull_time > 0.minutes
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+      end
+
+      radius = 0.1 #miles
+
+      last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
+      if last_tweet_id != nil
+        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}", since_id: "#{last_tweet_id}").take(20).collect
+      else
+        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
+      end
+
+      for venue_tweet in venue_tweets
+        Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
+      end
+
+      Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC")
+      self.update_columns(last_twitter_pull_time: Time.now)
     end
-
-    radius = 0.1 #miles
-
-    last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
-    if last_tweet_id != nil
-      venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}", since_id: "#{last_tweet_id}").take(20).collect
-    else
-      venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
-    end
-
-    for venue_tweet in venue_tweets
-      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
-    end
-
-    Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC")
   end
 
-  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale)
-    client = Twitter::REST::Client.new do |config|
-      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
-      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
-      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
-      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale, cluster, cluster_venue_ids)
+    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 5.minutes
+      cluster.update_columns(last_twitter_pull_time: Time.now)
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+      end
+
+      radius = Venue.meters_to_miles(map_scale/2)
+      cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(100).collect
+      
+      for cluster_tweet in cluster_tweets
+        Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
+      end
+
+      Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoomlevel).order("timestamp DESC").order("popularity_score DESC")
+    else
+      #cache here
+      Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoomlevel).order("timestamp DESC").order("popularity_score DESC")
     end
-
-    radius = Venue.meters_to_miles(map_scale/2)
-    cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
-    
-    for cluster_tweet in cluster_tweets
-      Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
-    end
-
-    Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
-      <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoomlevel).order("timestamp DESC").order("popularity_score DESC")
-
-    radius = ((40075*1000)*grid_size)/268435456
-
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->

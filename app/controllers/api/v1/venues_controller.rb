@@ -202,7 +202,8 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.find_by_id(venue_ids.first)
 				@tweets = @venue.twitter_tweets
 			else
-				@tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale)
+				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoomlevel)
+				@tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoomlevel, map_scale, cluster, venue_ids)
 			end
 		else
 			@feed = Feed.find_by_id(params[:feed_id])

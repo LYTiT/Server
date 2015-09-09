@@ -101,6 +101,9 @@ namespace :lytit do
       #bar.recalculate_bar_position
       #puts 'Bar updated'
 
+      puts "Clearing clusters"
+      ClusterTracker.delete_all
+
       puts "Recalculating trending indices"
 
       #used for determing which way top venues are trending
