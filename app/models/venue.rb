@@ -919,7 +919,7 @@ class Venue < ActiveRecord::Base
       end
 
       for venue_tweet in venue_tweets
-        Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count))
+        Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => (2.0*venue_tweet.retweet_count+venue_tweet.favorite_count)) rescue "Oops, Tweet already pulled!"
       end
 
       Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC")
