@@ -937,7 +937,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = Venue.meters_to_miles(map_scale.to_f/2)
+      radius = Venue.meters_to_miles(map_scale.to_f/2.0)
       cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(100).collect
       
       for cluster_tweet in cluster_tweets
