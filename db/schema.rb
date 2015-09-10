@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150908214518) do
+ActiveRecord::Schema.define(version: 20150910000507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,20 @@ ActiveRecord::Schema.define(version: 20150908214518) do
     t.datetime "updated_at"
     t.string   "title"
   end
+
+  create_table "cluster_trackers", force: true do |t|
+    t.float    "latitude"
+    t.float    "longitude"
+    t.float    "zoom_level"
+    t.integer  "num_venues"
+    t.datetime "last_twitter_pull_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "cluster_trackers", ["latitude"], name: "index_cluster_trackers_on_latitude", using: :btree
+  add_index "cluster_trackers", ["longitude"], name: "index_cluster_trackers_on_longitude", using: :btree
+  add_index "cluster_trackers", ["zoom_level"], name: "index_cluster_trackers_on_zoom_level", using: :btree
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -297,7 +311,7 @@ ActiveRecord::Schema.define(version: 20150908214518) do
     t.float    "longitude"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "popularity_score"
+    t.float    "popularity_score",               default: 0.0
   end
 
   add_index "tweets", ["latitude"], name: "index_tweets_on_latitude", using: :btree
@@ -450,6 +464,7 @@ ActiveRecord::Schema.define(version: 20150908214518) do
     t.integer  "trend_position"
     t.string   "last_instagram_post"
     t.datetime "latest_rating_update_time"
+    t.datetime "last_twitter_pull_time"
   end
 
   add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree
