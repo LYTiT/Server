@@ -938,7 +938,7 @@ class Venue < ActiveRecord::Base
       end
 
       radius = Venue.meters_to_miles(map_scale.to_f/2.0)
-      cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(100).collect
+      cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(100).collect
       
       for cluster_tweet in cluster_tweets
         fTweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
