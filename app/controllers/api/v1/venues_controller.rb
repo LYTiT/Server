@@ -191,7 +191,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_tweets
-		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
+		venue_ids = params[:cluster_venue_ids].split(',')
 		cluster_lat = params[:cluster_latitude]
 		cluster_long =  params[:cluster_longitude]
 		zoom_level = params[:zoom_level]
