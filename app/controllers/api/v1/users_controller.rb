@@ -73,10 +73,19 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end	
 
-	def set_phone
+	def update_phone_number
 		user = User.find_by_authentication_token(params[:auth_token])
-		user.update_columns(phone: params[:phone])
+		user.update_columns(phone_number: params[:phone_number])
+		user.update_columns(country_code: params[:country_code])
 		render json: { success: true }
+	end
+
+	def cross_reference_user_phonebook
+		formatted_numbers = []
+		for phone_number in params[:phone_numbers]
+			formated_numbers << phone_number.last(10)
+		end
+		@users = User.where("phone IN (?)", formatted_numbers)
 	end
 
 	def register_push_token

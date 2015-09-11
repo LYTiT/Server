@@ -200,14 +200,14 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:feed_id] == nil
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				@tweets = @venue.twitter_tweets
+				@tweets = @venue.twitter_tweets(false)
 			else
 				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 				@tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
 			end
 		else
 			@feed = Feed.find_by_id(params[:feed_id])
-			@tweets = @feed.venue_tweets
+			@tweets = @feed.venue_tweets(false)
 		end
 	end
 
@@ -390,6 +390,54 @@ class Api::V1::VenuesController < ApiBaseController
 			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
 			render 'get_contexts.json.jbuilder'
 		end
+	end
+
+	def explore_venues
+		user_lat = params[:latitude]
+		user_long = params[:longitude]
+		past_results = params[:past_venues].split(",") rescue []
+		nearby_radius = 2000 #meters
+
+		if params[:proximity] == "nearby"
+			@venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        <= #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 5")
+		elsif params[:proximity] == "far"
+			@venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        > #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 5")
+		else
+			nearby_venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        <= #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 3")
+			far_venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+        > #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 3")
+			@venues = (nearby_venues << far_venues).flatten
+		end			
+	end
+
+	def get_latest_tweet
+		venue_ids = params[:cluster_venue_ids].split(",")
+		if venue_ids.count == 1
+			venue = Venue.find_by_id(venue_ids.first)
+			@tweet = venue.twitter_tweets(true)
+		else
+			@tweet = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids, true)
+		end
+	end
+
+	def get_quick_venue_overview
+		@venue = Venue.find_by_id(params[:venue_id])
+	end
+
+	def get_quick_cluster_overview
+		venue_ids = params[:cluster_venue_ids].split(',')
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
+
+		@post = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")
+		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")
 	end
 
 

@@ -42,7 +42,8 @@ LytitServer::Application.routes.draw do
         post 'update_instagram_permission'
         post 'check_instagram_token_expiration'
         post 'remove_instagram_authentication'
-        post 'set_phone'
+        post 'update_phone_number'
+        post 'cross_reference_user_phonebook'
       end
 
       resources :feeds, only: [:create] do
@@ -129,6 +130,10 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_tweets'       
         end
+        collection do
+          get 'explore_venues'
+        end
+        get 'get_latest_tweet'
       end
 
       controller :lytit_bar do

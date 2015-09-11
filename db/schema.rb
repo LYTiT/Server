@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150910000507) do
+ActiveRecord::Schema.define(version: 20150911175208) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -348,7 +348,8 @@ ActiveRecord::Schema.define(version: 20150910000507) do
     t.string   "vendor_id"
     t.float    "monthly_gross_lumens",                   default: 0.0
     t.boolean  "asked_instagram_permission",             default: false
-    t.string   "phone"
+    t.integer  "country_code"
+    t.integer  "phone_number"
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree
