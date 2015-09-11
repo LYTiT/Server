@@ -134,6 +134,8 @@ LytitServer::Application.routes.draw do
           get 'explore_venues'
         end
         get 'get_latest_tweet'
+        get 'get_quick_venue_overview'
+        get 'get_quick_cluster_overview'
       end
 
       controller :lytit_bar do
