@@ -901,7 +901,7 @@ class Venue < ActiveRecord::Base
 
   #V. Twitter Functionality ----------------------------------------------------->
   def twitter_tweets(only_latest)
-    if self.last_twitter_pull_time == nil or Time.now - self.last_twitter_pull_time > 0.minutes
+    if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > 0.minutes)
       client = Twitter::REST::Client.new do |config|
         config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
         config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
@@ -913,9 +913,9 @@ class Venue < ActiveRecord::Base
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       if last_tweet_id != nil
-        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}", since_id: "#{last_tweet_id}").take(20).collect
+        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect
       else
-        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(20).collect
+        venue_tweets = client.search("#{m.name}", result_type: "recent", geo_code: "#{m.latitude},#{m.longitude},#{radius}mi").take(20).collect
       end
 
       for venue_tweet in venue_tweets
@@ -939,7 +939,8 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids, only_latest)
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids, only_latest)
+    cluster_venue_ids = venue_ids.split(',')
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
@@ -950,7 +951,14 @@ class Venue < ActiveRecord::Base
       end
 
       radius = Venue.meters_to_miles(map_scale.to_f/2.0)
-      cluster_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(100).collect
+      query = ""
+
+      underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 5").select("name")
+      underlying_venues.each{|v| query+v.name}
+      tags = MetaData.cluster_top_meta_tags(venue_ids)
+      tags.each{|tag| query+tag.meta}
+
+      cluster_tweets = client.search(query, result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
       
       for cluster_tweet in cluster_tweets
         Tweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
