@@ -446,8 +446,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 		cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 
-		@post = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")
-		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")
+		@post = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")[0]
+		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 5")
 	end
 
 
