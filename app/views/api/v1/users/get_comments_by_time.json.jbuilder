@@ -2,6 +2,7 @@ json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
+  json.media_url  comment.image_url_2
   json.image_url_1 comment.image_url_1
   json.image_url_2 comment.image_url_2
   json.image_url_3 comment.image_url_3
