@@ -915,7 +915,7 @@ class Venue < ActiveRecord::Base
       if last_tweet_id != nil
         venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect
       else
-        venue_tweets = client.search("#{m.name}", result_type: "recent", geo_code: "#{m.latitude},#{m.longitude},#{radius}mi").take(20).collect
+        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi").take(20).collect
       end
 
       for venue_tweet in venue_tweets
@@ -940,7 +940,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids, only_latest)
-    cluster_venue_ids = venue_ids.split(',')
+    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
@@ -954,9 +954,9 @@ class Venue < ActiveRecord::Base
       query = ""
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 5").select("name")
-      underlying_venues.each{|v| query+v.name}
+      underlying_venues.each{|v| query+=v.name}
       tags = MetaData.cluster_top_meta_tags(venue_ids)
-      tags.each{|tag| query+tag.meta}
+      tags.each{|tag| query+=tag.meta}
 
       cluster_tweets = client.search(query, result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
       

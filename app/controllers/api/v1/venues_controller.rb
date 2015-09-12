@@ -433,7 +433,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@tweet = venue.twitter_tweets(true)
 		else
 			cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
-			@tweet = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids, true)
+			@tweet = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids], true)
 		end
 	end
 
