@@ -395,8 +395,8 @@ class Api::V1::VenuesController < ApiBaseController
 	def explore_venues
 		user_lat = params[:latitude]
 		user_long = params[:longitude]
-		past_results = params[:past_venues].split(",") rescue []
-		nearby_radius = 2000 #meters
+		past_results = params[:past_venues].split(",") rescue ["0"]
+		nearby_radius = 2000 * 0.000621371 #meters to miles
 
 		if params[:proximity] == "nearby"
 			@venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
@@ -415,10 +415,16 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_latest_tweet
 		venue_ids = params[:cluster_venue_ids].split(",")
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
 		if venue_ids.count == 1
 			venue = Venue.find_by_id(venue_ids.first)
 			@tweet = venue.twitter_tweets(true)
 		else
+			cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 			@tweet = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids, true)
 		end
 	end

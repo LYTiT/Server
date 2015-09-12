@@ -137,7 +137,9 @@ LytitServer::Application.routes.draw do
           get 'get_latest_tweet'
         end
         get 'get_quick_venue_overview'
-        get 'get_quick_cluster_overview'
+        collection do 
+          get 'get_quick_cluster_overview'
+        end
       end
 
       controller :lytit_bar do
