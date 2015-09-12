@@ -429,6 +429,8 @@ class Api::V1::VenuesController < ApiBaseController
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 
+		radius = 0.1
+
 		if venue_ids.count == 1
 			venue = Venue.find_by_id(venue_ids.first)
 			@tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
