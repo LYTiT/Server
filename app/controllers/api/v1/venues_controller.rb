@@ -395,7 +395,11 @@ class Api::V1::VenuesController < ApiBaseController
 	def explore_venues
 		user_lat = params[:latitude]
 		user_long = params[:longitude]
-		past_results = params[:past_venues].split(",") rescue ["0"]
+		if param[:past_venues].length == 0
+			past_results = ["0"]
+		else
+			past_results = params[:past_venues].split(",")
+		end
 		nearby_radius = 2000 * 0.000621371 #meters to miles
 
 		if params[:proximity] == "nearby"
