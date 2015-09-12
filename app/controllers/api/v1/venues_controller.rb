@@ -204,14 +204,15 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:feed_id] == nil
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				@tweets = @venue.twitter_tweets(false)
+				@tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", @venue.id).order("timestamp DESC").order("popularity_score DESC")
 			else
 				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
-				@tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
+				@tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
 			end
 		else
 			@feed = Feed.find_by_id(params[:feed_id])
-			@tweets = @feed.venue_tweets(false)
+			@tweets = @feed.venue_tweets
 		end
 	end
 
@@ -430,10 +431,13 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if venue_ids.count == 1
 			venue = Venue.find_by_id(venue_ids.first)
-			@tweet = venue.twitter_tweets(true)
+			@tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
+			venue.delay.pull_twitter_tweets
 		else
 			cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
-			@tweet = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids], true)
+			@tweet = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
+			Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
 		end
 	end
 
