@@ -395,7 +395,7 @@ class Api::V1::VenuesController < ApiBaseController
 	def explore_venues
 		user_lat = params[:latitude]
 		user_long = params[:longitude]
-		if param[:past_venues].length == 0
+		if params[:past_venues].length == 0
 			past_results = ["0"]
 		else
 			past_results = params[:past_venues].split(",")
