@@ -940,7 +940,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids, only_latest)
-    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 5.minutes
+    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
         config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
