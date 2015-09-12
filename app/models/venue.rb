@@ -925,14 +925,14 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_twitter_pull_time: Time.now)
       
       if only_latest == true 
-        Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")
+        Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
       else
         Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC")
       end
     
     else
       if only_latest? == true 
-        Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")
+        Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
       else
         Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", self.id).order("timestamp DESC").order("popularity_score DESC")
       end
