@@ -133,7 +133,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'explore_venues'
         end
-        get 'get_latest_tweet'
+        collection do
+          get 'get_latest_tweet'
+        end
         get 'get_quick_venue_overview'
         get 'get_quick_cluster_overview'
       end
