@@ -1,7 +1,7 @@
 json.post_id @post.id
 json.comment @post.comment
 json.media_type @post.media_type
-json.media_url @post.media_url
+json.media_url @post.image_url_1
 json.post_created_at @post.time_wrapper
 json.content_origin @post.content_origin
 json.thirdparty_username @post.thirdparty_username
@@ -9,7 +9,7 @@ json.thirdparty_username @post.thirdparty_username
 json.post_id @post.id
 json.comment @post.comment
 json.media_type @post.media_type
-json.media_url @post.media_url
+json.media_url @post.image_url_1
 json.post_created_at @post.time_wrapper
 json.content_origin @post.content_origin
 json.thirdparty_username @post.thirdparty_username

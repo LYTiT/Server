@@ -13,7 +13,7 @@ class VenueComment < ActiveRecord::Base
 
 
 	def comment_or_media
-		if self.comment.blank? and self.media_url.blank?
+		if self.comment.blank? and self.image_url_1.blank?
 			errors.add(:comment, 'or image is required')
 		end
 	end
@@ -145,7 +145,7 @@ class VenueComment < ActiveRecord::Base
 		if lytit_venue !=nil and (lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time ))
 			vc = nil
 			begin
-				vc = VenueComment.create!(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+				vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
 			rescue
 				puts "Oops, uniqueness violation!"
 			end

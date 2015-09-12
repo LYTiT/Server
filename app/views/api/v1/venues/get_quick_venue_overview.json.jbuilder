@@ -10,7 +10,7 @@ json.time_zone_offset @venue.time_zone_offset
 json.post_id @venue.venue_comments.order("id DESC LIMIT 1).first.id
 json.comment @venue.venue_comments.order("id DESC LIMIT 1).first.comment
 json.media_type @venue.venue_comments.order("id DESC LIMIT 1).first.media_type
-json.media_url @venue.venue_comments.order("id DESC LIMIT 1).first.media_url
+json.media_url @venue.venue_comments.order("id DESC LIMIT 1).first.image_url_1
 json.post_created_at @venue.venue_comments.order("id DESC LIMIT 1).first.time_wrapper
 json.content_origin @venue.venue_comments.order("id DESC LIMIT 1).first.content_origin
 json.thirdparty_username @venue.venue_comments.order("id DESC LIMIT 1).first.thirdparty_username

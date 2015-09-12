@@ -4,7 +4,7 @@ FactoryGirl.define do
   factory :venue_comment do
     comment "MyString"
     media_type "MyString"
-    media_url "MyString"
+    image_url_1 "MyString"
     user nil
     venue nil
   end

@@ -1,7 +1,7 @@
 json.id @comment.id
 json.comment @comment.comment
 json.media_type @comment.media_type
-json.media_url @comment.media_url
+json.media_url @comment.image_url_1
 json.user_id @comment.user_id
 json.user_name @comment.user.try(:name)
 json.username_private @comment.username_private

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150911175208) do
+ActiveRecord::Schema.define(version: 20150912143808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -368,7 +368,7 @@ ActiveRecord::Schema.define(version: 20150911175208) do
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
     t.string   "media_type"
-    t.string   "media_url"
+    t.string   "image_url_1"
     t.integer  "user_id"
     t.integer  "venue_id"
     t.datetime "created_at"
@@ -387,6 +387,11 @@ ActiveRecord::Schema.define(version: 20150911175208) do
     t.datetime "time_wrapper"
     t.string   "instagram_id"
     t.string   "thirdparty_username"
+    t.string   "image_url_2"
+    t.string   "image_url_3"
+    t.string   "video_url_1"
+    t.string   "video_url_2"
+    t.string   "video_url_3"
   end
 
   add_index "venue_comments", ["id", "instagram_id"], name: "index_venue_comments_on_id_and_instagram_id", unique: true, using: :btree
