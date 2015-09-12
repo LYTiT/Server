@@ -2,7 +2,12 @@ json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
-  json.media_url comment.image_url_1
+  json.image_url_1 comment.image_url_1
+  json.image_url_2 comment.image_url_2
+  json.image_url_3 comment.image_url_3
+  json.video_url_1 comment.video_url_1
+  json.video_url_2 comment.video_url_2
+  json.video_url_3 comment.video_url_2
   json.user_id comment.user_id
   json.user_name comment.user.try(:name)
   json.username_private comment.username_private

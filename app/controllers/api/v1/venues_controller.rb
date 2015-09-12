@@ -37,7 +37,7 @@ class Api::V1::VenuesController < ApiBaseController
 			posting_parts = @user.temp_posting_housings.order('id ASC')
 
 			if posting_parts.count == 0 #if no parts are housed there is nothing to link
-				vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :image_url_1 => params[:media_url], 
+				vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :media_url => params[:media_url], 
 																			:session => session, :comment => params[:comment], :username_private => params[:username_private])
 				vc_part.save
 				completion = true
@@ -56,7 +56,11 @@ class Api::V1::VenuesController < ApiBaseController
 							@comment.username_private = part.username_private
 						else #pull media data as the incoming part is the text
 							@comment.media_type = part.media_type
-							@comment.image_url_1 = part.image_url_1
+							if part.media_type == "image"
+								@comment.image_url_1 = part.media_url
+							else
+								@comment.video_url_1 = part.media_url
+							end
 						end
 						part.delete
 						parts_linked = true
@@ -70,7 +74,7 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 
 				if parts_linked == false #appropraite part has not arrived yet so we store the current part in temp housing
-					vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :image_url_1 => params[:media_url], 
+					vc_part = TempPostingHousing.new(:user_id => @user.id, :venue_id => v_id, :media_type => params[:media_type], :media_url => params[:media_url], 
 																				:session => session, :comment => params[:comment], :username_private => params[:username_private])          
 					vc_part.save
 					completion = true

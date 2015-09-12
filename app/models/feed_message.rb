@@ -22,7 +22,7 @@ class FeedMessage < ActiveRecord::Base
 		    :type => 'chat_notification', 
 		    :user_id => user.id,
 		    :user_name => user.name,
-		    :user_phone => user.phone,
+		    :user_phone => user.phone_number,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :chat_message => self.message
