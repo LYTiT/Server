@@ -206,6 +206,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.find_by_id(venue_ids.first)
 				@tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", @venue.id).order("timestamp DESC").order("popularity_score DESC")
 			else
+				radius = Venue.meters_to_miles(map_scale.to_f/2.0)
 				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 				@tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
           <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
