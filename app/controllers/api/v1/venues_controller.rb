@@ -251,6 +251,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
+		Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
 		@venues = Venue.where("color_rating > -1.0").order("color_rating desc")
 		render 'display.json.jbuilder'
 	end
