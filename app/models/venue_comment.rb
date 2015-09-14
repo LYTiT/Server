@@ -19,6 +19,14 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def lowest_resolution_image_avaliable
+		begin
+			self.media_url_1 || self.media_url_2
+		rescue
+			nil
+		end
+	end
+
 	def username_for_trending_venue_view
 		if self.content_origin == "instagram"
 			self.thirdparty_username
