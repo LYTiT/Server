@@ -2,7 +2,6 @@ class FeedMessage < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :feed
 
-	has_many :venue_comments
 
 	after_create :new_message_notification
 
@@ -12,7 +11,7 @@ class FeedMessage < ActiveRecord::Base
 		for feed_user in feed_members
 			if feed_user.is_subscribed == true && feed_user.user.id != self.user.id
 				#might have to do a delay here/run on a seperate dyno
-				if self.venue_comments.first != nil
+				if self.venue_comment_id != nil
 					self.delay.send_new_message_notification(feed_user.user)
 				else
 					self.send_new_message_notification(feed_user.user)
