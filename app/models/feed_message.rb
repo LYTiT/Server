@@ -22,12 +22,6 @@ class FeedMessage < ActiveRecord::Base
 
 
 	def send_new_message_notification(member)
-		if self.venue_comment != nil
-			media_url = self.venue_comment.image_url_1 || self.venue_comment.image_url_2
-		else
-			media_url = nil
-		end
-
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'chat_notification', 
@@ -39,7 +33,7 @@ class FeedMessage < ActiveRecord::Base
 		    :chat_message => self.message,
 		    :venue_comment_id => self.venue_comment.try(:id),
 		    :media_type => self.venue_comment.try(:media_type),
-		    :media_url => media_url
+		    :media_url => self.venue_comment.try(:lowest_resolution_image_avaliable)
 
 		}
 
