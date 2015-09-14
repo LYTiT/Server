@@ -2,6 +2,8 @@ class FeedMessage < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :feed
 
+	has_many :venue_comments
+
 	after_create :new_message_notification
 
 	def new_message_notification
@@ -17,6 +19,7 @@ class FeedMessage < ActiveRecord::Base
 
 
 	def send_new_message_notification(member)
+		media_url = self.venue_comments.first.image_url_1 rescue self.venue_comments.first.image_url_2
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'chat_notification', 
@@ -25,7 +28,10 @@ class FeedMessage < ActiveRecord::Base
 		    :user_phone => user.phone_number,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
-		    :chat_message => self.message
+		    :chat_message => self.message,
+		    :venue_comment_id => self.venue_comments.first.id,
+		    :media_type => self.venue_comments.first.media_type,
+		    :media_url => media_url
 
 		}
 
@@ -41,7 +47,7 @@ class FeedMessage < ActiveRecord::Base
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  puts "Sending chat to #{member.name} whose id is #{member.id}"
-		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
+		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count, :sound => 'default'})
 		end
 
 	end
