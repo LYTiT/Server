@@ -11,7 +11,7 @@ class FeedMessage < ActiveRecord::Base
 		for feed_user in feed_members
 			if feed_user.is_subscribed == true && feed_user.user.id != self.user.id
 				#might have to do a delay here/run on a seperate dyno
-				if self.venue_comment.first != nil
+				if self.venue_comment != nil
 					self.delay.send_new_message_notification(feed_user.user)
 				else
 					self.send_new_message_notification(feed_user.user)
@@ -22,7 +22,12 @@ class FeedMessage < ActiveRecord::Base
 
 
 	def send_new_message_notification(member)
-		media_url = self.venue_comment.image_url_1 rescue self.venue_comment.image_url_2
+		if self.venue_comment != nil
+			media_url = self.venue_comment.image_url_1 || self.venue_comment.image_url_2
+		else
+			media_url = nil
+		end
+
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'chat_notification', 
@@ -32,8 +37,8 @@ class FeedMessage < ActiveRecord::Base
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :chat_message => self.message,
-		    :venue_comment_id => self.venue_comment.first.id,
-		    :media_type => self.venue_comment.media_type,
+		    :venue_comment_id => self.venue_comment.try(:id),
+		    :media_type => self.venue_comment.try(:media_type),
 		    :media_url => media_url
 
 		}
