@@ -59,8 +59,10 @@ LytitServer::Application.routes.draw do
         end
         post 'add_feed'
         post 'leave_feed'        
-        get 'get_feed'  
-        post 'send_message'
+        get 'get_feed'
+        collection do  
+          post 'send_message'
+        end
         get 'get_chat' 
         get 'get_categories'
         post 'edit_subscription'
