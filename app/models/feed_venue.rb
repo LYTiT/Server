@@ -9,7 +9,7 @@ class FeedVenue < ActiveRecord::Base
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
-			if feed_user.is_subscribed == true && feed_user.user.id != self.user.id
+			if feed_user.is_subscribed == true && feed_user.user_id != self.user_id
 				#might have to do a delay here/run on a seperate dyno
 				self.send_new_message_notification(feed_user.user)
 			end
@@ -20,11 +20,11 @@ class FeedVenue < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'added_place_notification', 
-		    :user_id => user.id,
+		    :user_id => user_id,
 		    :user_name => user.name,
-		    :feed_id => feed.id,
+		    :feed_id => feed_id,
 		    :feed_name => feed.name,
-		    :venue_id => venue.id,
+		    :venue_id => venue_id,
 		    :venue_name => venue.name
 
 		}
