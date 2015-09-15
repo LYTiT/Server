@@ -7,3 +7,8 @@ json.array! @tweets do |tweet|
 	json.media_url tweet.author_avatar
 	json.user_id tweet.author_id
 end
+
+json.pagination do 
+  json.current_page @tweets.current_page
+  json.total_pages @tweets.total_pages
+end

@@ -232,6 +232,12 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.surrounding_feed(lat, long)
+		radius = 1000 * 0.000621371
+		VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+          <= #{radius}").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").order("venue_comments.created_at DESC")
+	end
+
 	def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
 		#no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
 		if query[0..2].downcase == "insta"

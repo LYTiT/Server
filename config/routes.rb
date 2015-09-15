@@ -142,6 +142,9 @@ LytitServer::Application.routes.draw do
         collection do 
           get 'get_quick_cluster_overview'
         end
+        collection do
+          get 'get_surrounding_feed_for_user'
+        end
       end
 
       controller :lytit_bar do

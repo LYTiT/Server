@@ -9,3 +9,8 @@ json.array! @messages do |message|
   json.media_url message.venue_comment.try(:lowest_resolution_image_avaliable)
   json.timestamp message.created_at
 end
+
+json.pagination do 
+  json.current_page @messages.current_page
+  json.total_pages @messages.total_pages
+end

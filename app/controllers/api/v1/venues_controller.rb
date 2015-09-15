@@ -204,16 +204,19 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:feed_id] == nil
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				@tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", @venue.id).order("timestamp DESC").order("popularity_score DESC")
+				venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", @venue.id).order("timestamp DESC").order("popularity_score DESC")
+				@tweets = venue_tweets.page(params[:page]).per(10)
 			else
 				radius = Venue.meters_to_miles(map_scale.to_f/2.0)
 				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
-				@tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+				cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
           <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+				@tweets = cluster_tweets.page(params[:page]).per(10)
 			end
 		else
 			@feed = Feed.find_by_id(params[:feed_id])
-			@tweets = @feed.venue_tweets
+			feed_tweets = @feed.venue_tweets
+			@tweets = feed_tweets.page(params[:page]).per(10)
 		end
 	end
 
@@ -460,6 +463,14 @@ class Api::V1::VenuesController < ApiBaseController
 
 		@post = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 1")[0]
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 5")
+	end
+
+	def get_surrounding_feed_for_user
+		latitude = params[:latitude]
+		longitude = params[:longitude]
+
+		surrounding_venue_comments = VenueComment.surrounding_feed(latitude, longitude)
+		@comments = surrounding_venue_comments.page(params[:page]).per(10)
 	end
 
 
