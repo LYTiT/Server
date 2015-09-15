@@ -21,7 +21,7 @@ class VenueComment < ActiveRecord::Base
 
 	def lowest_resolution_image_avaliable
 		begin
-			self.media_url_1 || self.media_url_2
+			self.image_url_1 || self.image_url_2
 		rescue
 			nil
 		end
