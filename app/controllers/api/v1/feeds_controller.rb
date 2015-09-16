@@ -140,7 +140,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_chat
-		chat_messages = FeedMessage.where("feed_id = ?", params[:feed_id]).order("id ASC")
+		chat_messages = FeedMessage.where("feed_id = ?", params[:feed_id]).order("id DESC")
 		@messages = chat_messages.page(params[:page]).per(10)
 	end
 
