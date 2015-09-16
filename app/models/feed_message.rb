@@ -31,7 +31,7 @@ class FeedMessage < ActiveRecord::Base
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :chat_message => self.message,
-		    :venue_comment_id => self.venue_comment.try(:id),
+		    :venue_comment_id => self.venue_comment_id,
 		    :media_type => self.venue_comment.try(:media_type),
 		    :media_url => self.venue_comment.try(:lowest_resolution_image_avaliable)
 
@@ -45,7 +45,12 @@ class FeedMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 
-		preview = "#{user.name} in"+' "'+"#{feed.name}"+'"'+":\n#{message}"
+		if venue_comment_id == nil
+			preview = "#{user.name} in"+' "'+"#{feed.name}"+'"'+":\n#{message}"
+		else
+			preview = "#{user.name} shared a Moment with"+' "'+"#{feed.name}"+'"'
+		end
+		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  puts "Sending chat to #{member.name} whose id is #{member.id}"
