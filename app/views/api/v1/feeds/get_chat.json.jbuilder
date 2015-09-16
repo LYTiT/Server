@@ -6,7 +6,7 @@ json.chat_messages(@messages) do |message|
   json.chat_message message.message
   json.venue_comment_id message.venue_comment.try(:id)
   json.media_type message.venue_comment.try(:media_type)
-  json.media_url message.venue_comment.try(:lowest_resolution_image_avaliable)
+  json.media_url message.venue_comment.try(:image_url_2)
   json.timestamp message.created_at
 end
 

@@ -9,7 +9,7 @@ class FeedMessage < ActiveRecord::Base
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
-			if feed_user.is_subscribed == true && feed_user.user.id != self.user.id
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id)
 				#might have to do a delay here/run on a seperate dyno
 				if self.venue_comment != nil
 					self.delay.send_new_message_notification(feed_user.user)
@@ -33,7 +33,7 @@ class FeedMessage < ActiveRecord::Base
 		    :chat_message => self.message,
 		    :venue_comment_id => self.venue_comment_id,
 		    :media_type => self.venue_comment.try(:media_type),
-		    :media_url => self.venue_comment.try(:lowest_resolution_image_avaliable)
+		    :media_url => self.venue_comment.try(:image_url_2)
 
 		}
 
