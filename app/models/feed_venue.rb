@@ -31,7 +31,7 @@ class FeedVenue < ActiveRecord::Base
 
 		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
 		#when there is an unread message
-		type = "#{venue.name} has been added to the #{self.name} List"
+		type = "#{venue.name} has been added to the #{self.feed.name} List"
 
 		notification = self.store_new_message_notification(payload, member, type)
 		payload[:notification_id] = notification.id

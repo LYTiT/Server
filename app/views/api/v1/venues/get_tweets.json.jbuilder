@@ -1,4 +1,4 @@
-json.array! @tweets do |tweet|
+json.tweets(@tweets) do |tweet|
 	json.id tweet.id
 	json.twitter_id tweet.twitter_id
 	json.comment tweet.tweet_text

@@ -84,6 +84,10 @@ LytitServer::Application.routes.draw do
         get 'get_announcement_details'
       end
 
+      resources :venue_comments do
+        get 'get_venue_comment'
+      end
+
       post '/register_push_token' => 'users#register_push_token'
       post '/register_gcm_token' => 'users#register_gcm_token'
       post '/change_password' => 'users#change_password'

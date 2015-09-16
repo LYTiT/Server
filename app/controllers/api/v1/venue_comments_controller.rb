@@ -1,0 +1,5 @@
+class Api::V1::VenueCommentsController < ApiBaseController
+	def get_venue_comment
+		@venue_comment = VenueComment.find_by_id(params[:id])
+	end
+end
