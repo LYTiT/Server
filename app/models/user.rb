@@ -420,6 +420,11 @@ class User < ActiveRecord::Base
   #------------------------------------------------------------->
 
   #IV. Administrative/Creation Methods------------------------------>
+  def self.authenticate_by_username(username, password)
+    return nil  unless user = find_by_name(username)
+    return user if     user.authenticated?(password)
+  end
+
   def send_email_validation
     Mailer.delay.email_validation(self)
   end
