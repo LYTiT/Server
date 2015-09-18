@@ -466,11 +466,11 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_surrounding_feed_for_user
-		latitude = params[:latitude]
-		longitude = params[:longitude]
+		lat = params[:latitude]
+		long = params[:longitude]
+		meter_radius = 200
 
-		surrounding_venue_comments = VenueComment.surrounding_feed(latitude, longitude)
-		@comments = surrounding_venue_comments.page(params[:page]).per(10)
+		@venues = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).includes(:venue_comments).order('distance ASC limit 7')
 	end
 
 
