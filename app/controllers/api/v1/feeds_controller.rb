@@ -166,7 +166,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 	
 	def get_recommendations
-		feed_ids = "SELECT feed_id from feed_recommendations WHERE category IN (#{params[:selected_categories]}"
+		feed_ids = "SELECT feed_id from feed_recommendations WHERE category IN (#{params[:selected_categories]})"
 		@recommendations = Feed.where("id IN (#{feed_ids})")
 	end
 

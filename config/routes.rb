@@ -34,6 +34,7 @@ LytitServer::Application.routes.draw do
         post 'destroy_previous_temp_user'
         get 'validate_coupon_code'
         get 'email_availability'
+        post 'set_email_password'
         get 'is_user_confirmed'
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
