@@ -6,4 +6,5 @@ json.array! @spotlyts do |feed|
 	json.num_venues feed.num_venues
 	json.num_users	feed.num_users
 	json.feed_color feed.feed_color
+	json.image_url feed.image_url
 end

@@ -121,6 +121,9 @@ namespace :lytit do
         Venue.order("popularity_rank desc limit 10").includes(:venue_comments)
       end
 
+      #set image previews for spotlyts
+      
+
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end

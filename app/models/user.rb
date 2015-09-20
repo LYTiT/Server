@@ -26,7 +26,7 @@ class User < ActiveRecord::Base
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
 
-  has_many :feed_messages 
+  has_many :feed_messages, :dependent => :destroy 
 
   belongs_to :role
 
