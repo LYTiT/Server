@@ -1,4 +1,4 @@
-json.array! @venues do |v|
+json.venues(@venues) do |v|
   json.id v.id
   json.name v.name
   json.formatted_address v.address
@@ -9,6 +9,7 @@ json.array! @venues do |v|
   json.time_zone_offset v.time_zone_offset
   json.comments v.venue_comments.order("id DESC LIMIT 5")
 end
+
 json.pagination do 
   json.current_page @venues.current_page
   json.total_pages @venues.total_pages
