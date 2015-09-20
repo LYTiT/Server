@@ -153,13 +153,13 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_spotlyts
-		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feeds)
+		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 	end
 
 	def get_initial_recommendations
 		categories_array = params[:categories].split(',') rescue nil
 		if categories_array != nil
-			@recommendations = FeedRecommendation.where("category IN (?) AND active IS TRUE", categories_array).includes(:feeds)
+			@recommendations = FeedRecommendation.where("category IN (?) AND active IS TRUE", categories_array).includes(:feed)
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Categories are NIL'] } }, status: :unprocessable_entity
 		end		
