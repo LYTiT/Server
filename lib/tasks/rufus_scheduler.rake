@@ -122,7 +122,8 @@ namespace :lytit do
       end
 
       #set image previews for spotlyts
-      
+      spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE")
+      spotlyts.each{|spotlyt| spotlyt.set_image_url}
 
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"

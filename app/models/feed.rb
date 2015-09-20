@@ -14,7 +14,12 @@ class Feed < ActiveRecord::Base
 
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
-		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id desc")
+		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC LIMIT 1")
+	end
+
+	def latest_image_thumbnail_url
+		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
+		url = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC LIMIT 1").lowest_resolution_image_avaliable
 	end
 
 	def is_venue_present?(v_id)
