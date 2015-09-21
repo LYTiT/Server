@@ -55,11 +55,13 @@ class Api::V1::UsersController < ApiBaseController
 	def register
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@user.name = params[:name]
-		@user.phone_number = params[:phone_number] 
-		@user.country_code = params[:country_code]
+		@user.phone_number = params[:phone_number].to_i
+		@user.country_code = params[:country_code].to_i
 		@user.registered = true
 		if @user.save		
 			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not register user"} }, status: :unprocessable_entity
 		end
 	end
 
