@@ -110,6 +110,10 @@ namespace :lytit do
       MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
     end
 
+    #set image previews for spotlyts
+    spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE").includes(:feed)
+    spotlyts.each{|spotlyt| spotlyt.set_image_url}
+
     end_time = Time.now
 
     puts "Done. Time Taken: #{end_time - start_time}s"
