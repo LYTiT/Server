@@ -122,7 +122,7 @@ namespace :lytit do
       end
 
       #set image previews for spotlyts
-      spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE")
+      spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE").includes(:feed)
       spotlyts.each{|spotlyt| spotlyt.set_image_url}
 
       end_time = Time.now

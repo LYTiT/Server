@@ -144,7 +144,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_chat
-		chat_messages = FeedMessage.where("feed_id = ? (NOW() - created_at) <= INTERVAL '1 DAY'", params[:feed_id]).order("id DESC")
+		chat_messages = FeedMessage.where("feed_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", params[:feed_id]).order("id DESC")
 		@messages = chat_messages.page(params[:page]).per(15)
 	end
 
@@ -157,6 +157,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_spotlyts
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 	end
 
