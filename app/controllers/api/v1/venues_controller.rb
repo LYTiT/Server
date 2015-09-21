@@ -468,9 +468,17 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_surrounding_feed_for_user
 		lat = params[:latitude]
 		long = params[:longitude]
-		meter_radius = 200
+		venue_ids = params[:venue_ids].split(',')
 
-		@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("color_rating > -1.0").includes(:venue_comments).order('distance ASC limit 8').to_a).page(params[:page]).per(2)
+		meter_radius = 500
+		
+		if venue_ids.first != nil
+			@venues = Kaminari.paginate_array(Venue.where("id IN (?)", venue_ids).includes(:venue_comments).to_a).page(params[:page]).per(2)
+		else
+			#make instagram pull 
+		end
+		
+		#@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("color_rating > -1.0").includes(:venue_comments).order('distance ASC limit 8').to_a).page(params[:page]).per(2)
 	end
 
 
