@@ -76,6 +76,10 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def get_members
+		@users = Feed.find_by_id(params[:feed_id]).users
+	end
+
 	def get_venues
 		@venues = Feed.find_by_id(params[:id]).venues
 	end

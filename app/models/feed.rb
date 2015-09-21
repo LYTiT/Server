@@ -81,10 +81,6 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
-	def self.spotlyts
-
-	end
-
 	def self.initial_recommendations(selected_categories)
 		if selected_categories != nil
 			FeedRecommendation.where("category IN (?) AND active IS TRUE", selected_categories)
