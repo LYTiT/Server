@@ -18,8 +18,8 @@ class Feed < ActiveRecord::Base
 	end
 
 	def latest_image_thumbnail_url
-		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
-		url = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC").first.lowest_resolution_image_avaliable
+		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
+		url = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC").first.try(:lowest_resolution_image_avaliable)
 	end
 
 	def is_venue_present?(v_id)
