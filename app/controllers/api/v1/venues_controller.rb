@@ -485,7 +485,6 @@ class Api::V1::VenuesController < ApiBaseController
 			@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("latest_rating_update_time > ?", (Time.now - 10.minutes)).includes(:venue_comments).order('distance ASC')).page(params[:page]).per(2)
 		end
 		
-		#@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("color_rating > -1.0").includes(:venue_comments).order('distance ASC limit 8').to_a).page(params[:page]).per(2)
 	end
 
 
