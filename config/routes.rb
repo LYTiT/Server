@@ -45,6 +45,8 @@ LytitServer::Application.routes.draw do
         post 'remove_instagram_authentication'
         post 'update_phone_number'
         post 'cross_reference_user_phonebook'
+        post 'like_message'
+        post 'like_added_venue'
       end
 
       resources :feeds, only: [:create] do

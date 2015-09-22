@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150921000108) do
+ActiveRecord::Schema.define(version: 20150922210507) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -192,6 +192,20 @@ ActiveRecord::Schema.define(version: 20150921000108) do
     t.integer  "movement_direction"
     t.integer  "turn_cycle"
   end
+
+  create_table "likes", force: true do |t|
+    t.integer  "liked_id"
+    t.integer  "liker_id"
+    t.string   "type"
+    t.integer  "feed_message_id"
+    t.integer  "feed_venue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "likes", ["liked_id", "liker_id"], name: "index_likes_on_liked_id_and_liker_id", unique: true, using: :btree
+  add_index "likes", ["liked_id"], name: "index_likes_on_liked_id", using: :btree
+  add_index "likes", ["liker_id"], name: "index_likes_on_liker_id", using: :btree
 
   create_table "lumen_constants", force: true do |t|
     t.string   "constant_name"

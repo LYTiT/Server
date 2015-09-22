@@ -250,6 +250,20 @@ class Api::V1::UsersController < ApiBaseController
 	end
 	#-------------------------------------------------->
 
+	def like_message
+		@user = User.find_by_authentication_token(params[:auth_token])
+		message = FeedMessage.find_by_id(params[:message_id])
+		Like.create!(liker_id: @user.id, liked_id: message.user_id, type: "Posted Message", feed_message_id: message.id)
+		render json: { success: true }
+	end
+
+	def like_added_venue
+		@user = User.find_by_authentication_token(params[:auth_token])
+		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], params[:venue_id]).first
+		Like.create!(liker_id: @user.id, liked_id: feed_venue.user_id, type: "Added Venue", feed_venue_id: feed_venue.id)
+		render json: { success: true }
+	end
+
 	private
 
 	def user_params

@@ -3,20 +3,20 @@ class FeedVenue < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	after_create :new_message_notification
+	after_create :new_venue_notification
 
-	def new_message_notification
+	def new_venue_notification
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
 			if feed_user.is_subscribed == true && feed_user.user_id != self.user_id
 				#might have to do a delay here/run on a seperate dyno
-				self.send_new_message_notification(feed_user.user)
+				self.send_new_venue_notification(feed_user.user)
 			end
 		end
 	end
 
-	def send_new_message_notification(member)
+	def send_new_venue_notification(member)
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'added_place_notification', 
@@ -33,7 +33,7 @@ class FeedVenue < ActiveRecord::Base
 		#when there is an unread message
 		type = "#{venue.name} has been added to the #{self.feed.name} List"
 
-		notification = self.store_new_message_notification(payload, member, type)
+		notification = self.store_new_venue_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
 		if member.push_token
@@ -43,7 +43,7 @@ class FeedVenue < ActiveRecord::Base
 
 	end
 
-	def store_new_message_notification(payload, member, type)
+	def store_new_venue_notification(payload, member, type)
 		notification = {
 		  :payload => payload,
 		  :gcm => user.gcm_token.present?,
