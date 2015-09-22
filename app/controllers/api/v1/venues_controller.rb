@@ -470,13 +470,13 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids].split(',')
 
-		meter_radius = 500
+		meter_radius = 1000
 		
 		if venue_ids.first != nil
 			@venues = Kaminari.paginate_array(Venue.where("id IN (?)", venue_ids).includes(:venue_comments).to_a).page(params[:page]).per(2)
 		else
 			#make instagram pull 
-			surrounding_instagrams = Instagram.media_search(lat, long, :distance => meter_radius, :count => 60)
+			surrounding_instagrams = Instagram.media_search(lat, long, :distance => meter_radius, :count => 100)
 
 			for instagram in surrounding_instagrams
 				VenueComment.convert_instagram_to_vc(instagram, nil, nil)

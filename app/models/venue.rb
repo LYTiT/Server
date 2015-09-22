@@ -913,9 +913,9 @@ class Venue < ActiveRecord::Base
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       if last_tweet_id != nil
-        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect
+        venue_tweets = client.search("#{self.name} -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect
       else
-        venue_tweets = client.search("#{self.name}", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi").take(20).collect
+        venue_tweets = client.search("#{self.name} -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi").take(20).collect
       end
 
       for venue_tweet in venue_tweets
@@ -940,12 +940,12 @@ class Venue < ActiveRecord::Base
       radius = Venue.meters_to_miles(map_scale.to_f/2.0)
       query = ""
 
-      underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 5").select("name")
+      underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
       underlying_venues.each{|v| query+=v.name}
       tags = MetaData.cluster_top_meta_tags(venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
-      cluster_tweets = client.search(query, result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
+      cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
       
       for cluster_tweet in cluster_tweets
         Tweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :handle => cluster_tweet.screen_name, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
