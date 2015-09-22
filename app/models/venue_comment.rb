@@ -179,6 +179,7 @@ class VenueComment < ActiveRecord::Base
 				lytit_venue.update_r_up_votes(vote.time_wrapper)
 				lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
 				lytit_venue.delay.update_rating()
+				lytit_venue.update_columns(latest_rating_update_time: Time.now)
 				
 				if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 					LytSphere.create_new_sphere(lytit_venue)
