@@ -81,7 +81,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_venues
-		@venues = Feed.find_by_id(params[:id]).venues
+		@feed = Feed.find_by_id(params[:id])
+		@venues = @feed.venues
 	end
 
 	def add_venue
