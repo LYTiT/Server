@@ -14,7 +14,7 @@ class Feed < ActiveRecord::Base
 
 	def members
 		member_ids = "SELECT user_id FROM feed_users WHERE feed_id = #{self.id}"
-		members = User.where("id IN (#{user_ids})")
+		members = User.where("id IN (#{member_ids})")
 	end
 
 	def comments
