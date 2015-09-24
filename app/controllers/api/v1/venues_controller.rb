@@ -476,7 +476,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venues = Kaminari.paginate_array(Venue.where("id IN (?)", venue_ids).includes(:venue_comments).to_a).page(params[:page]).per(2)
 		else
 			#make instagram pull 
-			surrounding_instagrams = Instagram.media_search(lat, long, :distance => meter_radius, :count => 100)
+			surrounding_instagrams = Instagram.media_search(lat, long, :distance => meter_radius, :count => 20)
 
 			for instagram in surrounding_instagrams
 				VenueComment.convert_instagram_to_vc(instagram, nil, nil)
