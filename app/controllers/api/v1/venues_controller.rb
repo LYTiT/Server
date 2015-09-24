@@ -482,7 +482,7 @@ class Api::V1::VenuesController < ApiBaseController
 				VenueComment.convert_instagram_to_vc(instagram, nil, nil)
 			end
 
-			@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("latest_rating_update_time > ?", (Time.now - 10.minutes)).includes(:venue_comments).order('distance ASC')).page(params[:page]).per(2)
+			@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("latest_rating_update_time > ?", (Time.now - 10.minutes)).order('distance ASC')).includes(:venue_comments).page(params[:page]).per(2)
 		end
 		
 	end
