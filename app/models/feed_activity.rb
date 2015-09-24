@@ -8,7 +8,7 @@ class FeedActivity < ActiveRecord::Base
 	belongs_to :feed_recommendation
 
 	def self.create_new_venue_comment_activities(vc)
-		feed_ids = "SELECT feed_id FROM feed_venue WHERE venue_id = #{vc.venue_id}"
+		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{vc.venue_id}"
 		feeds_with_venue = Feed.where("id IN (#{feed_ids})")
 		feeds_with_venue.each{|feed_with_venue| FeedActivity.create!(:feed_id => feed_with_venue.id, :type => "venue comment", :venue_comment_id => vc.id, :adjusted_sort_position => vc.created_at.to_i)}
 	end
