@@ -9,7 +9,7 @@ class FeedVenue < ActiveRecord::Base
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :type => "added venue", :feed_venue_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+		FeedActivity.create!(:feed_id => feed_id, :type => "added venue", :feed_venue_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 	end
 
 	def new_venue_notification

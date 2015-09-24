@@ -15,9 +15,9 @@ class Like < ActiveRecord::Base
 
 	def create_feed_acitivity
 		if type == "Added Venue"
-			FeedActivity.create!(:feed_id => feed_id, :type => "liked added venue", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+			FeedActivity.create!(:feed_id => feed_id, :type => "liked added venue", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 		else
-			FeedActivity.create!(:feed_id => feed_id, :type => "liked message", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+			FeedActivity.create!(:feed_id => feed_id, :type => "liked message", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 		end
 	end
 
