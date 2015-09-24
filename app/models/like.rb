@@ -5,10 +5,21 @@ class Like < ActiveRecord::Base
 	belongs_to :feed_venue
 	belongs_to :feed_message
 
+	has_many :feed_activities, :dependent => :destroy
+
 	validates :liker_id, presence: true
 	validates :liked_id, presence: true
 
 	after_create :new_like_notification
+	after_create :create_feed_acitivity
+
+	def create_feed_acitivity
+		if type == "Added Venue"
+			FeedActivity.create!(:feed_id => feed_id, :type => "liked added venue", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+		else
+			FeedActivity.create!(:feed_id => feed_id, :type => "liked message", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+		end
+	end
 
 	def new_like_notification
 		self.delay.send_new_like_notification

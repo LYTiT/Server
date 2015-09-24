@@ -470,9 +470,9 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids].split(',')
 
-		meter_radius = 1000
+		meter_radius = 500
 		
-		if venue_ids.first != nil
+		if 3 > 4#venue_ids.first != nil
 			@venues = Kaminari.paginate_array(Venue.where("id IN (?)", venue_ids).includes(:venue_comments).to_a).page(params[:page]).per(2)
 		else
 			#make instagram pull 

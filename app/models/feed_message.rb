@@ -3,6 +3,8 @@ class FeedMessage < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :venue_comment
 
+	has_many :feed_activities, :dependent => :destroy
+
 	after_create :new_message_notification
 
 	def new_message_notification

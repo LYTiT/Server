@@ -2,7 +2,14 @@ class FeedUser < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :feed
 
+	has_many :feed_activities, :dependent => :destroy
+
 	after_create :new_message_notification
+	after_create :create_feed_acitivity
+
+	def create_feed_acitivity
+		FeedActivity.create!(:feed_id => feed_id, :type => "new member", :feed_user_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)}
+	end
 
 	def new_message_notification
 		begin

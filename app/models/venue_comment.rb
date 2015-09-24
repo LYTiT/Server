@@ -9,6 +9,7 @@ class VenueComment < ActiveRecord::Base
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
 	has_many :meta_datas, :dependent => :destroy
+	has_many :feed_activities, :dependent => :destroy
 
 	validate :comment_or_media
 
@@ -190,6 +191,7 @@ class VenueComment < ActiveRecord::Base
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+				FeedActivity.delay.create_new_venue_comment_activities(vc)
 			end
 		end
 		return new_media_created

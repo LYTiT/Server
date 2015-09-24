@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150922210507) do
+ActiveRecord::Schema.define(version: 20150924030550) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -86,6 +86,23 @@ ActiveRecord::Schema.define(version: 20150922210507) do
     t.string   "type"
     t.integer  "job_id"
   end
+
+  create_table "feed_activities", force: true do |t|
+    t.integer  "feed_id"
+    t.string   "type"
+    t.integer  "venue_comment_id"
+    t.integer  "feed_message_id"
+    t.integer  "feed_venue_id"
+    t.integer  "feed_user_id"
+    t.integer  "like_id"
+    t.integer  "feed_recommendation_id"
+    t.integer  "adjusted_sort_position", limit: 8
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
+  add_index "feed_activities", ["feed_id"], name: "index_feed_activities_on_feed_id", using: :btree
 
   create_table "feed_messages", force: true do |t|
     t.text     "message"

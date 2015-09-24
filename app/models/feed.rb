@@ -3,8 +3,10 @@ class Feed < ActiveRecord::Base
 	has_many :venues, through: :feed_venues
 	has_many :venue_comments, through: :venues
 	has_many :feed_users, :dependent => :destroy
+	has_many :users, through: :feed_users
 	has_many :feed_messages, :dependent => :destroy
 	has_many :feed_recommendations, :dependent => :destroy
+	has_many :feed_activities, :dependent => :destroy
 
 	belongs_to :user
 
@@ -20,6 +22,10 @@ class Feed < ActiveRecord::Base
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC")
+	end
+
+	def activity
+		self.feed_activities.order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url
