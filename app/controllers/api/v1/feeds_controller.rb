@@ -77,7 +77,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_members
-		@users = Feed.find_by_id(params(:feed_id)).members
+		@users = Feed.find_by_id(params(:id)).members
 	end
 
 	def get_venues
