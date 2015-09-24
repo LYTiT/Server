@@ -1,4 +1,4 @@
-json.post @post
+json.post @posts
 
 json.meta_1 @meta[0].try(:meta)
 json.meta_2 @meta[1].try(:meta)

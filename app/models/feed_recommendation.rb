@@ -5,7 +5,7 @@ class FeedRecommendation < ActiveRecord::Base
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at + 24.hours).to_i)
+		FeedActivity.create!(:feed_id => feed_id, :activity_type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at + 24.hours).to_i)
 	end
 
 	def set_image_url

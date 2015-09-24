@@ -89,7 +89,7 @@ ActiveRecord::Schema.define(version: 20150924030550) do
 
   create_table "feed_activities", force: true do |t|
     t.integer  "feed_id"
-    t.string   "type"
+    t.string   "activity_type"
     t.integer  "venue_comment_id"
     t.integer  "feed_message_id"
     t.integer  "feed_venue_id"
