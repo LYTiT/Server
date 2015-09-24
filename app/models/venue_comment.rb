@@ -333,6 +333,103 @@ class VenueComment < ActiveRecord::Base
 		return clean_data
 	end
 
+	#These methods are for proper key selection for get_surrounding_posts since hybrid arrays of instagram as well as LYTiT Venue Comment objects can exist there
+	def self.implicit_id(post)
+		if post.created_at != nil
+			post.id
+		else
+			nil
+		end
+	end
+
+	def self.implicit_media_type(post)
+		if post.created_at != nil
+			post.media_type
+		else
+			post.type
+		end
+	end
+
+	def self.implicit_image_url_1(post)
+		if post.created_at != nil
+			post.image_url_1
+		else
+			post.images.thumbnail.url
+		end
+	end
+
+	def self.implicit_image_url_2(post)
+		if post.created_at != nil
+			post.image_url_2
+		else
+			post.images.low_resolution.url
+		end
+	end
+
+	def self.implicit_image_url_3(post)
+		if post.created_at != nil
+			post.image_url_3
+		else
+			post.images.standard_resolution.url
+		end
+	end
+
+	def self.implicit_video_url_1(post)
+		if post.created_at != nil
+			post.video_url_1
+		else
+			post.videos.try(:low_bandwith).try(:url)
+		end
+	end
+
+	def self.implicit_video_url_2(post)
+		if post.created_at != nil
+			post.video_url_2
+		else
+			post.videos.try(:low_resolution).try(:url)
+		end
+	end
+
+	def self.implicit_video_url_3(post)
+		if post.created_at != nil
+			post.video_url_3
+		else
+			post.videos.try(:standard_resolution).try(:url)
+		end
+	end
+
+	def self.implicit_venue_id(post)
+		if post.created_at != nil
+			post.venue_id
+		else
+			[post.location.latitude, post.location.longitude]
+		end
+	end
+
+	def self.implicit_venue_name(post)
+		if post.created_at != nil
+			post.venue.name
+		else
+			post.location.name
+		end
+	end
+
+	def self.implicit_content_origin(post)
+		if post.created_at != nil
+			post.content_origin
+		else
+			"instagram"
+		end		
+	end
+
+	def self.thirdparty_username(post)
+		if post.created_at != nil
+			post.thirdparty_username
+		else
+			post.user.username
+		end		
+	end
+
 	def self.twitter_test
 		client = Twitter::REST::Client.new do |config|
 		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'

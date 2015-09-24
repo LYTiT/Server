@@ -470,13 +470,30 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids].split(',')
 
-		meter_radius = 100
+	
+		if venue_ids.first != nil
+			meter_radius = 100
+			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+
+			if surrounding_instagrams.count >= 20
+				@posts = surrounding_instagrams
+			else
+				@posts = (surrounding_instagrams << VenueComment.joins(:venue).where("id IN (?)", venue_ids).order("venue_comments.id DESC")).flatten
+			end
+
+		else
+			meter_radius = 500
+			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
 		
+			@posts = surrounding_instagrams
+		end
+
+=begin
 		if 3 > 4#venue_ids.first != nil
 			@venues = Kaminari.paginate_array(Venue.where("id IN (?)", venue_ids).includes(:venue_comments).to_a).page(params[:page]).per(2)
 		else
 			#make instagram pull 
-			surrounding_instagrams = Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+			
 
 			for instagram in surrounding_instagrams
 				VenueComment.convert_instagram_to_vc(instagram, nil, nil)
@@ -484,7 +501,9 @@ class Api::V1::VenuesController < ApiBaseController
 
 			@venues = Kaminari.paginate_array(Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("latest_rating_update_time > ?", (Time.now - 10.minutes)).includes(:venue_comments).order('distance ASC')).page(params[:page]).per(2)
 		end
-		
+		#instsort = inst2.sort_by{|inst| inst.location.name}
+		#instsort = inst2.sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+=end
 	end
 
 

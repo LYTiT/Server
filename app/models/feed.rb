@@ -14,11 +14,6 @@ class Feed < ActiveRecord::Base
 		self.code != nil
 	end
 
-	def members
-		member_ids = "SELECT user_id FROM feed_users WHERE feed_id = #{self.id}"
-		members = User.where("id IN (#{member_ids})")
-	end
-
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC")
