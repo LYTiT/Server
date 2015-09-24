@@ -77,7 +77,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_members
-		@users = Feed.find_by_id(params(:id)).members
+		@feed = Feed.find_by_id(params(:id))
+		@users = @feed.members
 	end
 
 	def get_venues
@@ -172,7 +173,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 	
 	def get_recommendations
-		feed_ids = "SELECT feed_id from feed_recommendations WHERE category IN (#{params[:selected_categories]})"
+		feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE"
 		@recommendations = Feed.where("id IN (#{feed_ids})")
 	end
 
