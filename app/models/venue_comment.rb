@@ -414,6 +414,14 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.implicit_created_at(post)
+		if post.created_at != nil
+			post.venue.time_wrapper
+		else
+			DateTime.strptime("#{post.created_time}",'%s')
+		end
+	end
+
 	def self.implicit_content_origin(post)
 		if post.created_at != nil
 			post.content_origin

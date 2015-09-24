@@ -1,21 +1,17 @@
 json.comments(@posts) do |post|
-  json.id comment.id
-  json.media_type comment.media_type
-  json.image_url_1 comment.image_url_1
-  json.image_url_2 comment.image_url_2
-  json.image_url_3 comment.image_url_3
-  json.video_url_1 comment.video_url_1
-  json.video_url_2 comment.video_url_2
-  json.video_url_3 comment.video_url_2
-  json.user_id comment.user_id
-  json.user_name comment.user.try(:name)
-  json.username_private comment.username_private
-  json.venue_id comment.venue_id
-  json.venue_name comment.venue.try(:name)
-  json.created_at comment.time_wrapper
-  json.updated_at comment.updated_at
-  json.content_origin comment.content_origin
-  json.thirdparty_username comment.thirdparty_username
+  json.id VenueComment.implicit_id(post)
+  json.media_type VenueComment.implicit_media_type(post)
+  json.image_url_1 VenueComment.implicit_image_url_1(post)
+  json.image_url_2 VenueComment.implicit_image_url_2(post)
+  json.image_url_3 VenueComment.implicit_image_url_3(post)
+  json.video_url_1 VenueComment.implicit_video_url_1(post)
+  json.video_url_2 VenueComment.implicit_video_url_2(post)
+  json.video_url_3 VenueComment.implicit_video_url_3(post)
+  json.venue_id VenueComment.implicit_venue_id(post)
+  json.venue_name VenueComment.implicit_venue_name(post)
+  json.created_at VenueComment.implicit_created_at(post)
+  json.content_origin VenueComment.implicit_content_origin(post)
+  json.thirdparty_username VenueComment.thirdparty_username(post)
 end
 json.pagination do 
   json.current_page @posts.current_page

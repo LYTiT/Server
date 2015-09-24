@@ -476,16 +476,16 @@ class Api::V1::VenuesController < ApiBaseController
 			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
 
 			if surrounding_instagrams.count >= 20
-				@posts = surrounding_instagrams
+				@posts = Kaminari.paginate_array(surrounding_instagrams).page(params[:page]).per(10)
 			else
-				@posts = (surrounding_instagrams << VenueComment.joins(:venue).where("id IN (?)", venue_ids).order("venue_comments.id DESC")).flatten
+				@posts = Kaminari.paginate_array((surrounding_instagrams << VenueComment.joins(:venue).where("id IN (?)", venue_ids).order("venue_comments.id DESC")).flatten).page(params[:page]).per(10)
 			end
 
 		else
 			meter_radius = 500
 			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
 		
-			@posts = surrounding_instagrams
+			@posts = Kaminari.paginate_array(surrounding_instagrams).page(params[:page]).per(10)
 		end
 
 =begin
