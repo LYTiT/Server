@@ -93,10 +93,6 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
-	def self.recommendations
-
-	end
-
 	def venue_tweets
 		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
 		Tweet.where("venue_id IN (#{venue_ids})").order("timestamp DESC")
