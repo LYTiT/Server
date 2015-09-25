@@ -38,7 +38,9 @@ LytitServer::Application.routes.draw do
         get 'is_user_confirmed'
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
-        get 'get_user_feeds'
+        collection do
+          get 'get_user_feeds'
+        end
         post 'add_instagram_auth_token'
         post 'update_instagram_permission'
         post 'check_instagram_token_expiration'
