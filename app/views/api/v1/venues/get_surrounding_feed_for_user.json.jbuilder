@@ -1,5 +1,7 @@
 json.comments(@posts) do |post|
   json.id VenueComment.implicit_id(post)
+  json.latitude post.try(:location).try(:latitude)
+  json.longitude post.try(:location).try(:longitude)
   json.media_type VenueComment.implicit_media_type(post)
   json.image_url_1 VenueComment.implicit_image_url_1(post)
   json.image_url_2 VenueComment.implicit_image_url_2(post)
