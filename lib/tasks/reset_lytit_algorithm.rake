@@ -21,6 +21,16 @@ namespace :lytit do
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
     #MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
 
+    #check if vortexes are being used. If not, deactivate them.
+    vortexes = InstagramVortex.all
+
+    for vortex in vortexes
+        if vortex.last_user_ping < (Time.now-2.days)
+            vortex.update_columns(active: false)
+        end
+    end
+
+
     puts "done."
   end
 

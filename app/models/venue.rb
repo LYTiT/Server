@@ -746,17 +746,6 @@ class Venue < ActiveRecord::Base
           VenueComment.convert_instagram_to_vc(instagram, nil, nil)
         end
       end
-
-      nearby_vortex_radius = 20000
-      if not InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).any?
-        begin
-          iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")
-          #vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
-        rescue
-          puts "Oops! Something went wrong in creating a vortex."
-        end
-      end
-      
     end
 
   end
