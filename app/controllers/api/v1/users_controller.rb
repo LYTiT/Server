@@ -15,9 +15,13 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def create
-		existing_temp_user = User.where("email = ?", params[:email]).first
-		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
-			existing_temp_user.destroy
+		begin
+			existing_temp_user = User.where("email = ?", params[:email]).first
+			if existing_temp_user != nil && params[:email].last(8) == "temp.com"
+				existing_temp_user.destroy
+			end
+		rescue
+			puts "Previous temp user issue"
 		end
 
 		@user = User.new(user_params)
@@ -268,7 +272,7 @@ class Api::V1::UsersController < ApiBaseController
 	private
 
 	def user_params
-		params.permit(:name, :version, :email, :password, :notify_location_added_to_groups, :notify_events_added_to_groups, :notify_venue_added_to_groups, :username_private)
+		params.permit(:name, :version, :email, :password, :username_private)
 	end
 end
 
