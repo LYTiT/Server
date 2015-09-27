@@ -98,6 +98,10 @@ class Api::V1::UsersController < ApiBaseController
 			formated_numbers << phone_number.last(10)
 		end
 		@users = User.where("phone IN (?)", formatted_numbers)
+
+
+		
+		
 	end
 
 	def register_push_token

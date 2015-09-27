@@ -478,7 +478,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if surrounding_instagrams.count >= 20
 				@posts = Kaminari.paginate_array(surrounding_instagrams).page(params[:page]).per(10)
 			else
-				@posts = Kaminari.paginate_array((surrounding_instagrams << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("venue_comments.id DESC")).flatten).page(params[:page]).per(10)
+				@posts = Kaminari.paginate_array((surrounding_instagrams << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("venue_comments.id DESC").to_a).flatten).page(params[:page]).per(10)
 			end
 
 		else
