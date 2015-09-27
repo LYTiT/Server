@@ -66,7 +66,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
-		if params[:email] != nil
+		if params[:email] != nil and params[:email].length > 4
 			@user.email = params[:email]
 		end
 		@user.password = params[:password]
