@@ -198,23 +198,26 @@ class InstagramVortex < ActiveRecord::Base
 	end	
 
 	def self.check_nearby_vortex_existence(lat, long)
-		nearby_vortex_radius = 20000
-		nearby_vortex = InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
-		if nearby_vortex == nil
-			begin
-				iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")
-				#vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
-			rescue
-				puts "Oops! Something went wrong in creating a vortex."
-			end
-		else
-			if nearby_vortex.active == false
-				nearby_vortex.update_columns(active: true)
-				nearby_vortex.update_columns(last_user_ping: Time.now)
+		if lat != nil and long != nil
+			nearby_vortex_radius = 20000
+			nearby_vortex = InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
+			if nearby_vortex == nil
+				begin
+					iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")
+					#vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
+				rescue
+					puts "Oops! Something went wrong in creating a vortex."
+				end
 			else
-				nearby_vortex.update_columns(last_user_ping: Time.now)
+				if nearby_vortex.active == false
+					nearby_vortex.update_columns(active: true)
+					nearby_vortex.update_columns(last_user_ping: Time.now)
+				else
+					nearby_vortex.update_columns(last_user_ping: Time.now)
+				end
 			end
-		end		
+		end
+
 	end
 
 end

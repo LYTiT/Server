@@ -66,7 +66,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@user.email = params[:email]
+		@user.email = params[:email] || "temp@temp.com"
 		@user.password = params[:password]
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
