@@ -93,15 +93,31 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def cross_reference_user_phonebook
-		formatted_numbers = []
-		for phone_number in params[:phone_numbers]
-			formated_numbers << phone_number.last(10)
+		phonebook = params[:phone_numbers].split(",")
+		
+		matched_users = User.where("RIGHT(phone, 7) IN (?)", phonebook)
+		for user in matched_users
+			phone_num = user.phone_number
+			if phone_num.length > 7
+				leading_digits = phone_num.first(phone_num.length-7)
+				phonebook_entry = phonebook[phonebook.index(phone_num.last(7))-1]
+				leading_phonebook_entry_digits = phonebook_entry.first(phone_num.length-7)
+
+				if leading_digits != leading_phonebook_entry_digits
+					matched_users.delete(user)
+				else
+					#compare country codes
+					if phone_num.length != phonebook_entry.length
+						if user.country_code != phonebook_entry.first(user.country_code.length)
+							matched_users.delete(user)
+						end
+					end
+				end
+			end
 		end
-		@users = User.where("phone IN (?)", formatted_numbers)
 
+		@users = matched_users
 
-		
-		
 	end
 
 	def register_push_token

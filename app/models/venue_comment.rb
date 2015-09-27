@@ -414,6 +414,22 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.implicit_venue_latitude(post)
+		if post.created_at != nil
+			post.venue.latitude
+		else
+			post.location.latitude
+		end
+	end
+
+	def self.implicit_venue_longitude(post)
+		if post.created_at != nil
+			post.venue.longitude
+		else
+			post.location.longitude
+		end		
+	end
+
 	def self.implicit_created_at(post)
 		if post.created_at != nil
 			post.time_wrapper
