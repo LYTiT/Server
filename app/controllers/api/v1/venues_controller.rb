@@ -468,10 +468,10 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_surrounding_feed_for_user
 		lat = params[:latitude]
 		long = params[:longitude]
-		venue_ids = params[:venue_ids].split(',')
+		venue_ids = params[:venue_ids]
 
 	
-		if venue_ids.first != nil
+		if venue_ids.length > 0
 			meter_radius = 100
 			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
 
