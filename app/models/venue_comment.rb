@@ -416,7 +416,7 @@ class VenueComment < ActiveRecord::Base
 
 	def self.implicit_created_at(post)
 		if post.created_at != nil
-			post.venue.time_wrapper
+			post.time_wrapper
 		else
 			DateTime.strptime("#{post.created_time}",'%s')
 		end
