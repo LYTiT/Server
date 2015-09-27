@@ -66,11 +66,15 @@ class Api::V1::UsersController < ApiBaseController
 
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@user.email = params[:email] || "temp@temp.com"
+		if params[:email] != nil
+			@user.email = params[:email]
+		end
 		@user.password = params[:password]
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
 			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not save user"} }, status: :unprocessable_entity
 		end
 	end
 
