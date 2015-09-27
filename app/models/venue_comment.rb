@@ -402,7 +402,7 @@ class VenueComment < ActiveRecord::Base
 		if post.created_at != nil
 			post.venue_id
 		else
-			[post.location.latitude, post.location.longitude]
+ 			nil
 		end
 	end
 

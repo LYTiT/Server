@@ -484,13 +484,13 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			meter_radius = 2000
 			surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
-		
+			
 			@posts = Kaminari.paginate_array(surrounding_instagrams).page(params[:page]).per(10)
 		end
 
 		#converting to lytit venue comments
-		for post in @posts
-			if post.created_at != nil
+		for instagram in surrounding_instagrams
+			if instagram.created_at != nil
 				VenueComment.delay.convert_instagram_to_vc(instagram, nil, nil)
 			end
 		end
