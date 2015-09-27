@@ -483,6 +483,31 @@ class User < ActiveRecord::Base
   def manages_any_venues?
     venues.size > 0
   end
+
+  def self.find_lytit_users_in_phonebook(phonebook)
+    matched_users = User.where("RIGHT(phone_number, 7) IN (?)", phonebook)
+    for user in matched_users
+      phone_num = user.phone_number
+      if phone_num.length > 7
+        leading_digits = phone_num.first(phone_num.length-7)
+        phonebook_entry = phonebook[phonebook.index(phone_num.last(7))-1]
+        leading_phonebook_entry_digits = phonebook_entry.first(phone_num.length-7)
+
+        if leading_digits != leading_phonebook_entry_digits
+          matched_users.delete(user)
+        else
+          #compare country codes
+          if phone_num.length != phonebook_entry.length
+            if user.country_code != phonebook_entry.first(user.country_code.length)
+              matched_users.delete(user)
+            end
+          end
+        end
+      end
+    end
+
+    return matched_users
+  end
   #-------------------------------------------------------------->
 
 
