@@ -136,7 +136,7 @@ class Api::V1::FeedsController < ApiBaseController
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
 		if feed_ids.count == 1
 			vc_id = 
-			new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => params[:venue_comment_id]) rescue FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => nil)
+			new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => params[:venue_comment_id])
 			render json: { success: true }
 		else
 			for feed_id in feed_ids
