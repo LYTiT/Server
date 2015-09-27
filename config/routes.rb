@@ -46,7 +46,7 @@ LytitServer::Application.routes.draw do
         post 'check_instagram_token_expiration'
         post 'remove_instagram_authentication'
         post 'update_phone_number'
-        post 'cross_reference_user_phonebook'
+        get 'cross_reference_user_phonebook'
         post 'like_message'
         post 'like_added_venue'
       end

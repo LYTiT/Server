@@ -94,7 +94,6 @@ class Api::V1::UsersController < ApiBaseController
 
 	def cross_reference_user_phonebook
 		phonebook = params[:phone_numbers].split(",")
-		
 		matched_users = User.where("RIGHT(phone, 7) IN (?)", phonebook)
 		for user in matched_users
 			phone_num = user.phone_number
@@ -117,7 +116,6 @@ class Api::V1::UsersController < ApiBaseController
 		end
 
 		@users = matched_users
-
 	end
 
 	def register_push_token
