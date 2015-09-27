@@ -55,8 +55,8 @@ class Api::V1::UsersController < ApiBaseController
 	def register
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@user.name = params[:username]
-		@user.phone_number = params[:phone_number].to_i
-		@user.country_code = params[:country_code].to_i
+		@user.phone_number = params[:phone_number]
+		@user.country_code = params[:country_code]
 		@user.registered = true
 		if @user.save		
 			render json: { success: true }
@@ -70,7 +70,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.email = params[:email]
 		@user.password = params[:password]
 		if @user.save
-			Mailer.delay.welcome_user(@user)
+			#Mailer.delay.welcome_user(@user)
 			render json: { success: true }
 		end
 	end

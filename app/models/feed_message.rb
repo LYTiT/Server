@@ -14,22 +14,17 @@ class FeedMessage < ActiveRecord::Base
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id)
 				#might have to do a delay here/run on a seperate dyno
 				if self.venue_comment_id != nil
-					begin
 						self.delay.send_new_message_notification(feed_user.user)
-					rescue
-						puts "Nil User"
-					end
 				else
 					begin
 						self.send_new_message_notification(feed_user.user)
 					rescue
-						puts "Nil User"
+						puts "Nil User encountered!"
 					end
 				end
 			end
 		end
 	end
-
 
 	def send_new_message_notification(member)
 		payload = {
