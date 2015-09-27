@@ -478,7 +478,11 @@ class Api::V1::VenuesController < ApiBaseController
 			if surrounding_instagrams.count >= 20
 				@posts = Kaminari.paginate_array(surrounding_instagrams).page(params[:page]).per(10)
 			else
-				@posts = Kaminari.paginate_array((surrounding_instagrams << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("venue_comments.id DESC").to_a).flatten).page(params[:page]).per(10)
+				inst_lytit_posts = []
+				inst_lytit_posts << surrounding_instagrams
+				inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("venue_comments.id DESC")
+				inst_lytit_posts.flatten!
+				@posts = Kaminari.paginate_array(inst_lytit_posts).page(params[:page]).per(10)
 			end
 
 		else
@@ -490,9 +494,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		#converting to lytit venue comments
 		for instagram in surrounding_instagrams
-			if instagram.created_at != nil
-				VenueComment.delay.convert_instagram_to_vc(instagram, nil, nil)
-			end
+			VenueComment.delay.convert_instagram_to_vc(instagram, nil, nil)
 		end
 
 =begin
