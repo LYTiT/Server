@@ -87,16 +87,6 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
-	def sign_in_existing_user
-		@user = User.find_by_name(params[:name])
-		if @user != nil and @user.password == params[:password]
-			sing_in @user
-			render 'created.json.jbuilder'
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Invalid password/username"} }, status: :unprocessable_entity
-		end
-	end
-
 	def set_version
 		@user = User.find_by_authentication_token(params[:auth_token])
 		v = params[:version]
