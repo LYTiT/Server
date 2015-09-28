@@ -220,6 +220,23 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	def get_surrounding_tweets
+		venue_ids = params[:cluster_venue_ids].split(',')
+		lat = params[:latitude]
+		long =  params[:longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		radius = Venue.meters_to_miles(200)
+		cluster = ClusterTracker.check_existence(lat, long, zoom_level)
+		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, venue_ids)
+		@tweets = surrounding_tweets.page(params[:page]).per(10)
+
+		for tweet in surrounding_tweets
+			Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))
+		end
+	end
+
 	def mark_comment_as_viewed
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@comment = VenueComment.find_by_id(params[:post_id])

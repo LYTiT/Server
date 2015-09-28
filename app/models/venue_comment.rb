@@ -178,7 +178,9 @@ class VenueComment < ActiveRecord::Base
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
 				vote.save
 				lytit_venue.update_r_up_votes(vote.time_wrapper)
-				lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
+				if lytit_venue.latest_posted_comment_time < vote.time_wrapper
+					lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
+				end
 				lytit_venue.delay.update_rating()
 				lytit_venue.update_columns(latest_rating_update_time: Time.now)
 				
