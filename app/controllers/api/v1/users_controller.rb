@@ -17,8 +17,13 @@ class Api::V1::UsersController < ApiBaseController
 	def create
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
-			if (existing_temp_user != nil && params[:email].last(8) == "temp.com") && existing_temp_user.registered == false
-				existing_temp_user.destroy
+			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
+				if existing_temp_user.registered == false
+					existing_temp_user.destroy
+				else
+					previous_email = existing_temp_user.email
+					existing_temp_user.update_columns(email: previous_email+"(og)")
+				end
 			end
 		rescue
 			puts "Previous temp user issue"
