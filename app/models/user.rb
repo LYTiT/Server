@@ -427,7 +427,7 @@ class User < ActiveRecord::Base
   #IV. Administrative/Creation Methods------------------------------>
   def self.authenticate_by_username(username, password)
     return nil  unless look_up_user = User.find_by_name(username)
-    return look_up_user if     user.authenticated?(password)
+    return look_up_user if     look_up_user.authenticated?(password)
   end
 
   def send_email_validation
