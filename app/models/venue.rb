@@ -962,7 +962,7 @@ class Venue < ActiveRecord::Base
       tags = MetaData.cluster_top_meta_tags(venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
-      cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect
+      cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
     end
   end
 
