@@ -229,7 +229,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		radius = Venue.meters_to_miles(200)
 		cluster = ClusterTracker.check_existence(lat, long, zoom_level)
-		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
+		surrounding_tweets = Kaminari.paginate_array(Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, params[:cluster_venue_ids]))
 		@tweets = surrounding_tweets.page(params[:page]).per(10)
 
 		for tweet in surrounding_tweets
