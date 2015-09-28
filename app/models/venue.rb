@@ -915,8 +915,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
-    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids)
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
@@ -940,12 +939,10 @@ class Venue < ActiveRecord::Base
         Tweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :handle => cluster_tweet.screen_name, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => cluster_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
       end
 
-      cluster.update_columns(last_twitter_pull_time: Time.now)
     end
   end
 
-  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
-    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
+  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids)
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|

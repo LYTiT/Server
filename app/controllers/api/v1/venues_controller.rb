@@ -461,12 +461,13 @@ class Api::V1::VenuesController < ApiBaseController
 			cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 			@tweet = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
           <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
-			Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
+			Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
 		end
 	end
 
 	def get_quick_venue_overview
 		@venue = Venue.find_by_id(params[:venue_id])
+		@venue.delay.pull_twitter_tweets
 	end
 
 	def get_quick_cluster_overview
@@ -480,6 +481,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		@posts = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 4")
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 5")
+		Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
 	end
 
 	def get_surrounding_feed_for_user
