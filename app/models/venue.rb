@@ -930,7 +930,7 @@ class Venue < ActiveRecord::Base
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
       underlying_venues.each{|v| query+=v.name}
-      tags = MetaData.cluster_top_meta_tags(venue_ids)
+      tags = MetaData.cluster_top_meta_tags(cluster_venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
@@ -957,7 +957,7 @@ class Venue < ActiveRecord::Base
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
       underlying_venues.each{|v| query+=v.name}
-      tags = MetaData.cluster_top_meta_tags(venue_ids)
+      tags = MetaData.cluster_top_meta_tags(cluster_venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect
