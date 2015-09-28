@@ -964,6 +964,7 @@ class Venue < ActiveRecord::Base
       tags.each{|tag| query+=tag.first.last}
 
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect
+    end
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
