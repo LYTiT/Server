@@ -17,7 +17,7 @@ class Api::V1::UsersController < ApiBaseController
 	def create
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
-			if existing_temp_user != nil && params[:email].last(8) == "temp.com"
+			if (existing_temp_user != nil && params[:email].last(8) == "temp.com") && existing_temp_user.registered == false
 				existing_temp_user.destroy
 			end
 		rescue
@@ -84,7 +84,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def sign_in_existing_user
 		@user = User.find_by_name(params[:name])
-		if @user.password == params[:password]
+		if @user != nil and @user.password == params[:password]
 			sing_in @user
 			render 'created.json.jbuilder'
 		else
