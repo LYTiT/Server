@@ -221,7 +221,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_surrounding_tweets
-		venue_ids = params[:cluster_venue_ids].split(',')
+		venue_ids = v.split(',')
 		lat = params[:latitude]
 		long =  params[:longitude]
 		zoom_level = params[:zoom_level]
@@ -229,7 +229,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		radius = Venue.meters_to_miles(200)
 		cluster = ClusterTracker.check_existence(lat, long, zoom_level)
-		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, venue_ids)
+		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
 		@tweets = surrounding_tweets.page(params[:page]).per(10)
 
 		for tweet in surrounding_tweets
@@ -481,7 +481,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		@posts = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 4")
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 5")
-		Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
+		Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
 	end
 
 	def get_surrounding_feed_for_user

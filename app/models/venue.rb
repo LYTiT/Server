@@ -915,7 +915,8 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids)
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
+    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
@@ -930,7 +931,7 @@ class Venue < ActiveRecord::Base
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
       underlying_venues.each{|v| query+=v.name}
-      tags = MetaData.cluster_top_meta_tags(cluster_venue_ids)
+      tags = MetaData.cluster_top_meta_tags(venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
@@ -942,7 +943,8 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, cluster_venue_ids)
+  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
+    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
@@ -957,7 +959,7 @@ class Venue < ActiveRecord::Base
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
       underlying_venues.each{|v| query+=v.name}
-      tags = MetaData.cluster_top_meta_tags(cluster_venue_ids)
+      tags = MetaData.cluster_top_meta_tags(venue_ids)
       tags.each{|tag| query+=tag.first.last}
 
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect
