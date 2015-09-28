@@ -151,6 +151,11 @@ class Api::V1::FeedsController < ApiBaseController
 		@messages = chat_messages.page(params[:page]).per(15)
 	end
 
+	def get_activity
+		@feed = Feed.find_by_id(params[:feed_id])
+		@activity = @feed.activity
+	end
+
 	def meta_search
 		@results = Feed.meta_search(params[:q])
 	end

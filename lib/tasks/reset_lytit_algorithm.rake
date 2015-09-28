@@ -19,6 +19,7 @@ namespace :lytit do
 
     #delete Instagrams and corresponding Meta Data daily
     VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
+    FeedActivity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
 
     #check if vortexes are being used. If not, deactivate them.

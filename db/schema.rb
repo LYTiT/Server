@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150927042718) do
+ActiveRecord::Schema.define(version: 20150928195841) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -99,6 +99,7 @@ ActiveRecord::Schema.define(version: 20150927042718) do
     t.integer  "adjusted_sort_position", limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "num_likes",                        default: 0
   end
 
   add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
