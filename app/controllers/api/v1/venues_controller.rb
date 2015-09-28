@@ -480,7 +480,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				inst_lytit_posts = []
 				inst_lytit_posts << surrounding_instagrams
-				inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("venue_comments.id DESC")
+				inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{venue_ids})").order("rating DESC").order("name ASC").order("venue_comments.id DESC")
 				inst_lytit_posts.flatten!
 				@posts = Kaminari.paginate_array(inst_lytit_posts).page(params[:page]).per(10)
 			end
