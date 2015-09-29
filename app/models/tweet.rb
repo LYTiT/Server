@@ -68,7 +68,7 @@ class Tweet < ActiveRecord::Base
   		if t.try(:handle) != nil
   			t.author_avatar
   		else
-  			tweet.user.profile_image_url.to_s
+  			t.user.profile_image_url.to_s
   		end
   	end  
 
