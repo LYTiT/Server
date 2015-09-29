@@ -908,7 +908,7 @@ class Venue < ActiveRecord::Base
       end
 
       for venue_tweet in venue_tweets
-       Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :handle => venue_tweet.screen_name, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(venue_tweet.user.followers_count, venue_tweet.retweet_count, venue_tweet.favorite_count)) rescue "Oops, Tweet already pulled!"
+       Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :handle => venue_tweet.user.screen_name, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(venue_tweet.user.followers_count, venue_tweet.retweet_count, venue_tweet.favorite_count)) rescue "Oops, Tweet already pulled!"
       end
 
       self.update_columns(last_twitter_pull_time: Time.now)
@@ -937,42 +937,40 @@ class Venue < ActiveRecord::Base
       cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(100).collect
       
       for cluster_tweet in cluster_tweets
-        Tweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :handle => cluster_tweet.screen_name, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => cluster_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
+        Tweet.create!(:twitter_id => cluster_tweet.id, :tweet_text => cluster_tweet.text, :author_id => cluster_tweet.user.id, :handle => cluster_tweet.user.screen_name, :author_name => cluster_tweet.user.name, :author_avatar => cluster_tweet.user.profile_image_url.to_s, :timestamp => cluster_tweet.created_at, :from_cluster => true, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(cluster_tweet.user.followers_count, cluster_tweet.retweet_count, cluster_tweet.favorite_count))
       end
 
     end
   end
 
-  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
+  def self.raw_cluster_twitter_tweets(cluster_lat, cluster_long, venue_ids)
     cluster_venue_ids = venue_ids.split(',').map(&:to_i)
-    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
-      cluster.update_columns(last_twitter_pull_time: Time.now)
-      client = Twitter::REST::Client.new do |config|
-        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
-        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
-        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
-        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
-      end
-
-      radius = Venue.meters_to_miles(200)
-      tag_query = ""
-      location_query = ""
-      underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
-      underlying_venues.each{|v| location_query+=(v.name+" OR ")}
-      tags = MetaData.cluster_top_meta_tags(venue_ids)
-      tags.each{|tag| tag_query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}
-      
-      location_query.chomp!(" OR ") 
-      tag_query.chomp!(" OR ") 
-
-      location_cluster_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
-      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
-      total_tweets = []
-      total_tweets << location_cluster_tweets
-      total_tweets << tag_query_tweets
-      flat_total_tweets = total_tweets.flatten.compact
-      return flat_total_tweets
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
     end
+
+    radius = Venue.meters_to_miles(200)
+    tag_query = ""
+    location_query = ""
+    underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
+    underlying_venues.each{|v| location_query+=(v.name+" OR ")}
+    tags = MetaData.cluster_top_meta_tags(venue_ids)
+    tags.each{|tag| tag_query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}
+    
+    location_query.chomp!(" OR ") 
+    tag_query.chomp!(" OR ") 
+
+    location_cluster_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
+    tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
+    total_tweets = []
+    total_tweets << location_cluster_tweets
+    total_tweets << tag_query_tweets
+    flat_total_tweets = total_tweets.flatten.compact
+    return flat_total_tweets
+    
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
