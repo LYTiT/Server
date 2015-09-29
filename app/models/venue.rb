@@ -967,7 +967,11 @@ class Venue < ActiveRecord::Base
 
       location_cluster_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
       tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
-      total_tweets = (location_cluster_tweets << tag_query_tweets).flatten.compact
+      total_tweets = []
+      total_tweets << location_cluster_tweets
+      total_tweets << tag_query_tweets
+      total_tweets.flatten!.compact!
+      
     end
   end
 
