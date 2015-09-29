@@ -16,4 +16,68 @@ class Tweet < ActiveRecord::Base
 		tweet_popularity_score = 1.0 / (Math::E ** (-alpha_factor.to_f * followers_count.to_f ** beta_factor) + 1.0) + retweet_count.to_f ** (1.0 / gamma_factor)      
   	end
 
+  	def self.implicit_id(t)
+  		if t.handle != nil
+  			t.id
+  		else
+  			nil
+  		end
+  	end
+
+  	def self.implicit_twitter_id(t)
+  		if t.handle != nil
+  			t.twitter_id
+  		else
+  			t.id
+  		end  		
+  	end
+
+  	def self.implicit_text(t)
+  		if t.handle != nil
+  			t.tweet_text
+  		else
+  			t.text
+  		end  		
+  	end  	  	
+
+  	def self.implicit_timestamp(t)
+  		if t.handle != nil
+  			t.timestamp
+  		else
+  			t.created_at
+  		end  		
+  	end
+
+  	def self.implicit_author_id(t)
+  		if t.handle != nil
+  			t.author_id
+  		else
+  			t.user.id
+  		end  		
+  	end
+
+  	def self.implicit_author_name(t)
+  		if t.handle != nil
+  			t.author_name
+  		else
+  			t.user.name
+  		end  		
+  	end
+
+  	def self.implicit_author_avatar(t)
+  		if t.handle != nil
+  			t.author_avatar
+  		else
+  			tweet.user.profile_image_url.to_s
+  		end
+  	end  
+
+  	def self.implicit_handle(t)
+  		if t.handle != nil
+  			t.handle
+  		else
+  			t.user.screen_name
+  		end  		
+  	end
+
 end

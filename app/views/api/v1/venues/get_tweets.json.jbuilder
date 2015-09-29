@@ -1,12 +1,12 @@
 json.tweets(@tweets) do |tweet|
-	json.id tweet.id
-	json.twitter_id tweet.twitter_id
-	json.comment tweet.tweet_text
-	json.created_at tweet.timestamp
-	json.user_name tweet.author_name
-	json.media_url tweet.author_avatar
-	json.user_id tweet.author_id
-	json.twitter_handle tweet.handle
+	json.id Tweet.implicit_id(tweet)
+	json.twitter_id Tweet.implicit_twitter_id(tweet)
+	json.comment Tweet.implicit_tweet_text(tweet)
+	json.created_at Tweet.implicit_timestamp(tweet)
+	json.user_name Tweet.implicit_author_name(tweet)
+	json.media_url Tweet.implicit_author_avatar(tweet)
+	json.user_id Tweet.implicit_author_id(tweet)
+	json.twitter_handle Tweet.implicit_handle(tweet)
 end
 
 json.pagination do 
