@@ -233,9 +233,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
 
 		if surrounding_tweets.length > 0
-			for tweet in surrounding_tweets
-				Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))
-			end
+			surrounding_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
 		end
 	end
 

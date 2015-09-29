@@ -28,11 +28,8 @@ json.activity(@activities) do |activity|
   json.num_likes activity.num_likes
 
   json.added_venue activity.try(:feed_venue).try(:venue)
-  json.added_venue_name
 
   json.liked_venue activity.try(:like).(:feed_venue).try(:venue)
-  json.liked_venue_name
-
 
 end
 json.pagination do 
