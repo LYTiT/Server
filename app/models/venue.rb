@@ -958,9 +958,9 @@ class Venue < ActiveRecord::Base
       tag_query = ""
       location_query = ""
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
-      underlying_venues.each{|v| location_query+=v.name+" OR "}
+      underlying_venues.each{|v| location_query+=(v.name+" OR ")}
       tags = MetaData.cluster_top_meta_tags(venue_ids)
-      tags.each{|tag| tag_query+=tag.first.last+" OR " if tag.first.last != nil || tag.first.last != ""}
+      tags.each{|tag| tag_query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}
       
       location_query.chomp!(" OR ") 
       tag_query.chomp!(" OR ") 
@@ -970,7 +970,6 @@ class Venue < ActiveRecord::Base
       total_tweets = []
       total_tweets << location_cluster_tweets
       total_tweets << tag_query_tweets
-      total_tweets.flatten!.compact!
       return total_tweets
     end
   end
