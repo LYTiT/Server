@@ -208,7 +208,6 @@ class Api::V1::VenuesController < ApiBaseController
 				@tweets = venue_tweets.page(params[:page]).per(10)
 			else
 				radius = Venue.meters_to_miles(map_scale.to_f/2.0)
-				cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
 				cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
           <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
 				@tweets = cluster_tweets.page(params[:page]).per(10)
@@ -227,14 +226,9 @@ class Api::V1::VenuesController < ApiBaseController
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 
-		radius = Venue.meters_to_miles(200)
-		cluster = ClusterTracker.check_existence(lat, long, zoom_level)
-		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		surrounding_tweets = Venue.raw_surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		
 		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
-
-		if surrounding_tweets.length > 0
-			surrounding_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
-		end
 	end
 
 	def mark_comment_as_viewed
