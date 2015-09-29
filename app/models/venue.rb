@@ -930,6 +930,9 @@ class Venue < ActiveRecord::Base
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, venue_ids)    
     cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
+    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
+    radius = Venue.meters_to_miles(map_scale.to_f/2.0)
+
     time_out_minutes = 0
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - time_out_minutes.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
@@ -939,9 +942,8 @@ class Venue < ActiveRecord::Base
         config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
-      cluster_venue_ids = venue_ids.split(',').map(&:to_i)
 
-      radius = Venue.meters_to_miles(map_scale.to_f/2.0)
+      
       location_query = ""
       tag_query = ""
 
@@ -955,14 +957,27 @@ class Venue < ActiveRecord::Base
 
       location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
       tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
-      total_tweets = []
-      total_tweets << location_tweets
-      total_tweets << tag_query_tweets
-      adjusted_total_tweets = total_tweets.flatten.compact
+      new_cluster_tweets = []
+      total_cluster_tweets = []
+      new_cluster_tweets << location_tweets
+      new_cluster_tweets << tag_query_tweets
+      new_cluster_tweets.flatten!.compact!
+      new_cluster_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
       
-      if adjusted_total_tweets.length > 0
-        adjusted_total_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+      total_cluster_tweets << new_cluster_tweets
+
+      total_cluster_tweets << Teet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+      total_cluster_tweets.flatten!.compact!
+
+      if new_cluster_tweets.length > 0
+        new_cluster_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, associated_zoomlevel => zoom_level,:latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
       end
+
+      return total_cluster_tweets
+    else
+      Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
     end
   end
 

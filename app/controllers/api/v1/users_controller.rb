@@ -18,7 +18,7 @@ class Api::V1::UsersController < ApiBaseController
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
-				if existing_temp_user.registered == false
+				if existing_temp_user.registered != true
 					existing_temp_user.destroy
 				else
 					previous_email = existing_temp_user.email
