@@ -1,4 +1,5 @@
 json.activity(@activities) do |activity|
+  json.list_name @feed.name
   json.id activity.try(:venue_comment).try(:venue_comment.id)
   json.comment activity.try(:venue_comment).try(:comment)
   json.media_type activity.try(:venue_comment).try(:media_type)

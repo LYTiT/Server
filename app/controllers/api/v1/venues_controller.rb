@@ -222,7 +222,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@feed = Feed.find_by_id(params[:feed_id])
 			feed_tweets = @feed.venue_tweets
-			@tweets = feed_tweets.page(params[:page]).per(10)
+			@tweets = Kaminari.paginate_array(feed_tweets).page(params[:page]).per(10)
 		end
 	end
 

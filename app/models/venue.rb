@@ -899,7 +899,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = 0.1 #miles
+      radius = Venue.meters_to_miles(100)
       #query = ""
       #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
       #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
@@ -942,7 +942,6 @@ class Venue < ActiveRecord::Base
         config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
-
       
       location_query = ""
       tag_query = ""
