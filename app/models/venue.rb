@@ -889,7 +889,7 @@ class Venue < ActiveRecord::Base
   #------------------------------------------------------------------------------>
 
   #V. Twitter Functionality ----------------------------------------------------->
-  def pull_twitter_tweets
+  def venue_twitter_tweets
     time_out_minutes = 0
     if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > time_out_minutes.minutes)
       client = Twitter::REST::Client.new do |config|
@@ -900,10 +900,11 @@ class Venue < ActiveRecord::Base
       end
 
       radius = 0.1 #miles
-      query = ""
-      top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
-      top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
-      query+=(" OR "+self.name)
+      #query = ""
+      #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
+      #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
+      #query+=(" OR "+self.name)
+      query = self.name
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       if last_tweet_id != nil
@@ -965,7 +966,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.raw_surrounding_twitter_tweets(user_lat, user_long, venue_ids)
+  def self.surrounding_twitter_tweets(user_lat, user_long, venue_ids)
     surrounding_venue_ids = venue_ids.split(',').map(&:to_i) rescue []
     client = Twitter::REST::Client.new do |config|
       config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'

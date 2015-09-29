@@ -204,7 +204,11 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:feed_id] == nil
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				venue_tweets = @venue.pull_twitter_tweets
+				begin
+					venue_tweets = @venue.venue_twitter_tweets
+				rescue
+					venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+				end
 				@tweets = Kaminari.paginate_array(venue_tweets).page(params[:page]).per(10)
 			else
 				radius = Venue.meters_to_miles(map_scale.to_f/2.0)
@@ -226,7 +230,7 @@ class Api::V1::VenuesController < ApiBaseController
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 
-		surrounding_tweets = Venue.raw_surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		surrounding_tweets = Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
 		
 		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
 	end
