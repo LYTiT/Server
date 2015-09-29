@@ -6,7 +6,7 @@ json.tweets(@tweets) do |tweet|
 	json.user_name tweet.user.name
 	json.media_url tweet.user.profile_image_url.to_s
 	json.user_id tweet.user.id
-	json.twitter_handle tweet.screen_name
+	json.twitter_handle tweet.user.screen_name
 end
 
 json.pagination do 
