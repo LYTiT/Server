@@ -970,7 +970,7 @@ class Venue < ActiveRecord::Base
       total_tweets = []
       total_tweets << location_cluster_tweets
       total_tweets << tag_query_tweets
-      flat_total_tweets = total_tweets
+      flat_total_tweets = total_tweets.flatten
       return flat_total_tweets
     end
   end
