@@ -890,7 +890,8 @@ class Venue < ActiveRecord::Base
 
   #V. Twitter Functionality ----------------------------------------------------->
   def pull_twitter_tweets
-    if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > 0.minutes)
+    time_out_minutes = 0
+    if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > time_out_minutes.minutes)
       client = Twitter::REST::Client.new do |config|
         config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
         config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
@@ -899,26 +900,37 @@ class Venue < ActiveRecord::Base
       end
 
       radius = 0.1 #miles
+      query = ""
+      top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
+      top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
+      query+=(" OR "+self.name)
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       if last_tweet_id != nil
-        venue_tweets = client.search("#{self.name} -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi", since_id: "#{last_tweet_id}").take(20).collect.to_a
       else
-        venue_tweets = client.search("#{self.name} -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi").take(20).collect
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}mi").take(20).collect.to_a
       end
-
-      for venue_tweet in venue_tweets
-       Tweet.create!(:twitter_id => venue_tweet.id, :tweet_text => venue_tweet.text, :author_id => venue_tweet.user.id, :handle => venue_tweet.user.screen_name, :author_name => venue_tweet.user.name, :author_avatar => venue_tweet.user.profile_image_url.to_s, :timestamp => venue_tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(venue_tweet.user.followers_count, venue_tweet.retweet_count, venue_tweet.favorite_count)) rescue "Oops, Tweet already pulled!"
-      end
-
       self.update_columns(last_twitter_pull_time: Time.now)
+
+      if new_venue_tweets.length > 0
+        new_venue_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+      end
+
+      total_venue_tweets = []
+      total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
+      total_venue_tweets << Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+      total_venue_tweets.flatten!.compact!
+      return total_venue_tweets
+    else
+      Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
     end
   end
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, venue_ids)    
     cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
-
-    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - 0.minutes
+    time_out_minutes = 0
+    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - time_out_minutes.minutes
       cluster.update_columns(last_twitter_pull_time: Time.now)
       client = Twitter::REST::Client.new do |config|
         config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
@@ -1000,8 +1012,7 @@ class Venue < ActiveRecord::Base
       surrounding_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => user_lat, :longitude => user_long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
     end
 
-    return surrounding_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}
-    
+    return surrounding_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
