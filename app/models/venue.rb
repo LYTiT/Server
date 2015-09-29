@@ -971,7 +971,7 @@ class Venue < ActiveRecord::Base
       total_tweets << location_cluster_tweets
       total_tweets << tag_query_tweets
       total_tweets.flatten!.compact!
-      
+      return total_tweets
     end
   end
 
