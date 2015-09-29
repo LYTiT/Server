@@ -229,8 +229,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 		radius = Venue.meters_to_miles(200)
 		cluster = ClusterTracker.check_existence(lat, long, zoom_level)
-		surrounding_tweets = Kaminari.paginate_array(Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, params[:cluster_venue_ids]))
-		@tweets = surrounding_tweets.page(params[:page]).per(10)
+		surrounding_tweets = Venue.raw_cluster_twitter_tweets(lat, long, zoom_level, map_scale, cluster, params[:cluster_venue_ids])
+		@tweets = Kaminari.paginate_array(surrounding_tweets.page(params[:page])).per(10)
 
 		for tweet in surrounding_tweets
 			Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :author_id => tweet.user.id, :handle => tweet.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => lat, :longitude => long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))
