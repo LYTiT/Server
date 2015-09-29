@@ -204,19 +204,20 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:feed_id] == nil
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				begin
+				#begin
 					venue_tweets = @venue.venue_twitter_tweets
-				rescue
-					venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
-				end
+				#rescue
+				#	venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+				#end
 				@tweets = Kaminari.paginate_array(venue_tweets).page(params[:page]).per(10)
 			else
-				begin
+				#begin
 					cluster_tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, params[:cluster_venue_ids])    
-				rescue
-					cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
+				#rescue
+				#	radius = Venue.meters_to_miles(map_scale.to_f/2.0)
+				#	cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*3963.1899999999996) 
          				<= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
-				end
+				#end
 				@tweets = Kaminari.paginate_array(cluster_tweets).page(params[:page]).per(10)
 			end
 		else
