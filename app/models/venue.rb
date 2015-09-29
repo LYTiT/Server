@@ -955,14 +955,19 @@ class Venue < ActiveRecord::Base
       end
 
       radius = Venue.meters_to_miles(200)
-      query = ""
-
+      tag_query = ""
+      location_query = ""
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
-      underlying_venues.each{|v| query+=v.name}
+      underlying_venues.each{|v| location_query+=v.name+" OR "}
       tags = MetaData.cluster_top_meta_tags(venue_ids)
-      tags.each{|tag| query+=tag.first.last if tag.first.last != nil || tag.first.last != ""}
+      tags.each{|tag| tag_query+=tag.first.last+" OR " if tag.first.last != nil || tag.first.last != ""}
+      
+      location_query.chomp!(" OR ") 
+      tag_query.chomp!(" OR ") 
 
-      cluster_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
+      location_cluster_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
+      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}mi").take(20).collect.to_a
+      total_tweets = (location_cluster_tweets << tag_query_tweets).flatten.compact
     end
   end
 
