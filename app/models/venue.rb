@@ -954,7 +954,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = Venue.meters_to_miles(map_scale.to_f/2.0)
+      radius = Venue.meters_to_miles(200)
       query = ""
 
       underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
