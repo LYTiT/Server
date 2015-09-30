@@ -11,7 +11,7 @@ class FeedMessage < ActiveRecord::Base
 		if venue_comment_id == nil
 			nil
 		else
-			Like.where("user_id = ? AND feed_message_id = ?" u.id, id).any?
+			Like.where("user_id = ? AND feed_message_id = ?", u.id, id).any?
 		end
 	end
 
