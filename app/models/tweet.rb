@@ -44,7 +44,12 @@ class Tweet < ActiveRecord::Base
       if t.try(:handle) != nil
         t.image_url_1
       else
-        t.try(:media).try(:first).try(:media_url).to_s+":small"
+        media_url_string = t.try(:media).try(:first).try(:media_url).to_s
+        if media_url_string != ""
+          media_url_string+":small"
+        else
+          nil
+        end
       end     
     end
 
@@ -52,7 +57,12 @@ class Tweet < ActiveRecord::Base
       if t.try(:handle) != nil
         t.image_url_2
       else
-        t.try(:media).try(:first).try(:media_url).to_s+":medium"
+        media_url_string = t.try(:media).try(:first).try(:media_url).to_s
+        if media_url_string != ""
+          media_url_string+":medium"
+        else
+          nil
+        end
       end     
     end
 
@@ -60,7 +70,12 @@ class Tweet < ActiveRecord::Base
       if t.try(:handle) != nil
         t.image_url_3
       else
-        t.try(:media).try(:first).try(:media_url).to_s+":large"
+        media_url_string = t.try(:media).try(:first).try(:media_url).to_s
+        if media_url_string != ""
+          media_url_string+":large"
+        else
+          nil
+        end
       end     
     end    
 
