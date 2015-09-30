@@ -147,11 +147,13 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_chat
+		@user = User.find_by_authentication_token(params[:auth_token])
 		chat_messages = FeedMessage.where("feed_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", params[:feed_id]).order("id DESC")
 		@messages = chat_messages.page(params[:page]).per(15)
 	end
 
 	def get_activity
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
 		@activity = @feed.activity
 	end

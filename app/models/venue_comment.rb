@@ -456,7 +456,7 @@ class VenueComment < ActiveRecord::Base
 		end		
 	end
 
-	def self.twitter_test
+	def self.twitter_test(query, radius)
 		client = Twitter::REST::Client.new do |config|
 		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
 		  config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
@@ -464,11 +464,11 @@ class VenueComment < ActiveRecord::Base
 		  config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
 		end
 		
-		client.search("new york", result_type: "recent", geo_code: "40.733482,-73.992367,0.5mi").take(3).collect do |tweet|
+		client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(3).collect do |tweet|
 		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.user.profile_image_url}"
 		end
 
-		return client.search("new york", result_type: "recent", geo_code: "40.733482,-73.992367,0.5mi", since: "#{Time.now.strftime("%Y-%d-%m")}").take(10).collect
+		return client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(5).collect
 	end
 			
 end

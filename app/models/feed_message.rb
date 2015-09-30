@@ -7,6 +7,14 @@ class FeedMessage < ActiveRecord::Base
 
 	after_create :new_message_notification
 
+	def did_like?(u)
+		if venue_comment_id == nil
+			nil
+		else
+			Like.where("user_id = ? AND feed_message_id = ?" u.id, id).any?
+		end
+	end
+
 	def new_message_notification
 		feed_members = feed.feed_users
 

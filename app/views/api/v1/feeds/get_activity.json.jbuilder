@@ -27,6 +27,7 @@ json.activity(@activities) do |activity|
   json.passive_user_id activity.try(:like).try(:liked_id)
   json.passive_user_name activity.try(:like).try(:liked).try(:name)
   json.num_likes activity.num_likes
+  json.did_like activity.did_like?(@user)
 
   json.added_venue activity.try(:feed_venue).try(:venue)
 

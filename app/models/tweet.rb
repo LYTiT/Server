@@ -38,7 +38,31 @@ class Tweet < ActiveRecord::Base
   		else
   			t.text
   		end  		
-  	end  	  	
+  	end
+
+    def self.implicit_image_url_1(t)
+      if t.try(:handle) != nil
+        t.image_url_1
+      else
+        t.media.first.media_url+":small"
+      end     
+    end
+
+    def self.implicit_image_url_2(t)
+      if t.try(:handle) != nil
+        t.image_url_2
+      else
+        t.media.first.media_url+":medium"
+      end     
+    end
+
+    def self.implicit_image_url_3(t)
+      if t.try(:handle) != nil
+        t.image_url_3
+      else
+        t.media.first.media_url+":large"
+      end     
+    end    
 
   	def self.implicit_timestamp(t)
   		if t.try(:handle) != nil

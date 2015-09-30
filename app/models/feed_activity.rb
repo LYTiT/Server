@@ -13,4 +13,12 @@ class FeedActivity < ActiveRecord::Base
 		feeds_with_venue.each{|feed_with_venue| FeedActivity.create!(:feed_id => feed_with_venue.id, :activity_type => "venue comment", :venue_comment_id => vc.id, :adjusted_sort_position => vc.created_at.to_i)}
 	end
 
+	def did_like?(user) 
+		if like_id == nil
+			nil
+		else
+			like.user == user
+		end
+	end
+
 end

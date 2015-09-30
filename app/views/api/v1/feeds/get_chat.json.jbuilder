@@ -8,6 +8,7 @@ json.chat_messages(@messages) do |message|
   json.media_type message.venue_comment.try(:media_type)
   json.media_url message.venue_comment.try(:image_url_2)
   json.timestamp message.created_at
+  json.did_like message.did_like?(@user)
 end
 
 json.pagination do 

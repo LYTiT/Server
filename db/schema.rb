@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150928195841) do
+ActiveRecord::Schema.define(version: 20150930172442) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -352,6 +352,9 @@ ActiveRecord::Schema.define(version: 20150928195841) do
     t.datetime "updated_at"
     t.float    "popularity_score",               default: 0.0
     t.string   "handle"
+    t.string   "image_url_1"
+    t.string   "image_url_2"
+    t.string   "image_url_3"
   end
 
   add_index "tweets", ["latitude"], name: "index_tweets_on_latitude", using: :btree
