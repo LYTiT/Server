@@ -84,6 +84,7 @@ LytitServer::Application.routes.draw do
           get 'get_spotlyts'
         end
         get 'get_members'
+        get 'get_activity'
       end
 
       resources :announcement do
