@@ -155,7 +155,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
-		@activity = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
+		@activities = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
 	end
 
 	def meta_search
