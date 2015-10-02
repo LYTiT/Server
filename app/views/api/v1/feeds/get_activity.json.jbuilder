@@ -14,15 +14,15 @@ json.activity(@activities) do |activity|
   json.user_name activity.venue_comment.try(:user).try(:name)
   json.venue_id activity.venue_comment.try(:venue_id)
   json.venue_name activity.venue_comment.try(:venue).try(:name)
-  json.created_at activity.venue_comment.try(:time_wrapper)
+  json.created_at activity.implicit_created_at
   json.updated_at activity.venue_comment.try(:updated_at)
   json.content_origin activity.venue_comment.try(:content_origin)
   json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
 
   json.activity_type activity.activity_type
   
-  json.action_user_id activity.like.try(:liker_id)
-  json.action_user_name activity.like.try(:liker).try(:name)
+  json.action_user_id activity.implicit_action_user.try(:id)
+  json.action_user_name activity.implicit_action_user.try(:name)
   json.passive_user_id activity.like.try(:liked_id)
   json.passive_user_name activity.like.try(:liked).try(:name)
   json.liked_venue activity.like.try(:feed_venue).try(:venue)

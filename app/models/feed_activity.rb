@@ -21,4 +21,24 @@ class FeedActivity < ActiveRecord::Base
 		end
 	end
 
+	def implicit_created_at
+		if venue_comment != nil
+			venue_comment.time_wrapper
+		else
+			created_at
+		end
+	end
+
+	def implicit_action_user
+		if feed_venue != nil
+			feed_venue.user
+		elsif like != nil
+			like.liker
+		elsif feed_user != nil
+			feed_user.user
+		else
+			nil
+		end
+	end
+
 end
