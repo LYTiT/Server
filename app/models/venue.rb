@@ -1030,6 +1030,36 @@ class Venue < ActiveRecord::Base
     return surrounding_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
   end
 
+  def self.surrounding_feed(lat, long, surrounding_venue_ids)
+    if surrounding_venue_ids != nil and surrounding_venue_ids.length > 0
+      meter_radius = 100
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+
+      if surrounding_instagrams.count >= 20
+        surrounding_feed = surrounding_instagrams
+      else
+        inst_lytit_posts = []
+        inst_lytit_posts << surrounding_instagrams
+        inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{surrounding_venue_ids})").order("rating DESC").order("name ASC").order("venue_comments.id DESC")
+        inst_lytit_posts.flatten!
+        surrounding_feed = inst_lytit_posts
+      end
+
+    else
+      meter_radius = 2000
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+      
+      surrounding_feed = surrounding_instagrams
+    end
+
+    #converting to lytit venue comments
+    for instagram in surrounding_instagrams
+      VenueComment.delay.convert_instagram_to_vc(instagram, nil, nil)
+    end
+
+    return surrounding_feed
+  end
+
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
