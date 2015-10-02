@@ -487,7 +487,7 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids]
 
-		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, surrounding_venue_ids)).page(params[:page]).per(10)
+		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, venue_ids)).page(params[:page]).per(10)
 	end
 
 
