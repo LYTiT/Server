@@ -279,6 +279,9 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def self.add_new_venue_to_lytit
+  end
+
   #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
