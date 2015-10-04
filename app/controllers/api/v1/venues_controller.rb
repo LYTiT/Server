@@ -184,17 +184,16 @@ class Api::V1::VenuesController < ApiBaseController
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
 			if venue_ids.count == 1 && params[:feed_id] == nil				
+				cache_key = "comments/#{venue_ids.first}"
 				@venue = Venue.find_by_id(venue_ids.first)
 				@venue.delay.account_page_view
 				@venue.instagram_pull_check
-				cache_key = "comments/#{venue_ids.first}"
 			end
 			cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
 			live_comments = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				VenueComment.get_comments_for_cluster(venue_ids)
 			end
 
-			#rescue attempt for timeouts
 			@comments = live_comments.page(params[:page]).per(10)
 					
 		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
