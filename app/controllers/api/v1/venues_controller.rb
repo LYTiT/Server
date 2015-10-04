@@ -195,7 +195,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 
 			#rescue attempt for timeouts
-			if live_comments == nil
+			if live_comments.first == nil
 				live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 			end
 
