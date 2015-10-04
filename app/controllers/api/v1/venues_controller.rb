@@ -479,7 +479,7 @@ class Api::V1::VenuesController < ApiBaseController
 		map_scale = params[:map_scale]
 
 		@posts = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 4")
-		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 5")
+		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
 	end
 
 	def get_surrounding_feed_for_user
