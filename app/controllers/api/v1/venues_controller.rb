@@ -190,14 +190,14 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue.instagram_pull_check
 			end
 
-		live_comments = Rails.cache.fetch("comments/#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}", :expires_in => 5.minutes) do
-			VenueComment.get_comments_for_cluster(venue_ids)
-		end
-		@comments = live_comments.page(params[:page]).per(10)
+			live_comments = Rails.cache.fetch("comments/#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}", :expires_in => 5.minutes) do
+				VenueComment.get_comments_for_cluster(venue_ids)
+			end
+			@comments = live_comments.page(params[:page]).per(10)
 		
 		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 		#	@comments = live_comments.page(params[:page]).per(10)
-		#end
+		end
 	end
 
 	def get_tweets
