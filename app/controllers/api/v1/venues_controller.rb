@@ -188,9 +188,10 @@ class Api::V1::VenuesController < ApiBaseController
 
 				@venue.account_page_view
 				@venue.instagram_pull_check
+				cache_key = "#{venue_ids.first}"
 			end
-
-			live_comments = Rails.cache.fetch("comments/#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}", :expires_in => 5.minutes) do
+			cache_key = "comments/#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
+			live_comments = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				VenueComment.get_comments_for_cluster(venue_ids)
 			end
 			@comments = live_comments.page(params[:page]).per(10)
