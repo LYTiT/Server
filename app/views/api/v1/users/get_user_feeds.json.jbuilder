@@ -11,5 +11,5 @@ json.array! @feeds do |feed|
 	json.creator feed.user
 	json.has_added 1
 	json.list_description feed.description
-	json.private_list feed.is_private?
+	json.subscribed feed.is_subscribed?(@user)
 end
