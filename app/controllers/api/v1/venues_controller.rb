@@ -196,10 +196,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 			#rescue attempt for timeouts
 			if live_comments.first == nil
-				live_comments = VenueComment.get_comments_for_cluster(venue_ids)
+				@comments = VenueComment.get_comments_for_cluster(venue_ids).page(params[:page]).per(10)
+			else
+				@comments = live_comments.page(params[:page]).per(10)
 			end
-
-			@comments = live_comments.page(params[:page]).per(10)
+			
 		
 		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 		#	@comments = live_comments.page(params[:page]).per(10)
