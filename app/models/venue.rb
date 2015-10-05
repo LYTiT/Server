@@ -674,7 +674,7 @@ class Venue < ActiveRecord::Base
     end
 
     self.update_columns(last_instagram_pull_time: Time.now)
-    return instagrams
+    return instagrams.to_a
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)
