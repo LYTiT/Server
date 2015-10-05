@@ -4,6 +4,7 @@ json.activity(@activities) do |activity|
   json.comment activity.venue_comment.try(:comment)
   json.media_type activity.venue_comment.try(:media_type)
   json.media_url activity.venue_comment.try(:image_url_2)
+  json.venue_comment_id activity.venue_comment_id
   json.image_url_1 activity.venue_comment.try(:image_url_1)
   json.image_url_2 activity.venue_comment.try(:image_url_2)
   json.image_url_3 activity.venue_comment.try(:image_url_3)

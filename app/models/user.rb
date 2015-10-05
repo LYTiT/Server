@@ -46,7 +46,7 @@ class User < ActiveRecord::Base
     non_checked_feeds = feeds.where("new_media_present IS FALSE")
     for feed in non_checked_feeds
       for feed_venue in feed.venues
-        if feed_venue.instagram_pull_check == true && feed.new_media_present == false
+        if feed_venue.get_instagrams.first.try(:created_at) == nil && feed.new_media_present == false
           feed.update_columns(latest_content_time: Time.now)
           feed.update_columns(new_media_present: true)
         end

@@ -279,9 +279,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.add_new_venue_to_lytit
-  end
-
   #Bounding area in which to search for a venue as determined by target lat and long.
   def self.bounding_box(radius, lat, long)
     box = Hash.new()
@@ -660,8 +657,10 @@ class Venue < ActiveRecord::Base
 
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      self.update_columns(last_instagram_pull_time: Time.now)
     else
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      self.update_columns(last_instagram_pull_time: Time.now)
     end
 
     instagrams.sort_by!{|instagram| instagram.created_time}  
@@ -671,7 +670,6 @@ class Venue < ActiveRecord::Base
       VenueComment.convert_instagram_array_to_vc(instagrams, self)
     end
 
-    self.update_columns(last_instagram_pull_time: Time.now)
     return instagrams
   end
 
@@ -701,7 +699,7 @@ class Venue < ActiveRecord::Base
       if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
-          if ((Time.now - instagram_venue_id_ping_rate.days) >= venue.last_instagram_pull_time)
+          if ((Time.now - instagram_venue_id_ping_rate.days) >= venue.latest_posted_comment_time)
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
