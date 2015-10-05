@@ -666,11 +666,9 @@ class Venue < ActiveRecord::Base
 
     instagrams.sort_by!{|instagram| instagram.created_time}  
 
-    if instagrams != nil and instagrams.count > 0
+    if instagrams.count > 0
       self.update_columns(last_instagram_post: instagrams.last.id)
-      for instagram in instagrams
-        VenueComment.delay.convert_instagram_to_vc(instagram, self, nil)        
-      end
+      VenueComment.delay.convert_instagram_array_to_vc(instagrams, self)
     end
 
     self.update_columns(last_instagram_pull_time: Time.now)

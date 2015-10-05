@@ -127,6 +127,10 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
 
+	def self.convert_instagram_array_to_vc(instagrams, v)
+		instagrams.each{|instagram| VenueComment.convert_instagram_to_vc(instagram, v, nil)}
+	end
+
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
