@@ -725,8 +725,8 @@ class Venue < ActiveRecord::Base
       total_media << new_instagrams
       total_media << venue.venue_comments.order("time_wrapper desc")
       total_media.flatten!.compact!
-      total_media.unique!
-      
+      total_media.uniq!
+
       return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
     end
   end
