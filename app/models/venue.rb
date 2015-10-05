@@ -620,6 +620,7 @@ class Venue < ActiveRecord::Base
           venue.time_zone = timezone.active_support_time_zone rescue nil
           venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
           venue.verified = false
+          v.instagram_location_id = inst_loc_id
 
           if lat < 0 && long >= 0
             quadrant = "a"
@@ -635,7 +636,6 @@ class Venue < ActiveRecord::Base
           venue.fetched_at = Time.now
           venue.save
           lookup = venue
-          lookup.update_columns(instagram_location_id: inst_loc_id)
 
           inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
           inst_location_id_tracker_lookup_entry.save
@@ -722,10 +722,9 @@ class Venue < ActiveRecord::Base
         end
       end
       total_media = []
-      total_media << new_instagrams
+      total_media << new_instagrams.uniq!
       total_media << venue.venue_comments.order("time_wrapper desc")
       total_media.flatten!.compact!
-      total_media.uniq!
 
       return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
     end
