@@ -197,7 +197,7 @@ class VenueComment < ActiveRecord::Base
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-				FeedActivity.delay.create_new_venue_comment_activities(vc)
+				#FeedActivity.delay.create_new_venue_comment_activities(vc)
 			end
 		end
 		return new_media_created
