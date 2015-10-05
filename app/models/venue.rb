@@ -720,7 +720,7 @@ class Venue < ActiveRecord::Base
         end
       end
       total_media = []
-      total_media << new_instagrams.uniq
+      total_media << new_instagrams
       total_media << venue.venue_comments.order("time_wrapper desc")
       total_media.flatten!.compact!
 
