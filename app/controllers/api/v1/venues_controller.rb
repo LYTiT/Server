@@ -197,7 +197,7 @@ class Api::V1::VenuesController < ApiBaseController
 				Venue.get_comments(venue_ids)
 			end
 
-			@comments = live_comments.page(params[:page]).per(10)
+			@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
 					
 		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 		#	@comments = live_comments.page(params[:page]).per(10)
