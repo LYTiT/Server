@@ -135,7 +135,6 @@ class Api::V1::FeedsController < ApiBaseController
 	def send_message
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
 		if feed_ids.count == 1
-			vc_id = 
 			new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => params[:venue_comment_id])
 			render json: { success: true }
 		else

@@ -487,31 +487,19 @@ class Venue < ActiveRecord::Base
         #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the instagrams
         #we need and create venue comments
         venue_comments_created = 0
+        venue_instagrams = []
         for instagram in nearby_instagram_content
-          if (instagram.location.id == self.instagram_location_id && VenueComment.where("instagram_id = ?", instagram.id).any? == false) && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
-            puts("converting instagram to #{self.name} Venue Comment from #{instagram.location.name}")
-            vc = VenueComment.new(:venue_id => self.id, :image_url_1 => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-            vc.save
-            instagram_tags = instagram.tags
-            instagram_captions = instagram.caption.text.split rescue nil
-            vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-            venue_comments_created += 1
-            vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                  :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
-            vote.save
-            self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
-            self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
-            
-            if not LytSphere.where("venue_id = ?", self.id).any?
-              LytSphere.create_new_sphere(self)
-            end            
+          if instagram.location.id == self.instagram_location_id && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
+            venue_instagrams << instagram
+            VenueComment.delay.convert_instagram_to_vc(instagram, self, nil)            
           end
         end
 
         #if little content is offered on the geo pull make a venue specific pull
-        if venue_comments_created < 3
+        if venue_instagrams.count < 3
           puts ("making a venue get instagrams calls")
-          self.get_instagrams(true)
+          venue_instagrams << self.get_instagrams(true)
+          venue_instagrams.flatten!.unique!.sort_by!{|instagram| instagram.created_time}
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -533,6 +521,8 @@ class Venue < ActiveRecord::Base
         self.update_columns(instagram_location_id: 0)
       end
     end
+
+    return venue_instagrams
   end
 
   #Instagram specific LYTiT venue search-match  
@@ -659,7 +649,6 @@ class Venue < ActiveRecord::Base
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
   def get_instagrams(day_pull)
-    new_media_created = false
     last_instagram_id = nil
 
     instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first
@@ -675,19 +664,17 @@ class Venue < ActiveRecord::Base
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
     end
 
-    instagrams_count = instagrams.count
+    instagrams.sort_by!{|instagram| instagram.created_time}  
 
-    if instagrams != nil and instagrams_count > 0
-      instagrams.each_with_index do |instagram, index|
-        new_media_created = VenueComment.convert_instagram_to_vc(instagram, self, nil)
-        if index+1 == instagrams_count
-          last_instagram_id = instagram.id
-        end
+    if instagrams != nil and instagrams.count > 0
+      self.update_columns(last_instagram_post: instagrams.last.id)
+      for instagram in instagrams
+        VenueComment.delay.convert_instagram_to_vc(instagram, self, nil)        
       end
-      self.update_columns(last_instagram_post: last_instagram_id)  
     end
+
     self.update_columns(last_instagram_pull_time: Time.now)
-    return new_media_created
+    return instagrams
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)
@@ -700,8 +687,49 @@ class Venue < ActiveRecord::Base
     else
       Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post)
     end
-
   end
+
+  def self.get_comments(venue_ids)    
+    if venue_ids.count > 1
+    #returning cluster comments which is just a pull of all avaliable underlying venue comments
+      return VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
+    else
+    #dealing with an individual venue which could require an instagram pull
+      venue = Venue.find_by_id(venue_ids.first)
+      new_instagrams = []
+      instagram_refresh_rate = 15 #minutes
+      instagram_venue_id_ping_rate = 1 #days      
+
+      if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil  
+        #try to establish instagram location id if previous attempts failed every 1 day
+        if venue.instagram_location_id == 0 
+          if ((Time.now - instagram_venue_id_ping_rate.minutes) >= venue.last_instagram_pull_time)
+            new_instagrams << venue.set_instagram_location_id(100)
+            venue.update_columns(last_instagram_pull_time: Time.now)
+          end
+        else
+          if ((Time.now - instagram_refresh_rate.minutes) >= venue.last_instagram_pull_time)
+            new_instagrams << venue.get_instagrams(false)
+          end
+        end
+      else
+        if venue.instagram_location_id == nil
+          new_instagrams << venue.set_instagram_location_id(100)
+        elsif venue.instagram_location_id != 0
+          new_instagrams << venue.get_instagrams(false)
+        else
+          new_media_created = false
+        end
+      end
+      total_media = []
+      total_media << new_instagrams
+      total_media << venue.venue_comments.order("time_wrapper desc")
+      total_media.flatten!.compact!
+      
+      return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}
+    end
+  end
+
 
   def instagram_pull_check
     instagram_refresh_rate = 15 #minutes

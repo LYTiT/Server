@@ -4,7 +4,7 @@ class VenueComment < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	has_many :feed_messages
+	has_many :feed_messages, :dependent => :destroy
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
