@@ -179,6 +179,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		end
 
+		cache_key = ""
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
@@ -188,7 +189,10 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.find_by_id(venue_ids.first)
 				@venue.delay.account_page_view
 			end
-			cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
+
+			if cache_key == ""
+				cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
+			end
 			live_comments = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.get_comments(venue_ids)
 			end
