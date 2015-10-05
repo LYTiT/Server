@@ -703,7 +703,7 @@ class Venue < ActiveRecord::Base
       if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
-          if ((Time.now - instagram_venue_id_ping_rate.minutes) >= venue.last_instagram_pull_time)
+          if ((Time.now - instagram_venue_id_ping_rate.days) >= venue.last_instagram_pull_time)
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
@@ -722,11 +722,11 @@ class Venue < ActiveRecord::Base
         end
       end
       total_media = []
-      total_media << new_instagrams.uniq!
+      total_media << new_instagrams
       total_media << venue.venue_comments.order("time_wrapper desc")
       total_media.flatten!.compact!
 
-      return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
+      return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse.uniq
     end
   end
 
