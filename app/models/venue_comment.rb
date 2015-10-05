@@ -182,7 +182,7 @@ class VenueComment < ActiveRecord::Base
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
 				vote.save
 				lytit_venue.update_r_up_votes(vote.time_wrapper)
-				if lytit_venue.latest_posted_comment_time < vote.time_wrapper
+				if lytit_venue.latest_posted_comment_time == nil or lytit_venue.latest_posted_comment_time < vote.time_wrapper
 					lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
 				end
 				lytit_venue.delay.update_rating()
@@ -197,7 +197,7 @@ class VenueComment < ActiveRecord::Base
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-				#FeedActivity.delay.create_new_venue_comment_activities(vc)
+				FeedActivity.delay.create_new_venue_comment_activities(vc)
 			end
 		end
 		return new_media_created
