@@ -511,12 +511,12 @@ class User < ActiveRecord::Base
   #-------------------------------------------------------------->
 
   def self.lumen_cleanup
-    VenueComment.where("created_at > 1", Time.now - 24.hours).delete_all
-    MetaData.where("created_at > 1", Time.now - 24.hours).delete_all
-    Tweet.where("created_at > 1", Time.now - 24.hours).delete_all
-    FeedMessage.where("created_at > 1", Time.now - 24.hours).delete_all
-    LytSphere.where("created_at > 1", Time.now - 24.hours).delete_all
-    LytitVote.where("created_at > 1", Time.now - 24.hours).delete_all
+    VenueComment.where("created_at > ?", Time.now - 24.hours).delete_all
+    MetaData.where("created_at > ?", Time.now - 24.hours).delete_all
+    Tweet.where("created_at > ?", Time.now - 24.hours).delete_all
+    FeedMessage.where("created_at > ?", Time.now - 24.hours).delete_all
+    LytSphere.where("created_at > ?", Time.now - 24.hours).delete_all
+    LytitVote.where("created_at > ?", Time.now - 24.hours).delete_all
   end
 
 
