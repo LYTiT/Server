@@ -191,7 +191,7 @@ class VenueComment < ActiveRecord::Base
 				if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 					LytSphere.create_new_sphere(lytit_venue)
 				end
-				puts "instagram venue comment created"
+				puts "instagram venue comment created, id: #{vc.id}"
 				lytit_venue.feeds.update_all(new_media_present: true)
 				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
 				instagram_tags = instagram.tags
