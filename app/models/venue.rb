@@ -700,7 +700,7 @@ class Venue < ActiveRecord::Base
       instagram_refresh_rate = 15 #minutes
       instagram_venue_id_ping_rate = 1 #days      
 
-      if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil  
+      if venue.instagram_location_id != nil
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
           if ((Time.now - instagram_venue_id_ping_rate.minutes) >= venue.last_instagram_pull_time)
