@@ -209,7 +209,6 @@ class Api::V1::UsersController < ApiBaseController
 	def get_map_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_map_details.json.jbuilder'
-		InstagramVortex.delay.check_nearby_vortex_existence(params[:latitude], params[:longitude])
 	end
 
 	def get_comments_by_time

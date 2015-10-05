@@ -159,6 +159,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_surrounding_tweets'
         end
+        collection do
+          post 'check_vortex_proximity'
+        end
       end
 
       controller :lytit_bar do

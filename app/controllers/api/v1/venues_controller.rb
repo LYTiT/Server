@@ -500,6 +500,11 @@ class Api::V1::VenuesController < ApiBaseController
 		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, venue_ids)).page(params[:page]).per(10)
 	end
 
+	def check_vortex_proximity
+		InstagramVortex.check_nearby_vortex_existence(params[:latitude], params[:longitude])
+		render json: { success: true }
+	end
+
 
 	private
 
