@@ -128,7 +128,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_array_to_vc(instagrams, v)
-		instagrams.each{|instagram| VenueComment.convert_instagram_to_vc(instagram, v, nil)}
+		instagrams.each{|instagram| VenueComment.delay.convert_instagram_to_vc(instagram, v, nil)}
 	end
 
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
