@@ -133,13 +133,20 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def send_message
+		#This is to deal with instances when a user tries to share a directly dispalyed instagram which does not have an associated venue_comment at the time
+		if params[:venue_comment_id] == nil
+			venue_comment_id = VenueComment.convert_instagram_details_to_vc(params[:venue_comment_details])
+		else
+			venue_comment_id = params[:venue_comment_id]
+		end
+
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
 		if feed_ids.count == 1
-			new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => params[:venue_comment_id])
+			new_message = FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_ids.first, :user_id => params[:user_id], :venue_comment_id => venue_comment_id)
 			render json: { success: true }
 		else
 			for feed_id in feed_ids
-				FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_id, :user_id => params[:user_id], :venue_comment_id => params[:venue_comment_id])
+				FeedMessage.create!(:message => params[:chat_message], :feed_id => feed_id, :user_id => params[:user_id], :venue_comment_id => venue_comment_id)
 			end
 			render json: { success: true }
 		end

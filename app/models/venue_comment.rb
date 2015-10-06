@@ -204,6 +204,20 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
+	def self.convert_instagram_details_to_vc(instagram_params)
+		venue_comment_details = {"image_url_1"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s150x150/e35/11910111_736876443085065_81476911_n.jpg", "image_url_2"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e35/11910111_736876443085065_81476911_n.jpg", "media_type"=>"image", "image_url_3"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s640x640/sh0.08/e35/11910111_736876443085065_81476911_n.jpg", "thirdparty_username"=>"mayararovariz", "longitude"=>-73.975306691, "venue_name"=>"Central Park", "latitude"=>40.768924369, "created_at"=>"2015-10-05T20:56:35.000-0400", "media_url"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e35/11910111_736876443085065_81476911_n.jpg", "content_origin"=>"instagram", "username_private"=>false, "user_name"=>"mayararovariz"},
+		inst_id = instagram_params["instagram_id"]
+
+		vc = VenueComment.find_by_instagram_id(inst_id)
+		if vc != nil
+			vc_id = vc.id
+		else
+			vc = VenueComment.create!(:venue_id => instagram_params[:venue_id], :image_url_1 => instagram_params[:image_url_1], :image_url_2 => instagram_params[:image_url_2], :image_url_3 => instagram_params[:image_url_3], :video_url_1 => instagram_params[:video_url_1], :video_url_2 => instagram_params[:video_url_2], :video_url_3 => instagram_params[:video_url_3], :media_type => instagram_params[:media_type], :content_origin => "instagram", :time_wrapper => instagram_params[:created_at], :instagram_id => instagram_params[:instagram_id], :thirdparty_username => instagram_params[:thirdparty_username])
+			vc_id = vc.id
+		end
+		return vc_id
+	end
+
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)
 		inst_hashtags = instagram_tags
 		inst_comment = instagram_captions
@@ -345,6 +359,14 @@ class VenueComment < ActiveRecord::Base
 			post.id
 		else
 			nil
+		end
+	end
+
+	def self.implicit_instagram_id(post)
+		if post.created_at != nil
+			post.instagram_id
+		else
+			post.id
 		end
 	end
 
