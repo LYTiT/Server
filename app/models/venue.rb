@@ -643,6 +643,10 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def impicit_instagram_to_vc_conversion(instagram)
+    VenueComment.delay.convert_instagram_to_vc(instagram, self, nil)
+  end
+
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
   def get_instagrams(day_pull)
