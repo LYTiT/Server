@@ -617,7 +617,7 @@ class Venue < ActiveRecord::Base
           venue.time_zone = timezone.active_support_time_zone rescue nil
           venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
           venue.verified = false
-          v.instagram_location_id = inst_loc_id
+          venue.instagram_location_id = inst_loc_id
 
           if lat < 0 && long >= 0
             quadrant = "a"
