@@ -128,7 +128,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_array_to_vc(instagrams, v)
-		instagrams.each{|instagram| VenueComment.delay.convert_instagram_to_vc(instagram, v, nil)}
+		instagrams.each{|instagram| VenueComment.convert_instagram_to_vc(instagram, v, nil)}
 	end
 
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
@@ -183,7 +183,7 @@ class VenueComment < ActiveRecord::Base
 				vote.save
 				lytit_venue.update_r_up_votes(vote.time_wrapper)
 				if lytit_venue.latest_posted_comment_time == nil or lytit_venue.latest_posted_comment_time < vote.time_wrapper
-					lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
+					lytit_venue.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
 				end
 				lytit_venue.delay.update_rating()
 				lytit_venue.update_columns(latest_rating_update_time: Time.now)

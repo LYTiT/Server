@@ -667,7 +667,7 @@ class Venue < ActiveRecord::Base
 
     if instagrams.count > 0
       self.update_columns(last_instagram_post: instagrams.last.id)
-      VenueComment.convert_instagram_array_to_vc(instagrams, self)
+      VenueComment.delay.convert_instagram_array_to_vc(instagrams, self)
     end
 
     return instagrams
