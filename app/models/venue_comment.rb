@@ -205,8 +205,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_details_to_vc(instagram_params)
-		venue_comment_details = {"image_url_1"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s150x150/e35/11910111_736876443085065_81476911_n.jpg", "image_url_2"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e35/11910111_736876443085065_81476911_n.jpg", "media_type"=>"image", "image_url_3"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s640x640/sh0.08/e35/11910111_736876443085065_81476911_n.jpg", "thirdparty_username"=>"mayararovariz", "longitude"=>-73.975306691, "venue_name"=>"Central Park", "latitude"=>40.768924369, "created_at"=>"2015-10-05T20:56:35.000-0400", "media_url"=>"https://scontent.cdninstagram.com/hphotos-xaf1/t51.2885-15/s320x320/e35/11910111_736876443085065_81476911_n.jpg", "content_origin"=>"instagram", "username_private"=>false, "user_name"=>"mayararovariz"},
-		puts "------------------------------------------------#{instagram_params}"
+		puts "------------------------------------------------ #{instagram_params}"
 		inst_id = instagram_params["instagram_id"]
 
 		vc = VenueComment.find_by_instagram_id(inst_id)

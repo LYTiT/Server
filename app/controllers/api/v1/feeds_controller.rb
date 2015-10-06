@@ -90,7 +90,10 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id])
 			if new_feed_venue.save
-				Feed.find_by_id(params[:id]).increment!(:num_venues, 1)
+				feed = Feed.find_by_id(params[:id])
+				feed.increment!(:num_venues, 1)
+				venue = Venue.find_by_id(params[:venue_id])
+				feed.delay.convert_added_venue_vcs_to_activities(venue)
 				render json: { success: true }
 			end
 		else
@@ -104,7 +107,9 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id])
 			if new_feed_venue.save
-				Feed.find_by_id(params[:feed_id]).increment!(:num_venues, 1)
+				feed = Feed.find_by_id(params[:feed_id])
+				feed.increment!(:num_venues, 1)
+				feed.delay.convert_added_venue_vcs_to_activities(venue)
 				render json: { id: venue.id }
 			end
 		else

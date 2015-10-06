@@ -98,4 +98,9 @@ class Feed < ActiveRecord::Base
 		Tweet.where("venue_id IN (#{venue_ids})").order("timestamp DESC")
 	end
 
+	def convert_added_venue_vcs_to_activities(venue)
+		comments = venue.venue_comments
+		comments.each{|vc| FeedActivity.create!(:feed_id => id, :activity_type => "venue comment", :venue_comment_id => vc.id, :adjusted_sort_position => vc.created_at.to_i)}
+	end
+
 end
