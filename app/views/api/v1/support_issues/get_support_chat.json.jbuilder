@@ -7,6 +7,6 @@ json.array! @issues do |issue|
 end
 
 json.pagination do 
-  json.current_page @messages.current_page
-  json.total_pages @messages.total_pages
+  json.current_page @issues.current_page
+  json.total_pages @issues.total_pages
 end
