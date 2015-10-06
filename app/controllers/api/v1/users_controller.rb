@@ -39,6 +39,8 @@ class Api::V1::UsersController < ApiBaseController
 				@user.save
 			end
 
+			SupportIssue.create!(user_id: @user.id)
+
 			if VendorIdTracker.where("LOWER(used_vendor_id) = ?", @user.vendor_id.downcase).first == nil
       			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
       			v_id_tracker.save

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151003001708) do
+ActiveRecord::Schema.define(version: 20151006043301) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -320,6 +320,25 @@ ActiveRecord::Schema.define(version: 20151003001708) do
   create_table "roles", force: true do |t|
     t.string "name"
   end
+
+  create_table "support_issues", force: true do |t|
+    t.integer  "user_id"
+    t.datetime "latest_message_time"
+    t.datetime "latest_open_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "support_issues", ["user_id"], name: "index_support_issues_on_user_id", using: :btree
+
+  create_table "support_messages", force: true do |t|
+    t.text     "message"
+    t.integer  "support_issue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "support_messages", ["support_issue_id"], name: "index_support_messages_on_support_issue_id", using: :btree
 
   create_table "temp_posting_housings", force: true do |t|
     t.string   "comment"

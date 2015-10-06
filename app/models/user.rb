@@ -33,6 +33,8 @@ class User < ActiveRecord::Base
 
   has_many :feed_messages, :dependent => :destroy 
 
+  has_many :support_issues, :dependent => :destroy 
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -507,6 +509,12 @@ class User < ActiveRecord::Base
     end
 
     return matched_users
+  end
+
+  def self.generate_support_issues
+    users_with_support = "SELECT user_id FROM support_issues"
+    not_supported_users = User.where("id NOT IN (#{user})").pluck(:id)
+    not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
   end
   #-------------------------------------------------------------->
 
