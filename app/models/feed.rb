@@ -99,8 +99,12 @@ class Feed < ActiveRecord::Base
 	end
 
 	def convert_added_venue_vcs_to_activities(venue)
-		comments = venue.venue_comments
-		comments.each{|vc| FeedActivity.create!(:feed_id => id, :activity_type => "venue comment", :venue_comment_id => vc.id, :adjusted_sort_position => vc.created_at.to_i)}
+		comments = venue.venue_comments.to_a
+		for comment in comments
+			fa = FeedActivity.create!(:feed_id => self.id, :activity_type => "venue comment", :venue_comment_id => comment.id, :adjusted_sort_position => comment.created_at.to_i)
+			puts "created an activity with id: #{fa.id}"
+		end
+		
 	end
 
 end
