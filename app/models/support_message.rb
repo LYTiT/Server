@@ -5,7 +5,7 @@ class SupportMessage < ActiveRecord::Base
 
 	def new_message_notification
 		user = self.support_issue.user
-		if @user.role == "Admin"
+		if user.role == "Admin"
 			self.send_new_message_notification(user)
 		end
 	end

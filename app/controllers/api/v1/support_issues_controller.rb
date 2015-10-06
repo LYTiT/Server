@@ -21,7 +21,7 @@ class Api::V1::SupportIssuesController < ApiBaseController
 
 	def send_support_message
 		@user = User.find_by_authentication_token(params[:auth_token])
-		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => params[:id])
+		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => params[:support_issue_id])
 		if sm != nil
 			render json: { success: true }	
 		else
