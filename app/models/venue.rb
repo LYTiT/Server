@@ -703,7 +703,7 @@ class Venue < ActiveRecord::Base
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
-        elsif (venue.last_instagram_pull_time - venue.latest_posted_comment_time) >= instagram_venue_id_ping_rate
+        elsif venue.latest_posted_comment_time != nil and (venue.last_instagram_pull_time - venue.latest_posted_comment_time) >= instagram_venue_id_ping_rate
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
         else

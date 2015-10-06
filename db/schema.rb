@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151006043301) do
+ActiveRecord::Schema.define(version: 20151006071651) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -339,6 +339,17 @@ ActiveRecord::Schema.define(version: 20151006043301) do
   end
 
   add_index "support_messages", ["support_issue_id"], name: "index_support_messages_on_support_issue_id", using: :btree
+
+  create_table "surrounding_pull_trackers", force: true do |t|
+    t.integer  "user_id"
+    t.datetime "latest_pull_time"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "surrounding_pull_trackers", ["user_id"], name: "index_surrounding_pull_trackers_on_user_id", using: :btree
 
   create_table "temp_posting_housings", force: true do |t|
     t.string   "comment"

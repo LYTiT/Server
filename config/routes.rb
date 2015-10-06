@@ -87,6 +87,12 @@ LytitServer::Application.routes.draw do
         get 'get_activity'
       end
 
+      resources :support_issues do
+        get 'get_support_issues'
+        get 'get_support_chat'
+        get 'send_support_message'
+      end
+
       resources :announcement do
         get 'get_announcement_details'
       end

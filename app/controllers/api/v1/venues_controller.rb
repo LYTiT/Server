@@ -498,6 +498,12 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids]
 
+		@user = User.find_by_authentication_token(params[:auth_token])
+		spt = SurroundingPullTracker.find_by_user_id(@user.id)
+		if spt == nil
+			spt = SurroundingPullTracker.create!(user_id: @user.id, latitude: lat, longitude: long, latest_pull_time: Time.now)
+		end
+		
 		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, venue_ids)).page(params[:page]).per(10)
 	end
 
