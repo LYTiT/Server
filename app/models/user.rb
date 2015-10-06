@@ -513,7 +513,7 @@ class User < ActiveRecord::Base
 
   def self.generate_support_issues
     users_with_support = "SELECT user_id FROM support_issues"
-    not_supported_users = User.where("id NOT IN (#{user})").pluck(:id)
+    not_supported_users = User.where("id NOT IN (#{users_with_support})").pluck(:id)
     not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
   end
   #-------------------------------------------------------------->
