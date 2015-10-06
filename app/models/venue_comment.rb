@@ -131,6 +131,20 @@ class VenueComment < ActiveRecord::Base
 		instagrams.each{|instagram| VenueComment.convert_instagram_to_vc(instagram, v, nil)}
 	end
 
+	def create_vc_from_instagram(instagram, origin_venue)
+		image_1 = instagram.images.thumbnail.url rescue nil
+		image_2 = instagram.images.low_resolution.url rescue nil
+		image_3 = instagram.images.standard_resolution.url rescue nil
+		video_1 = instagram.videos.low_bandwith.url rescue nil
+		video_2 = instagram.videos.low_resolution.url rescue nil
+		video_3 = instagram.videos.standard_resolution.url rescue nil
+		if instagram.type == "video"
+			vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+		else
+			vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+		end
+	end
+
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
