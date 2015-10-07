@@ -692,13 +692,13 @@ class Venue < ActiveRecord::Base
     #dealing with an individual venue which could require an instagram pull
       venue = Venue.find_by_id(venue_ids.first)
       new_instagrams = []
-      instagram_refresh_rate = 10 #minutes
+      instagram_refresh_rate = 5 #minutes
       instagram_venue_id_ping_rate = 1 #days      
 
       if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
-          if ((Time.now - instagram_venue_id_ping_rate.days) >= venue.latest_posted_comment_time)
+          if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days) >= venue.latest_posted_comment_time)
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
