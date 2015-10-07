@@ -132,6 +132,24 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue)
+		vc = nil
+
+		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
+		if origin_venue == nil
+			if Venue.name_is_proper?(place_name) == true
+				origin_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)	
+			else
+				return nil
+			end
+		end
+
+		#Instagram sometimes returns posts outside the vortex radius, we filter them out
+		if vortex != nil && origin_venue != nil
+			if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+				return nil
+			end
+		end
+
 		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
 		instagram_id = instagram_hash["id"]
 		username = instagram_hash["user"]["username"]
