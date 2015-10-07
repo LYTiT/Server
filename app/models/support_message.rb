@@ -29,9 +29,9 @@ class SupportMessage < ActiveRecord::Base
 		
 		preview = "Team LYTiT responded to your outreach"
 
-		if member.push_token
-		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
-		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count, :sound => 'default'})
+		if user.push_token
+		  count = Notification.where(user_id: user.id, read: false, deleted: false).count
+		  APNS.send_notification(user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count, :sound => 'default'})
 		end
 
 	end
