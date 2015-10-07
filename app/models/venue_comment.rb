@@ -192,7 +192,7 @@ class VenueComment < ActiveRecord::Base
 				sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
 			end
 		rescue
-			puts "Something went wrong!"
+			puts "Failed to convert instagram to Venue Comment"
 		end
 	end
 
