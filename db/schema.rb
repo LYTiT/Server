@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151007164232) do
+ActiveRecord::Schema.define(version: 20151007165952) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -104,6 +104,17 @@ ActiveRecord::Schema.define(version: 20151007164232) do
 
   add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
   add_index "feed_activities", ["feed_id"], name: "index_feed_activities_on_feed_id", using: :btree
+
+  create_table "feed_invitations", force: true do |t|
+    t.integer  "inviter_id"
+    t.integer  "invitee_id"
+    t.integer  "feed_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_invitations", ["invitee_id"], name: "index_feed_invitations_on_invitee_id", using: :btree
+  add_index "feed_invitations", ["inviter_id"], name: "index_feed_invitations_on_inviter_id", using: :btree
 
   create_table "feed_messages", force: true do |t|
     t.text     "message"

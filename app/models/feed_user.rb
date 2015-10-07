@@ -34,14 +34,14 @@ class FeedUser < ActiveRecord::Base
 
 		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
 		#when there is an unread message
-		type = "#{user.name} added your #{feed.name} List"
+		alert = "#{user.name} added your #{feed.name} List"
 
-		notification = self.store_new_message_notification(payload, feed.user, type)
+		notification = self.store_new_message_notification(payload, feed.user, "new list member")
 		payload[:notification_id] = notification.id
 
 		if feed.user.push_token
 		  count = Notification.where(user_id: feed.user.id, read: false, deleted: false).count
-		  APNS.send_notification(feed.user.push_token, { :priority =>10, :alert => type, :content_available => 1, :other => payload, :badge => count})
+		  APNS.send_notification(feed.user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
 		end
 
 	end

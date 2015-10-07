@@ -23,7 +23,12 @@ class User < ActiveRecord::Base
   has_many :likes, foreign_key: "liker_id", dependent: :destroy
   has_many :liked_users, through: :likes, source: :liked
   has_many :reverse_likes, foreign_key: "liked_id", class_name: "Like", dependent: :destroy
-  has_many :likers, through: :reverse_likes, source: :liker  
+  has_many :likers, through: :reverse_likes, source: :liker
+
+  has_many :feed_invitations, foreign_key: "inviter_id", dependent: :destroy
+  has_many :invitee_users, through: :feed_invitations, source: :invitee
+  has_many :sent_feed_invitations, foreign_key: "invitee_id", class_name: "FeedInvitation", dependent: :destroy
+  has_many :inviters, through: :sent_feed_invitations, source: :inviter
 
   has_many :temp_posting_housings, :dependent => :destroy
 

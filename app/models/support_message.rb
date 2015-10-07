@@ -27,11 +27,11 @@ class SupportMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 		
-		preview = "Team LYTiT responded to your outreach"
+		alert = "Team LYTiT responded to your message"
 
 		if support_user.push_token
 		  count = Notification.where(user_id: support_user.id, read: false, deleted: false).count
-		  APNS.send_notification(support_user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count, :sound => 'default'})
+		  APNS.send_notification(support_user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count, :sound => 'default'})
 		end
 
 	end
