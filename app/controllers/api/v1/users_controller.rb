@@ -78,10 +78,10 @@ class Api::V1::UsersController < ApiBaseController
 	def update_user
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:name] != nil
-			@user.name params[:name]
+			@user.name = params[:name]
 		end
 
-		if params[:phone_number]
+		if params[:phone_number] != nil
 			@user.phone_number = params[:phone_number]
 			@user.country_code = params[:country_code]
 		end
