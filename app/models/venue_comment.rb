@@ -132,8 +132,6 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
-		vc = nil
-
 		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
 		if origin_venue == nil
 			if Venue.name_is_proper?(place_name) == true
