@@ -75,6 +75,24 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+	def update_user
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if params[:name] != nil
+			@user.name params[:name]
+		end
+
+		if params[:phone_number]
+			@user.phone_number = params[:phone_number]
+			@user.country_code = params[:country_code]
+		end
+
+		if @user.save		
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "User cannot be updated with given parameters"} }, status: :unprocessable_entity
+		end
+	end
+
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:email] != nil and params[:email].length > 4

@@ -49,6 +49,7 @@ LytitServer::Application.routes.draw do
         get 'cross_reference_user_phonebook'
         post 'like_message'
         post 'like_added_venue'
+        post 'update_user'
       end
 
       resources :feeds, only: [:create] do
