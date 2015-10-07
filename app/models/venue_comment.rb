@@ -168,6 +168,7 @@ class VenueComment < ActiveRecord::Base
 			#Venue method
 			if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
 				origin_venue.update_columns(latest_posted_comment_time: created_time)
+				origin_venue.update_columns(last_instagram_post: instagram_id)
 			end
 
 			#Further instagram related methods

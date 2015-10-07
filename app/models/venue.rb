@@ -666,7 +666,6 @@ class Venue < ActiveRecord::Base
     instagrams.sort_by!{|instagram| instagram.created_time}  
 
     if instagrams.count > 0
-      self.update_columns(last_instagram_post: instagrams.last.id)
       VenueComment.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
@@ -703,7 +702,7 @@ class Venue < ActiveRecord::Base
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
-        elsif venue.latest_posted_comment_time != nil and (venue.last_instagram_pull_time - venue.latest_posted_comment_time) >= instagram_venue_id_ping_rate
+        elsif venue.latest_posted_comment_time != nil and (venue.last_instagram_pull_time - venue.latest_posted_comment_time) >= instagram_venue_id_ping_rate.days
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
         else
