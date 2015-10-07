@@ -43,6 +43,7 @@ class FeedMessage < ActiveRecord::Base
 		    :user_phone => user.phone_number,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color,
 		    :chat_message => self.message,
 		    :venue_comment_id => self.venue_comment_id,
 		    :media_type => self.venue_comment.try(:media_type),

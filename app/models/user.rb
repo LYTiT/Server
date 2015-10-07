@@ -35,6 +35,7 @@ class User < ActiveRecord::Base
 
   has_many :support_issues, :dependent => :destroy
   has_many :surrounding_pull_trackers, :dependent => :destroy
+  has_many :support_messages, :dependent => :destroy
 
   belongs_to :role
 
