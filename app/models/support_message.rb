@@ -7,6 +7,8 @@ class SupportMessage < ActiveRecord::Base
 		user = self.support_issue.user
 		if user.role == "Admin"
 			self.send_new_message_notification(user)
+		else
+			support_issue.update_columns(latest_message_time: Time.now)
 		end
 	end
 

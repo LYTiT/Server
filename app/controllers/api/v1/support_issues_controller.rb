@@ -3,7 +3,7 @@ class Api::V1::SupportIssuesController < ApiBaseController
 	def get_support_issues
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if @user.role == "Admin"
-			@issues = Kaminari.paginate_array(SupportIssue.all.order("latest_message_time DESC")).page(params[:page]).per(10)
+			@issues = Kaminari.paginate_array(SupportIssue.where("latest_message_time IS NOT NULL").all.order("latest_message_time DESC")).page(params[:page]).per(10)
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "User is not an admin" } }, status: :unprocessable_entity
 		end
