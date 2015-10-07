@@ -26,7 +26,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'search'
         end
-        get 'get_core_details'
+        get 'get_map_details'
         get 'confirm_email'
         get 'get_venue_comment'
         get 'username_availability'

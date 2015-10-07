@@ -226,7 +226,7 @@ class Api::V1::UsersController < ApiBaseController
 
 
 	#Functionality Methods------------------------------->
-	def get_core_details
+	def get_map_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_map_details.json.jbuilder'
 	end
