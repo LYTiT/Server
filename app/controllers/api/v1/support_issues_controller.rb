@@ -15,7 +15,7 @@ class Api::V1::SupportIssuesController < ApiBaseController
 		if @user.role == "Admin"
 			support_issue.update_columns(latest_open_time: Time.now)
 		end
-		support_messages = support_issue.support_messages.order("id ASC")
+		support_messages = support_issue.support_messages.order("id DESC")
 		@messages = Kaminari.paginate_array(support_messages).page(params[:page]).per(10)
 	end
 
