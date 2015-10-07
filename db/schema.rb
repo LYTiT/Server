@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151006071651) do
+ActiveRecord::Schema.define(version: 20151007003808) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -252,6 +252,7 @@ ActiveRecord::Schema.define(version: 20151006071651) do
     t.datetime "updated_at"
   end
 
+  add_index "lyt_spheres", ["id", "venue_id"], name: "index_lyt_spheres_on_id_and_venue_id", unique: true, using: :btree
   add_index "lyt_spheres", ["sphere"], name: "index_lyt_spheres_on_sphere", using: :btree
 
   create_table "lytit_bars", force: true do |t|

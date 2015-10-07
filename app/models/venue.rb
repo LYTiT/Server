@@ -488,7 +488,7 @@ class Venue < ActiveRecord::Base
         for instagram in nearby_instagram_content
           if instagram.location.id == self.instagram_location_id && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
             venue_instagrams << instagram
-            VenueComment.delay.convert_instagram_to_vc(instagram, self, nil)            
+            VenueComment.delay.create_vc_from_instagram(instagram.to_hash, self, nil)            
           end
         end
 
@@ -643,10 +643,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def impicit_instagram_to_vc_conversion(instagram)
-    VenueComment.convert_instagram_to_vc(instagram, self, nil)
-  end
-
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
   def get_instagrams(day_pull)
@@ -671,7 +667,7 @@ class Venue < ActiveRecord::Base
 
     if instagrams.count > 0
       self.update_columns(last_instagram_post: instagrams.last.id)
-      VenueComment.delay.convert_instagram_array_to_vc(instagrams, self)
+      VenueComment.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
     return instagrams

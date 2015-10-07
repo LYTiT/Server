@@ -88,7 +88,9 @@ LytitServer::Application.routes.draw do
       end
 
       resources :support_issues do
-        get 'get_support_issues'
+        collection do
+          get 'get_support_issues'
+        end
         get 'get_support_chat'
         post 'send_support_message'
       end

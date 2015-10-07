@@ -127,25 +127,51 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
 
-	def self.convert_instagram_array_to_vc(instagrams, v)
-		instagrams.each{|instagram| VenueComment.convert_instagram_to_vc(instagram, v, nil)}
+	def self.convert_bulk_instagrams_to_vcs(instagrams, origin_venue)
+		instagrams.each{|instagram| VenueComment.delay.create_vc_from_instagram(instagram.to_hash, origin_venue)}
 	end
 
-	def self.create_vc_from_instagram(instagram, origin_venue)
-		created_time = DateTime.strptime(instagram["created_time"],'%s')
-		instagram_id = instagram["id"]
-		username = instagram["user"]["username"]
-		image_1 = instagram["images"]["thumbnail"]["url"]
-		image_2 = instagram["images"]["low_resolution"]["url"]
-		image_3 = instagram["images"]["standard_resolution"]["url"]
+	def self.create_vc_from_instagram(instagram_hash, origin_venue)
+		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
+		instagram_id = instagram_hash["id"]
+		username = instagram_hash["user"]["username"]
+		image_1 = instagram_hash["images"]["thumbnail"]["url"]
+		image_2 = instagram_hash["images"]["low_resolution"]["url"]
+		image_3 = instagram_hash["images"]["standard_resolution"]["url"]
 
-		if instagram["type"] == "video"
-			video_1 = instagram["videos"]["low_bandwith"]["url"]
-			video_2 = instagram["videos"]["low_resolution"]["url"]
-			video_3 = instagram["videos"]["standard_resolution"]["url"]
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username)
+		if instagram_hash["type"] == "video"
+			video_1 = instagram_hash["videos"]["low_bandwith"]["url"]
+			video_2 = instagram_hash["videos"]["low_resolution"]["url"]
+			video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
+			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
 		else
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username)
+			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
+		end
+
+		if vc != nil
+			#Venue method
+			if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
+				origin_venue.update_columns(latest_posted_comment_time: created_time)
+			end
+
+			#Further instagram related methods
+			instagram_tags = instagram_hash["tags"]
+			instagram_captions = i.to_hash["caption"]["text"].split rescue nil
+			vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+
+			#Feed related methods
+			FeedActivity.delay.create_new_venue_comment_activities(vc)
+			origin_venue.feeds.update_all(new_media_present: true)
+			origin_venue.feeds.update_all(latest_content_time: created_time)
+
+			#Venue LYTiT ratings related methods
+			vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+												:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
+			origin_venue.update_r_up_votes(created_time)
+			origin_venue.delay.update_rating()
+			origin_venue.update_columns(latest_rating_update_time: Time.now)											
+
+			sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
 		end
 	end
 
