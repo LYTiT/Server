@@ -1083,9 +1083,7 @@ class Venue < ActiveRecord::Base
     end
 
     #converting to lytit venue comments
-    for instagram in surrounding_instagrams
-      VenueComment.delay.convert_instagram_to_vc(instagram, nil, nil)
-    end
+    VenueComment.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
 
     return surrounding_feed
   end
