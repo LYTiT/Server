@@ -132,63 +132,67 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
-		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
-		if origin_venue == nil
-			if Venue.name_is_proper?(instagram_hash["location"]["name"]) == true
-				origin_venue = Venue.fetch_venues_for_instagram_pull(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"])	
+		begin
+			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
+			if origin_venue == nil
+				if Venue.name_is_proper?(instagram_hash["location"]["name"]) == true
+					origin_venue = Venue.fetch_venues_for_instagram_pull(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"])	
+				else
+					return nil
+				end
+			end
+
+			#Instagram sometimes returns posts outside the vortex radius, we filter them out
+			if vortex != nil && origin_venue != nil
+				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+					return nil
+				end
+			end
+
+			created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
+			instagram_id = instagram_hash["id"]
+			username = instagram_hash["user"]["username"]
+			image_1 = instagram_hash["images"]["thumbnail"]["url"]
+			image_2 = instagram_hash["images"]["low_resolution"]["url"]
+			image_3 = instagram_hash["images"]["standard_resolution"]["url"]
+
+			if instagram_hash["type"] == "video"
+				video_1 = instagram_hash["videos"]["low_bandwith"]["url"]
+				video_2 = instagram_hash["videos"]["low_resolution"]["url"]
+				video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
+				vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
 			else
-				return nil
-			end
-		end
-
-		#Instagram sometimes returns posts outside the vortex radius, we filter them out
-		if vortex != nil && origin_venue != nil
-			if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
-				return nil
-			end
-		end
-
-		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
-		instagram_id = instagram_hash["id"]
-		username = instagram_hash["user"]["username"]
-		image_1 = instagram_hash["images"]["thumbnail"]["url"]
-		image_2 = instagram_hash["images"]["low_resolution"]["url"]
-		image_3 = instagram_hash["images"]["standard_resolution"]["url"]
-
-		if instagram_hash["type"] == "video"
-			video_1 = instagram_hash["videos"]["low_bandwith"]["url"]
-			video_2 = instagram_hash["videos"]["low_resolution"]["url"]
-			video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
-		else
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
-		end
-
-		if vc != nil
-			#Venue method
-			if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
-				origin_venue.update_columns(latest_posted_comment_time: created_time)
-				origin_venue.update_columns(last_instagram_post: instagram_id)
+				vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
 			end
 
-			#Further instagram related methods
-			instagram_tags = instagram_hash["tags"]
-			instagram_captions = i.to_hash["caption"]["text"].split rescue nil
-			vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+			if vc != nil
+				#Venue method
+				if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
+					origin_venue.update_columns(latest_posted_comment_time: created_time)
+					origin_venue.update_columns(last_instagram_post: instagram_id)
+				end
 
-			#Feed related methods
-			FeedActivity.delay.create_new_venue_comment_activities(vc)
-			origin_venue.feeds.update_all(new_media_present: true)
-			origin_venue.feeds.update_all(latest_content_time: created_time)
+				#Further instagram related methods
+				instagram_tags = instagram_hash["tags"]
+				instagram_captions = i.to_hash["caption"]["text"].split rescue nil
+				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
 
-			#Venue LYTiT ratings related methods
-			vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
-												:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
-			origin_venue.update_r_up_votes(created_time)
-			origin_venue.delay.update_rating()
-			origin_venue.update_columns(latest_rating_update_time: Time.now)											
+				#Feed related methods
+				FeedActivity.delay.create_new_venue_comment_activities(vc)
+				origin_venue.feeds.update_all(new_media_present: true)
+				origin_venue.feeds.update_all(latest_content_time: created_time)
 
-			sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
+				#Venue LYTiT ratings related methods
+				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
+				origin_venue.update_r_up_votes(created_time)
+				origin_venue.delay.update_rating()
+				origin_venue.update_columns(latest_rating_update_time: Time.now)											
+
+				sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
+			end
+		rescue
+			puts "Something went wrong!"
 		end
 	end
 
