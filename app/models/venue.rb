@@ -719,12 +719,16 @@ class Venue < ActiveRecord::Base
           new_media_created = false
         end
       end
-      total_media = []
-      total_media << new_instagrams
-      total_media << venue.venue_comments.order("time_wrapper desc")
-      total_media.flatten!.compact!
 
-      return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
+      if new_instagrams.count > 0
+        total_media = []
+        total_media << new_instagrams
+        total_media << venue.venue_comments.order("time_wrapper desc")
+        total_media.flatten!.compact!
+        return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
+      else
+        return venue.venue_comments.order("time_wrapper desc")
+      end
     end
   end
 
