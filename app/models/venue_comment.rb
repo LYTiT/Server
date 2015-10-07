@@ -131,13 +131,13 @@ class VenueComment < ActiveRecord::Base
 		instagrams.each{|instagram| VenueComment.delay.create_vc_from_instagram(instagram.to_hash, origin_venue)}
 	end
 
-	def self.create_vc_from_instagram(instagram_hash, origin_venue)
+	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
 		vc = nil
 
 		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
 		if origin_venue == nil
 			if Venue.name_is_proper?(place_name) == true
-				origin_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id)	
+				origin_venue = Venue.fetch_venues_for_instagram_pull(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"])	
 			else
 				return nil
 			end
