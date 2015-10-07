@@ -666,7 +666,7 @@ class Venue < ActiveRecord::Base
     instagrams.sort_by!{|instagram| instagram.created_time}  
 
     if instagrams.count > 0
-      VenueComment.convert_bulk_instagrams_to_vcs(instagrams, self)
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
     return instagrams
@@ -1086,7 +1086,7 @@ class Venue < ActiveRecord::Base
     end
 
     #converting to lytit venue comments
-    VenueComment.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
+    VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
 
     return surrounding_feed
   end

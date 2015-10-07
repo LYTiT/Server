@@ -128,7 +128,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_bulk_instagrams_to_vcs(instagrams, origin_venue)
-		instagrams.each{|instagram| VenueComment.delay.create_vc_from_instagram(instagram.to_hash, origin_venue, nil)}
+		instagrams.each{|instagram| VenueComment.create_vc_from_instagram(instagram.to_hash, origin_venue, nil)}
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
