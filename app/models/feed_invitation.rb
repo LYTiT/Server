@@ -16,9 +16,9 @@ class FeedInvitation < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'invited_list_notification', 
-		    :user_id => user.id,
-		    :user_name => user.name,
-		    :user_phone => user.phone_number,
+		    :user_id => inviter.id,
+		    :user_name => inviter.name,
+		    :user_phone => inviter.phone_number,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color
