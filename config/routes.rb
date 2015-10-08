@@ -86,6 +86,8 @@ LytitServer::Application.routes.draw do
         end
         get 'get_members'
         get 'get_activity'
+        post 'invite_user'
+        post 'edit_venue_description'
       end
 
       resources :support_issues do

@@ -89,7 +89,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_venue
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
-			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id])
+			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:description])
 			if new_feed_venue.save
 				feed = Feed.find_by_id(params[:id])
 				feed.increment!(:num_venues, 1)
@@ -106,7 +106,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_raw_venue
 		venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
-			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id])
+			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id], :description => params[:description])
 			if new_feed_venue.save
 				feed = Feed.find_by_id(params[:feed_id])
 				feed.increment!(:num_venues, 1)
@@ -115,6 +115,16 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 		else
 			render json: { success: false }
+		end
+	end
+
+	def edit_venue_description
+		fv = FeedVenue.find_by_id(params[:feed_venue_id])
+		fv.description = params[:description]
+		if fv.save
+			render json: { success: false }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could edit feed venue description'] } }, status: :unprocessable_entity
 		end
 	end
 
@@ -195,6 +205,15 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_recommendations
 		feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE"
 		@recommendations = Feed.where("id IN (#{feed_ids})")
+	end
+
+	def invite_user
+		fi = FeedInvitation.create!(:inviter_id => params[:inviter_id], :invitee_id => params[:inviter_id], :feed_id => params[:feed_id])
+		if fi != nil
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create invitation'] } }, status: :unprocessable_entity
+		end
 	end
 
 end

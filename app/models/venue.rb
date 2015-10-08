@@ -496,7 +496,8 @@ class Venue < ActiveRecord::Base
         if venue_instagrams.count < 3
           puts ("making a venue get instagrams calls")
           venue_instagrams << self.get_instagrams(true)
-          venue_instagrams.flatten!.sort_by!{|instagram| instagram.created_time}
+          venue_instagrams.flatten!
+          venue_instagrams.sort_by!{|instagram| instagram.created_time} rescue instagram_hashes
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
