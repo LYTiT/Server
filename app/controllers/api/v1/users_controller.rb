@@ -293,6 +293,23 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def unlike_message
+		if Like.find_by_message_id(params[:message_id]).delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not unlike"} }, status: :unprocessable_entity
+		end
+	end
+
+	def unlike_added_venue
+		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], params[:venue_id]).first
+		if Like.find_by_feed_venue_id(feed_venue.id).delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not unlike"} }, status: :unprocessable_entity
+		end
+	end
+
 	private
 
 	def user_params
