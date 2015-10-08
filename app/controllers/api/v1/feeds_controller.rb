@@ -209,7 +209,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def invite_user
-		fi = FeedInvitation.create!(:inviter_id => params[:inviter_id], :invitee_id => params[:inviter_id], :feed_id => params[:feed_id])
+		fi = FeedInvitation.create!(:inviter_id => params[:inviter_id], :invitee_id => params[:invitee_id], :feed_id => params[:feed_id])
 		if fi != nil
 			render json: { success: true }
 		else
