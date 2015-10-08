@@ -39,13 +39,13 @@ class FeedInvitation < ActiveRecord::Base
 
 	end
 
-	def store_new_invitation_notification(payload, user, type)
+	def store_new_invitation_notification(payload, invitee, type)
 		notification = {
 		  :payload => payload,
-		  :gcm => feed.user.gcm_token.present?,
-		  :apns => feed.user.push_token.present?,
+		  :gcm => invitee.gcm_token.present?,
+		  :apns => invitee.push_token.present?,
 		  :response => notification_payload,
-		  :user_id => user.id,
+		  :user_id => invitee.id,
 		  :read => false,
 		  :message => type,
 		  :deleted => false
