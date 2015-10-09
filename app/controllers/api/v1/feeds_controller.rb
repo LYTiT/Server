@@ -151,7 +151,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def send_message
 		#This is to deal with instances when a user tries to share a directly dispalyed instagram which does not have an associated venue_comment at the time
-		if params[:venue_comment_details] != nil 
+		if params[:venue_comment_id] == nil 
 			venue_comment_id = VenueComment.convert_instagram_details_to_vc(params[:venue_comment_details])
 		else
 			venue_comment_id = params[:venue_comment_id]
