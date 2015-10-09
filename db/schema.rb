@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009014842) do
+ActiveRecord::Schema.define(version: 20151009051903) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -100,6 +100,7 @@ ActiveRecord::Schema.define(version: 20151009014842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "num_likes",                        default: 0
+    t.integer  "num_comments",                     default: 0
   end
 
   add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
@@ -158,7 +159,7 @@ ActiveRecord::Schema.define(version: 20151009014842) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
-    t.integer  "num_likes"
+    t.integer  "num_likes",   default: 0
   end
 
   add_index "feed_venues", ["feed_id"], name: "index_feed_venues_on_feed_id", using: :btree
@@ -407,6 +408,17 @@ ActiveRecord::Schema.define(version: 20151009014842) do
   add_index "tweets", ["longitude"], name: "index_tweets_on_longitude", using: :btree
   add_index "tweets", ["twitter_id"], name: "index_tweets_on_twitter_id", unique: true, using: :btree
   add_index "tweets", ["venue_id"], name: "index_tweets_on_venue_id", using: :btree
+
+  create_table "user_comments", force: true do |t|
+    t.integer  "feed_activity_id"
+    t.integer  "user_id"
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "user_comments", ["feed_activity_id"], name: "index_user_comments_on_feed_activity_id", using: :btree
+  add_index "user_comments", ["user_id"], name: "index_user_comments_on_user_id", using: :btree
 
   create_table "users", force: true do |t|
     t.datetime "created_at",                                               null: false
