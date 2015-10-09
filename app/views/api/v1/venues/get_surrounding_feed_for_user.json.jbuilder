@@ -1,5 +1,6 @@
 json.comments(@posts) do |post|
   json.id VenueComment.implicit_id(post)
+  json.instagram_id VenueComment.implicit_instagram_id(post)
   json.latitude VenueComment.implicit_venue_latitude(post)
   json.longitude VenueComment.implicit_venue_longitude(post)
   json.media_type VenueComment.implicit_media_type(post)
