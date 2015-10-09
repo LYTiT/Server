@@ -15,5 +15,5 @@ json.array! @venues do |v|
   json.time_zone_offset v.time_zone_offset
   json.added_by_user FeedVenue.where("feed_id = ? AND venue_id =?", @feed.id, v.id).first.user.try(:name)
   json.num_likes FeedVenue.where("feed_id = ? AND venue_id =?", @feed.id, v.id).first.feed_activities.first.try(:num_likes)
-  json.did_like Like.where("user_id = ? AND feed_venue_id = ?", @user.id, FeedVenue.where("feed_id = ? AND venue_id =?", @feed.id, v.id).first.id).any?
+  json.did_like Like.where("liker_id = ? AND feed_venue_id = ?", @user.id, FeedVenue.where("feed_id = ? AND venue_id =?", @feed.id, v.id).first.id).any?
 end
