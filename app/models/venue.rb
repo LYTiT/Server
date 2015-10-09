@@ -665,10 +665,10 @@ class Venue < ActiveRecord::Base
     end
 
     instagrams.sort_by!{|instagram| instagram.created_time}
-    instagrams.map!(&:to_hash)
+    
 
     if instagrams.count > 0
-      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams.map(&:to_hash), self)
     end
 
     return instagrams
