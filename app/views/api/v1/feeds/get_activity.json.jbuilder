@@ -15,6 +15,9 @@ json.activity(@activities) do |activity|
   json.user_name activity.venue_comment.try(:user).try(:name)
   json.venue_id activity.venue_comment.try(:venue_id)
   json.venue_name activity.venue_comment.try(:venue).try(:name)
+  json.latitude activity.venue_comment.try(:venue).try(:latitude)
+  json.longitude activity.venue_comment.try(:venue).try(:longitude)
+  json.color_rating activity.venue_comment.try(:venue).try(:color_rating)
   json.created_at activity.implicit_created_at
   json.updated_at activity.venue_comment.try(:updated_at)
   json.content_origin activity.venue_comment.try(:content_origin)
