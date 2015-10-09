@@ -85,7 +85,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_venues
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:id])
-		@venues = @feed.venues
+		@venues = @feed.venues.includes(:feed_venues)
 	end
 
 	def add_venue
