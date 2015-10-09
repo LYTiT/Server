@@ -435,6 +435,14 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.implicit_instagram_location_id(post)
+		if post.created_at != nil
+			nil
+		else
+			post.location.id
+		end
+	end	
+
 	def self.implicit_media_type(post)
 		if post.created_at != nil
 			post.media_type
