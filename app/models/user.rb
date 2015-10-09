@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
   has_many :instagram_auth_tokens
 
   has_many :feed_messages, :dependent => :destroy 
-  has_many :user_comments, :dependent => :destroy
+  has_many :feed_activity_comments, :dependent => :destroy
 
   has_many :support_issues, :dependent => :destroy
   has_many :surrounding_pull_trackers, :dependent => :destroy

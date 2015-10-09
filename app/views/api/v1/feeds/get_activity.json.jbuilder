@@ -33,6 +33,8 @@ json.activity(@activities) do |activity|
   json.num_likes activity.num_likes
   json.did_like activity.did_like?(@user)
 
+  json.num_comments activity.num_comments
+
   json.added_venue activity.feed_venue.try(:venue)
 
 end

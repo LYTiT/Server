@@ -181,6 +181,29 @@ class Api::V1::FeedsController < ApiBaseController
 		@activities = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
 	end
 
+	def add_user_activity_comment
+		uc = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
+		if uc
+			FeedActivity.find_by_id(params[:feed_activity_id]).increment!(num_comments: 1)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create activity comment'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def delete_user_activity_comment
+		if FeedActivityComment.find_by_id(params[:feed_activity_comment_id]).delete
+			FeedActivity.find_by_id(params[:feed_activity_id]).decrement!(num_comments: 1)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not delete activity comment'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def get_activity_comments
+		@activity_comments = Kaminari.paginate_array(FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC")).page(params[:page]).per(10)
+	end
+
 	def meta_search
 		@results = Feed.meta_search(params[:q])
 	end

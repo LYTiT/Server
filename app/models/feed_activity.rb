@@ -7,7 +7,7 @@ class FeedActivity < ActiveRecord::Base
 	belongs_to :like
 	belongs_to :feed_recommendation
 
-	has_many :user_comments, :dependent => :destroy
+	has_many :feed_activity_comments, :dependent => :destroy
 
 	def self.create_new_venue_comment_activities(vc)
 		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{vc.venue_id}"
@@ -42,5 +42,7 @@ class FeedActivity < ActiveRecord::Base
 			nil
 		end
 	end
+
+	
 
 end
