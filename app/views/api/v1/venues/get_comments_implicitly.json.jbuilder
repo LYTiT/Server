@@ -18,7 +18,7 @@ json.comments(@comments) do |comment|
   json.thirdparty_username VenueComment.thirdparty_username(comment)
 end
 json.pagination do
-  json.venue_id @venue.id 
+  json.venue_id @venue.try(:id)
   json.current_page @comments.current_page
   json.total_pages @comments.total_pages
 end
