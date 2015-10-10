@@ -1,5 +1,5 @@
 class FeedShare < ActiveRecord::Base
-	belongs_to :feed
+	#belongs_to :feed
 	belongs_to :user
 	belongs_to :venue_comment
 
