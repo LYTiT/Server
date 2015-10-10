@@ -473,7 +473,11 @@ class VenueComment < ActiveRecord::Base
 
 	def self.implicit_video_url_1(post)
 		if post.is_a?(Hash)
-			post["videos"]["low_bandwidth"]["url"]
+			if post["type"] == "video"
+				post["videos"]["low_bandwidth"]["url"]
+			else
+				nil
+			end
 		else
 			post.video_url_1
 		end
@@ -481,7 +485,11 @@ class VenueComment < ActiveRecord::Base
 
 	def self.implicit_video_url_2(post)
 		if post.is_a?(Hash)
-			post["videos"]["low_resolution"]["url"]
+			if post["type"] == "video"
+				post["videos"]["low_resolution"]["url"]
+			else
+				nil
+			end
 		else
 			post.video_url_2
 		end
@@ -489,7 +497,11 @@ class VenueComment < ActiveRecord::Base
 
 	def self.implicit_video_url_3(post)
 		if post.is_a?(Hash)
-			post["videos"]["standard_resolution"]["url"]
+			if post["type"] == "video"
+				post["videos"]["standard_resolution"]["url"]
+			else
+				nil
+			end
 		else
 			post.video_url_3
 		end
