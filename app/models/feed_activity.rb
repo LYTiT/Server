@@ -50,7 +50,7 @@ class FeedActivity < ActiveRecord::Base
 			return feed_user.user
 		elsif activity_type == "liked message" || activity_type == "liked added venue"
 			return like.liker
-		elsif activity_type = "new topic"
+		elsif activity_type == "new topic"
 			return feed_topic.user
 		else
 			return	nil
