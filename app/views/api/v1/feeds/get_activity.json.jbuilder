@@ -7,10 +7,10 @@ json.activity(@activities) do |activity|
   json.created_at activity.created_at
 
   json.venue_id activity.venue_id
-  json.venue_name activity.venue.name
-  json.venue_latitude activity.venue.latitude
-  json.venue_longitude activity.venue.longitude
-  json.color_rating activity.venue.color_rating
+  json.venue_name activity.venue.try(:name)
+  json.venue_latitude activity.venue.try(:latitude)
+  json.venue_longitude activity.venue.try(:longitude)
+  json.color_rating activity.venue.try(:color_rating)
 
   json.venue_comment_id activity.feed_share.try(:venue_comment_id)
   json.venue_comment_created_at activity.feed_share.try(:venue_comment).try(:created_at)
