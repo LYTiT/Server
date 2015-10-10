@@ -1066,7 +1066,7 @@ class Venue < ActiveRecord::Base
   def self.surrounding_feed(lat, long, surrounding_venue_ids)
     if surrounding_venue_ids != nil and surrounding_venue_ids.length > 0
       meter_radius = 100
-      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Venue.spherecial_distance_between_points(lat, long, inst.location.latitude, inst.location.longitude)}
       surrounding_instagrams.map!(&:to_hash)
 
       if surrounding_instagrams.count >= 20
@@ -1081,7 +1081,7 @@ class Venue < ActiveRecord::Base
 
     else
       meter_radius = 2000
-      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude]) rescue 10.0}
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
       
       surrounding_instagrams.map!(&:to_hash)
       surrounding_feed = surrounding_instagrams
@@ -1092,6 +1092,10 @@ class Venue < ActiveRecord::Base
     VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
 
     return surrounding_feed
+  end
+
+  def self.spherecial_distance_between_points(lat_1, long_1, lat_2, long_2)
+    Geocoder::Calculations.distance_between([lat_1, long_1], [lat_2, long_2]) rescue 1000.0
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
