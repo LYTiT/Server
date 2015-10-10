@@ -181,6 +181,9 @@ LytitServer::Application.routes.draw do
         collection do
           post 'check_vortex_proximity'
         end
+        collection do
+          get 'get_comments_implicitly'
+        end
       end
 
       controller :lytit_bar do
