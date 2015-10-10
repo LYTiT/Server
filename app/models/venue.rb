@@ -1095,7 +1095,12 @@ class Venue < ActiveRecord::Base
   end
 
   def self.spherecial_distance_between_points(lat_1, long_1, lat_2, long_2)
-    Geocoder::Calculations.distance_between([lat_1, long_1], [lat_2, long_2]) rescue 1000.0
+    result = Geocoder::Calculations.distance_between([lat_1, long_1], [lat_2, long_2])
+    if result >= 0.0
+      result
+    else
+      1000.0
+    end
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
