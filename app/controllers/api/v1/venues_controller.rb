@@ -212,12 +212,12 @@ class Api::V1::VenuesController < ApiBaseController
 				initial_instagrams = @venue.set_instagram_location_id(100)
 				@venue.delay.account_page_view
 			end
-		end
 
-		if initial_instagrams != nil
-			live_comments = initial_instagrams
-		else
-			live_comments = Venue.get_comments([@venue.id])	
+			if initial_instagrams != nil
+				live_comments = initial_instagrams
+			else
+				live_comments = Venue.get_comments([@venue.id])	
+			end
 		end
 		
 		@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
