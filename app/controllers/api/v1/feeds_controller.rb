@@ -94,8 +94,6 @@ class Api::V1::FeedsController < ApiBaseController
 			if new_feed_venue.save
 				feed = Feed.find_by_id(params[:id])
 				feed.increment!(:num_venues, 1)
-				venue = Venue.find_by_id(params[:venue_id])
-				feed.delay.convert_added_venue_vcs_to_activities(venue)
 				render json: { success: true }
 			end
 		else
@@ -111,7 +109,6 @@ class Api::V1::FeedsController < ApiBaseController
 			if new_feed_venue.save
 				feed = Feed.find_by_id(params[:feed_id])
 				feed.increment!(:num_venues, 1)
-				feed.delay.convert_added_venue_vcs_to_activities(venue)
 				render json: { id: venue.id }
 			end
 		else
@@ -169,16 +166,47 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def get_chat
-		@user = User.find_by_authentication_token(params[:auth_token])
-		chat_messages = FeedMessage.where("feed_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", params[:feed_id]).order("id DESC")
-		@messages = chat_messages.page(params[:page]).per(15)
-	end
-
 	def get_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
 		@activities = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
+	end
+
+	def add_new_topic_to_feed
+		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id])
+		if ft
+			FeedActivity.create!(:feed_topic_id => ft.id, :user_id => params[:user_id], :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create new activity topic'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def share_with_feed
+		@user = User.find_by_authentication_token(params[:auth_token])
+		feed_ids = params[:feed_ids].split(',').map(&:to_i)
+		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], @user.id, feed_ids)
+		render json: { success: true }
+	end
+
+	def like_activity
+		@user = User.find_by_authentication_token(params[:auth_token])
+		fa = FeedActivity.find_by_id(params[:feed_activity_id])
+		fa.increment!(num_like: 1)
+		if Like.create!(:liker_id => @user.id, :liked_id => fa.user_id, :feed_activity_id => fa.id)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not like feed activity'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def unlike_activity
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not unlike feed activity'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def add_user_activity_comment
@@ -202,6 +230,11 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_activity_comments
 		@activity_comments = Kaminari.paginate_array(FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC")).page(params[:page]).per(10)
+	end
+
+	def get_venue_comments
+		feed = Feed.find_by_id(params[:feed_id])
+		@comments = Kaminari.paginate_array(feed.comments.page(params[:page]).per(10)
 	end
 
 	def meta_search

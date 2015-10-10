@@ -91,8 +91,11 @@ LytitServer::Application.routes.draw do
         post 'invite_user'
         post 'edit_venue_description'
         post 'add_user_activity_comment'
-        post 'delete_user_activity_comment'
         get 'get_activity_comments'
+        post 'like_activity'
+        post 'unlike_activity'
+        post 'share_with_feed'
+        post 'add_new_topic_to_feed'
       end
 
       resources :support_issues do

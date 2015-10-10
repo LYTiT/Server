@@ -23,6 +23,7 @@ class Venue < ActiveRecord::Base
   has_many :instagram_location_id_lookups, :dependent => :destroy
   has_many :feed_venues
   has_many :feeds, through: :feed_venues
+  has_many :feed_activities, :dependent => :destroy
 
   belongs_to :user
 
@@ -221,9 +222,6 @@ class Venue < ActiveRecord::Base
 
       lookup.save
 
-      if lookup.instagram_location_id == nil && pin_drop != 1#Add instagram location id
-        lookup.set_instagram_location_id(100)
-      end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -274,7 +272,6 @@ class Venue < ActiveRecord::Base
       end
 
       venue.save
-      venue.set_instagram_location_id(100)
       return venue
     end
   end
@@ -665,10 +662,10 @@ class Venue < ActiveRecord::Base
     end
 
     instagrams.sort_by!{|instagram| instagram.created_time}
-    
-
+    instagrams.map!(&:to_hash)
+    instagrams.uniq!
     if instagrams.count > 0
-      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams.map(&:to_hash), self)
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
     return instagrams
@@ -1069,6 +1066,7 @@ class Venue < ActiveRecord::Base
     if surrounding_venue_ids != nil and surrounding_venue_ids.length > 0
       meter_radius = 100
       surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+      surrounding_instagrams.map!(&:to_hash)
 
       if surrounding_instagrams.count >= 20
         surrounding_feed = surrounding_instagrams
@@ -1084,11 +1082,13 @@ class Venue < ActiveRecord::Base
       meter_radius = 2000
       surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
       
+      surrounding_instagrams.map!(&:to_hash)
       surrounding_feed = surrounding_instagrams
     end
 
+
     #converting to lytit venue comments
-    VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams.map(&:to_hash), nil)
+    VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
 
     return surrounding_feed
   end

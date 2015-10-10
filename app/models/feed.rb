@@ -4,10 +4,10 @@ class Feed < ActiveRecord::Base
 	has_many :venue_comments, through: :venues
 	has_many :feed_users, :dependent => :destroy
 	has_many :users, through: :feed_users
-	has_many :feed_messages, :dependent => :destroy
 	has_many :feed_recommendations, :dependent => :destroy
 	has_many :feed_activities, :dependent => :destroy
 	has_many :feed_invitations, :dependent => :destroy
+	has_many :feed_shares, :dependent => :destroy
 
 	belongs_to :user
 
@@ -17,11 +17,11 @@ class Feed < ActiveRecord::Base
 
 	def comments
 		venue_ids = "SELECT venue_id FROM feeds WHERE id = #{self.id}"
-		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").order("id DESC")
+		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:user).order("id DESC")
 	end
 
 	def activity
-		self.feed_activities.where("(NOW() - created_at) <= INTERVAL '1 DAY'").includes(:venue_comment).order("adjusted_sort_position DESC")
+		self.feed_activities.where("(NOW() - created_at) <= INTERVAL '1 DAY'").includes(:user, :venue, :feed_activity_comments, :venue_comment).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url
@@ -99,13 +99,5 @@ class Feed < ActiveRecord::Base
 		Tweet.where("venue_id IN (#{venue_ids})").order("timestamp DESC")
 	end
 
-	def convert_added_venue_vcs_to_activities(venue)
-		comments = venue.venue_comments.to_a
-		for comment in comments
-			fa = FeedActivity.create!(:feed_id => self.id, :activity_type => "venue comment", :venue_comment_id => comment.id, :adjusted_sort_position => comment.created_at.to_i)
-			puts "created an activity with id: #{fa.id}"
-		end
-		
-	end
 
 end

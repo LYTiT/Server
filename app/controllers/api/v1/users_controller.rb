@@ -279,39 +279,6 @@ class Api::V1::UsersController < ApiBaseController
 	end
 	#-------------------------------------------------->
 
-	def like_message
-		@user = User.find_by_authentication_token(params[:auth_token])
-		message = FeedMessage.find_by_id(params[:message_id])
-		Like.create!(liker_id: @user.id, liked_id: message.user_id, type: "Posted Message", feed_message_id: message.id)
-		render json: { success: true }
-	end
-
-	def like_added_venue
-		@user = User.find_by_authentication_token(params[:auth_token])
-		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], params[:venue_id]).first
-		feed_venue.increment!(:num_likes, 1)
-		Like.create!(liker_id: @user.id, liked_id: feed_venue.user_id, type: "Added Venue", feed_venue_id: feed_venue.id)
-		render json: { success: true }
-	end
-
-	def unlike_message
-		if Like.find_by_message_id(params[:message_id]).delete
-			render json: { success: true }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not unlike"} }, status: :unprocessable_entity
-		end
-	end
-
-	def unlike_added_venue
-		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], params[:venue_id]).first
-		if Like.find_by_feed_venue_id(feed_venue.id).delete
-			feed_venue.decrement!(:num_likes, 1)
-			render json: { success: true }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not unlike"} }, status: :unprocessable_entity
-		end
-	end
-
 	private
 
 	def user_params

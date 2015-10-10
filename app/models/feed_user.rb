@@ -4,24 +4,24 @@ class FeedUser < ActiveRecord::Base
 
 	has_many :feed_activities, :dependent => :destroy
 
-	after_create :new_message_notification
+	after_create :new_user_notification
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+		FeedActivity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 	end
 
-	def new_message_notification
+	def new_user_notification
 		begin
 			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id
-				self.send_new_message_notification
+				self.send_new_user_notification
 			end
 		rescue
 			puts "List has no admin"
 		end
 	end
 
-	def send_new_message_notification
+	def send_new_user_notification
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'added_list_notification', 
@@ -32,11 +32,9 @@ class FeedUser < ActiveRecord::Base
 
 		}
 
-		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
-		#when there is an unread message
 		alert = "#{user.name} added your #{feed.name} List"
 
-		notification = self.store_new_message_notification(payload, feed.user, "new list member")
+		notification = self.store_new_user_notification(payload, feed.user, "new list member")
 		payload[:notification_id] = notification.id
 
 		if feed.user.push_token
@@ -46,7 +44,7 @@ class FeedUser < ActiveRecord::Base
 
 	end
 
-	def store_new_message_notification(payload, user, type)
+	def store_new_user_notification(payload, user, type)
 		notification = {
 		  :payload => payload,
 		  :gcm => feed.user.gcm_token.present?,

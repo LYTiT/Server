@@ -4,12 +4,11 @@ class VenueComment < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	has_many :feed_messages, :dependent => :destroy
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
 	has_many :meta_datas, :dependent => :destroy
-	has_many :feed_activities, :dependent => :destroy
+	has_many :feed_shares, :dependent => :destroy
 
 	validate :comment_or_media
 
@@ -178,7 +177,6 @@ class VenueComment < ActiveRecord::Base
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
 
 				#Feed related methods
-				FeedActivity.delay.create_new_venue_comment_activities(vc)
 				origin_venue.feeds.update_all(new_media_present: true)
 				origin_venue.feeds.update_all(latest_content_time: created_time)
 
@@ -262,7 +260,6 @@ class VenueComment < ActiveRecord::Base
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-				FeedActivity.delay.create_new_venue_comment_activities(vc)
 			end
 		end
 		return new_media_created
@@ -270,17 +267,16 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_details_to_vc(instagram_params)
-		puts "------------------------------------------------ #{instagram_params}"
 		inst_id = instagram_params["instagram_id"]
 
 		vc = VenueComment.find_by_instagram_id(inst_id)
 		if vc != nil
-			vc_id = vc.id
+			return vc
 		else
 			vc = VenueComment.create!(:venue_id => instagram_params[:venue_id], :image_url_1 => instagram_params[:image_url_1], :image_url_2 => instagram_params[:image_url_2], :image_url_3 => instagram_params[:image_url_3], :video_url_1 => instagram_params[:video_url_1], :video_url_2 => instagram_params[:video_url_2], :video_url_3 => instagram_params[:video_url_3], :media_type => instagram_params[:media_type], :content_origin => "instagram", :time_wrapper => instagram_params[:created_at], :instagram_id => instagram_params[:instagram_id], :thirdparty_username => instagram_params[:thirdparty_username])
-			vc_id = vc.id
+			return vc
 		end
-		return vc_id
+		
 	end
 
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)
@@ -420,139 +416,139 @@ class VenueComment < ActiveRecord::Base
 
 	#These methods are for proper key selection for get_surrounding_posts since hybrid arrays of instagram as well as LYTiT Venue Comment objects can exist there
 	def self.implicit_id(post)
-		if post.created_at != nil
-			post.id
-		else
+		if post.is_a?(Hash)
 			nil
+		else
+			post.id
 		end
 	end
 
 	def self.implicit_instagram_id(post)
-		if post.created_at != nil
-			post.instagram_id
+		if post.is_a?(Hash)
+			post["id"]
 		else
-			post.id
+			post.instagram_id
 		end
 	end
 
 	def self.implicit_instagram_location_id(post)
-		if post.created_at != nil
-			nil
+		if post.is_a?(Hash)
+			post["location"]["id"]
 		else
-			post.location.id
+			nil
 		end
 	end	
 
 	def self.implicit_media_type(post)
-		if post.created_at != nil
-			post.media_type
+		if post.is_a?(Hash)
+			post["type"]
 		else
-			post.type
+			post.media_type
 		end
 	end
 
 	def self.implicit_image_url_1(post)
-		if post.created_at != nil
-			post.image_url_1
+		if post.is_a?(Hash)
+			post["images"]["thumbnail"]["url"]
 		else
-			post.images.thumbnail.url
+			post.image_url_1
 		end
 	end
 
 	def self.implicit_image_url_2(post)
-		if post.created_at != nil
-			post.image_url_2
+		if post.is_a?(Hash)
+			post["images"]["low_resolution"]["url"]
 		else
-			post.images.low_resolution.url
+			post.image_url_2
 		end
 	end
 
 	def self.implicit_image_url_3(post)
-		if post.created_at != nil
-			post.image_url_3
+		if post.is_a?(Hash)
+			post["images"]["standard_resolution"]["url"]
 		else
-			post.images.standard_resolution.url
+			post.image_url_3
 		end
 	end
 
 	def self.implicit_video_url_1(post)
-		if post.created_at != nil
-			post.video_url_1
+		if post.is_a?(Hash)
+			post["videos"]["low_bandwidth"]["url"]
 		else
-			post.videos.try(:low_bandwith).try(:url)
+			post.video_url_1
 		end
 	end
 
 	def self.implicit_video_url_2(post)
-		if post.created_at != nil
-			post.video_url_2
+		if post.is_a?(Hash)
+			post["videos"]["low_resolution"]["url"]
 		else
-			post.videos.try(:low_resolution).try(:url)
+			post.video_url_2
 		end
 	end
 
 	def self.implicit_video_url_3(post)
-		if post.created_at != nil
-			post.video_url_3
+		if post.is_a?(Hash)
+			post["videos"]["standard_resolution"]["url"]
 		else
-			post.videos.try(:standard_resolution).try(:url)
+			post.video_url_3
 		end
 	end
 
 	def self.implicit_venue_id(post)
-		if post.created_at != nil
-			post.venue_id
+		if post.is_a?(Hash)
+			nil
 		else
- 			nil
+			post.venue_id
 		end
 	end
 
 	def self.implicit_venue_name(post)
-		if post.created_at != nil
-			post.venue.name
+		if post.is_a?(Hash)
+			post["location"]["name"]
 		else
-			post.location.name
+			post.venue.name
 		end
 	end
 
 	def self.implicit_venue_latitude(post)
-		if post.created_at != nil
-			post.venue.latitude
+		if post.is_a?(Hash)
+			post["location"]["latitude"]
 		else
-			post.location.latitude
+			post.venue.latitude
 		end
 	end
 
 	def self.implicit_venue_longitude(post)
-		if post.created_at != nil
-			post.venue.longitude
+		if post.is_a?(Hash)
+			post["location"]["longitude"]
 		else
-			post.location.longitude
-		end		
+			post.venue.longitude
+		end
 	end
 
 	def self.implicit_created_at(post)
-		if post.created_at != nil
-			post.time_wrapper
+		if post.is_a?(Hash)
+			DateTime.strptime(post["created_time"],'%s')
 		else
-			DateTime.strptime("#{post.created_time}",'%s')
+			post.time_wrapper
 		end
 	end
 
 	def self.implicit_content_origin(post)
-		if post.created_at != nil
-			post.content_origin
-		else
+		if post.is_a?(Hash)
 			"instagram"
-		end		
+		else
+			post.content_origin
+		end
 	end
 
 	def self.thirdparty_username(post)
-		if post.created_at != nil
-			post.thirdparty_username
+		if post.is_a?(Hash)
+			post["user"]["username"]
 		else
-			post.user.username
-		end		
+			post.thirdparty_username
+		end
 	end
 
 	def self.twitter_test(query, radius)

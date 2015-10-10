@@ -36,12 +36,14 @@ class User < ActiveRecord::Base
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
 
-  has_many :feed_messages, :dependent => :destroy 
+  has_many :feed_activities, :dependent => :destroy
   has_many :feed_activity_comments, :dependent => :destroy
 
   has_many :support_issues, :dependent => :destroy
   has_many :surrounding_pull_trackers, :dependent => :destroy
   has_many :support_messages, :dependent => :destroy
+
+  has_many :feed_shares, :dependent => :destroy
 
   belongs_to :role
 
@@ -530,7 +532,6 @@ class User < ActiveRecord::Base
     VenueComment.where("created_at < ?", Time.now - 24.hours).delete_all
     MetaData.where("created_at < ?", Time.now - 24.hours).delete_all
     Tweet.where("created_at < ?", Time.now - 24.hours).delete_all
-    FeedMessage.where("created_at < ?", Time.now - 24.hours).delete_all
     LytSphere.where("created_at < ?", Time.now - 24.hours).delete_all
     LytitVote.where("created_at < ?", Time.now - 24.hours).delete_all
   end

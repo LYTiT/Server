@@ -3,35 +3,13 @@ class Like < ActiveRecord::Base
 	belongs_to :liked, class_name: "User"
 	
 	belongs_to :feed_venue
-	belongs_to :feed_message
 
-	has_many :feed_activities, :dependent => :destroy
+	belongs_to :feed_activity
 
 	validates :liker_id, presence: true
 	validates :liked_id, presence: true
 
 	after_create :new_like_notification
-	after_create :create_feed_acitivity
-
-	def create_feed_acitivity
-		if type == "Added Venue"
-			previous_like = Like.find_by_feed_venue_id(self.feed_venue_id).order("created_at ASC").first
-			fa = FeedActivity.find_by_like_id(previous_like.id)
-			if fa == nil
-				FeedActivity.create!(:feed_id => feed_id, :activity_type => "liked added venue", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
-			else
-				fa.increment!(:num_likes, 1)
-			end
-		else
-			previous_like = Like.find_by_feed_venue_id(self.feed_message_id).order("created_at ASC").first
-			fa = FeedActivity.find_by_like_id(previous_like.id)
-			if fa == nil
-				FeedActivity.create!(:feed_id => feed_id, :activity_type => "liked message", :like_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
-			else
-				fa.increment!(:num_likes, 1)
-			end
-		end
-	end
 
 	def new_like_notification
 		self.delay.send_new_like_notification
@@ -59,8 +37,6 @@ class Like < ActiveRecord::Base
 		    :feed_name => feed_venue.try(:feed).try(:name),
 		    :venue_id => feed_venue.try(:venue_id),
 		    :venue_name => feed_venue.try(:venue).try(:name),
-		    :message_id => feed_message_id,
-		    :venue_comment_id => feed_message.try(:venue_comment_id)
 
 		}
 		

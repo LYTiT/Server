@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151009211923) do
+ActiveRecord::Schema.define(version: 20151010173608) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -90,17 +90,18 @@ ActiveRecord::Schema.define(version: 20151009211923) do
   create_table "feed_activities", force: true do |t|
     t.integer  "feed_id"
     t.string   "activity_type"
-    t.integer  "venue_comment_id"
-    t.integer  "feed_message_id"
+    t.integer  "feed_share_id"
     t.integer  "feed_venue_id"
     t.integer  "feed_user_id"
-    t.integer  "like_id"
     t.integer  "feed_recommendation_id"
     t.integer  "adjusted_sort_position", limit: 8
     t.datetime "created_at"
     t.datetime "updated_at"
     t.integer  "num_likes",                        default: 0
     t.integer  "num_comments",                     default: 0
+    t.integer  "feed_topic_id"
+    t.integer  "user_id"
+    t.integer  "venue_id"
   end
 
   add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
@@ -128,18 +129,6 @@ ActiveRecord::Schema.define(version: 20151009211923) do
   add_index "feed_invitations", ["invitee_id"], name: "index_feed_invitations_on_invitee_id", using: :btree
   add_index "feed_invitations", ["inviter_id"], name: "index_feed_invitations_on_inviter_id", using: :btree
 
-  create_table "feed_messages", force: true do |t|
-    t.text     "message"
-    t.integer  "feed_id"
-    t.integer  "user_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-    t.integer  "venue_comment_id"
-  end
-
-  add_index "feed_messages", ["feed_id"], name: "index_feed_messages_on_feed_id", using: :btree
-  add_index "feed_messages", ["user_id"], name: "index_feed_messages_on_user_id", using: :btree
-
   create_table "feed_recommendations", force: true do |t|
     t.integer "feed_id"
     t.string  "category"
@@ -149,6 +138,24 @@ ActiveRecord::Schema.define(version: 20151009211923) do
   end
 
   add_index "feed_recommendations", ["feed_id"], name: "index_feed_recommendations_on_feed_id", using: :btree
+
+  create_table "feed_shares", force: true do |t|
+    t.integer "feed_id"
+    t.integer "venue_comment_id"
+    t.integer "user_id"
+  end
+
+  add_index "feed_shares", ["feed_id"], name: "index_feed_shares_on_feed_id", using: :btree
+  add_index "feed_shares", ["user_id"], name: "index_feed_shares_on_user_id", using: :btree
+
+  create_table "feed_topics", force: true do |t|
+    t.integer "feed_id"
+    t.integer "user_id"
+    t.text    "message"
+  end
+
+  add_index "feed_topics", ["feed_id"], name: "index_feed_topics_on_feed_id", using: :btree
+  add_index "feed_topics", ["user_id"], name: "index_feed_topics_on_user_id", using: :btree
 
   create_table "feed_users", force: true do |t|
     t.integer  "user_id"
@@ -170,7 +177,6 @@ ActiveRecord::Schema.define(version: 20151009211923) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.text     "description"
-    t.integer  "num_likes",   default: 0
   end
 
   add_index "feed_venues", ["feed_id"], name: "index_feed_venues_on_feed_id", using: :btree
@@ -240,11 +246,9 @@ ActiveRecord::Schema.define(version: 20151009211923) do
   create_table "likes", force: true do |t|
     t.integer  "liked_id"
     t.integer  "liker_id"
-    t.string   "type"
-    t.integer  "feed_message_id"
-    t.integer  "feed_venue_id"
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "feed_activity_id"
   end
 
   add_index "likes", ["liked_id", "liker_id"], name: "index_likes_on_liked_id_and_liker_id", unique: true, using: :btree

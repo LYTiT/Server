@@ -1,19 +1,18 @@
 class FeedActivity < ActiveRecord::Base
 	belongs_to :feed
+	belongs_to :user
+	belongs_to :venue
+
 	belongs_to :venue_comment
 	belongs_to :feed_venue
 	belongs_to :feed_user
-	belongs_to :feed_message
-	belongs_to :like
+	belongs_to :feed_topic
+
 	belongs_to :feed_recommendation
 
+	has_many :likes, :dependent => :destroy
 	has_many :feed_activity_comments, :dependent => :destroy
 
-	def self.create_new_venue_comment_activities(vc)
-		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{vc.venue_id}"
-		feeds_with_venue = Feed.where("id IN (#{feed_ids})")
-		feeds_with_venue.each{|feed_with_venue| FeedActivity.create!(:feed_id => feed_with_venue.id, :activity_type => "venue comment", :venue_comment_id => vc.id, :adjusted_sort_position => vc.created_at.to_i)}
-	end
 
 	def did_like?(user) 
 		if like_id == nil
@@ -40,6 +39,20 @@ class FeedActivity < ActiveRecord::Base
 			feed_user.user
 		else
 			nil
+		end
+	end
+
+	def underlying_user
+		if activity_type == "added venue"
+			return feed_venue.user	
+		elsif activity_type == "new member" 
+			return feed_user.user
+		elsif activity_type == "liked message" || activity_type == "liked added venue"
+			return like.liker
+		elsif activity_type = "new topic"
+			return feed_topic.user
+		else
+			return	nil
 		end
 	end
 

@@ -9,7 +9,7 @@ class FeedVenue < ActiveRecord::Base
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+		FeedActivity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 	end
 
 	def new_venue_notification
@@ -42,7 +42,7 @@ class FeedVenue < ActiveRecord::Base
 
 		#A feed should have only 1 new chat message notification contribution to the badge count thus we create a chat notification only once,
 		#when there is an unread message
-		type = "#{venue.name} has been added to the #{self.feed.name} List"
+		type = "#{venue.name} has been added to #{self.feed.name}"
 
 		notification = self.store_new_venue_notification(payload, member, type)
 		payload[:notification_id] = notification.id

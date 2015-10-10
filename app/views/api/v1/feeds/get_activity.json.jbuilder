@@ -1,42 +1,30 @@
 json.activity(@activities) do |activity|
-  json.list_name @feed.name
   json.id activity.id
-  json.comment activity.venue_comment.try(:comment)
-  json.media_type activity.venue_comment.try(:media_type)
-  json.media_url activity.venue_comment.try(:image_url_2)
-  json.venue_comment_id activity.venue_comment_id
-  json.image_url_1 activity.venue_comment.try(:image_url_1)
-  json.image_url_2 activity.venue_comment.try(:image_url_2)
-  json.image_url_3 activity.venue_comment.try(:image_url_3)
-  json.video_url_1 activity.venue_comment.try(:video_url_1)
-  json.video_url_2 activity.venue_comment.try(:video_url_2)
-  json.video_url_3 activity.venue_comment.try(:video_url_2)
-  json.user_id activity.venue_comment.try(:user_id)
-  json.user_name activity.venue_comment.try(:user).try(:name)
-  json.venue_id activity.venue_comment.try(:venue_id)
-  json.venue_name activity.venue_comment.try(:venue).try(:name)
-  json.latitude activity.venue_comment.try(:venue).try(:latitude)
-  json.longitude activity.venue_comment.try(:venue).try(:longitude)
-  json.color_rating activity.venue_comment.try(:venue).try(:color_rating)
-  json.created_at activity.implicit_created_at
-  json.updated_at activity.venue_comment.try(:updated_at)
-  json.content_origin activity.venue_comment.try(:content_origin)
-  json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
+  json.type activity.activity_type
+  json.user_id activity.user_id
+  json.user_name activity.user.name
+  json.user_phone activity.user.phone_number
+  json.created_at activity.created_at
 
-  json.activity_type activity.activity_type
+  json.venue_id activity.venue_id
+  json.venue_name activity.venue.name
+  json.venue_latitude activity.venue.latitude
+  json.venue_longitude activity.venue.longitude
+  json.color_rating activity.venue.color_rating
+
+  json.venue_comment_id activity.feed_share.try(:venue_comment_id)
+  json.venue_comment_created_at activity.feed_share.try(:venue_comment).try(:created_at)
+  json.media_type activity.feed_share.venue_comment.media_type
+  json.image_url_1 activity.feed_share.try(:venue_comment).try(:image_url_1)
+  json.image_url_2 activity.feed_share.try(:venue_comment).try(:image_url_2)
+  json.image_url_3 activity.feed_share.try(:venue_comment).try(:image_url_3)
+  json.video_url_1 activity.feed_share.try(:venue_comment).try(:video_url_1)
+  json.video_url_2 activity.feed_share.try(:venue_comment).try(:video_url_2)
+  json.video_url_3 activity.feed_share.try(:venue_comment).try(:video_url_3)
+  json.content_origin activiy.feed_share.try(:venue_comment).try(:content_origin)
+  json.thirdparty_username activiy.feed_share.try(:venue_comment).try(:thirdparty_username)
   
-  json.action_user_id activity.implicit_action_user.try(:id)
-  json.action_user_name activity.implicit_action_user.try(:name)
-  json.passive_user_id activity.like.try(:liked_id)
-  json.passive_user_name activity.like.try(:liked).try(:name)
-  json.liked_venue activity.like.try(:feed_venue).try(:venue)
-  json.num_likes activity.num_likes
-  json.did_like activity.did_like?(@user)
-
-  json.num_comments activity.num_comments
-
-  json.added_venue activity.feed_venue.try(:venue)
-
+  json.topic activity.feed_topic.try(:message)
 end
 json.pagination do 
   json.current_page @activities.current_page
