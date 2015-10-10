@@ -516,7 +516,7 @@ class Venue < ActiveRecord::Base
         self.update_columns(instagram_location_id: 0)
       end
     end
-    
+
     venue_instagrams.uniq!
     return venue_instagrams
   end
@@ -1081,7 +1081,7 @@ class Venue < ActiveRecord::Base
 
     else
       meter_radius = 2000
-      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude])}
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude]) rescue 10.0}
       
       surrounding_instagrams.map!(&:to_hash)
       surrounding_feed = surrounding_instagrams
