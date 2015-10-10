@@ -1,6 +1,6 @@
 json.activity(@activities) do |activity|
   json.id activity.id
-  json.type activity.activity_type
+  json.activity_type activity.activity_type
   json.user_id activity.user_id
   json.user_name activity.user.name
   json.user_phone activity.user.phone_number

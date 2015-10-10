@@ -12,8 +12,11 @@ class FeedShare < ActiveRecord::Base
 			vc_id = VenueComment.convert_instagram_details_to_vc(instagram_details).id
 		end
 
+		vc_venue = VenueComment.where("id = ?", vc_id).includes(:venue).first.venue
+
 		for target_feed_id in target_feed_ids
-			FeedShare.create!(:user_id => u_id, :vc_id => vc_id, :feed_id => target_feed_id)
+			fs = FeedShare.create!(:user_id => u_id, :vc_id => vc_id, :feed_id => target_feed_id)
+			FeedActivity.create!(:feed_share_id => fs.id, :activity_type => "shared moment", :feed_id => target_feed_id, :user_id => u_id, :venue_id => vc_venue.id, :adjusted_sort_position => Time.now.to_i)
 		end
 	end
 
