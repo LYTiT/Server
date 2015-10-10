@@ -7,6 +7,7 @@ class FeedActivity < ActiveRecord::Base
 	belongs_to :feed_venue
 	belongs_to :feed_user
 	belongs_to :feed_topic
+	belongs_to :feed_share
 
 	belongs_to :feed_recommendation
 
