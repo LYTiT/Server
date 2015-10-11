@@ -182,8 +182,8 @@ class Api::V1::FeedsController < ApiBaseController
 	def unlike_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		fa = FeedActivity.find_by_id(params[:feed_activity_id])
-		fa.decrement!(:num_likes, 1)
-		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).delete
+		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).first.try(:delete)
+			fa.decrement!(:num_likes, 1)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not unlike feed activity'] } }, status: :unprocessable_entity
