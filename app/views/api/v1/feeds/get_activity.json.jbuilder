@@ -7,12 +7,8 @@ json.activity(@activities) do |activity|
   json.created_at activity.created_at
   json.num_chat_participants activity.num_participants
   json.latest_chat_message activity.latest_comment_time
-
-  json.venue_id activity.venue_id
-  json.venue_name activity.venue.try(:name)
-  json.venue_latitude activity.venue.try(:latitude)
-  json.venue_longitude activity.venue.try(:longitude)
-  json.color_rating activity.venue.try(:color_rating)
+  
+  json.activity_venue activity.venue
 
   json.venue_comment_id activity.feed_share.try(:venue_comment_id)
   json.venue_comment_created_at activity.feed_share.try(:venue_comment).try(:created_at)
