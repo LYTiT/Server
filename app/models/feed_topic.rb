@@ -1,4 +1,5 @@
 class FeedTopic < ActiveRecord::Base
+	belongs_to :feed
 	belongs_to :user
 	has_many :feed_activities, :dependent => :destroy
 
