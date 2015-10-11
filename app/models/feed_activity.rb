@@ -23,7 +23,7 @@ class FeedActivity < ActiveRecord::Base
 		end
 	end
 
-	def update_comment_paramters(t, u_id)
+	def update_comment_parameters(t, u_id)
 		increment!(num_comments: 1)
 		update_columns(latest_comment_time: t)
 		if FeedActivityComment.where("user_id = ? AND feed_activity_id = ?", u_id, self.id).any? == false
