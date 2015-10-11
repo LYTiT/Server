@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151010173608) do
+ActiveRecord::Schema.define(version: 20151011012254) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -130,28 +130,34 @@ ActiveRecord::Schema.define(version: 20151010173608) do
   add_index "feed_invitations", ["inviter_id"], name: "index_feed_invitations_on_inviter_id", using: :btree
 
   create_table "feed_recommendations", force: true do |t|
-    t.integer "feed_id"
-    t.string  "category"
-    t.boolean "active",    default: true
-    t.boolean "spotlyt",   default: false
-    t.string  "image_url"
+    t.integer  "feed_id"
+    t.string   "category"
+    t.boolean  "active",     default: true
+    t.boolean  "spotlyt",    default: false
+    t.string   "image_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "feed_recommendations", ["feed_id"], name: "index_feed_recommendations_on_feed_id", using: :btree
 
   create_table "feed_shares", force: true do |t|
-    t.integer "feed_id"
-    t.integer "venue_comment_id"
-    t.integer "user_id"
+    t.integer  "feed_id"
+    t.integer  "venue_comment_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "feed_shares", ["feed_id"], name: "index_feed_shares_on_feed_id", using: :btree
   add_index "feed_shares", ["user_id"], name: "index_feed_shares_on_user_id", using: :btree
 
   create_table "feed_topics", force: true do |t|
-    t.integer "feed_id"
-    t.integer "user_id"
-    t.text    "message"
+    t.integer  "feed_id"
+    t.integer  "user_id"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "feed_topics", ["feed_id"], name: "index_feed_topics_on_feed_id", using: :btree
