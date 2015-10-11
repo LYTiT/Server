@@ -36,7 +36,8 @@ class FeedVenue < ActiveRecord::Base
 		    :feed_id => feed_id,
 		    :feed_name => feed.name,
 		    :venue_id => venue_id,
-		    :venue_name => venue.name
+		    :venue_name => venue.name,
+		    :added_note => description
 
 		}
 
