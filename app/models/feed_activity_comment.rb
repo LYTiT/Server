@@ -19,6 +19,7 @@ class FeedActivityComment < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id, 
 		    :feed_activity_id => feed_activity_id,
+		    :feed_activty_type => feed_activity.activity_type,
 		    :type => 'chat_notification', 
 		    :user_id => user.id,
 		    :user_name => user.name,
