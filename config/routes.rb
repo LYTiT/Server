@@ -92,9 +92,11 @@ LytitServer::Application.routes.draw do
         post 'edit_venue_description'
         post 'add_activity_comment'
         get 'get_activity_comments'
-        post 'like_activity'
-        post 'unlike_activity'
-        post 'share_with_feed'
+        post 'like_feed_activity'
+        post 'unlike_feed_activity'
+        collection do
+          post 'share_with_feed'
+        end
         post 'add_new_topic_to_feed'
         get 'get_venue_comments'
       end

@@ -173,7 +173,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_new_topic_to_feed
-		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id])
+		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :message => params[:topic])
 		if ft
 			FeedActivity.create!(:feed_topic_id => ft.id, :user_id => params[:user_id], :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
 			render json: { success: true }
@@ -183,24 +183,23 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def share_with_feed
-		@user = User.find_by_authentication_token(params[:auth_token])
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
-		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], @user.id, feed_ids)
+		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], params[:user_id], feed_ids)
 		render json: { success: true }
 	end
 
-	def like_activity
+	def like_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		fa = FeedActivity.find_by_id(params[:feed_activity_id])
 		fa.increment!(num_like: 1)
-		if Like.create!(:liker_id => @user.id, :liked_id => fa.user_id, :feed_activity_id => fa.id)
+		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :feed_activity_id => fa.id)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not like feed activity'] } }, status: :unprocessable_entity
 		end
 	end
 
-	def unlike_activity
+	def unlike_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).delete
 			render json: { success: true }
@@ -209,7 +208,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def add_activity_comment
+	def add_feed_activity_comment
 		uc = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
 		if uc
 			FeedActivity.find_by_id(params[:feed_activity_id]).increment!(num_comments: 1)
@@ -219,16 +218,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def delete_activity_comment
-		if FeedActivityComment.find_by_id(params[:feed_activity_comment_id]).delete
-			FeedActivity.find_by_id(params[:feed_activity_id]).decrement!(num_comments: 1)
-			render json: { success: true }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not delete activity comment'] } }, status: :unprocessable_entity
-		end
-	end
-
-	def get_activity_comments
+	def get_feed_activity_comments
 		@activity_comments = Kaminari.paginate_array(FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC")).page(params[:page]).per(10)
 	end
 
