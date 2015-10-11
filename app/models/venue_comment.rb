@@ -171,6 +171,10 @@ class VenueComment < ActiveRecord::Base
 					origin_venue.update_columns(last_instagram_post: instagram_id)
 				end
 
+				if origin_venue.last_instagram_pull_time < created_time
+					origin_venue.update_columns(last_instagram_pull_time: created_time)
+				end
+
 				#Further instagram related methods
 				instagram_tags = instagram_hash["tags"]
 				instagram_captions = i.to_hash["caption"]["text"].split rescue nil
