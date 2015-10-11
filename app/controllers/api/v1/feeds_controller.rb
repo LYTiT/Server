@@ -206,7 +206,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_venue_comments
 		feed = Feed.find_by_id(params[:feed_id])
-		@comments = Kaminari.paginate_array(feed.comments).per(10)
+		@comments = Kaminari.paginate_array(feed.comments).page(params[:page]).per(10)
 	end
 
 	def meta_search
