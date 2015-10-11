@@ -664,7 +664,7 @@ class Venue < ActiveRecord::Base
 
     instagrams.sort_by!{|instagram| instagram.created_time}
     instagrams.map!(&:to_hash)
-    instagrams.uniq!
+
     if instagrams.count > 0
       VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
@@ -722,7 +722,7 @@ class Venue < ActiveRecord::Base
 
       if new_instagrams.count > 0
         total_media = []
-        total_media << new_instagrams
+        total_media << new_instagrams.uniq!
         total_media << venue.venue_comments.order("time_wrapper desc")
         total_media.flatten!.compact!
         return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
