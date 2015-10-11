@@ -21,8 +21,8 @@ json.activity(@activities) do |activity|
   json.video_url_1 activity.feed_share.try(:venue_comment).try(:video_url_1)
   json.video_url_2 activity.feed_share.try(:venue_comment).try(:video_url_2)
   json.video_url_3 activity.feed_share.try(:venue_comment).try(:video_url_3)
-  json.content_origin activiy.feed_share.try(:venue_comment).try(:content_origin)
-  json.thirdparty_username activiy.feed_share.try(:venue_comment).try(:thirdparty_username)
+  json.content_origin activity.feed_share.try(:venue_comment).try(:content_origin)
+  json.thirdparty_username activity.feed_share.try(:venue_comment).try(:thirdparty_username)
   
   json.topic activity.feed_topic.try(:message)
 end

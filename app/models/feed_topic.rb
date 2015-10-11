@@ -21,8 +21,8 @@ class FeedTopic < ActiveRecord::Base
 		    :user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feed_id,
-		    :feed_name => feed.name,
+		    :feed_id => feed_activities.first.feed.id,
+		    :feed_name => feed_activities.first.feed.name,
 		    :topic => self.message
 		}
 
@@ -32,7 +32,7 @@ class FeedTopic < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		preview = "#{user.name} opened a new topic in #{feed_activity.feed.name}"
+		preview = "#{user.name} opened a new topic in #{feed_activities.first.feed.name}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
