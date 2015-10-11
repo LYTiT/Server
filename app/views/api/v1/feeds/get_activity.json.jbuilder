@@ -9,6 +9,7 @@ json.activity(@activities) do |activity|
   json.latest_chat_message activity.latest_comment_time
   
   json.activity_venue activity.venue
+  json.added_note activity.feed_venue.try(:description)
 
   json.venue_comment_id activity.feed_share.try(:venue_comment_id)
   json.venue_comment_created_at activity.feed_share.try(:venue_comment).try(:created_at)
