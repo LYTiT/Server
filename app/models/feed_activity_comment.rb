@@ -32,7 +32,7 @@ class FeedActivityComment < ActiveRecord::Base
 
 		notification_type = "New comment for Feed Activity #{feed_activity_id}"
 		if Notification.where(user_id: member.id, message: notification_type, read: false, deleted: false).count == 0
-			notification = self.store_new_chat_notification(payload, member, type)
+			notification = self.store_new_chat_notification(payload, member, notification_type)
 			payload[:notification_id] = notification.id
 		end
 
