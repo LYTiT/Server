@@ -171,7 +171,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def like_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		fa = FeedActivity.find_by_id(params[:feed_activity_id])
-		fa.increment!(num_like: 1)
+		fa.increment!(:num_likes, 1)
 		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :feed_activity_id => fa.id)
 			render json: { success: true }
 		else
@@ -181,6 +181,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def unlike_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
+		fa = FeedActivity.find_by_id(params[:feed_activity_id])
+		fa.decrement!(:num_likes, 1)
 		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).delete
 			render json: { success: true }
 		else
