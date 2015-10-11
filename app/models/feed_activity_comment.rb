@@ -5,7 +5,7 @@ class FeedActivityComment < ActiveRecord::Base
 	after_create :new_chat_notification
 
 	def new_chat_notification
-		conversation_participant_ids = "SELECT user_id FROM feed_activity_comments WHERE feed_activity = #{self.feed_activity_id}"
+		conversation_participant_ids = "SELECT user_id FROM feed_activity_comments WHERE feed_activity_id = #{self.feed_activity_id}"
 		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id = ?", feed_activity.user_id, self.feed_activity.feed_id)
 
 		for feed_user in feed_users
