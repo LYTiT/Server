@@ -17,5 +17,5 @@ json.array! @venues do |v|
   json.added_by_user v.feed_activities.where("feed_id = ?", @feed.id).first.try(:user).try(:name)
   json.num_likes v.feed_activities.where("feed_id = ?", @feed.id).first.try(:num_likes)
   json.description v.feed_venues.where("feed_id = ?", @feed.id).first.try(:description)
-  json.did_like @user.likes.where("feed_activity_id = ?", v.feed_activities.where("feed_id = ?", @feed.id).first.id).any?
+  json.did_like @user.likes.where("feed_activity_id = ?", v.feed_activities.where("feed_id = ?", @feed.id).first.try(:id)).any?
 end
