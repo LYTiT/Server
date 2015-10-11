@@ -180,9 +180,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def unlike_feed_activity
-		@user = User.find_by_authentication_token(params[:auth_token])
 		fa = FeedActivity.find_by_id(params[:feed_activity_id])
-		if Like.where("liker_id = ? AND feed_activity_id = ?", @user.id, params[:feed_activity_id]).first.try(:delete)
+		if Like.where("liker_id = ? AND feed_activity_id = ?", params[:user_id], params[:feed_activity_id]).first.try(:delete)
 			fa.decrement!(:num_likes, 1)
 			render json: { success: true }
 		else
@@ -207,7 +206,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_venue_comments
 		feed = Feed.find_by_id(params[:feed_id])
-		@comments = Kaminari.paginate_array(feed.comments).page(params[:page]).per(10)
+		@comments = Kaminari.paginate_array(feed.comments).per(10)
 	end
 
 	def meta_search
