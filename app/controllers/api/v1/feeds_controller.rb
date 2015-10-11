@@ -209,7 +209,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def add_user_activity_comment
+	def add_activity_comment
 		uc = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
 		if uc
 			FeedActivity.find_by_id(params[:feed_activity_id]).increment!(num_comments: 1)
@@ -219,7 +219,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def delete_user_activity_comment
+	def delete_activity_comment
 		if FeedActivityComment.find_by_id(params[:feed_activity_comment_id]).delete
 			FeedActivity.find_by_id(params[:feed_activity_id]).decrement!(num_comments: 1)
 			render json: { success: true }
