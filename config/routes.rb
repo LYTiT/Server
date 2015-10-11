@@ -90,8 +90,8 @@ LytitServer::Application.routes.draw do
         get 'get_activity'
         post 'invite_user'
         post 'edit_venue_description'
-        post 'add_activity_comment'
-        get 'get_activity_comments'
+        post 'add_feed_activity_comment'
+        get 'get_feed_activity_comments'
         post 'like_feed_activity'
         post 'unlike_feed_activity'
         collection do
