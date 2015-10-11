@@ -6,7 +6,7 @@ class FeedActivityComment < ActiveRecord::Base
 
 	def new_chat_notification
 		conversation_participant_ids = "SELECT user_id FROM feed_activity_comments WHERE feed_activity = #{self.feed_activity_id}"
-		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id = ?", feed_activity.user_id, self.feed_activity.feed.id)
+		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id = ?", feed_activity.user_id, self.feed_activity.feed_id)
 
 		for feed_user in feed_users
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
@@ -23,9 +23,9 @@ class FeedActivityComment < ActiveRecord::Base
 		    :user_id => user.id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feed.id,
-		    :feed_name => feed.name,
-		    :feed_color => feed.color,
+		    :feed_id => feed_activity.feed_id,
+		    :feed_name => feed_activity.feed.name,
+		    :feed_color => feed_activity.feed.color,
 		    :comment => self.comment,
 
 		}
@@ -36,7 +36,7 @@ class FeedActivityComment < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 
-		preview = "#{user.name} in"+' "'+"#{feed.name}"+'"'+":\n#{comment}"
+		preview = "#{user.name} in"+' "'+"#{feed_activity.feed.name}"+'"'+":\n#{comment}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
