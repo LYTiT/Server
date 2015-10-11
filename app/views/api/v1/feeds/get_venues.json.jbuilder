@@ -1,5 +1,6 @@
 json.array! @venues do |v|
   json.id v.id
+  json.feed_activity_id v.feed_activities.where("feed_id = ?", @feed.id).first.id
   json.name v.name
   json.formatted_address v.formatted_address
   json.address v.address
