@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151011012254) do
+ActiveRecord::Schema.define(version: 20151011030652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -102,6 +102,8 @@ ActiveRecord::Schema.define(version: 20151011012254) do
     t.integer  "feed_topic_id"
     t.integer  "user_id"
     t.integer  "venue_id"
+    t.datetime "latest_comment_time"
+    t.integer  "num_participants",                 default: 0
   end
 
   add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree

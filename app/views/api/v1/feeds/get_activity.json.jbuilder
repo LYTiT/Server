@@ -5,6 +5,8 @@ json.activity(@activities) do |activity|
   json.user_name activity.user.try(:name)
   json.user_phone activity.user.phone_number
   json.created_at activity.created_at
+  json.num_chat_participants activity.num_participants
+  json.latest_chat_message activity.latest_comment_time
 
   json.venue_id activity.venue_id
   json.venue_name activity.venue.try(:name)

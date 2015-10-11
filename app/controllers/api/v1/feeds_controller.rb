@@ -209,9 +209,10 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_feed_activity_comment
-		uc = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
-		if uc
-			FeedActivity.find_by_id(params[:feed_activity_id]).increment!(num_comments: 1)
+		fac = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
+		if fac
+			fa = FeedActivity.find_by_id(params[:feed_activity_id])
+			fa.update_comment_paramaters(Time.now, params[:user_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create activity comment'] } }, status: :unprocessable_entity
