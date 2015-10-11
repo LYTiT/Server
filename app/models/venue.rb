@@ -517,7 +517,10 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    venue_instagrams.uniq!
+    if venue_instagrams != nil
+      venue_instagrams.uniq!
+    end
+    
     return venue_instagrams
   end
 
