@@ -18,8 +18,12 @@ class FeedActivityComment < ActiveRecord::Base
 	def send_new_chat_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :feed_activity_id => feed_activity_id,
-		    :feed_activty_type => feed_activity.activity_type,
+		    :activity_id => feed_activity_id,
+		    :activity_type => feed_activity.activity_type,
+		    :activity_created_at => feed_activity.created_at,
+		    :activity_user_name => feed_activity.user.try(:name),
+		    :activity_user_id => feed_activity.user_id,
+		    :activity_user_phone => feed_activity.user.try(:phone_number),
 		    :type => 'chat_notification', 
 		    :user_id => user.id,
 		    :user_name => user.name,

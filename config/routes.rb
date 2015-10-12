@@ -99,6 +99,7 @@ LytitServer::Application.routes.draw do
         end
         post 'add_new_topic_to_feed'
         get 'get_venue_comments'
+        get 'get_activity_object'
       end
 
       resources :support_issues do

@@ -152,6 +152,10 @@ class Api::V1::FeedsController < ApiBaseController
 		@activities = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
 	end
 
+	def get_activity_object
+		@activity = FeedActivity.find_by_id(params[:feed_activity_id])
+	end
+
 	def add_new_topic_to_feed
 		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :message => params[:topic])
 		if ft
