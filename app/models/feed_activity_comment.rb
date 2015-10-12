@@ -20,7 +20,6 @@ class FeedActivityComment < ActiveRecord::Base
 		    :object_id => self.id, 
 		    :activity_id => feed_activity_id,
 		    :activity_type => feed_activity.activity_type,
-		    :activity_created_at => feed_activity.created_at,
 		    :activity_user_name => feed_activity.user.try(:name),
 		    :activity_user_id => feed_activity.user_id,
 		    :activity_user_phone => feed_activity.user.try(:phone_number),
@@ -36,10 +35,10 @@ class FeedActivityComment < ActiveRecord::Base
 		}
 
 		notification_type = "New comment for Feed Activity #{feed_activity_id}"
-		if Notification.where(user_id: member.id, message: notification_type, read: false, deleted: false).count == 0
-			notification = self.store_new_chat_notification(payload, member, notification_type)
-			payload[:notification_id] = notification.id
-		end
+		#if Notification.where(user_id: member.id, message: notification_type, read: false, deleted: false).count == 0
+		notification = self.store_new_chat_notification(payload, member, notification_type)
+		payload[:notification_id] = notification.id
+		#end
 
 		preview = "#{user.name} in"+' "'+"#{feed_activity.feed.name}"+'"'+":\n#{comment}"
 		if member.push_token
