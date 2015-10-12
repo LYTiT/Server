@@ -21,14 +21,14 @@ class Like < ActiveRecord::Base
 			message = "#{liker.name} has liked your added venue to #{feed_venue.feed.name}"
 			notification_type = "Added venue like"
 		else
-			payload_type = "message_like_notification"
+			payload_type = "share_like_notification"
 			message = "#{liker.name} has liked your shared Moment in #{feed_venue.feed.name}"
 			notification_type = "Message like"
 		end
 
 		payload = {
 		    :object_id => self.id, 
-		    :type => payload_type,
+		    :type => "like_notification",
 		    :liker_id => liker_id,
 		    :liker_name => liker.name,
 		    :liker_phone => liker.phone_number,
