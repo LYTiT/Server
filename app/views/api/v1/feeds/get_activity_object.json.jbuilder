@@ -7,7 +7,7 @@ json.created_at @activity.created_at
 json.num_chat_participants @activity.num_participants
 json.latest_chat_message @activity.latest_comment_time
 
-json.@activity_venue @activity.venue
+json.activity_venue @activity.venue
 json.added_note @activity.feed_venue.try(:description)
 
 json.venue_comment_id @activity.feed_share.try(:venue_comment_id)
