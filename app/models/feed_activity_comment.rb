@@ -30,7 +30,7 @@ class FeedActivityComment < ActiveRecord::Base
 		    :feed_id => feed_activity.feed_id,
 		    :feed_name => feed_activity.feed.name,
 		    :feed_color => feed_activity.feed.feed_color,
-		    :comment => self.comment,
+		    :chat_message => self.comment,
 
 		}
 

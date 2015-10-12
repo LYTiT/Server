@@ -1,5 +1,5 @@
-json.id @@activity.id
-json.@@activity_type @@activity.@@activity_type
+json.id @activity.id
+json.activity_type @activity.activity_type
 json.user_id @activity.user_id
 json.user_name @activity.user.try(:name)
 json.user_phone @activity.user.try(:phone_number)
