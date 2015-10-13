@@ -520,7 +520,7 @@ class Venue < ActiveRecord::Base
     if venue_instagrams != nil
       venue_instagrams.uniq!
     end
-    
+
     return venue_instagrams
   end
 
@@ -714,13 +714,8 @@ class Venue < ActiveRecord::Base
           end
         end
       else
-        if venue.instagram_location_id == nil
-          new_instagrams << venue.set_instagram_location_id(100)
-        elsif venue.instagram_location_id != 0
-          new_instagrams << venue.get_instagrams(false)
-        else
-          new_media_created = false
-        end
+        new_instagrams << venue.set_instagram_location_id(100)
+        venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
       if new_instagrams.count > 0
