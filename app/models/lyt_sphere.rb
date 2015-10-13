@@ -6,7 +6,7 @@ class LytSphere < ActiveRecord::Base
   		begin
 	  		LytSphere.create!(:venue_id => v.id, :sphere => v.l_sphere)
 		rescue
-			puts "Could not create LytSphere"
+			puts "Could not create Lyt Sphere"
 		end
 	end
   end
