@@ -59,7 +59,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.name = params[:name]
 		@user.phone_number = params[:phone_number]
 		@user.country_code = params[:country_code]
-		@user.Ï = true
+		@user.registered = true
 		if @user.save		
 			render json: { success: true }
 		else
