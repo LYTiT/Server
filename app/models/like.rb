@@ -12,7 +12,9 @@ class Like < ActiveRecord::Base
 	after_create :new_like_notification
 
 	def new_like_notification
-		self.delay.send_new_like_notification
+		if feed_activity.user_id != liker_id
+			self.delay.send_new_like_notification
+		end
 	end
 
 	def send_new_like_notification
