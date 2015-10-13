@@ -497,7 +497,7 @@ class User < ActiveRecord::Base
   end
 
   def self.find_lytit_users_in_phonebook(phonebook)
-    matched_users = User.where("RIGHT(phone_number, 7) IN (?)", phonebook)
+    matched_users = User.where("RIGHT(phone_number, 7) IN (?)", phonebook).to_a
     for user in matched_users
       phone_num = user.phone_number
       if phone_num.length > 7
