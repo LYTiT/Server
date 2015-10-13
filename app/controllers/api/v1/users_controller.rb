@@ -18,7 +18,7 @@ class Api::V1::UsersController < ApiBaseController
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
-				if existing_temp_user.registered != true
+				if existing_temp_user.registered == false
 					existing_temp_user.destroy
 				else
 					previous_email = existing_temp_user.email
@@ -52,14 +52,6 @@ class Api::V1::UsersController < ApiBaseController
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
 		end
-	end
-
-	def destroy_previous_temp_user
-		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
-		if previous_user != nil
-			previous_user.destroy
-		end
-		render json: { success: true }
 	end
 
 	def register
