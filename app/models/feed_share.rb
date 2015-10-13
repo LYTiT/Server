@@ -32,7 +32,7 @@ class FeedShare < ActiveRecord::Base
 	def send_new_feed_share_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :feed_activity_id => feed_activities.first.id,
+		    :activity_id => feed_activities.first.id,
 		    :type => 'share_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,

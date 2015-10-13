@@ -17,7 +17,7 @@ class FeedTopic < ActiveRecord::Base
 	def send_new_topic_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :feed_activity_id => feed_activities.first.id,
+		    :activity_id => feed_activities.first.id,
 		    :type => 'new_topic_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,
