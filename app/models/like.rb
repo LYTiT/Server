@@ -56,8 +56,8 @@ class Like < ActiveRecord::Base
 	def store_new_message_notification(payload, notification_type)
 		notification = {
 		  :payload => payload,
-		  :gcm => user.gcm_token.present?,
-		  :apns => user.push_token.present?,
+		  :gcm => liked.gcm_token.present?,
+		  :apns => liked.push_token.present?,
 		  :response => notification_payload,
 		  :user_id => liked_id,
 		  :read => false,
