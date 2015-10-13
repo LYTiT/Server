@@ -18,7 +18,7 @@ class Api::V1::UsersController < ApiBaseController
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
-				if existing_temp_user.registered == false
+				if existing_temp_user.registered == false && existing_temp_user.name.first(10).downcase == existing_temp_user.email.first(10).downcase
 					existing_temp_user.destroy
 				else
 					previous_email = existing_temp_user.email
@@ -59,7 +59,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.name = params[:name]
 		@user.phone_number = params[:phone_number]
 		@user.country_code = params[:country_code]
-		@user.registered = true
+		@user.Ï = true
 		if @user.save		
 			render json: { success: true }
 		else
@@ -153,18 +153,6 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { success: true, message: 'Password reset link sent to your email.' }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Can not find user with this email'] } }, status: :unprocessable_entity
-		end
-	end
-
-	def update
-		@user = User.find params[:id]
-		permitted_params = user_params
-		permitted_params.delete(:password)
-
-		if @user.update_attributes(permitted_params)
-			render 'created.json.jbuilder'
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
 
