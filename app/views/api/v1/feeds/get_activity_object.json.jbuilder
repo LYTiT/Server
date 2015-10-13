@@ -22,7 +22,7 @@ json.video_url_3 @activity.feed_share.try(:venue_comment).try(:video_url_3)
 json.content_origin @activity.feed_share.try(:venue_comment).try(:content_origin)
 json.thirdparty_username @activity.feed_share.try(:venue_comment).try(:thirdparty_username)
 
-  json.num_likes @activity.num_likes
-  json.has_liked @user.likes.where("feed_activity_id = ?", @activity.id).any?
+json.num_likes @activity.num_likes
+json.has_liked @user.likes.where("feed_activity_id = ?", @activity.id).any?
 
 json.topic @activity.feed_topic.try(:message)
