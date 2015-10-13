@@ -18,11 +18,11 @@ class Like < ActiveRecord::Base
 	def send_new_like_notification
 		if feed_activity.activity_type == "added venue"
 			payload_type = "added_venue_like_notification"
-			message = "#{liker.name} has liked your added venue to #{feed_venue.feed.name}"
+			message = "#{liker.name} has liked your added venue to #{feed_activity.feed.name}"
 			notification_type = "Added venue like"
 		else
 			payload_type = "share_like_notification"
-			message = "#{liker.name} has liked your shared Moment in #{feed_venue.feed.name}"
+			message = "#{liker.name} has liked your shared Moment in #{feed_activity.feed.name}"
 			notification_type = "Message like"
 		end
 
