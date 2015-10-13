@@ -3,8 +3,11 @@ class LytSphere < ActiveRecord::Base
 
   def self.create_new_sphere(v)
   	if v.l_sphere != nil
-	  	lyt_sphere = LytSphere.new(:venue_id => v.id, :sphere => v.l_sphere)
-		lyt_sphere.save
+  		begin
+	  		LytSphere.create!(:venue_id => v.id, :sphere => v.l_sphere)
+		rescue
+			puts "Could not create LytSphere"
+		end
 	end
   end
 

@@ -127,9 +127,8 @@ class Api::V1::VenuesController < ApiBaseController
 					venue.update_r_up_votes(Time.now)
             		venue.update_columns(latest_posted_comment_time: Time.now)
 
-					if LytSphere.where("venue_id = ?", venue.id).count == 0
-						LytSphere.delay.create_new_sphere(venue)
-					end
+					
+					LytSphere.delay.create_new_sphere(venue)
 
 				end
 				#@comment.extract_venue_comment_meta_data
