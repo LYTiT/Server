@@ -153,6 +153,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_activity_object
+		@user = User.user_find_by_id(params[:user_id])
 		@activity = FeedActivity.find_by_id(params[:feed_activity_id])
 	end
 
