@@ -31,14 +31,15 @@ class Like < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id, 
 		    :type => "like_notification",
+		    :activity_id => feed_activity.id,
 		    :liker_id => liker_id,
 		    :liker_name => liker.name,
 		    :liker_phone => liker.phone_number,
 		    :liked_id => liked_id,
-		    :feed_id => feed_venue.try(:feed_id),
-		    :feed_name => feed_venue.try(:feed).try(:name),
-		    :venue_id => feed_venue.try(:venue_id),
-		    :venue_name => feed_venue.try(:venue).try(:name),
+		    :feed_id => feed_activity.feed_id,
+		    :feed_name => feed_activity.feed.try(:name),
+		    :venue_id => feed_activity.venue_id,
+		    :venue_name => feed_activity.venue.try(:name),
 
 		}
 		
