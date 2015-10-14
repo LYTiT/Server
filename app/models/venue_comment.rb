@@ -7,11 +7,16 @@ class VenueComment < ActiveRecord::Base
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
-	has_many :meta_datas, :dependent => :delete_all
-	has_many :feed_shares, :dependent => :delete_all
+	has_many :meta_datas, :dependent => :destroy
+	has_many :feed_shares, :dependent => :destroy
 
 	validate :comment_or_media
 
+	before_destroy :deincrement_feed_moment_counts
+
+	def deincrement_feed_moment_counts
+		self.venue.feeds.update_all("num_moments = num_moments-1")		
+	end
 
 	def comment_or_media
 		if self.comment.blank? and self.image_url_1.blank?
@@ -183,6 +188,7 @@ class VenueComment < ActiveRecord::Base
 				#Feed related methods
 				origin_venue.feeds.update_all(new_media_present: true)
 				origin_venue.feeds.update_all(latest_content_time: created_time)
+				origin_venue.feeds.update_all("num_moments = num_moments+1")
 
 				#Venue LYTiT ratings related methods
 				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
@@ -261,6 +267,8 @@ class VenueComment < ActiveRecord::Base
 				puts "instagram venue comment created, id: #{vc.id}"
 				lytit_venue.feeds.update_all(new_media_present: true)
 				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
+				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
+				lytit_venue.feeds.update_all("num_moments = num_moments+1")
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
