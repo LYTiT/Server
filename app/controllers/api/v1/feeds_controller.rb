@@ -164,7 +164,7 @@ class Api::V1::FeedsController < ApiBaseController
 		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :message => params[:topic])
 		if ft			
 			topic = ft.as_json
-			topic[:activity_id] = ft.feed_activity_id
+			topic[:activity_id] = ft.feed_activity.id
 
 			render json: topic
 		else
