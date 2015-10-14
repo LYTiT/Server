@@ -521,7 +521,8 @@ class Venue < ActiveRecord::Base
   #Instagram specific LYTiT venue search-match  
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
     lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
-    if lookup != nil
+
+    if lookup != nil && inst_loc_id.to_i != 0
       return lookup.venue
     else
       #Check if there is a direct name match in proximity
