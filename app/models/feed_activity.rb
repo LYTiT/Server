@@ -3,6 +3,7 @@ class FeedActivity < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
+	belongs_to :venue_comment
 	belongs_to :feed_venue
 	belongs_to :feed_user
 	belongs_to :feed_topic
