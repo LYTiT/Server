@@ -12,7 +12,7 @@ class Venue < ActiveRecord::Base
   validate :validate_menu_link
 
   has_many :venue_ratings, :dependent => :destroy
-  has_many :venue_comments, :dependent => :delete
+  has_many :venue_comments, :dependent => :destroy
   has_many :tweets, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
