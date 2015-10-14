@@ -3,7 +3,7 @@ class FeedShare < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue_comment
 
-	has_many :feed_activities, :dependent => :destroy
+	has_one :feed_activity, :dependent => :destroy
 
 
 	def self.implicit_creation(instagram_details, vc_id, u_id, target_feed_ids)
@@ -32,7 +32,7 @@ class FeedShare < ActiveRecord::Base
 	def send_new_feed_share_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :activity_id => feed_activities.first.id,
+		    :activity_id => feed_activity.id,
 		    :type => 'share_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,

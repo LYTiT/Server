@@ -3,7 +3,7 @@ class FeedVenue < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	has_many :feed_activities, :dependent => :destroy
+	has_one :feed_activity, :dependent => :destroy
 
 	after_create :new_venue_notification
 	after_create :create_feed_acitivity

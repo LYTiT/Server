@@ -1,7 +1,7 @@
 class FeedRecommendation < ActiveRecord::Base
 	belongs_to :feed
 
-	has_many :feed_activities, :dependent => :destroy
+	has_one :feed_activity, :dependent => :destroy
 	after_create :create_feed_acitivity
 	after_create :spotlyt_notification
 

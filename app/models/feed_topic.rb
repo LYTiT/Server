@@ -1,7 +1,7 @@
 class FeedTopic < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :user
-	has_many :feed_activities, :dependent => :destroy
+	has_one :feed_activity, :dependent => :destroy
 
 	after_create :create_feed_acitivity
 	after_create :new_topic_notification
@@ -22,7 +22,7 @@ class FeedTopic < ActiveRecord::Base
 	def send_new_topic_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :activity_id => feed_activities.first.id,
+		    :activity_id => feed_activity.id,
 		    :type => 'new_topic_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,
@@ -38,7 +38,7 @@ class FeedTopic < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		preview = "#{user.name} opened a new topic in #{feed_activities.first.feed.name}"
+		preview = "#{user.name} opened a new topic in #{feed_activity.feed.name}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
