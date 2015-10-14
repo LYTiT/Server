@@ -1,6 +1,6 @@
 class Venue < ActiveRecord::Base
 
-  acts_as_mappable :default_units => :kilometers,
+  acts_as_mappable :default_units => :kms,
                      :default_formula => :sphere,
                      :distance_field_name => :distance,
                      :lat_column_name => :latitude,
@@ -769,8 +769,8 @@ class Venue < ActiveRecord::Base
 
     if lat != nil && long != nil
       
-      surrounding_lyts_radius = 10000
-      if not Venue.within(surrounding_lyts_radius.to_i, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+      surrounding_lyts_radius = 1000/100
+      if not Venue.within(surrounding_lyts_radius.to_f, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
         new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
         for instagram in new_instagrams
