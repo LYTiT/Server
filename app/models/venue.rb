@@ -102,7 +102,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result != nil
-      puts "A direct match has been found - name:#{result.name}, id:#{result.id} "
+      puts "A direct match in the LDB has been found - name:#{result.name}, id:#{result.id} "
       lookup = result
     else
       #We need to determine the type of search being conducted whether it is venue specific or geographic
@@ -518,7 +518,7 @@ class Venue < ActiveRecord::Base
     end
 
     if venue_instagrams != nil
-      venue_instagrams.uniq!
+      venue_instagrams#.uniq!
     end
 
     return venue_instagrams
@@ -720,7 +720,7 @@ class Venue < ActiveRecord::Base
 
       if new_instagrams.count > 0
         total_media = []
-        total_media << new_instagrams.uniq!
+        total_media << new_instagrams#.uniq!
         total_media << venue.venue_comments.order("time_wrapper desc")
         total_media.flatten!.compact!
         return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
