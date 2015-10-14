@@ -1,5 +1,5 @@
 class InstagramVortex < ActiveRecord::Base
-	acts_as_mappable :default_units => :miles,
+	acts_as_mappable :default_units => :kilometers,
 	             :default_formula => :sphere,
 	             :distance_field_name => :distance,
 	             :lat_column_name => :latitude,
@@ -200,7 +200,7 @@ class InstagramVortex < ActiveRecord::Base
 	def self.check_nearby_vortex_existence(lat, long)
 		if lat != nil and long != nil
 			nearby_vortex_radius = 20000
-			nearby_vortex = InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
+			nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :origin => [lat, long]).first #InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
 			if nearby_vortex == nil
 				begin
 					iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")

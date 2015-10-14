@@ -1,6 +1,6 @@
 class Venue < ActiveRecord::Base
 
-  acts_as_mappable :default_units => :miles,
+  acts_as_mappable :default_units => :kilometers,
                      :default_formula => :sphere,
                      :distance_field_name => :distance,
                      :lat_column_name => :latitude,
@@ -531,14 +531,14 @@ class Venue < ActiveRecord::Base
       return lookup.venue
     else
       #Check if there is a direct name match in proximity
-      name_lookup = Venue.where("LOWER(name) = ? AND ABS(#{lat} - latitude) <= 0.3 AND ABS(#{long} - longitude) <= 0.3", vname.to_s.downcase).first
+      name_lookup = Venue.where("LOWER(name) = ? AND ABS(#{lat} - latitude) <= 0.01 AND ABS(#{long} - longitude) <= 0.01", vname.to_s.downcase).first
       if name_lookup != nil
         return name_lookup
       else
         search_part = nil
         radius = 500
         boundries = bounding_box(radius, lat, long)
-        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
+        venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.01 AND ABS(#{long} - longitude) <= 0.01", '%' + vname.to_s.downcase + '%')
         if venues.count == 0
           vname.to_s.downcase.split.each do |part| 
             if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
@@ -549,7 +549,7 @@ class Venue < ActiveRecord::Base
           end
 
           if search_part != nil
-            venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
+            venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.01 AND ABS(#{long} - longitude) <= 0.01", '%' + search_part + '%')
           end
 
           if venues.count == 0
@@ -584,7 +584,7 @@ class Venue < ActiveRecord::Base
               end
             end          
           
-            if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
+            if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "")) >= 0.85 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)) && Geocoder::Calculations.distance_between([venue.latitude, venue.longitude], [lat, long]) < 250
               lookup = venue
               break
             end
@@ -770,7 +770,7 @@ class Venue < ActiveRecord::Base
     if lat != nil && long != nil
       
       surrounding_lyts_radius = 10000
-      if not Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+      if not Venue.within(surrounding_lyts_radius.to_i, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
         new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
         for instagram in new_instagrams
@@ -851,7 +851,8 @@ class Venue < ActiveRecord::Base
 
   def self.near_locations(lat, long)
     meter_radius = 400
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
+    surroundings = Venue.within(meter_radius.to_i, :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
+    #Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
 
   def cord_to_city
@@ -930,7 +931,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = Venue.meters_to_miles(100)
+      radius = 100 #Venue.meters_to_miles(100)
       #query = ""
       #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
       #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
@@ -962,7 +963,7 @@ class Venue < ActiveRecord::Base
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, venue_ids)    
     cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
     cluster_venue_ids = venue_ids.split(',').map(&:to_i)
-    radius = Venue.meters_to_miles(map_scale.to_f/2.0)
+    radius = map_scale.to_f/2.0#Venue.meters_to_miles(map_scale.to_f/2.0)
 
     time_out_minutes = 0
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - time_out_minutes.minutes
@@ -1020,7 +1021,7 @@ class Venue < ActiveRecord::Base
       config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
     end
     surrounding_tweets = []
-    radius = Venue.meters_to_miles(200)
+    radius = 200 #Venue.meters_to_miles(200)
     
     if surrounding_venue_ids.count > 0
       location_query = ""
