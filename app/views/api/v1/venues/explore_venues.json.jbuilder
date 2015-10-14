@@ -7,6 +7,7 @@ json.array! @venues do |v|
 	json.longitude v.longitude
 	json.color_rating v.color_rating
 	json.time_zone_offset v.time_zone_offset
+	json.instagram_location_id
 
 	json.post v.venue_comments.order("id DESC LIMIT 1")[0]
 

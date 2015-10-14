@@ -6,4 +6,5 @@ json.array! @venues do |v|
   json.longitude v.longitude
   json.color_rating v.color_rating
   json.last_post_time v.last_post_time
+  json.instagram_location_id v.instagram_location_id
 end
