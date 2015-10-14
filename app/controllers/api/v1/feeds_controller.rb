@@ -163,6 +163,9 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_new_topic_to_feed
 		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :message => params[:topic])
 		if ft			
+			topic = ft.as_json
+			topic[:activity_id] = ft.feed_activities.first.id
+
 			render json: ft
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create new activity topic'] } }, status: :unprocessable_entity
