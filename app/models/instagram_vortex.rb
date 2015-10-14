@@ -24,7 +24,7 @@ class InstagramVortex < ActiveRecord::Base
 				path_center_lat = path.origin_lat - (path.span/2) / (109.0 * 1000)
 				path_center_long = path.origin_long + (path.span/2) / (113.2 * 1000 * Math.cos(path.origin_lat * Math::PI / 180))
 				
-				if Geocoder::Calculations.distance_between([latitude, longitude], [path_center_lat, path_center_long])*1609.34 < 1.3*path.increment_distance
+				if Geocoder::Calculations.distance_between([latitude, longitude], [path_center_lat, path_center_long], :units => :km)*1000 < 1.3*path.increment_distance
 					puts "Reached center, reseting..."
 					puts "lat: #{latitude}, long: #{longitude}"
 					update_columns(latitude: path.origin_lat)
@@ -120,7 +120,7 @@ class InstagramVortex < ActiveRecord::Base
 				path_center_lat = path.origin_lat - (path.span/2) / (109.0 * 1000)
 				path_center_long = path.origin_long + (path.span/2) / (113.2 * 1000 * Math.cos(path.origin_lat * Math::PI / 180))
 				
-				if Geocoder::Calculations.distance_between([latitude, longitude], [path_center_lat, path_center_long])*1609.34 < 1.3*path.increment_distance
+				if Geocoder::Calculations.distance_between([latitude, longitude], [path_center_lat, path_center_long], :units => :km)*1000 < 1.3*path.increment_distance
 					puts "Reached center, reseting..."
 					puts "lat: #{latitude}, long: #{longitude}"
 					update_columns(latitude: path.origin_lat)
@@ -199,8 +199,8 @@ class InstagramVortex < ActiveRecord::Base
 
 	def self.check_nearby_vortex_existence(lat, long)
 		if lat != nil and long != nil
-			nearby_vortex_radius = 20000
-			nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :origin => [lat, long]).first #InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
+			nearby_vortex_radius = 20000 * 1/1000
+			nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :units => :kms, :origin => [lat, long]).first #InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
 			if nearby_vortex == nil
 				begin
 					iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :description => "auto generated")
