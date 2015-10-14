@@ -277,7 +277,8 @@ class VenueComment < ActiveRecord::Base
 		if vc != nil
 			return vc
 		else
-			vc = VenueComment.create!(:venue_id => instagram_params[:venue_id], :image_url_1 => instagram_params[:image_url_1], :image_url_2 => instagram_params[:image_url_2], :image_url_3 => instagram_params[:image_url_3], :video_url_1 => instagram_params[:video_url_1], :video_url_2 => instagram_params[:video_url_2], :video_url_3 => instagram_params[:video_url_3], :media_type => instagram_params[:media_type], :content_origin => "instagram", :time_wrapper => instagram_params[:created_at], :instagram_id => instagram_params[:instagram_id], :thirdparty_username => instagram_params[:thirdparty_username])
+			venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"])	
+			vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"])
 			return vc
 		end
 		
