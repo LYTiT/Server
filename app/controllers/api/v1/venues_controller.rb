@@ -522,6 +522,8 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude]
 		venue_ids = params[:venue_ids]
 
+		fresh_pull = params[:fresh_pull]
+
 		@user = User.find_by_authentication_token(params[:auth_token])
 		spt = SurroundingPullTracker.find_by_user_id(@user.id)
 		if spt == nil
