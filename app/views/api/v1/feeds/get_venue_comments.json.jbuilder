@@ -14,6 +14,9 @@ json.comments(@comments) do |comment|
   json.created_at comment.time_wrapper
   json.content_origin comment.content_origin
   json.thirdparty_username comment.thirdparty_username
+  json.latitude comment.venue.latitude
+  json.longitude comment.venue.longitude
+  json.color_rating comment.venue.color_rating
 end
 json.pagination do 
   json.current_page @comments.current_page
