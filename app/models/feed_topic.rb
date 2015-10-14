@@ -3,10 +3,15 @@ class FeedTopic < ActiveRecord::Base
 	belongs_to :user
 	has_many :feed_activities, :dependent => :destroy
 
+	after_create :create_feed_acitivity
 	after_create :new_topic_notification
 
+	def create_feed_acitivity
+		FeedActivity.create!(:feed_topic_id => id, :user_id => user_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
+	end
+
 	def new_topic_notification
-		feed_users = FeedUser.where("feed_id = ?", feed_activities.first.feed.id)
+		feed_users = FeedUser.where("feed_id = ?", feed_id)
 		for feed_user in feed_users
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
 				self.delay.send_new_topic_notification(feed_user.user)

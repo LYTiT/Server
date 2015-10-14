@@ -61,11 +61,15 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_feed
 		feed = Feed.find_by_id(params[:feed_id])
 		feed.calibrate_num_members
-		feed.increment!(:num_users, 1)
+		
 
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
-		feed_user.save
-		render json: { success: true }
+		if feed_user.save
+			feed.increment!(:num_users, 1)	
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not add feed'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def leave_feed
@@ -92,8 +96,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:description])
 			if new_feed_venue.save
-				feed = Feed.find_by_id(params[:id])
-				feed.increment!(:num_venues, 1)
+				new_feed_venue.feed.increment!(:num_venues, 1)
 				render json: { success: true }
 			end
 		else
@@ -159,9 +162,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_new_topic_to_feed
 		ft = FeedTopic.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :message => params[:topic])
-		if ft
-			FeedActivity.create!(:feed_topic_id => ft.id, :user_id => params[:user_id], :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
-			render json: { success: true }
+		if ft			
+			render json: ft
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create new activity topic'] } }, status: :unprocessable_entity
 		end

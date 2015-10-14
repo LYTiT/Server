@@ -16,10 +16,10 @@ class FeedVenue < ActiveRecord::Base
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
-			if feed_user.is_subscribed == true && feed_user.user_id != self.user_id
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
 				#might have to do a delay here/run on a seperate dyno
 				begin
-					self.send_new_venue_notification(feed_user.user)
+					self.delay.send_new_venue_notification(feed_user.user)
 				rescue
 					puts "Nil User encountered!"
 				end
