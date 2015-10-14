@@ -23,7 +23,7 @@ class FeedShare < ActiveRecord::Base
 	def new_feed_share_notification
 		feed_users = FeedUser.where("feed_id = ?", feed_id)
 		for feed_user in feed_users
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
 				self.send_new_feed_share_notification(feed_user.user)
 			end
 		end
