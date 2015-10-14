@@ -7,7 +7,7 @@ class FeedTopic < ActiveRecord::Base
 	after_create :new_topic_notification
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_topic_id => id, :user_id => user_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
+		FeedActivity.create!(:feed_topic_id => id, :feed_id => feed_id, :user_id => user_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
 	end
 
 	def new_topic_notification
@@ -27,8 +27,8 @@ class FeedTopic < ActiveRecord::Base
 		    :user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feed_activities.first.feed.id,
-		    :feed_name => feed_activities.first.feed.name,
+		    :feed_id => feed_id,
+		    :feed_name => feed.name,
 		    :topic => self.message
 		}
 
