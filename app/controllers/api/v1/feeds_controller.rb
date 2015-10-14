@@ -166,7 +166,7 @@ class Api::V1::FeedsController < ApiBaseController
 			topic = ft.as_json
 			topic[:activity_id] = ft.feed_activities.first.id
 
-			render json: ft
+			render json: topic
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create new activity topic'] } }, status: :unprocessable_entity
 		end
