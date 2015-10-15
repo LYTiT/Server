@@ -15,7 +15,7 @@ class FeedVenue < ActiveRecord::Base
 
 	def adjust_feed_moment_count
 		new_moment_count = venue.venue_comments.count || 0
-		origin_venue.feeds.update_all("num_moments = num_moments+CAST(#{new_moment_count} AS INT)")
+		feed.update("num_moments = num_moments+CAST(#{new_moment_count} AS INT)")
 	end
 
 	def new_venue_notification
