@@ -6,7 +6,7 @@ json.activity(@activities) do |activity|
   json.user_phone activity.user.try(:phone_number)
   json.created_at activity.created_at
   json.num_chat_participants activity.num_participants
-  json.latest_chat_time (Time.now.to_i-activity.latest_comment_time.to_i)
+  json.latest_chat_time activity.latest_comment_time
   
   json.activity_venue activity.venue
   json.added_note activity.feed_venue.try(:description)
