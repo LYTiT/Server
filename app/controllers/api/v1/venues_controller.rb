@@ -459,26 +459,16 @@ class Api::V1::VenuesController < ApiBaseController
 	def explore_venues
 		user_lat = params[:latitude]
 		user_long = params[:longitude]
-		if params[:past_venues].length == 0
-			past_results = ["0"]
-		else
-			past_results = params[:past_venues].split(",")
-		end
-		nearby_radius = 2000 * 1/1000#* 0.000621371 #meters to miles
+
+		nearby_radius = 5000 * 1/1000#* 0.000621371 #meters to miles
 
 		if params[:proximity] == "nearby"
-			@venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 5")
-		elsif params[:proximity] == "far"
-			@venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 5")
+			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        <= #{nearby_radius} AND id NOT IN (?)", past_results).order("popularity_rank DESC").limit(20).order("RANDOM()").first
 		else
-			nearby_venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 3")
-			far_venues = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius} AND id NOT IN (?)", past_results).includes(:venue_comments, :meta_datas).order("popularity_rank DESC LIMIT 3")
-			@venues = (nearby_venues << far_venues).flatten
-		end			
+			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        > #{nearby_radius} AND id NOT IN (?)", past_results).order("popularity_rank DESC").limit(20).order("RANDOM()").first		
+		end
 	end
 
 	def get_latest_tweet
