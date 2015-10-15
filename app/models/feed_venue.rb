@@ -7,9 +7,14 @@ class FeedVenue < ActiveRecord::Base
 
 	after_create :new_venue_notification
 	after_create :create_feed_acitivity
+	after_create :adjust_feed_moment_count
 
 	def create_feed_acitivity
 		FeedActivity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+	end
+
+	def adjust_feed_moment_count
+		origin_venue.feeds.update_all("num_moments = num_moments+#{venue.venue_comments.count}")
 	end
 
 	def new_venue_notification
