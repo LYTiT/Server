@@ -464,10 +464,10 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if params[:proximity] == "nearby"
 			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius} AND id NOT IN (?)", past_results).order("popularity_rank DESC").limit(20).order("RANDOM()").first
+        <= #{nearby_radius}").order("popularity_rank DESC").limit(20).order("RANDOM()").first
 		else
 			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius} AND id NOT IN (?)", past_results).order("popularity_rank DESC").limit(20).order("RANDOM()").first		
+        > #{nearby_radius}").order("popularity_rank DESC").limit(20).order("RANDOM()").first		
 		end
 	end
 
