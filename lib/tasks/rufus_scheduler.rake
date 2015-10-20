@@ -104,6 +104,7 @@ namespace :lytit do
       puts "Clearing clusters"
       ClusterTracker.delete_all
 
+=begin
       puts "Recalculating trending indices"
 
       #used for determing which way top venues are trending
@@ -120,8 +121,10 @@ namespace :lytit do
       Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
         Venue.order("popularity_rank desc limit 10").includes(:venue_comments)
       end
+=end
 
       #set image previews for spotlyts
+      puts "Setting Spotlyt image thumbnail preview"
       spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE").includes(:feed)
       spotlyts.each{|spotlyt| spotlyt.set_image_url}
 
