@@ -187,6 +187,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_comments_implicitly'
         end
+        get 'get_feeds'
       end
 
       controller :lytit_bar do

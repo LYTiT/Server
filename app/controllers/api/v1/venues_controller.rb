@@ -225,6 +225,12 @@ class Api::V1::VenuesController < ApiBaseController
 		@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
 	end
 
+	def get_feeds
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@venue = Venue.find_by_id(params[:venue_id])
+		@feeds = @venue.feeds.order("name ASC")
+	end
+
 	def get_tweets
 		venue_ids = params[:cluster_venue_ids].split(',')
 		cluster_lat = params[:cluster_latitude]
@@ -461,10 +467,11 @@ class Api::V1::VenuesController < ApiBaseController
 		user_long = params[:longitude]
 
 		nearby_radius = 5000 * 1/1000#* 0.000621371 #meters to miles
+		rand_position = Random.rand(20)
 
 		if params[:proximity] == "nearby"
 			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius}").order("popularity_rank DESC").limit(20).order("RANDOM()").first
+        <= #{nearby_radius}").order("popularity_rank DESC").limit(20)[rand_position]
 		else
 			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
         > #{nearby_radius}").order("popularity_rank DESC").limit(20).order("RANDOM()").first		
