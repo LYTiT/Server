@@ -470,7 +470,7 @@ class VenueComment < ActiveRecord::Base
 
 	def self.implicit_image_url_2(post)
 		if post.is_a?(Hash)
-			post["images"]["low_resolution"]["url"]
+			post["images"]["low_resolution"]["url"] || post["images"]["standard_resolution"]["url"]
 		else
 			post.image_url_2
 		end
