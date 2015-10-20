@@ -20,11 +20,30 @@ class User < ActiveRecord::Base
   has_many :announcement_users, :dependent => :destroy
   has_many :announcements, through: :announcement_users
 
+  has_many :likes, foreign_key: "liker_id", dependent: :destroy
+  has_many :liked_users, through: :likes, source: :liked
+  has_many :reverse_likes, foreign_key: "liked_id", class_name: "Like", dependent: :destroy
+  has_many :likers, through: :reverse_likes, source: :liker
+
+  has_many :feed_invitations, foreign_key: "inviter_id", dependent: :destroy
+  has_many :invitee_users, through: :feed_invitations, source: :invitee
+  has_many :sent_feed_invitations, foreign_key: "invitee_id", class_name: "FeedInvitation", dependent: :destroy
+  has_many :inviters, through: :sent_feed_invitations, source: :inviter
+
   has_many :temp_posting_housings, :dependent => :destroy
 
   has_many :feed_users, :dependent => :destroy
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
+
+  has_many :feed_activities, :dependent => :destroy
+  has_many :feed_activity_comments, :dependent => :destroy
+
+  has_many :support_issues, :dependent => :destroy
+  has_many :surrounding_pull_trackers, :dependent => :destroy
+  has_many :support_messages, :dependent => :destroy
+
+  has_many :feed_shares, :dependent => :destroy
 
   belongs_to :role
 
@@ -39,7 +58,8 @@ class User < ActiveRecord::Base
     non_checked_feeds = feeds.where("new_media_present IS FALSE")
     for feed in non_checked_feeds
       for feed_venue in feed.venues
-        if feed_venue.instagram_pull_check == true && feed.new_media_present == false
+        if feed_venue.get_instagrams(false).first.try(:created_at) == nil && feed.new_media_present == false
+          feed.update_columns(latest_content_time: Time.now)
           feed.update_columns(new_media_present: true)
         end
       end
@@ -417,6 +437,11 @@ class User < ActiveRecord::Base
   #------------------------------------------------------------->
 
   #IV. Administrative/Creation Methods------------------------------>
+  def self.authenticate_by_username(username, password)
+    return nil  unless look_up_user = User.find_by_name(username)
+    return look_up_user if     look_up_user.authenticated?(password)
+  end
+
   def send_email_validation
     Mailer.delay.email_validation(self)
   end
@@ -470,7 +495,46 @@ class User < ActiveRecord::Base
   def manages_any_venues?
     venues.size > 0
   end
+
+  def self.find_lytit_users_in_phonebook(phonebook)
+    matched_users = User.where("RIGHT(phone_number, 7) IN (?)", phonebook).to_a
+    for user in matched_users
+      phone_num = user.phone_number
+      if phone_num.length > 7
+        leading_digits = phone_num.first(phone_num.length-7)
+        phonebook_entry = phonebook[phonebook.index(phone_num.last(7))-1]
+        leading_phonebook_entry_digits = phonebook_entry.first(phone_num.length-7)
+
+        if leading_digits != leading_phonebook_entry_digits
+          matched_users.delete(user)
+        else
+          #compare country codes
+          if phone_num.length != phonebook_entry.length
+            if user.country_code != phonebook_entry.first(user.country_code.length)
+              matched_users.delete(user)
+            end
+          end
+        end
+      end
+    end
+
+    return matched_users
+  end
+
+  def self.generate_support_issues
+    users_with_support = "SELECT user_id FROM support_issues"
+    not_supported_users = User.where("id NOT IN (#{users_with_support})").pluck(:id)
+    not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
+  end
   #-------------------------------------------------------------->
+
+  def self.lumen_cleanup
+    VenueComment.where("created_at < ?", Time.now - 24.hours).delete_all
+    MetaData.where("created_at < ?", Time.now - 24.hours).delete_all
+    Tweet.where("created_at < ?", Time.now - 24.hours).delete_all
+    LytSphere.where("created_at < ?", Time.now - 24.hours).delete_all
+    LytitVote.where("created_at < ?", Time.now - 24.hours).delete_all
+  end
 
 
   private 

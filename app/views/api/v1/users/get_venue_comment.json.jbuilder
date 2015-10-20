@@ -1,7 +1,7 @@
 json.id @venue_comment.id
 json.comment @venue_comment.comment
 json.media_type @venue_comment.media_type
-json.media_url @venue_comment.media_url
+json.media_url @venue_comment.image_url_1
 json.user_id @venue_comment.user_id
 json.user_name @venue_comment.user.try(:name)
 json.username_private @venue_comment.username_private

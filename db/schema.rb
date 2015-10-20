@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150726030506) do
+ActiveRecord::Schema.define(version: 20151013070217) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -34,6 +34,20 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.datetime "updated_at"
     t.string   "title"
   end
+
+  create_table "cluster_trackers", force: true do |t|
+    t.float    "latitude"
+    t.float    "longitude"
+    t.float    "zoom_level"
+    t.integer  "num_venues"
+    t.datetime "last_twitter_pull_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "cluster_trackers", ["latitude"], name: "index_cluster_trackers_on_latitude", using: :btree
+  add_index "cluster_trackers", ["longitude"], name: "index_cluster_trackers_on_longitude", using: :btree
+  add_index "cluster_trackers", ["zoom_level"], name: "index_cluster_trackers_on_zoom_level", using: :btree
 
   create_table "comment_views", force: true do |t|
     t.integer  "venue_comment_id"
@@ -73,19 +87,104 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.integer  "job_id"
   end
 
+  create_table "feed_activities", force: true do |t|
+    t.integer  "feed_id"
+    t.string   "activity_type"
+    t.integer  "feed_share_id"
+    t.integer  "feed_venue_id"
+    t.integer  "feed_user_id"
+    t.integer  "feed_recommendation_id"
+    t.integer  "adjusted_sort_position", limit: 8
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "num_likes",                        default: 0
+    t.integer  "num_comments",                     default: 0
+    t.integer  "feed_topic_id"
+    t.integer  "user_id"
+    t.integer  "venue_id"
+    t.datetime "latest_comment_time"
+    t.integer  "num_participants",                 default: 0
+  end
+
+  add_index "feed_activities", ["adjusted_sort_position"], name: "index_feed_activities_on_adjusted_sort_position", using: :btree
+  add_index "feed_activities", ["feed_id"], name: "index_feed_activities_on_feed_id", using: :btree
+
+  create_table "feed_activity_comments", force: true do |t|
+    t.integer  "feed_activity_id"
+    t.integer  "user_id"
+    t.text     "comment"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_activity_comments", ["feed_activity_id"], name: "index_feed_activity_comments_on_feed_activity_id", using: :btree
+  add_index "feed_activity_comments", ["user_id"], name: "index_feed_activity_comments_on_user_id", using: :btree
+
+  create_table "feed_invitations", force: true do |t|
+    t.integer  "inviter_id"
+    t.integer  "invitee_id"
+    t.integer  "feed_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_invitations", ["invitee_id"], name: "index_feed_invitations_on_invitee_id", using: :btree
+  add_index "feed_invitations", ["inviter_id"], name: "index_feed_invitations_on_inviter_id", using: :btree
+
+  create_table "feed_recommendations", force: true do |t|
+    t.integer  "feed_id"
+    t.string   "category"
+    t.boolean  "active",     default: true
+    t.boolean  "spotlyt",    default: false
+    t.string   "image_url"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_recommendations", ["feed_id"], name: "index_feed_recommendations_on_feed_id", using: :btree
+
+  create_table "feed_shares", force: true do |t|
+    t.integer  "feed_id"
+    t.integer  "venue_comment_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_shares", ["feed_id"], name: "index_feed_shares_on_feed_id", using: :btree
+  add_index "feed_shares", ["user_id"], name: "index_feed_shares_on_user_id", using: :btree
+
+  create_table "feed_topics", force: true do |t|
+    t.integer  "feed_id"
+    t.integer  "user_id"
+    t.text     "message"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "feed_topics", ["feed_id"], name: "index_feed_topics_on_feed_id", using: :btree
+  add_index "feed_topics", ["user_id"], name: "index_feed_topics_on_user_id", using: :btree
+
   create_table "feed_users", force: true do |t|
-    t.integer "user_id"
-    t.integer "feed_id"
-    t.boolean "creator", default: false
+    t.integer  "user_id"
+    t.integer  "feed_id"
+    t.boolean  "creator",       default: false
+    t.datetime "last_visit"
+    t.boolean  "is_subscribed", default: true
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   add_index "feed_users", ["feed_id"], name: "index_feed_users_on_feed_id", using: :btree
   add_index "feed_users", ["user_id"], name: "index_feed_users_on_user_id", using: :btree
 
   create_table "feed_venues", force: true do |t|
-    t.integer "feed_id"
-    t.integer "venue_id"
-    t.integer "user_id"
+    t.integer  "feed_id"
+    t.integer  "venue_id"
+    t.integer  "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.text     "description"
   end
 
   add_index "feed_venues", ["feed_id"], name: "index_feed_venues_on_feed_id", using: :btree
@@ -95,13 +194,16 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.string   "name"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "num_venues",         default: 0
+    t.integer  "num_venues",          default: 0
     t.datetime "latest_viewed_time"
-    t.boolean  "new_media_present",  default: false
+    t.boolean  "new_media_present",   default: false
     t.string   "feed_color"
     t.integer  "user_id"
-    t.boolean  "open",               default: true
-    t.integer  "num_users",          default: 1
+    t.boolean  "open",                default: true
+    t.integer  "num_users",           default: 1
+    t.datetime "latest_content_time"
+    t.text     "description"
+    t.string   "code"
   end
 
   add_index "feeds", ["name"], name: "index_feeds_on_name", using: :btree
@@ -145,7 +247,20 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.string   "description"
     t.integer  "city_que"
     t.integer  "movement_direction"
+    t.integer  "turn_cycle"
+    t.datetime "last_user_ping"
   end
+
+  create_table "likes", force: true do |t|
+    t.integer  "liked_id"
+    t.integer  "liker_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "feed_activity_id"
+  end
+
+  add_index "likes", ["liked_id"], name: "index_likes_on_liked_id", using: :btree
+  add_index "likes", ["liker_id"], name: "index_likes_on_liker_id", using: :btree
 
   create_table "lumen_constants", force: true do |t|
     t.string   "constant_name"
@@ -174,6 +289,7 @@ ActiveRecord::Schema.define(version: 20150726030506) do
   end
 
   add_index "lyt_spheres", ["sphere"], name: "index_lyt_spheres_on_sphere", using: :btree
+  add_index "lyt_spheres", ["venue_id"], name: "index_lyt_spheres_on_venue_id", unique: true, using: :btree
 
   create_table "lytit_bars", force: true do |t|
     t.float "position"
@@ -236,10 +352,42 @@ ActiveRecord::Schema.define(version: 20150726030506) do
 
   add_index "meta_data", ["meta", "venue_comment_id"], name: "index_meta_data_on_meta_and_venue_comment_id", unique: true, using: :btree
   add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
+  add_index "meta_data", ["venue_id"], name: "index_meta_data_on_venue_id", using: :btree
 
   create_table "roles", force: true do |t|
     t.string "name"
   end
+
+  create_table "support_issues", force: true do |t|
+    t.integer  "user_id"
+    t.datetime "latest_message_time"
+    t.datetime "latest_open_time"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "support_issues", ["user_id"], name: "index_support_issues_on_user_id", using: :btree
+
+  create_table "support_messages", force: true do |t|
+    t.text     "message"
+    t.integer  "support_issue_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "user_id"
+  end
+
+  add_index "support_messages", ["support_issue_id"], name: "index_support_messages_on_support_issue_id", using: :btree
+
+  create_table "surrounding_pull_trackers", force: true do |t|
+    t.integer  "user_id"
+    t.datetime "latest_pull_time"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "surrounding_pull_trackers", ["user_id"], name: "index_surrounding_pull_trackers_on_user_id", using: :btree
 
   create_table "temp_posting_housings", force: true do |t|
     t.string   "comment"
@@ -255,6 +403,33 @@ ActiveRecord::Schema.define(version: 20150726030506) do
 
   add_index "temp_posting_housings", ["user_id"], name: "index_temp_posting_housings_on_user_id", using: :btree
   add_index "temp_posting_housings", ["venue_id"], name: "index_temp_posting_housings_on_venue_id", using: :btree
+
+  create_table "tweets", force: true do |t|
+    t.integer  "twitter_id",           limit: 8
+    t.string   "tweet_text"
+    t.string   "author_id"
+    t.string   "author_name"
+    t.string   "author_avatar"
+    t.datetime "timestamp"
+    t.integer  "venue_id"
+    t.boolean  "from_cluster"
+    t.float    "associated_zoomlevel"
+    t.integer  "cluster_min_venue_id"
+    t.float    "latitude"
+    t.float    "longitude"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.float    "popularity_score",               default: 0.0
+    t.string   "handle"
+    t.string   "image_url_1"
+    t.string   "image_url_2"
+    t.string   "image_url_3"
+  end
+
+  add_index "tweets", ["latitude"], name: "index_tweets_on_latitude", using: :btree
+  add_index "tweets", ["longitude"], name: "index_tweets_on_longitude", using: :btree
+  add_index "tweets", ["twitter_id"], name: "index_tweets_on_twitter_id", unique: true, using: :btree
+  add_index "tweets", ["venue_id"], name: "index_tweets_on_venue_id", using: :btree
 
   create_table "users", force: true do |t|
     t.datetime "created_at",                                               null: false
@@ -285,6 +460,8 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.string   "vendor_id"
     t.float    "monthly_gross_lumens",                   default: 0.0
     t.boolean  "asked_instagram_permission",             default: false
+    t.string   "country_code"
+    t.string   "phone_number"
   end
 
   add_index "users", ["bonus_lumens"], name: "index_users_on_bonus_lumens", using: :btree
@@ -303,7 +480,7 @@ ActiveRecord::Schema.define(version: 20150726030506) do
   create_table "venue_comments", force: true do |t|
     t.string   "comment"
     t.string   "media_type"
-    t.string   "media_url"
+    t.string   "image_url_1"
     t.integer  "user_id"
     t.integer  "venue_id"
     t.datetime "created_at"
@@ -322,6 +499,11 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.datetime "time_wrapper"
     t.string   "instagram_id"
     t.string   "thirdparty_username"
+    t.string   "image_url_2"
+    t.string   "image_url_3"
+    t.string   "video_url_1"
+    t.string   "video_url_2"
+    t.string   "video_url_3"
   end
 
   add_index "venue_comments", ["id", "instagram_id"], name: "index_venue_comments_on_id_and_instagram_id", unique: true, using: :btree
@@ -399,13 +581,17 @@ ActiveRecord::Schema.define(version: 20150726030506) do
     t.float    "time_zone_offset"
     t.integer  "trend_position"
     t.string   "last_instagram_post"
+    t.datetime "latest_rating_update_time"
+    t.datetime "last_twitter_pull_time"
   end
 
+  add_index "venues", ["color_rating"], name: "index_venues_on_color_rating", using: :btree
   add_index "venues", ["instagram_location_id"], name: "index_venues_on_instagram_location_id", using: :btree
   add_index "venues", ["key"], name: "index_venues_on_key", using: :btree
   add_index "venues", ["l_sphere"], name: "index_venues_on_l_sphere", using: :btree
   add_index "venues", ["latitude"], name: "index_venues_on_latitude", using: :btree
   add_index "venues", ["longitude"], name: "index_venues_on_longitude", using: :btree
+  add_index "venues", ["popularity_rank"], name: "index_venues_on_popularity_rank", using: :btree
 
   create_table "vortex_paths", force: true do |t|
     t.integer "instagram_vortex_id"

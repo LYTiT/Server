@@ -13,6 +13,9 @@ LytitServer::Application.routes.draw do
         get '/groups', :action => :get_groups
         resources :notifications, only: [:index, :destroy] do
           post 'mark_as_read'
+          collection do
+            post 'mark_feedchat_as_read'
+          end
           post 'mark_as_responded_to'
         end
         post 'set_version'
@@ -28,17 +31,26 @@ LytitServer::Application.routes.draw do
         get 'get_venue_comment'
         get 'username_availability'
         post 'register'
-        post 'destroy_previous_temp_user'
         get 'validate_coupon_code'
         get 'email_availability'
+        post 'set_email_password'
         get 'is_user_confirmed'
         get 'get_comments_by_time'
         get 'get_comments_by_venue'
-        get 'get_user_feeds'
+        collection do
+          get 'get_user_feeds'
+        end
         post 'add_instagram_auth_token'
         post 'update_instagram_permission'
         post 'check_instagram_token_expiration'
         post 'remove_instagram_authentication'
+        post 'update_phone_number'
+        get 'cross_reference_user_phonebook'
+        post 'like_message'
+        post 'like_added_venue'
+        post 'unlike_message'
+        post 'unlike_added_venue'
+        post 'update_user'
       end
 
       resources :feeds, only: [:create] do
@@ -53,11 +65,56 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
         post 'add_feed'
-        post 'leave_feed'
+        post 'leave_feed'        
+        get 'get_feed'
+        collection do  
+          post 'send_message'
+        end
+        get 'get_chat' 
+        get 'get_categories'
+        post 'edit_subscription'
+        collection do
+          get 'get_categories'
+        end
+        collection do
+          get 'get_initial_recommendations'
+        end
+        collection do
+          get 'get_recommendations'
+        end
+        collection do
+          get 'get_spotlyts'
+        end
+        get 'get_members'
+        get 'get_activity'
+        post 'invite_user'
+        post 'edit_venue_description'
+        post 'add_feed_activity_comment'
+        get 'get_feed_activity_comments'
+        post 'like_feed_activity'
+        post 'unlike_feed_activity'
+        collection do
+          post 'share_with_feed'
+        end
+        post 'add_new_topic_to_feed'
+        get 'get_venue_comments'
+        get 'get_activity_object'
+      end
+
+      resources :support_issues do
+        collection do
+          get 'get_support_issues'
+        end
+        get 'get_support_chat'
+        post 'send_support_message'
       end
 
       resources :announcement do
         get 'get_announcement_details'
+      end
+
+      resources :venue_comments do
+        get 'get_venue_comment'
       end
 
       post '/register_push_token' => 'users#register_push_token'
@@ -75,9 +132,15 @@ LytitServer::Application.routes.draw do
 
         collection do
           get 'refresh_map_view'
+        end
+        collection do
+          get 'refresh_map_view_by_parts'
         end 
         collection do
           get 'search'
+        end
+        collection do
+          get 'direct_fetch'
         end
         collection do
           get 'get_suggested_venues'
@@ -96,7 +159,35 @@ LytitServer::Application.routes.draw do
           get 'get_comments'
         end
         get 'get_comments_of_a_venue'
-        get 'get_contexts'       
+        collection do
+          get 'get_contexts'       
+        end
+        collection do
+          get 'get_tweets'       
+        end
+        collection do
+          get 'explore_venues'
+        end
+        collection do
+          get 'get_latest_tweet'
+        end
+        get 'get_quick_venue_overview'
+        collection do 
+          get 'get_quick_cluster_overview'
+        end
+        collection do
+          get 'get_surrounding_feed_for_user'
+        end
+        collection do
+          get 'get_surrounding_tweets'
+        end
+        collection do
+          post 'check_vortex_proximity'
+        end
+        collection do
+          get 'get_comments_implicitly'
+        end
+        get 'get_feeds'
       end
 
       controller :lytit_bar do

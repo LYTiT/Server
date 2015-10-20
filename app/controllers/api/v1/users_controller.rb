@@ -15,13 +15,21 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def create
-		existing_temp_user = User.where("email = ?", params[:email]).first
-		if existing_temp_user != nil && params[:email].last(8) == "temp.com"
-			existing_temp_user.destroy
+		begin
+			existing_temp_user = User.where("email = ?", params[:email]).first
+			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
+				if existing_temp_user.registered != true
+					existing_temp_user.destroy
+				else
+					previous_email = existing_temp_user.email
+					existing_temp_user.update_columns(email: previous_email+"(og)")
+				end
+			end
+		rescue
+			puts "Previous temp user issue"
 		end
 
 		@user = User.new(user_params)
-		@user.adjusted_view_discount = LumenConstants.views_weight_adj
 
 		if @user.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
@@ -31,36 +39,64 @@ class Api::V1::UsersController < ApiBaseController
 				@user.save
 			end
 
+			SupportIssue.create!(user_id: @user.id)
+
 			if VendorIdTracker.where("LOWER(used_vendor_id) = ?", @user.vendor_id.downcase).first == nil
       			v_id_tracker = VendorIdTracker.new(:used_vendor_id => @user.vendor_id)
       			v_id_tracker.save
       		end
 			sign_in @user
 			#check if there are lyts around a user and if not make an instagram pull to drop them (if there are any instagrams created in the area)
-			Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
+			#Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
 			render 'created.json.jbuilder'
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
 
-	def destroy_previous_temp_user
-		previous_user = User.where("vendor_id = ? AND registered = FALSE", params[:vendor_id]).first
-		if previous_user != nil
-			previous_user.destroy
-		end
-		render json: { success: true }
-	end
-
 	def register
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@user.name = params[:username]
-		@user.email = params[:email]
-		@user.password = params[:password]
+		@user.name = params[:name]
+		@user.phone_number = params[:phone_number]
+		@user.country_code = params[:country_code]
 		@user.registered = true
-		@user.save
-		Mailer.delay.welcome_user(@user)
-		render json: { success: true }
+		if @user.save		
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not register user"} }, status: :unprocessable_entity
+		end
+	end
+
+	def update_user
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if params[:name] != nil
+			@user.name = params[:name]
+		end
+
+		if params[:phone_number] != nil
+			@user.phone_number = params[:phone_number]
+			@user.country_code = params[:country_code]
+		end
+
+		if @user.save		
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "User cannot be updated with given parameters"} }, status: :unprocessable_entity
+		end
+	end
+
+	def set_email_password
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if params[:email] != nil and params[:email].length > 4
+			@user.email = params[:email]
+		end
+		@user.password = params[:password]
+		if @user.save
+			#Mailer.delay.welcome_user(@user)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not save user"} }, status: :unprocessable_entity
+		end
 	end
 
 	def set_version
@@ -73,9 +109,21 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end	
 
+	def update_phone_number
+		user = User.find_by_authentication_token(params[:auth_token])
+		user.update_columns(phone_number: params[:phone_number])
+		user.update_columns(country_code: params[:country_code])
+		render json: { success: true }
+	end
+
+	def cross_reference_user_phonebook
+		user_phonebook = params[:phone_numbers].split(",")
+		@users = User.find_lytit_users_in_phonebook(user_phonebook)
+	end
+
 	def register_push_token
-		User.where(push_token: params[:push_token]).update_all(push_token: nil)
-		@user.update(push_token: params[:push_token])
+		#User.where(push_token: params[:push_token]).update_all(push_token: nil)
+		@user.update_columns(push_token: params[:push_token])
 		render 'created.json.jbuilder'
 	end
 
@@ -105,18 +153,6 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { success: true, message: 'Password reset link sent to your email.' }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Can not find user with this email'] } }, status: :unprocessable_entity
-		end
-	end
-
-	def update
-		@user = User.find params[:id]
-		permitted_params = user_params
-		permitted_params.delete(:password)
-
-		if @user.update_attributes(permitted_params)
-			render 'created.json.jbuilder'
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: @user.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
 
@@ -166,30 +202,30 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { bool_response: false }
 		end
 	end
-	#--------------------------------------------------->
+	#---------------------------------------------------->
 
 
-	#Functionality Methods------------------------------>
+	#Functionality Methods------------------------------->
 	def get_map_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_map_details.json.jbuilder'
 	end
 
 	def get_comments_by_time
-		venue_comments = @user.venue_comments.includes(:venue).order("id desc")
-		@comments = venue_comments.page(params[:page]).per(25)
+		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).includes(:venue).order("id desc")
+		@comments = venue_comments.page(params[:page]).per(20)
 	end
 
 	def get_comments_by_venue
-		venue_comments = @user.venue_comments.joins(:venue).order("venues.name asc").order("id desc")
-		@comments = venue_comments.page(params[:page]).per(25)
+		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).joins(:venue).order("venues.name asc").order("id desc")
+		@comments = venue_comments.page(params[:page]).per(20)
 	end
 
 	def get_user_feeds
 		#we use this method to also return list of feeds when inside a venue page(params[:venue_id]) and so must make a check if the venue is part of any of the user's feed.
-		user = User.find_by_authentication_token(params[:auth_token])
+		@user = User.find_by_authentication_token(params[:auth_token]) 
 		if params[:venue_id] == nil
-			user.delay.update_user_feeds
+			@user.delay.update_user_feeds
 		end
 		@venue_id = params[:venue_id]
 		@feeds = @user.feeds.includes(:venues).order("name asc")
@@ -226,7 +262,7 @@ class Api::V1::UsersController < ApiBaseController
 	private
 
 	def user_params
-		params.permit(:name, :version, :email, :password, :notify_location_added_to_groups, :notify_events_added_to_groups, :notify_venue_added_to_groups, :username_private)
+		params.permit(:name, :version, :email, :password, :username_private)
 	end
 end
 

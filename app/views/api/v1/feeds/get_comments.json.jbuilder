@@ -2,7 +2,7 @@ json.comments(@comments) do |comment|
   json.id comment.id
   json.comment comment.comment
   json.media_type comment.media_type
-  json.media_url comment.media_url
+  json.media_url comment.image_url_1
   json.user_id comment.user_id
   json.user_name comment.user.try(:name)
   json.username_private comment.username_private
@@ -14,6 +14,7 @@ json.comments(@comments) do |comment|
   json.updated_at comment.updated_at
   json.content_origin comment.content_origin
   json.thirdparty_username comment.thirdparty_username
+  
 end
 json.pagination do 
   json.current_page @comments.current_page

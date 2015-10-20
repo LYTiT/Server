@@ -10,6 +10,9 @@ namespace :lytit do
     puts "Scheduler run at #{Time.now}"
     start_time = Time.now
 
+    puts "Clearing clusters"
+    ClusterTracker.delete_all
+
     #Instagram data pull----------->
     puts "Pulling from Instagram"
     vortexes = InstagramVortex.where("active = ?", true)
@@ -18,7 +21,7 @@ namespace :lytit do
       vortex.update_columns(last_instagram_pull_time: Time.now)
       new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
       for instagram in new_instagrams
-        VenueComment.convert_instagram_to_vc(instagram, nil, nil)
+        VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex)
       end
       #if there are multiple vortexes in a city we traverse through them to save instagram API calls
       if vortex.city_que != nil
@@ -103,9 +106,15 @@ namespace :lytit do
 
     #reset_lytit_algo runs only in production so to clear 24 hour Venue Comments we use the work around below 
     if Time.now.hour == 23 && Time.now.min > 30
-      VenueComment.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
-      MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+      VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
+      MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
+      FeedActivity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
+      Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
     end
+
+    #set image previews for spotlyts
+    spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE").includes(:feed)
+    spotlyts.each{|spotlyt| spotlyt.set_image_url}
 
     end_time = Time.now
 

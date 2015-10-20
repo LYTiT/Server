@@ -17,9 +17,23 @@ namespace :lytit do
     #end
 
 
-    #delete Instagrams and corresponding Meta Data daily
-    VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
-    MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+    #delete Instagrams, Meta Data, Feed Activity and Notifications older than a day old
+    VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
+    #MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
+    FeedActivity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").destroy_all
+    Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
+    
+    #MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+
+    #check if vortexes are being used. If not, deactivate them.
+    vortexes = InstagramVortex.all
+
+    for vortex in vortexes
+        if vortex.last_user_ping < (Time.now-2.days)
+            vortex.update_columns(active: false)
+        end
+    end
+
 
     puts "done."
   end

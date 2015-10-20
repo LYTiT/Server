@@ -7,8 +7,8 @@
                <div class = "col-sm-7 col-sm-offset-5"> 
                     <ul class="nav navbar-nav navbar-right">
                      <li class="contact-us"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a></li>
-                     <li class="twitter" href="/"><%= link_to "t", "https://twitter.com/lytitapp" %></li>
                      <li class="facebook" href="/"><%= link_to "f", "https://facebook.com/LYTiTApp" %></li>
+                     <li class="twitter" href="/"><%= link_to "l", "https://twitter.com/lytitapp" %></li>                     
                   </ul>
                </div><!--col-sm-7-->         
          </div><!--header-top-->
@@ -18,9 +18,9 @@
                <div class="col-sm-10 col-sm-offset-1 text-center">
                   <div id="logo"><%= image_tag src="LytitWhite.png"%>
                   </div>
-                  <p class="appStoreBtnBox"><%= image_tag "AppStoreDownloadClear.png"%></p>
-                  <!--<p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownloadClear.png"%></a></p>-->
-                  <p id="comingSoon"> COMING SOON!</p>
+                  <!--<p class="appStoreBtnBox"><%= image_tag "AppStoreDownloadClear.png"%></p>-->
+                  <p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownloadClear.png"%></a></p>
+                  <!-- <p id="comingSoon"> COMING SOON!</p>-->
                </div><!--col-sm-10-->
          </div><!--container-->
       </div><!--header-bottom-->
@@ -45,7 +45,7 @@
          <div class="container">
             <div class="row">
                <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <div class="feature-icon-2"><%= image_tag "LYTFlat.png"%></div>
+                  <a name="lyt-map"><div class="feature-icon-2"><%= image_tag "LYTFlat.png"%></div></a>
                   <h3>LYT MAP</h3>
                   <p>A quick overview of a specific place or a wider area is provided by its lyt. The brighter it glows the greater the amount of recent activity at that location.</p>
                </div>
@@ -64,7 +64,7 @@
                   <p class="iphone-img"><%= image_tag "iPhone_VenuePage.png"%></p>
                </div>
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="feature-icon-3"><%= image_tag "VenuePage.png"%></p>
+                  <a name="venue-pages"><p class="feature-icon-3"><%= image_tag "VenuePage.png"%></p></a>
                   <h3>VENUE PAGES</h3>
                   <p>Searching for locations or tapping on lyts pulls up Venue Pages that house live  Moments. Upon zooming-out lyts group into clusters that can be selected to show content from multiples places in one feed.</p>
                   <br>
@@ -78,12 +78,12 @@
          <div class="container">
             <div class="row">
                <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="feature-icon-4"><%= image_tag "MomentSearch.png"%></p>
-                  <h3>MOMENT SEARCH</h3>
-                  <p>On top of finding Moments by location you can also search directly for the live Moments that you want to see. Search for anything - dogs, handstands, ice-cream, and if you wish you can even easily do query searches over a specific area.</p>
+                  <a name="feeds"><p class="feature-icon-4"><%= image_tag "Feeds.png"%></p></a>
+                  <h3>FEEDS</h3>
+                  <p>Build a Feed of Moments from places that interest you. Add other people's Feeds to discover new and exciting locations.</p>
                </div>
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="iphone-img"><%= image_tag "iPhone_MomentSearch.png"%></p>
+                  <p class="iphone-img"><%= image_tag "iPhone_Feeds.png"%></p>
                </div>
             </div><!--row-->
          </div><!--container-->
@@ -96,7 +96,7 @@
                   <p class="iphone-img"><%= image_tag "iPhone_Moment.png"%></p>
                </div>
                <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="feature-icon-3"><%= image_tag "MomentMapping.png"%></p>
+                  <a name="moment-mapping"><p class="feature-icon-3"><%= image_tag "MomentMapping.png"%></p></a>
                   <h3>MOMENT MAPPING</h3>
                   <p>Whenever you publicly geo-tag your social media activity you automatically contribute to the real-time picture on LYTiT. You can however capture Moments directly within the application.</p>
                   <br>
@@ -110,8 +110,8 @@
 <!--      
       <div class="closing">
             <div class="col-sm-10 col-sm-offset-1 text-center">
-               <h1>Map the Moment</a></h1>
-               <!--<h1><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8">Map the Moment</a></h1>-->
+               <!--<h1>Map the Moment</a></h1>-->
+               <h1><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8">Map the Moment</a></h1>
             </div>
       </div>
    </div>

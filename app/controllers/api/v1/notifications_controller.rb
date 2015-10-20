@@ -26,6 +26,15 @@ class Api::V1::NotificationsController < ApiBaseController
 		end
 	end
 
+	def mark_feedchat_as_read
+		notifications = Notification.where(payload: {feed_id: params[:feed_id]}, user_id: @user.id, deleted: false)
+		for notification in notifications
+			notification[:deleted] = true
+			notification.save
+		end
+		render json: { success: true }
+	end
+
 	def mark_as_responded_to
 		notification = Notification.where(id: params[:notification_id], user_id: @user.id, deleted: false).first
 		if notification.present?

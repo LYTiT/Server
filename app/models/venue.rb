@@ -1,6 +1,6 @@
 class Venue < ActiveRecord::Base
 
-  acts_as_mappable :default_units => :miles,
+  acts_as_mappable :default_units => :kms,
                      :default_formula => :sphere,
                      :distance_field_name => :distance,
                      :lat_column_name => :latitude,
@@ -13,6 +13,7 @@ class Venue < ActiveRecord::Base
 
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
+  has_many :tweets, :dependent => :destroy
   has_many :venue_messages, :dependent => :destroy
   has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
   has_many :menu_section_items, :through => :menu_sections
@@ -22,6 +23,7 @@ class Venue < ActiveRecord::Base
   has_many :instagram_location_id_lookups, :dependent => :destroy
   has_many :feed_venues
   has_many :feeds, through: :feed_venues
+  has_many :feed_activities, :dependent => :destroy
 
   belongs_to :user
 
@@ -32,6 +34,18 @@ class Venue < ActiveRecord::Base
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   #I. Search------------------------------------------------------->
+  def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+    name_search = Venue.where("LOWER(name) LIKE ?", query.downcase+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
+
+    if name_search == nil
+      in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND LOWER(name) LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query.downcase+"%").limit(10)
+      return in_view_search
+    else
+      return name_search
+    end
+
+  end
+
   #LYTiT database venue match-search
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     require 'fuzzystringmatch'
@@ -64,7 +78,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result == nil
-      name_search = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 0.5 AND ABS(#{vlongitude} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
+      name_search = Venue.where("LOWER(name) LIKE ? AND ABS(#{vlatitude} - latitude) <= 0.05 AND ABS(#{vlongitude} - longitude) <= 0.05", '%' + vname.to_s.downcase + '%')
       if name_search.count != 0
         if name_search.count > 1
           best_match = nil
@@ -88,35 +102,29 @@ class Venue < ActiveRecord::Base
     end
 
     if result != nil
-      puts "A direct match has been found - name:#{result.name}, id:#{result.id} "
+      puts "A direct match in the LDB has been found - name:#{result.name}, id:#{result.id} "
       lookup = result
     else
       #We need to determine the type of search being conducted whether it is venue specific or geographic
+      center_point = [vlatitude, vlongitude]
       if vaddress == nil
         if vcity != nil #city search
-          radius = 3000
-          boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcity, vname)
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
+          venues = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname)
         end
 
         if vstate != nil && vcity == nil #state search
-          radius = 30000
-          boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND city IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vstate, vname)
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
+          venues = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname)
         end
 
         if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-          radius = 300000
-          boundries = bounding_box(radius, vlatitude, vlongitude)
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND 
-            address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"], vcountry, vname)
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
+          venues = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname)
         end
-      else #venue search 
-        radius = 250
-        boundries = bounding_box(radius, vlatitude, vlongitude)
-        venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
+      else #venue search
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+        venues = Venue.in_bounds(search_box)
       end
 
       lookup = nil 
@@ -208,9 +216,6 @@ class Venue < ActiveRecord::Base
 
       lookup.save
 
-      if lookup.instagram_location_id == nil && pin_drop != 1#Add instagram location id
-        lookup.set_instagram_location_id(100)
-      end
       return lookup
     else
       Timezone::Configure.begin do |c|
@@ -261,7 +266,6 @@ class Venue < ActiveRecord::Base
       end
 
       venue.save
-      venue.set_instagram_location_id(100)
       return venue
     end
   end
@@ -471,31 +475,20 @@ class Venue < ActiveRecord::Base
         #the proper instagram location id has been determined now we go back and traverse the pulled instagrams to filter out the instagrams
         #we need and create venue comments
         venue_comments_created = 0
+        venue_instagrams = []
         for instagram in nearby_instagram_content
-          if (instagram.location.id == self.instagram_location_id && VenueComment.where("instagram_id = ?", instagram.id).any? == false) && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
-            puts("converting instagram to #{self.name} Venue Comment from #{instagram.location.name}")
-            vc = VenueComment.new(:venue_id => self.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-            vc.save
-            instagram_tags = instagram.tags
-            instagram_captions = instagram.caption.text.split rescue nil
-            vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-            venue_comments_created += 1
-            vote = LytitVote.new(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                  :prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))     
-            vote.save
-            self.update_r_up_votes(DateTime.strptime("#{instagram.created_time}",'%s'))
-            self.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
-            
-            if not LytSphere.where("venue_id = ?", self.id).any?
-              LytSphere.create_new_sphere(self)
-            end            
+          if instagram.location.id == self.instagram_location_id && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
+            venue_instagrams << instagram
+            VenueComment.delay.create_vc_from_instagram(instagram.to_hash, self, nil)            
           end
         end
 
         #if little content is offered on the geo pull make a venue specific pull
-        if venue_comments_created < 3
+        if venue_instagrams.count < 3
           puts ("making a venue get instagrams calls")
-          self.get_instagrams(true)
+          venue_instagrams << self.get_instagrams(true)
+          venue_instagrams.flatten!
+          venue_instagrams.sort_by!{|instagram| VenueComment.implicit_created_at(instagram)}
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -517,127 +510,143 @@ class Venue < ActiveRecord::Base
         self.update_columns(instagram_location_id: 0)
       end
     end
+
+    if venue_instagrams != nil
+      venue_instagrams#.uniq!
+    end
+
+    return venue_instagrams
   end
 
   #Instagram specific LYTiT venue search-match  
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
     lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
-    if lookup != nil
+
+    if lookup != nil && inst_loc_id.to_i != 0
       return lookup.venue
     else
-      search_part = nil
-      radius = 500
-      boundries = bounding_box(radius, lat, long)
-      venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + vname.to_s.downcase + '%')
-      if venues.count == 0
-        vname.to_s.downcase.split.each do |part| 
-          if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
-            puts "search part extracted"
-            search_part = part
-            break
-          end
-        end
-
-        if search_part != nil
-          venues = Venue.where("LOWER(name) LIKE ? AND ABS(#{lat} - latitude) <= 0.5 AND ABS(#{long} - longitude) <= 0.5", '%' + search_part + '%')
-        end
-
-        if venues.count == 0
-          venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", boundries["min_lat"], boundries["max_lat"], boundries["min_long"], boundries["max_long"])
-        end
-      end
-
-      if venues.count != 0
-        for venue in venues
-          if venue.name.downcase == vname.downcase #Is there a direct string match?
-            lookup = venue
-            break
-          end
-
-          if ( ((venue.name.downcase).include?(vname.downcase) && vname.length.to_f/venue.name.length.to_f > 0.5) || ((vname.downcase).include?(venue.name.downcase) && venue.name.length.to_f/vname.length.to_f > 0.5) ) #Are they substrings?
-            #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
-            if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)
-              lookup = venue
-              break
-            end
-          end
-
-          require 'fuzzystringmatch'
-          jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-
-          if vname.include?(',') || venue.name.include?(',')
-            no_comma_vname = vname.slice(0..(vname.index(',')-1)) rescue vname
-            no_comma_venue_name = venue.name.slice(0..(venue.name.index(',')-1)) rescue venue.name
-            if p jarow.getDistance(no_comma_vname, no_comma_venue_name) > 0.9
-              lookup = venue
-              break
-            end
-          end          
+      #Check if there is a direct name match in proximity
+      center_point = [lat, long]
+      search_box = Geokit::Bounds.from_point_and_radius(center_point, 1, :units => :kms)
+      
+      name_lookup =  Venue.in_bounds(search_box).where("LOWER(name) = ?", vname.to_s.downcase).first
+      
+      if name_lookup != nil
+        return name_lookup
+      else     
+        venues = Venue.in_bounds(search_box).where("LOWER(name) LIKE ?", '%' + vname.to_s.downcase + '%')
         
-          if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "").gsub(" ", "")) >= 0.8 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false))
-            lookup = venue
-            break
+        search_part = nil
+        if venues.count == 0
+          vname.to_s.downcase.split.each do |part| 
+            if not ['the', 'a', 'cafe', 'restaurant', 'club', 'park'].include? part
+              puts "search part extracted"
+              search_part = part
+              break
+            end
+          end
+
+          if search_part != nil
+            venues = Venue.in_bounds(search_box).where("LOWER(name) LIKE ?", '%' + search_part + '%')
+          end
+
+          if venues.count == 0
+            search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.5, :units => :kms)
+            venues = Venue.in_bounds(search_box)
           end
         end
-      end
 
-      if lookup != nil 
-        if lookup.time_zone == nil #Add timezone of venue if not present
+        if venues.count != 0
+          for venue in venues
+            if venue.name.downcase == vname.downcase #Is there a direct string match?
+              lookup = venue
+              break
+            end
+
+            if ( ((venue.name.downcase).include?(vname.downcase) && vname.length.to_f/venue.name.length.to_f > 0.5) || ((vname.downcase).include?(venue.name.downcase) && venue.name.length.to_f/vname.length.to_f > 0.5) ) #Are they substrings?
+              #parks tend to cause problems because of their general naming convetions which often overlap with other establishments, so we check explicitly if we are dealing with a park
+              if (venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)
+                lookup = venue
+                break
+              end
+            end
+
+            require 'fuzzystringmatch'
+            jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+
+            if vname.include?(',') || venue.name.include?(',')
+              no_comma_vname = vname.slice(0..(vname.index(',')-1)) rescue vname
+              no_comma_venue_name = venue.name.slice(0..(venue.name.index(',')-1)) rescue venue.name
+              if p jarow.getDistance(no_comma_vname, no_comma_venue_name) > 0.9
+                lookup = venue
+                break
+              end
+            end          
+          
+            if p jarow.getDistance(venue.name.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", ""), vname.downcase.gsub("the", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("park", "").gsub("club", "")) >= 0.85 && ((venue.name.downcase.include?("park") && vname.downcase.include?("park")) || (venue.name.downcase.include?("park") == false && vname.downcase.include?("park") == false)) && Geocoder::Calculations.distance_between([venue.latitude, venue.longitude], [lat, long], :units => :km) < 0.250
+              lookup = venue
+              break
+            end
+          end
+        end
+
+        if lookup != nil 
+          if lookup.time_zone == nil #Add timezone of venue if not present
+            Timezone::Configure.begin do |c|
+              c.username = 'LYTiT'
+            end
+            timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
+            lookup.time_zone = timezone.active_support_time_zone rescue nil
+          end
+
+          if lookup.time_zone_offset == nil
+            lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
+          end
+        end
+
+        #if location not found in LYTiT database create new venue
+        if lookup == nil
           Timezone::Configure.begin do |c|
             c.username = 'LYTiT'
           end
           timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-          lookup.time_zone = timezone.active_support_time_zone rescue nil
+          
+          venue = Venue.new
+          venue.name = vname
+          venue.latitude = lat
+          venue.longitude = long
+          venue.time_zone = timezone.active_support_time_zone rescue nil
+          venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+          venue.verified = false
+          venue.instagram_location_id = inst_loc_id
+
+          if lat < 0 && long >= 0
+            quadrant = "a"
+          elsif lat < 0 && long < 0
+            quadrant = "b"
+          elsif lat >= 0 && long < 0
+            quadrant = "c"
+          else
+            quadrant = "d"
+          end
+          venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+
+          venue.fetched_at = Time.now
+          venue.save
+          lookup = venue
+
+          inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
+          inst_location_id_tracker_lookup_entry.save
         end
 
-        if lookup.time_zone_offset == nil
-          lookup.time_zone_offset = Time.now.in_time_zone(lookup.time_zone).utc_offset/3600.0 rescue nil
-        end
+        return lookup
       end
-
-      #if location not found in LYTiT database create new venue
-      if lookup == nil
-        Timezone::Configure.begin do |c|
-          c.username = 'LYTiT'
-        end
-        timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-        
-        venue = Venue.new
-        venue.name = vname
-        venue.latitude = lat
-        venue.longitude = long
-        venue.time_zone = timezone.active_support_time_zone rescue nil
-        venue.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
-        venue.verified = false
-
-        if lat < 0 && long >= 0
-          quadrant = "a"
-        elsif lat < 0 && long < 0
-          quadrant = "b"
-        elsif lat >= 0 && long < 0
-          quadrant = "c"
-        else
-          quadrant = "d"
-        end
-        venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
-
-        venue.fetched_at = Time.now
-        venue.save
-        lookup = venue
-        lookup.update_columns(instagram_location_id: inst_loc_id)
-
-        inst_location_id_tracker_lookup_entry = InstagramLocationIdLookup.new(:venue_id => lookup.id, :instagram_location_id => inst_loc_id)
-        inst_location_id_tracker_lookup_entry.save
-      end
-
-      return lookup
     end
   end
 
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
   def get_instagrams(day_pull)
-    new_media_created = false
     last_instagram_id = nil
 
     instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first
@@ -649,23 +658,20 @@ class Venue < ActiveRecord::Base
 
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      self.update_columns(last_instagram_pull_time: Time.now)
     else
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    instagrams_count = instagrams.count
+    instagrams.sort_by!{|instagram| instagram.created_time}
+    instagrams.map!(&:to_hash)
 
-    if instagrams != nil and instagrams_count > 0
-      instagrams.each_with_index do |instagram, index|
-        new_media_created = VenueComment.convert_instagram_to_vc(instagram, self, nil)
-        if index+1 == instagrams_count
-          last_instagram_id = instagram.id
-        end
-      end
-      self.update_columns(last_instagram_post: last_instagram_id)  
+    if instagrams.count > 0
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
-    self.update_columns(last_instagram_pull_time: Time.now)
-    return new_media_created
+
+    return instagrams
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)
@@ -676,17 +682,60 @@ class Venue < ActiveRecord::Base
     if day_pull == true
       Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
     else
-      Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post)
+      Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
     end
-
   end
+
+  def self.get_comments(venue_ids)    
+    if venue_ids.count > 1
+    #returning cluster comments which is just a pull of all avaliable underlying venue comments
+      return VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
+    else
+    #dealing with an individual venue which could require an instagram pull
+      venue = Venue.find_by_id(venue_ids.first)
+      new_instagrams = []
+      instagram_refresh_rate = 5 #minutes
+      instagram_venue_id_ping_rate = 1 #days      
+
+      if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
+        #try to establish instagram location id if previous attempts failed every 1 day
+        if venue.instagram_location_id == 0 
+          if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days) >= venue.latest_posted_comment_time)
+            new_instagrams << venue.set_instagram_location_id(100)
+            venue.update_columns(last_instagram_pull_time: Time.now)
+          end
+        elsif venue.latest_posted_comment_time != nil and (venue.last_instagram_pull_time - venue.latest_posted_comment_time) >= instagram_venue_id_ping_rate.days
+            new_instagrams << venue.set_instagram_location_id(100)
+            venue.update_columns(last_instagram_pull_time: Time.now)
+        else
+          if ((Time.now - instagram_refresh_rate.minutes) >= venue.last_instagram_pull_time)
+            new_instagrams << venue.get_instagrams(false)
+          end
+        end
+      else
+        new_instagrams << venue.set_instagram_location_id(100)
+        venue.update_columns(last_instagram_pull_time: Time.now)
+      end
+
+      if new_instagrams.count > 0
+        total_media = []
+        total_media << new_instagrams#.uniq!
+        total_media << venue.venue_comments.order("time_wrapper desc")
+        total_media.flatten!.compact!
+        return total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse
+      else
+        return venue.venue_comments.order("time_wrapper desc")
+      end
+    end
+  end
+
 
   def instagram_pull_check
     instagram_refresh_rate = 15 #minutes
     instagram_venue_id_ping_rate = 1 #days
 
     if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
-      #try to establish instagram location id if previous attempts failed every 5 days
+      #try to establish instagram location id if previous attempts failed every 1 day
       if self.instagram_location_id == 0 
         if ((Time.now - instagram_venue_id_ping_rate.minutes) >= self.last_instagram_pull_time)
           self.set_instagram_location_id(100)
@@ -716,18 +765,19 @@ class Venue < ActiveRecord::Base
   end
 
   def self.instagram_content_pull(lat, long)
+
     if lat != nil && long != nil
-       
-        meter_radius = 20000
-        if not Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
-          new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
+      
+      surrounding_lyts_radius = 10000 * 1/1000
+      if not Venue.within(surrounding_lyts_radius.to_f, :units => :kms, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+        new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
 
-          for instagram in new_instagrams
-            VenueComment.convert_instagram_to_vc(instagram, nil, nil)
-          end
-
+        for instagram in new_instagrams
+          VenueComment.convert_instagram_to_vc(instagram, nil, nil)
         end
+      end
     end
+
   end
   #----------------------------------------------------------------------------->
 
@@ -799,8 +849,9 @@ class Venue < ActiveRecord::Base
   end
 
   def self.near_locations(lat, long)
-    meter_radius = 400
-    surroundings = Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
+    radius = 400 * 1/1000
+    surroundings = Venue.within(radius.to_i, :units => :kms, :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
+    #Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
 
   def cord_to_city
@@ -868,8 +919,189 @@ class Venue < ActiveRecord::Base
   end
   #------------------------------------------------------------------------------>
 
+  #V. Twitter Functionality ----------------------------------------------------->
+  def venue_twitter_tweets
+    time_out_minutes = 0
+    if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > time_out_minutes.minutes)
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+      end
 
-  #V. LYT Algorithm Related Calculations and Calibrations ------------------------->
+      radius = 100 * 1/1000 #Venue.meters_to_miles(100)
+      #query = ""
+      #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
+      #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
+      #query+=(" OR "+self.name)
+      query = self.name
+
+      last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
+      if last_tweet_id != nil
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
+      else
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a
+      end
+      self.update_columns(last_twitter_pull_time: Time.now)
+
+      if new_venue_tweets.length > 0
+        new_venue_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+      end
+
+      total_venue_tweets = []
+      total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
+      total_venue_tweets << Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+      total_venue_tweets.flatten!.compact!
+      return total_venue_tweets
+    else
+      Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+    end
+  end
+
+  def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, venue_ids)    
+    cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
+    cluster_venue_ids = venue_ids.split(',').map(&:to_i)
+    radius = map_scale.to_f/2.0 * 1/1000#Venue.meters_to_miles(map_scale.to_f/2.0)
+
+    time_out_minutes = 0
+    if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - time_out_minutes.minutes
+      cluster.update_columns(last_twitter_pull_time: Time.now)
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+      end
+      
+      location_query = ""
+      tag_query = ""
+
+      underlying_venues = Venue.where("id IN (?)", cluster_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
+      underlying_venues.each{|v| location_query+=(v.name+" OR ")}
+      tags = MetaData.cluster_top_meta_tags(venue_ids)
+      tags.each{|tag| tag_query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}
+
+      location_query.chomp!(" OR ") 
+      tag_query.chomp!(" OR ") 
+
+      location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a
+      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a
+      new_cluster_tweets = []
+      total_cluster_tweets = []
+      new_cluster_tweets << location_tweets
+      new_cluster_tweets << tag_query_tweets
+      new_cluster_tweets.flatten!.compact!
+      new_cluster_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
+      
+      total_cluster_tweets << new_cluster_tweets
+
+      total_cluster_tweets << Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+      total_cluster_tweets.flatten!.compact!
+
+      if new_cluster_tweets.length > 0
+        new_cluster_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :associated_zoomlevel => zoom_level, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+      end
+
+      return total_cluster_tweets
+    else
+      Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+    end
+  end
+
+  def self.surrounding_twitter_tweets(user_lat, user_long, venue_ids)
+    surrounding_venue_ids = venue_ids.split(',').map(&:to_i) rescue []
+    client = Twitter::REST::Client.new do |config|
+      config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+      config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+      config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+      config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+    end
+    surrounding_tweets = []
+    radius = 200 #Venue.meters_to_miles(200)
+    
+    if surrounding_venue_ids.count > 0
+      location_query = ""
+      tag_query = ""
+      
+      underlying_venues = Venue.where("id IN (?)", surrounding_venue_ids).order("popularity_rank DESC LIMIT 4").select("name")
+      underlying_venues.each{|v| location_query+=(v.name+" OR ")}
+      tags = MetaData.cluster_top_meta_tags(venue_ids)
+      tags.each{|tag| tag_query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}
+      
+      location_query.chomp!(" OR ") 
+      tag_query.chomp!(" OR ") 
+
+      location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{user_lat},#{user_long},#{radius}mi").take(20).collect.to_a
+      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{user_lat},#{user_long},#{radius}mi").take(20).collect.to_a
+      
+      surrounding_tweets << location_tweets
+      surrounding_tweets << tag_query_tweets
+      surrounding_tweets.flatten!.compact!
+    else
+      query = user_lat.to_s + "," + user_long.to_s
+      result = Geocoder.search(query).first 
+      result_city = result.city || result.county
+      result_city.slice!(" County")
+
+      user_city = result_city
+      user_state = result.state
+      user_country = result.country
+
+      vague_query = user_city+" OR "+user_state+" OR "+user_country
+      surrounding_tweets = client.search(vague_query+" -rt", result_type: "recent", geo_code: "#{user_lat},#{user_long},#{radius}mi").take(20).collect.to_a
+    end
+    
+    if surrounding_tweets.length > 0
+      surrounding_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :latitude => user_lat, :longitude => user_long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+    end
+
+    return surrounding_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
+  end
+
+  def self.surrounding_feed(lat, long, surrounding_venue_ids)
+    if surrounding_venue_ids != nil and surrounding_venue_ids.length > 0
+      meter_radius = 100
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Venue.spherecial_distance_between_points(lat, long, inst.location.latitude, inst.location.longitude)}
+      surrounding_instagrams.map!(&:to_hash)
+
+      if surrounding_instagrams.count >= 20
+        surrounding_feed = surrounding_instagrams
+      else
+        inst_lytit_posts = []
+        inst_lytit_posts << surrounding_instagrams
+        inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{surrounding_venue_ids})").order("rating DESC").order("name ASC").order("venue_comments.id DESC")
+        inst_lytit_posts.flatten!
+        surrounding_feed = inst_lytit_posts
+      end
+
+    else
+      meter_radius = 2000
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Geocoder::Calculations.distance_between([lat, long], [inst.location.latitude, inst.location.longitude], :units => :km)}
+      
+      surrounding_instagrams.map!(&:to_hash)
+      surrounding_feed = surrounding_instagrams
+    end
+
+
+    #converting to lytit venue comments
+    VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
+
+    return surrounding_feed
+  end
+
+  def self.spherecial_distance_between_points(lat_1, long_1, lat_2, long_2)
+    result = Geocoder::Calculations.distance_between([lat_1, long_1], [lat_2, long_2], :units => :km)
+    if result >= 0.0
+      result
+    else
+      1000.0
+    end
+  end
+
+  #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end
@@ -962,6 +1194,12 @@ class Venue < ActiveRecord::Base
         new_rating = eval(x).round(4)
 
         update_columns(rating: new_rating)
+        #update the popularity rank as well if the last rating update was over 5 minutes ago
+        if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 5.minutes
+          update_popularity_rank
+        end
+
+        update_columns(latest_rating_update_time: Time.now)
       else
         puts "Could not calculate rating. Status: #{$?.to_i}"
       end
@@ -985,6 +1223,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(color_rating: -1.0)
       self.update_columns(trend_position: nil)
       self.update_columns(popularity_rank: 0.0)
+      self.lyt_spheres.delete_all
     end
 
     return visible
@@ -1001,7 +1240,7 @@ class Venue < ActiveRecord::Base
     0
   end  
   #----------------------------------------------------------------------------->
-
+  #VII.
 
   private 
 

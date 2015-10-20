@@ -56,7 +56,11 @@ class Api::V1::VenuesController < ApiBaseController
 							@comment.username_private = part.username_private
 						else #pull media data as the incoming part is the text
 							@comment.media_type = part.media_type
-							@comment.media_url = part.media_url
+							if part.media_type == "image"
+								@comment.image_url_1 = part.media_url
+							else
+								@comment.video_url_1 = part.media_url
+							end
 						end
 						part.delete
 						parts_linked = true
@@ -99,20 +103,20 @@ class Api::V1::VenuesController < ApiBaseController
 				venue = @comment.venue
 				venue.update_columns(latest_posted_comment_time: Time.now)
 
-				if (@comment.media_type == 'text' and @comment.consider? == 1)
-					if assign_lumens == true and @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
-						@user.update_lumens_after_text(@comment.id)
-					end
-				end
+				#if (@comment.media_type == 'text' and @comment.consider? == 1)
+				#	if assign_lumens == true and @comment.comment.split.count >= 5 # far from science but we assume that if a Venue Comment is text it should have at least 5 words to be considered 'useful'
+				#		@user.update_lumens_after_text(@comment.id)
+				#	end
+				#end
 
-				if (@comment.media_type != 'text' and @comment.consider? == 1)
-					@user.update_lumens_after_media(@comment)
-				end
+				#if (@comment.media_type != 'text' and @comment.consider? == 1)
+				#	@user.update_lumens_after_media(@comment)
+				#end
 
 				#if a hot venue and valid bonus post assign user bonus lumens
-				if params[:bonus_lumens] != nil
-					@user.account_new_bonus_lumens(params[:bonus_lumens])
-				end
+				#if params[:bonus_lumens] != nil
+				#	@user.account_new_bonus_lumens(params[:bonus_lumens])
+				#end
 
 				#LYTiT it UP!
 				rating = venue.rating
@@ -123,14 +127,13 @@ class Api::V1::VenuesController < ApiBaseController
 					venue.update_r_up_votes(Time.now)
             		venue.update_columns(latest_posted_comment_time: Time.now)
 
-					if LytSphere.where("venue_id = ?", venue.id).count == 0
-						LytSphere.delay.create_new_sphere(venue)
-					end
+					
+					LytSphere.delay.create_new_sphere(venue)
 
 				end
 				#@comment.extract_venue_comment_meta_data
 				venue.feeds.delay.update_all(new_media_present: true)
-
+				venue.delay.update_rating()
 			end
 
 		end
@@ -160,26 +163,117 @@ class Api::V1::VenuesController < ApiBaseController
 		@venue.account_page_view
 		@venue.instagram_pull_check
 		live_comments = VenueComment.get_comments_for_cluster(v)
-		@comments = live_comments.page(params[:page]).per(25)
+		@comments = live_comments.page(params[:page]).per(10)
 		render 'get_comments.json.jbuilder'
 	end
 
 	def get_comments
-		#expires_in 3.minutes, :public => true
+		if params[:feed_id] == nil
+			#expires_in 3.minutes, :public => true
+		else
+			@user = User.find_by_authentication_token(params[:auth_token])
+			feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id]).first
+			if feeduser != nil
+				feeduser.update_columns(last_visit: Time.now)
+			end
+		end
 
+		cache_key = ""
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 		if not venue_ids 
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
 		else
-			if venue_ids.count == 1 && params[:feed_id] == nil
+			if venue_ids.count == 1 && params[:feed_id] == nil				
+				cache_key = "comments/#{venue_ids.first}"
 				@venue = Venue.find_by_id(venue_ids.first)
-
-				@venue.account_page_view
-				@venue.instagram_pull_check
+				@venue.delay.account_page_view
 			end
-			live_comments = VenueComment.get_comments_for_cluster(venue_ids)
-			@comments = live_comments.page(params[:page]).per(25)
+
+			if cache_key == ""
+				cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
+			end
+			#live_comments = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+			#	Venue.get_comments(venue_ids)
+			#end
+
+			live_comments = Venue.get_comments(venue_ids)
+			@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
+					
+		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
+		#	@comments = live_comments.page(params[:page]).per(10)
 		end
+	end
+
+	def get_comments_implicitly
+		if params[:country] != nil
+			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+		else
+			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id])
+		end
+
+		if @venue.instagram_location_id == nil
+			initial_instagrams = @venue.set_instagram_location_id(100)
+			@venue.delay.account_page_view
+		end
+
+		if initial_instagrams != nil
+			live_comments = initial_instagrams
+		else
+			live_comments = Venue.get_comments([@venue.id])	
+		end
+
+		@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
+	end
+
+	def get_feeds
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@venue = Venue.find_by_id(params[:venue_id])
+		@feeds = @venue.feeds.order("name ASC")
+	end
+
+	def get_tweets
+		venue_ids = params[:cluster_venue_ids].split(',')
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		if params[:feed_id] == nil
+			if venue_ids.count == 1
+				@venue = Venue.find_by_id(venue_ids.first)
+				begin
+					venue_tweets = @venue.venue_twitter_tweets
+				rescue
+					venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
+				end
+				@tweets = Kaminari.paginate_array(venue_tweets).page(params[:page]).per(10)
+			else
+				begin
+					cluster_tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, params[:cluster_venue_ids])    
+				rescue
+					radius = map_scale.to_f/2.0 * 1/1000 #Venue.meters_to_miles(map_scale.to_f/2.0)
+					cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+         				<= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+				end
+				@tweets = Kaminari.paginate_array(cluster_tweets).page(params[:page]).per(10)
+			end
+		else
+			@feed = Feed.find_by_id(params[:feed_id])
+			feed_tweets = @feed.venue_tweets
+			@tweets = Kaminari.paginate_array(feed_tweets).page(params[:page]).per(10)
+		end
+	end
+
+	def get_surrounding_tweets
+		venue_ids = params[:cluster_venue_ids].split(',')
+		lat = params[:latitude]
+		long =  params[:longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		surrounding_tweets = Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		
+		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
 	end
 
 	def mark_comment_as_viewed
@@ -216,30 +310,66 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
+		Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
 		@venues = Venue.where("color_rating > -1.0").order("color_rating desc")
 		render 'display.json.jbuilder'
+	end
+
+	def refresh_map_view_by_parts
+		lat = params[:latitude] || 40.741140
+		long = params[:longitude] || -73.981917
+
+		if params[:page] == 1
+			num_page_entries = 500
+		else
+			num_page_entries = 1000
+		end
+
+		venues = Kaminari.paginate_array(Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC"))
+		@venues = venues.page(params[:page]).per(num_page_entries)
+		render 'display_by_parts.json.jbuilder'
 	end
 
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
 
-		#I am aware this approach is Muppet, need to update later 
-		venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
+		if params[:instagram_location_id] == nil
+			#I am aware this approach is Muppet, need to update later 
+			venue0 = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], params[:pin_drop])
 
-		venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
-		venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
-		venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
-		venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
-		venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
-		venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
-		venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
-		venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
-		venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
-		venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
+			venue1 = Venue.fetch(params[:name1], params[:formatted_address1], params[:city1], params[:state1], params[:country1], params[:postal_code1], params[:phone_number1], params[:latitude1], params[:longitude1], params[:pin_drop])
+			venue2 = Venue.fetch(params[:name2], params[:formatted_address2], params[:city2], params[:state2], params[:country2], params[:postal_code2], params[:phone_number2], params[:latitude2], params[:longitude2], params[:pin_drop])
+			venue3 = Venue.fetch(params[:name3], params[:formatted_address3], params[:city3], params[:state3], params[:country3], params[:postal_code3], params[:phone_number3], params[:latitude3], params[:longitude3], params[:pin_drop])
+			venue4 = Venue.fetch(params[:name4], params[:formatted_address4], params[:city4], params[:state4], params[:country4], params[:postal_code4], params[:phone_number4], params[:latitude4], params[:longitude4], params[:pin_drop])
+			venue5 = Venue.fetch(params[:name5], params[:formatted_address5], params[:city5], params[:state5], params[:country5], params[:postal_code5], params[:phone_number5], params[:latitude5], params[:longitude5], params[:pin_drop])
+			venue6 = Venue.fetch(params[:name6], params[:formatted_address6], params[:city6], params[:state6], params[:country6], params[:postal_code6], params[:phone_number6], params[:latitude6], params[:longitude6], params[:pin_drop])
+			venue7 = Venue.fetch(params[:name7], params[:formatted_address7], params[:city7], params[:state7], params[:country7], params[:postal_code7], params[:phone_number7], params[:latitude7], params[:longitude7], params[:pin_drop])
+			venue8 = Venue.fetch(params[:name8], params[:formatted_address8], params[:city8], params[:state8], params[:country8], params[:postal_code8], params[:phone_number8], params[:latitude8], params[:longitude8], params[:pin_drop])
+			venue9 = Venue.fetch(params[:name9], params[:formatted_address9], params[:city9], params[:state9], params[:country9], params[:postal_code9], params[:phone_number9], params[:latitude9], params[:longitude9], params[:pin_drop])
+			venue10 = Venue.fetch(params[:name10], params[:formatted_address10], params[:city10], params[:state10], params[:country10], params[:postal_code10], params[:phone_number10], params[:latitude10], params[:longitude10], params[:pin_drop])
 
-		@venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+			@venues = [venue0, venue1, venue2, venue3, venue4, venue5, venue6, venue7, venue8, venue9, venue10].compact
+		else
+			@venues =[Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])]
+		end
 
 		#@venues = Venue.fetch_venues('search', params[:q], params[:latitude], params[:longitude], params[:radius], params[:timewalk_start_time], params[:timewalk_end_time], params[:group_id], @user)
+		render 'search.json.jbuilder'
+	end
+
+	def direct_fetch
+		position_lat = params[:latitude]
+		position_long = params[:longitude]
+
+		ne_lat = params[:ne_latitude]
+		ne_long = params[:ne_longitude]
+		sw_lat = params[:sw_latitude]
+		sw_long = params[:sw_longitude]
+
+		query = params[:q]
+
+		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long).to_a
+
 		render 'search.json.jbuilder'
 	end
 
@@ -323,12 +453,86 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_contexts
 		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
-			venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
-			@contexts = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
+			@contexts = MetaData.cluster_top_meta_tags(params[:cluster_venue_ids])
+			render 'get_cluster_contexts.json.jbuilder'
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
 			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
+			render 'get_contexts.json.jbuilder'
 		end
+	end
+
+	def explore_venues
+		user_lat = params[:latitude]
+		user_long = params[:longitude]
+
+		nearby_radius = 5000 * 1/1000#* 0.000621371 #meters to miles
+		rand_position = Random.rand(20)
+
+		if params[:proximity] == "nearby"
+			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        <= #{nearby_radius}").order("popularity_rank DESC").limit(20)[rand_position]
+		else
+			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        > #{nearby_radius}").order("popularity_rank DESC").limit(20).order("RANDOM()").first		
+		end
+	end
+
+	def get_latest_tweet
+		venue_ids = params[:cluster_venue_ids].split(",")
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		radius = 160 * 1/1000
+
+		if venue_ids.count == 1
+			venue = Venue.find_by_id(venue_ids.first)
+			@tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue.id).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
+			venue.delay.pull_twitter_tweets
+		else
+			cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
+			@tweet = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+          <= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC LIMIT 1")[0]
+			Venue.delay.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, cluster, venue_ids)
+		end
+	end
+
+	def get_quick_venue_overview
+		@venue = Venue.find_by_id(params[:venue_id])
+	end
+
+	def get_quick_cluster_overview
+		venue_ids = params[:cluster_venue_ids].split(',')
+		cluster_lat = params[:cluster_latitude]
+		cluster_long =  params[:cluster_longitude]
+		zoom_level = params[:zoom_level]
+		map_scale = params[:map_scale]
+
+		@posts = VenueComment.where("venue_id IN (?)", venue_ids).order("id DESC LIMIT 4")
+		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
+	end
+
+	def get_surrounding_feed_for_user
+		lat = params[:latitude]
+		long = params[:longitude]
+		venue_ids = params[:venue_ids]
+
+		fresh_pull = params[:fresh_pull]
+
+		@user = User.find_by_authentication_token(params[:auth_token])
+		spt = SurroundingPullTracker.find_by_user_id(@user.id)
+		if spt == nil
+			spt = SurroundingPullTracker.create!(user_id: @user.id, latitude: lat, longitude: long, latest_pull_time: Time.now)
+		end
+		
+		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, venue_ids)).page(params[:page]).per(10)
+	end
+
+	def check_vortex_proximity
+		InstagramVortex.check_nearby_vortex_existence(params[:latitude], params[:longitude])
+		render json: { success: true }
 	end
 
 

@@ -3,18 +3,32 @@ class VenueComment < ActiveRecord::Base
 
 	belongs_to :user
 	belongs_to :venue
-	
+
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
 	has_many :lumen_values
 	has_many :meta_datas, :dependent => :destroy
+	has_many :feed_shares, :dependent => :destroy
 
 	validate :comment_or_media
 
+	before_destroy :deincrement_feed_moment_counts
+
+	def deincrement_feed_moment_counts
+		self.venue.feeds.update_all("num_moments = num_moments-1")		
+	end
 
 	def comment_or_media
-		if self.comment.blank? and self.media_url.blank?
+		if self.comment.blank? and self.image_url_1.blank?
 			errors.add(:comment, 'or image is required')
+		end
+	end
+
+	def lowest_resolution_image_avaliable
+		begin
+			self.image_url_1 || self.image_url_2
+		rescue
+			nil
 		end
 	end
 
@@ -117,6 +131,79 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
 
+	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
+		instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
+	end
+
+	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
+		begin
+			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
+			if origin_venue == nil
+				if Venue.name_is_proper?(instagram_hash["location"]["name"]) == true
+					origin_venue = Venue.fetch_venues_for_instagram_pull(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"])	
+				else
+					return nil
+				end
+			end
+
+			#Instagram sometimes returns posts outside the vortex radius, we filter them out
+			if vortex != nil && origin_venue != nil
+				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+					return nil
+				end
+			end
+
+			created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
+			instagram_id = instagram_hash["id"]
+			username = instagram_hash["user"]["username"]
+			image_1 = instagram_hash["images"]["thumbnail"]["url"]
+			image_2 = instagram_hash["images"]["low_resolution"]["url"]
+			image_3 = instagram_hash["images"]["standard_resolution"]["url"]
+
+			if instagram_hash["type"] == "video"
+				video_1 = instagram_hash["videos"]["low_bandwidth"]["url"]
+				video_2 = instagram_hash["videos"]["low_resolution"]["url"]
+				video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
+				vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3, :media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
+			else
+				vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
+			end
+
+			if vc != nil
+				#Venue method
+				if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
+					origin_venue.update_columns(latest_posted_comment_time: created_time)
+					origin_venue.update_columns(last_instagram_post: instagram_id)
+				end
+
+				if origin_venue.last_instagram_pull_time < created_time
+					origin_venue.update_columns(last_instagram_pull_time: created_time)
+				end
+
+				#Further instagram related methods
+				instagram_tags = instagram_hash["tags"]
+				instagram_captions = i.to_hash["caption"]["text"].split rescue nil
+				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+
+				#Feed related methods
+				origin_venue.feeds.update_all(new_media_present: true)
+				origin_venue.feeds.update_all(latest_content_time: created_time)
+				origin_venue.feeds.update_all("num_moments = num_moments+1")
+
+				#Venue LYTiT ratings related methods
+				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
+				origin_venue.update_r_up_votes(created_time)
+				origin_venue.delay.update_rating()
+				origin_venue.update_columns(latest_rating_update_time: Time.now)											
+
+				sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
+			end
+		rescue
+			puts "Failed to convert instagram to Venue Comment"
+		end
+	end
+
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
@@ -135,15 +222,30 @@ class VenueComment < ActiveRecord::Base
 			lytit_venue = origin_venue
 		end
 
-		if vortex != nil
+		if vortex != nil && lytit_venue != nil
 			if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
 				return nil
 			end
 		end
 
 		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
-		if lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time )			
-			vc = VenueComment.create!(:venue_id => lytit_venue.id, :media_url => instagram.images.standard_resolution.url, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username) rescue nil
+		if lytit_venue !=nil #and (lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time ))
+			vc = nil
+			begin
+				image_1 = instagram.images.thumbnail.url rescue nil
+				image_2 = instagram.images.low_resolution.url rescue nil
+				image_3 = instagram.images.standard_resolution.url rescue nil
+				video_1 = instagram.videos.low_bandwith.url rescue nil
+				video_2 = instagram.videos.low_resolution.url rescue nil
+				video_3 = instagram.videos.standard_resolution.url rescue nil
+				if instagram.type == "video"
+					vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+				else
+					vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
+				end
+			rescue
+				puts "Oops, uniqueness violation!"
+			end
 			if vc != nil
 				new_media_created = true
 				if origin_venue == nil
@@ -153,13 +255,20 @@ class VenueComment < ActiveRecord::Base
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
 				vote.save
 				lytit_venue.update_r_up_votes(vote.time_wrapper)
-				lytit_venue.update_columns(latest_posted_comment_time: vote.time_wrapper)
+				if lytit_venue.latest_posted_comment_time == nil or lytit_venue.latest_posted_comment_time < vote.time_wrapper
+					lytit_venue.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
+				end
+				lytit_venue.delay.update_rating()
+				lytit_venue.update_columns(latest_rating_update_time: Time.now)
 				
 				if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
 					LytSphere.create_new_sphere(lytit_venue)
 				end
-				puts "instagram venue comment created"
+				puts "instagram venue comment created, id: #{vc.id}"
 				lytit_venue.feeds.update_all(new_media_present: true)
+				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
+				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
+				lytit_venue.feeds.update_all("num_moments = num_moments+1")
 				instagram_tags = instagram.tags
 				instagram_captions = instagram.caption.text.split rescue nil
 				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
@@ -169,6 +278,20 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
+	def self.convert_instagram_details_to_vc(instagram_params)
+		inst_id = instagram_params["instagram_id"]
+
+		vc = VenueComment.find_by_instagram_id(inst_id)
+		if vc != nil
+			return vc
+		else
+			venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"])	
+			vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"])
+			return vc
+		end
+		
+	end
+
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)
 		inst_hashtags = instagram_tags
 		inst_comment = instagram_captions
@@ -176,7 +299,14 @@ class VenueComment < ActiveRecord::Base
 
 		if inst_hashtags != nil and inst_hashtags.count != 0
 			inst_hashtags.each do |data|
-				venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) rescue MetaData.increment_relevance_score(data, venue_id)
+				if data.length > 2 && (data.include?("inst") == false && data.include?("gram") == false && data.include?("like") == false)
+					lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
+					if lookup == nil
+						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
+					else
+						lookup.increment_relevance_score
+					end
+				end
 			end
 		end
 	end
@@ -199,6 +329,12 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.surrounding_feed(lat, long)
+		radius = 1000 * 1/1000#* 0.000621371
+		VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+          <= #{radius}").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC").order("venue_comments.created_at DESC")
+	end
+
 	def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
 		#no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
 		if query[0..2].downcase == "insta"
@@ -210,7 +346,7 @@ class VenueComment < ActiveRecord::Base
 
 		#user searching around himself as determined by centered positioning on map screen
 		if (sw_lat.to_i == 0 && ne_long.to_i == 0)		  
-		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*3963.1899999999996) ASC").where("venue_comments.id IN (#{meta_vc_ids})").to_a
+		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC").where("venue_comments.id IN (#{meta_vc_ids})").to_a
 		#user searching over an area of view
 		else
 		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})").to_a
@@ -289,6 +425,170 @@ class VenueComment < ActiveRecord::Base
 			clean_data = data
 		end					
 		return clean_data
+	end
+
+	#These methods are for proper key selection for get_surrounding_posts since hybrid arrays of instagram as well as LYTiT Venue Comment objects can exist there
+	def self.implicit_id(post)
+		if post.is_a?(Hash)
+			nil
+		else
+			post.id
+		end
+	end
+
+	def self.implicit_instagram_id(post)
+		if post.is_a?(Hash)
+			post["id"]
+		else
+			post.instagram_id
+		end
+	end
+
+	def self.implicit_instagram_location_id(post)
+		if post.is_a?(Hash)
+			post["location"]["id"]
+		else
+			nil
+		end
+	end	
+
+	def self.implicit_media_type(post)
+		if post.is_a?(Hash)
+			post["type"]
+		else
+			post.media_type
+		end
+	end
+
+	def self.implicit_image_url_1(post)
+		if post.is_a?(Hash)
+			post["images"]["thumbnail"]["url"]
+		else
+			post.image_url_1
+		end
+	end
+
+	def self.implicit_image_url_2(post)
+		if post.is_a?(Hash)
+			post["images"]["low_resolution"]["url"]
+		else
+			post.image_url_2
+		end
+	end
+
+	def self.implicit_image_url_3(post)
+		if post.is_a?(Hash)
+			post["images"]["standard_resolution"]["url"]
+		else
+			post.image_url_3
+		end
+	end
+
+	def self.implicit_video_url_1(post)
+		if post.is_a?(Hash)
+			if post["type"] == "video"
+				post["videos"]["low_bandwidth"]["url"]
+			else
+				nil
+			end
+		else
+			post.video_url_1
+		end
+	end
+
+	def self.implicit_video_url_2(post)
+		if post.is_a?(Hash)
+			if post["type"] == "video"
+				post["videos"]["low_resolution"]["url"]
+			else
+				nil
+			end
+		else
+			post.video_url_2
+		end
+	end
+
+	def self.implicit_video_url_3(post)
+		if post.is_a?(Hash)
+			if post["type"] == "video"
+				post["videos"]["standard_resolution"]["url"]
+			else
+				nil
+			end
+		else
+			post.video_url_3
+		end
+	end
+
+	def self.implicit_venue_id(post)
+		if post.is_a?(Hash)
+			nil
+		else
+			post.venue_id
+		end
+	end
+
+	def self.implicit_venue_name(post)
+		if post.is_a?(Hash)
+			post["location"]["name"]
+		else
+			post.venue.name
+		end
+	end
+
+	def self.implicit_venue_latitude(post)
+		if post.is_a?(Hash)
+			post["location"]["latitude"]
+		else
+			post.venue.latitude
+		end
+	end
+
+	def self.implicit_venue_longitude(post)
+		if post.is_a?(Hash)
+			post["location"]["longitude"]
+		else
+			post.venue.longitude
+		end
+	end
+
+	def self.implicit_created_at(post)
+		if post.is_a?(Hash)
+			DateTime.strptime(post["created_time"],'%s')
+		else
+			post.time_wrapper
+		end
+	end
+
+	def self.implicit_content_origin(post)
+		if post.is_a?(Hash)
+			"instagram"
+		else
+			post.content_origin
+		end
+	end
+
+	def self.thirdparty_username(post)
+		if post.is_a?(Hash)
+			post["user"]["username"]
+		else
+			post.thirdparty_username
+		end
+	end
+
+	def self.twitter_test(query, radius)
+		client = Twitter::REST::Client.new do |config|
+		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+		  config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+		  config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+		  config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+		end
+		
+		client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(3).collect do |tweet|
+		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.user.profile_image_url}"
+		end
+
+		return client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(5).collect
 	end
 			
 end

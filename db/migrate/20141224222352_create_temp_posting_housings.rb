@@ -3,7 +3,7 @@ class CreateTempPostingHousings < ActiveRecord::Migration
     create_table :temp_posting_housings do |t|
       t.string :comment
       t.string :media_type
-      t.string :media_url
+      t.string :image_url_1
       t.integer :session
       t.boolean :username_private
       t.references :user, index: true

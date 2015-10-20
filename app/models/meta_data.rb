@@ -15,11 +15,23 @@ class MetaData < ActiveRecord::Base
 		end
 	end
 
+	def increment_relevance_score
+		relevance_half_life = 360.0 #minutes
+		old_score = relevance_score
+		new_score = old_score * 2 ** ((-(Time.now - updated_at)/60.0) / (relevance_half_life)).round(4)+1.0
+		update_columns(relevance_score: new_score)
+	end
+
 	def update_and_return_relevance_score
 		relevance_half_life = 360.0
 		old_score = self.relevance_score
 		new_score = old_score * 2 ** ((-(Time.now - self.updated_at)/60.0) / (relevance_half_life)).round(4)+1.0
 		self.update_columns(relevance_score: new_score)
 		return self.relevance_score
+	end
+
+	def self.cluster_top_meta_tags(venue_ids)
+		sql = "SELECT meta, SUM(relevance_score)*(COUNT(distinct (case when venue_id IN (#{venue_ids}) then venue_id end))) AS weighted_avg FROM meta_data WHERE venue_id IN (#{venue_ids}) GROUP BY meta ORDER BY weighted_avg DESC LIMIT 5"
+		results = ActiveRecord::Base.connection.execute(sql)
 	end
 end
