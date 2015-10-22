@@ -192,9 +192,9 @@ class Api::V1::VenuesController < ApiBaseController
 			if cache_key == ""
 				cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
 			end
-			#live_comments = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			#	Venue.get_comments(venue_ids)
-			#end
+			live_comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
+				Venue.get_comments(venue_ids)
+			end
 
 			live_comments = Venue.get_comments(venue_ids)
 			@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
