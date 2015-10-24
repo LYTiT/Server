@@ -458,6 +458,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
 			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
+			MetaData.delay.bulck_relevance_score_update(@contexts)
 			render 'get_contexts.json.jbuilder'
 		end
 	end
@@ -466,7 +467,7 @@ class Api::V1::VenuesController < ApiBaseController
 		user_lat = params[:latitude]
 		user_long = params[:longitude]
 
-		nearby_radius = 5000 * 1/1000 #* 0.000621371 #meters to miles
+		nearby_radius = 5000.0 * 1/1000 #* 0.000621371 #meters to miles
 		rand_position = Random.rand(20)
 
 		if params[:proximity] == "nearby"
@@ -485,7 +486,7 @@ class Api::V1::VenuesController < ApiBaseController
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 
-		radius = 160 * 1/1000
+		radius = 160.0 * 1/1000
 
 		if venue_ids.count == 1
 			venue = Venue.find_by_id(venue_ids.first)

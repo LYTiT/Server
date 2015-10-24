@@ -257,6 +257,12 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
 		end
 	end
+
+	def get_aggregate_feed_activity
+		@user = User.find_by_authentication_token(params[:auth_token])
+		user_feed_ids = "SELECT feed_id from user_feeds WHERE user_id = #{@user.id}"
+		@activity = FeedActivity.where("feed_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", user_feed_ids).includes(:user, :venue, :feed_activity_comments, :venue_comment, :feed).order("adjusted_sort_position DESC")
+	end
 	#-------------------------------------------------->
 
 	private

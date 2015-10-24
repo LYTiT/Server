@@ -22,6 +22,10 @@ class MetaData < ActiveRecord::Base
 		update_columns(relevance_score: new_score)
 	end
 
+	def self.bulck_relevance_score_update(contexts)
+		contexts.each{|context| context.update_and_return_relevance_score}
+	end
+
 	def update_and_return_relevance_score
 		relevance_half_life = 360.0
 		old_score = self.relevance_score

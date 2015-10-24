@@ -16,6 +16,14 @@ class Tweet < ActiveRecord::Base
 		tweet_popularity_score = 1.0 / (Math::E ** (-alpha_factor.to_f * followers_count.to_f ** beta_factor) + 1.0) + retweet_count.to_f ** (1.0 / gamma_factor)      
   	end
 
+    def self.bulk_conversion(raw_tweets, v_id, cluster_lat, cluster_long, zoom_level, map_scale)
+      if v_id != nil
+        raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v_id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count)}
+      else
+        raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => true, :associated_zoomlevel => zoom_level, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count)}                                    
+      end
+    end
+
   	def self.implicit_id(t)
   		if t.try(:handle) != nil
   			t.id

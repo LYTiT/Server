@@ -849,7 +849,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.near_locations(lat, long)
-    radius = 400 * 1/1000
+    radius = 400.0 * 1/1000
     surroundings = Venue.within(radius.to_i, :units => :kms, :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
     #Venue.within(Venue.meters_to_miles(meter_radius.to_i), :origin => [lat, long]).where("has_been_voted_at = TRUE AND is_address = FALSE").order('distance ASC limit 10')
   end
@@ -930,7 +930,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = 100 * 1/1000 #Venue.meters_to_miles(100)
+      radius = 100.0 * 1/1000 #Venue.meters_to_miles(100)
       #query = ""
       #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
       #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
