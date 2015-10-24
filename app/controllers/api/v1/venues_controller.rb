@@ -525,7 +525,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 
 		if fresh_pull == "0"
-			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{user.id}", :expires_in => 3.minutes) do
+			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 3.minutes) do
 				Venue.surrounding_feed(lat, long, venue_ids)
 			end
 		else
