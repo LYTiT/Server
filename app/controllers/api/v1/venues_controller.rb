@@ -523,12 +523,16 @@ class Api::V1::VenuesController < ApiBaseController
 		fresh_pull = params[:fresh_pull]
 
 		@user = User.find_by_authentication_token(params[:auth_token])
-		spt = SurroundingPullTracker.find_by_user_id(@user.id)
-		if spt == nil
-			spt = SurroundingPullTracker.create!(user_id: @user.id, latitude: lat, longitude: long, latest_pull_time: Time.now)
+
+		if fresh_pull == "0"
+			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{user.id}", :expires_in => 3.minutes) do
+				Venue.surrounding_feed(lat, long, venue_ids)
+			end
+		else
+			surrounding_posts = Venue.surrounding_feed(lat, long, venue_ids)
 		end
 		
-		@posts = Kaminari.paginate_array(Venue.surrounding_feed(lat, long, venue_ids)).page(params[:page]).per(10)
+		@posts = Kaminari.paginate_array(surrounding_posts).page(params[:page]).per(10)
 	end
 
 	def check_vortex_proximity
