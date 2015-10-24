@@ -436,7 +436,17 @@ class User < ActiveRecord::Base
   end
   #------------------------------------------------------------->
 
-  #IV. Administrative/Creation Methods------------------------------>
+  #IV. Lists
+
+  def aggregate_list_feed(last_activity_id)
+    last_activity_id = last_activity_id || 0
+    user_feed_ids = "SELECT feed_id from feed_users WHERE user_id = #{self.id}"
+    FeedActivity.where("id > ? AND feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'", last_activity_id).includes(:user, :venue, :venue_comment, :feed).order("adjusted_sort_position DESC")    
+  end
+
+  #------------------------------------------------------------->
+
+  #V. Administrative/Creation Methods------------------------------>
   def self.authenticate_by_username(username, password)
     return nil  unless look_up_user = User.find_by_name(username)
     return look_up_user if     look_up_user.authenticated?(password)
