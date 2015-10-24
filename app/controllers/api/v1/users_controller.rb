@@ -262,7 +262,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		last_activity_id = params[:last_activity_id] || 0
 		user_feed_ids = "SELECT feed_id from feed_users WHERE user_id = #{@user.id}"
-		@activities = Kaminari.paginate_array(FeedActivity.where("id > ? AND feed_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", last_activity_id, user_feed_ids).includes(:user, :venue, :venue_comment, :feed).order("adjusted_sort_position DESC")).page(params[:page]).per(10)
+		@activities = Kaminari.paginate_array(FeedActivity.where("id > ? AND feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'", last_activity_id).includes(:user, :venue, :venue_comment, :feed).order("adjusted_sort_position DESC")).page(params[:page]).per(10)
 	end
 	#-------------------------------------------------->
 
