@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151025172354) do
+ActiveRecord::Schema.define(version: 20151025174244) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -353,6 +353,7 @@ ActiveRecord::Schema.define(version: 20151025172354) do
 
   add_index "meta_data", ["meta", "venue_comment_id"], name: "index_meta_data_on_meta_and_venue_comment_id", unique: true, using: :btree
   add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
+  add_index "meta_data", ["relevance_score"], name: "index_meta_data_on_relevance_score", using: :btree
   add_index "meta_data", ["venue_id"], name: "index_meta_data_on_venue_id", using: :btree
 
   create_table "roles", force: true do |t|
@@ -429,6 +430,8 @@ ActiveRecord::Schema.define(version: 20151025172354) do
 
   add_index "tweets", ["latitude"], name: "index_tweets_on_latitude", using: :btree
   add_index "tweets", ["longitude"], name: "index_tweets_on_longitude", using: :btree
+  add_index "tweets", ["popularity_score"], name: "index_tweets_on_popularity_score", using: :btree
+  add_index "tweets", ["timestamp"], name: "index_tweets_on_timestamp", using: :btree
   add_index "tweets", ["twitter_id"], name: "index_tweets_on_twitter_id", unique: true, using: :btree
   add_index "tweets", ["venue_id"], name: "index_tweets_on_venue_id", using: :btree
 
