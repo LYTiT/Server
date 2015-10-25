@@ -1,7 +1,7 @@
 json.activity(@activities) do |activity|
   json.feed_id activity.feed_id
   json.feed_name activity.feed.try(:name)
-  json.feed_color activity.feed.try(:color)
+  json.feed_color activity.feed.try(:feed_color)
   json.id activity.id
   json.activity_type activity.activity_type
   json.user_id activity.user_id
