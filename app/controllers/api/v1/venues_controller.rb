@@ -270,8 +270,22 @@ class Api::V1::VenuesController < ApiBaseController
 		long =  params[:longitude]
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
+		fresh_pull = params[:fresh_pull]
 
-		surrounding_tweets = Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		@user = User.find_by_authentication_token(params[:auth_token])
+
+		if fresh_pull == "0"
+			surrounding_tweets = Rails.cache.fetch("surrounding_tweets/#{@user.id}", :expires_in => 5.minutes) do
+				Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+			end
+		else
+			begin
+				Rails.cache.delete("surrounding_tweets/#{@user.id}")
+			rescue
+				puts "No cache present to delete"
+			end
+			surrounding_tweets = Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
+		end
 		
 		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
 	end
@@ -525,11 +539,18 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 
 		if fresh_pull == "0"
-			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 3.minutes) do
+			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 5.minutes) do
 				Venue.surrounding_feed(lat, long, venue_ids)
 			end
 		else
-			surrounding_posts = Venue.surrounding_feed(lat, long, venue_ids)
+			begin
+				Rails.cache.delete("surrounding_posts/#{@user.id}")
+			rescue
+				puts "No cache present to delete"
+			end
+			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 5.minutes) do
+				Venue.surrounding_feed(lat, long, venue_ids)
+			end
 		end
 		
 		@posts = Kaminari.paginate_array(surrounding_posts).page(params[:page]).per(10)
