@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151014200511) do
+ActiveRecord::Schema.define(version: 20151025172354) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -509,6 +509,7 @@ ActiveRecord::Schema.define(version: 20151014200511) do
 
   add_index "venue_comments", ["id", "instagram_id"], name: "index_venue_comments_on_id_and_instagram_id", unique: true, using: :btree
   add_index "venue_comments", ["instagram_id"], name: "index_venue_comments_on_instagram_id", unique: true, using: :btree
+  add_index "venue_comments", ["time_wrapper"], name: "index_venue_comments_on_time_wrapper", using: :btree
   add_index "venue_comments", ["user_id"], name: "index_venue_comments_on_user_id", using: :btree
   add_index "venue_comments", ["venue_id"], name: "index_venue_comments_on_venue_id", using: :btree
 

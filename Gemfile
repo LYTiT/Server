@@ -60,6 +60,7 @@ gem 'heroku-api'
 gem 'jbuilder_cache_multi'
 gem 'twitter'
 gem 'kdtree'
+gem 'postgresql_cursor'
 
 group :development do
   gem 'better_errors'

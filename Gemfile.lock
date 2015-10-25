@@ -267,6 +267,8 @@ GEM
     pg (0.17.1)
     plucky (0.6.6)
       mongo (~> 1.5)
+    postgresql_cursor (0.5.1)
+      activerecord (>= 3.2.0)
     pr_geohash (1.0.0)
     pry (0.10.1)
       coderay (~> 1.1.0)
@@ -473,6 +475,7 @@ DEPENDENCIES
   paperclip (~> 4.1)
   paranoia (~> 2.0)
   pg
+  postgresql_cursor
   pr_geohash
   pry-byebug
   rack-timeout
