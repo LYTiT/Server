@@ -1211,9 +1211,9 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    #if not self.rating || self.rating.round(1) == 0.0
-    #  visible = false
-    #end
+    if not self.rating || self.rating.round(1) == 0.0
+      visible = false
+    end
 
     if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
       visible = false
