@@ -260,7 +260,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_aggregate_feed_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@activities = Kaminari.paginate_array(@user.aggregate_list_feed(params[:last_activity_id])).page(params[:page]).per(10)
+		@activities = @user.aggregate_list_feed(params[:last_activity_id]).page(params[:page]).per(10)
 	end
 	#-------------------------------------------------->
 

@@ -192,12 +192,12 @@ class Api::V1::VenuesController < ApiBaseController
 			if cache_key == ""
 				cache_key = "comments/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}"
 			end
-			
+
 			live_comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
 				Venue.get_comments(venue_ids)
 			end
 
-			@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
+			@comments = live_comments.page(params[:page]).per(10)
 					
 		#	live_comments = VenueComment.get_comments_for_cluster(venue_ids)
 		#	@comments = live_comments.page(params[:page]).per(10)
@@ -222,7 +222,7 @@ class Api::V1::VenuesController < ApiBaseController
 			live_comments = Venue.get_comments([@venue.id])	
 		end
 
-		@comments = Kaminari.paginate_array(live_comments).page(params[:page]).per(10)
+		@comments = live_comments.page(params[:page]).per(10)
 	end
 
 	def get_feeds
@@ -238,29 +238,24 @@ class Api::V1::VenuesController < ApiBaseController
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 
-		if params[:feed_id] == nil
-			if venue_ids.count == 1
-				@venue = Venue.find_by_id(venue_ids.first)
-				begin
-					venue_tweets = @venue.venue_twitter_tweets
-				rescue
-					venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
-				end
-				@tweets = Kaminari.paginate_array(venue_tweets).page(params[:page]).per(10)
-			else
-				begin
-					cluster_tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, params[:cluster_venue_ids])    
-				rescue
-					radius = map_scale.to_f/2.0 * 1/1000 #Venue.meters_to_miles(map_scale.to_f/2.0)
-					cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-         				<= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
-				end
-				@tweets = Kaminari.paginate_array(cluster_tweets).page(params[:page]).per(10)
+		
+		if venue_ids.count == 1
+			@venue = Venue.find_by_id(venue_ids.first)
+			begin
+				venue_tweets = @venue.venue_twitter_tweets
+			rescue
+				venue_tweets = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
 			end
+			@tweets = venue_tweets.page(params[:page]).per(10)
 		else
-			@feed = Feed.find_by_id(params[:feed_id])
-			feed_tweets = @feed.venue_tweets
-			@tweets = Kaminari.paginate_array(feed_tweets).page(params[:page]).per(10)
+			begin
+				cluster_tweets = Venue.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, params[:cluster_venue_ids])    
+			rescue
+				radius = map_scale.to_f/2.0 * 1/1000 #Venue.meters_to_miles(map_scale.to_f/2.0)
+				cluster_tweets = Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+     				<= #{radius} AND associated_zoomlevel <= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
+			end
+			@tweets = cluster_tweets.page(params[:page]).per(10)
 		end
 	end
 
@@ -339,7 +334,7 @@ class Api::V1::VenuesController < ApiBaseController
 			num_page_entries = 1000
 		end
 
-		venues = Kaminari.paginate_array(Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC"))
+		venues = Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC"))
 		@venues = venues.page(params[:page]).per(num_page_entries)
 		render 'display_by_parts.json.jbuilder'
 	end

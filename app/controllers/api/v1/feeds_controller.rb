@@ -156,7 +156,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
-		@activities = Kaminari.paginate_array(@feed.activity).page(params[:page]).per(10)
+		@activities = @feed.activity.page(params[:page]).per(10)
 	end
 
 	def get_activity_object
@@ -215,12 +215,12 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_feed_activity_comments
-		@activity_comments = Kaminari.paginate_array(FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC")).page(params[:page]).per(10)
+		@activity_comments = FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC").page(params[:page]).per(10)
 	end
 
 	def get_venue_comments
 		feed = Feed.find_by_id(params[:feed_id])
-		@comments = Kaminari.paginate_array(feed.comments).page(params[:page]).per(10)
+		@comments = feed.comments.page(params[:page]).per(10)
 	end
 
 	def meta_search
