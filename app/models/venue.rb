@@ -689,7 +689,7 @@ class Venue < ActiveRecord::Base
   def self.get_comments(venue_ids)    
     if venue_ids.count > 1
     #returning cluster comments which is just a pull of all avaliable underlying venue comments
-      return VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
+      return VenueComment.where("venue_id IN (?)", venue_ids).includes(:venue).order("time_wrapper desc")
     else
     #dealing with an individual venue which could require an instagram pull
       venue = Venue.find_by_id(venue_ids.first)
