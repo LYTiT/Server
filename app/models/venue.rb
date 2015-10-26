@@ -94,7 +94,7 @@ class Venue < ActiveRecord::Base
             result = best_match
           end
         else
-            if (p jarow.getDistance(name_search.first.name, vname)) >= 0.8
+            if (p jarow.getDistance(name_search.first.name, vname)) >= 0.85
               result = name_search.first
             end
         end
@@ -717,7 +717,7 @@ class Venue < ActiveRecord::Base
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
-      if new_instagrams.count > 0
+      if new_instagrams.length > 0
         total_media = []
         total_media << new_instagrams#.uniq!
         total_media << venue.venue_comments.order("time_wrapper desc")
