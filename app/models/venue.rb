@@ -96,12 +96,12 @@ class Venue < ActiveRecord::Base
       result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
     end
 
-    result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+    result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
 
     return result 
   end
 
-  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude)
+  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
     venue = Venue.new
     venue.fetched_at = Time.now
 
@@ -110,19 +110,24 @@ class Venue < ActiveRecord::Base
     venue.longitude = longitude
     venue.save
 
-    venue.update_columns(address: address) rescue venue.update_columns(address: nil)
+    venue.update_columns(address: address) 
     part1 = [address, city].compact.join(', ')
     part2 = [part1, state].compact.join(', ')
     part3 = [part2, postal_code].compact.join(' ')
     part4 = [part3, country].compact.join(', ')
 
-    venue.update_columns(formatted_address: part4) rescue venue.update_columns(formatted_address: nil)
-    venue.update_columns(city: city) rescue venue.update_columns(city: nil)
-    venue.update_columns(state: state) rescue venue.update_columns(state: nil)
-    venue.update_columns(country: country) rescue venue.update_columns(country: nil)
+    venue.update_columns(formatted_address: part4) 
+    venue.update_columns(city: city) 
+    venue.update_columns(state: state) 
+    venue.update_columns(country: country) 
 
-    venue.postal_code = postal_code.to_s
-    venue.phone_number = formatTelephone(phone)
+    if postal_code != nil
+      venue.postal_code = postal_code.to_s
+    end
+    
+    if phone != nil
+      venue.phone_number = formatTelephone(phone)
+    end
 
     if venue.latitude < 0 && venue.longitude >= 0
       quadrant = "a"
@@ -140,6 +145,10 @@ class Venue < ActiveRecord::Base
       if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
         venue.is_address = true
       end
+    end
+
+    if instagram_location_id != nil
+      venue.update_columns(instagram_location_id: instagram_location_id)  
     end
 
     venue.save
@@ -680,6 +689,39 @@ class Venue < ActiveRecord::Base
 
     return venue_instagrams
   end
+
+
+
+
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
+    #Reference LYTiT Instagram Location Id Database
+    inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
+
+    if lookup != nil && inst_loc_id.to_i != 0
+      result = inst_id_lookup.venue
+    else
+      #Check if there is a direct name match in proximity
+      center_point = [lat, long]
+      search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.5, :units => :kms)
+
+      name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(query, 0.7).first
+
+      if name_lookup != nil
+        result = name_lookup
+      else
+        result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, vlatitude, vlongitude, inst_loc_id)
+        InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
+      end
+    end
+    return result 
+  end
+
+
+
+
+
+
+
 
   #Instagram specific LYTiT venue search-match  
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
