@@ -709,7 +709,7 @@ class Venue < ActiveRecord::Base
       if name_lookup != nil
         result = name_lookup
       else
-        result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, vlatitude, vlongitude, inst_loc_id)
+        result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id)
         InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
       end
     end
