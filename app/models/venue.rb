@@ -722,7 +722,7 @@ class Venue < ActiveRecord::Base
 
 
 
-
+=begin
   #Instagram specific LYTiT venue search-match  
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
     lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
@@ -848,6 +848,7 @@ class Venue < ActiveRecord::Base
       end
     end
   end
+=end
 
   #Instagram API locational content pulls. The min_id_consideration variable is used because we also call get_instagrams sometimes when setting an instagram location id (see bellow) and thus 
   #need access to all recent instagrams
