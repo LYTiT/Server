@@ -210,7 +210,9 @@ class Venue < ActiveRecord::Base
       self.update_columns(state: auth_state) rescue self.update_columns(state: nil)
       self.update_columns(country: auth_country) rescue self.update_columns(country: nil)
 
-      self.phone_number = formatTelephone(auth_phone)
+      if auth_phone != nil
+        self.phone_number = formatTelephone(auth_phone)
+      end
       self.save
     end
 
