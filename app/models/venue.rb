@@ -559,8 +559,8 @@ class Venue < ActiveRecord::Base
       if new_instagrams.length > 0
         total_media = []
         total_media << new_instagrams#.uniq!
-        total_media << venue.venue_comments.order("time_wrapper desc")
-        total_media.flatten!.compact!
+        total_media << venue.venue_comments
+        total_media.flatten!#.compact!
         return Kaminari.paginate_array(total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse)
       else
         return venue.venue_comments.order("time_wrapper desc")
