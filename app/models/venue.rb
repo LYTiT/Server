@@ -101,6 +101,29 @@ class Venue < ActiveRecord::Base
     return result 
   end
 
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
+    #Reference LYTiT Instagram Location Id Database
+    inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
+
+    if inst_id_lookup != nil && inst_loc_id.to_i != 0
+      result = inst_id_lookup.venue
+    else
+      #Check if there is a direct name match in proximity
+      center_point = [lat, long]
+      search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.5, :units => :kms)
+
+      name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
+
+      if name_lookup != nil
+        result = name_lookup
+      else
+        result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id)
+        InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
+      end
+    end
+    return result 
+  end
+
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
     venue = Venue.new
     venue.fetched_at = Time.now
@@ -689,33 +712,6 @@ class Venue < ActiveRecord::Base
 
     return venue_instagrams
   end
-
-
-
-
-  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
-    #Reference LYTiT Instagram Location Id Database
-    inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
-
-    if inst_id_lookup != nil && inst_loc_id.to_i != 0
-      result = inst_id_lookup.venue
-    else
-      #Check if there is a direct name match in proximity
-      center_point = [lat, long]
-      search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.5, :units => :kms)
-
-      name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
-
-      if name_lookup != nil
-        result = name_lookup
-      else
-        result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id)
-        InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
-      end
-    end
-    return result 
-  end
-
 
 
 

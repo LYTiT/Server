@@ -207,7 +207,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if initial_instagrams != nil
-			live_comments = initial_instagrams
+			live_comments = Kaminari.paginate_array(initial_instagrams)
 		else
 			live_comments = Venue.get_comments([@venue.id])	
 		end
@@ -338,7 +338,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venues =[Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])]
 		end
-		
+
 		render 'search.json.jbuilder'
 	end
 
