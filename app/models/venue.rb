@@ -697,7 +697,7 @@ class Venue < ActiveRecord::Base
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
-    if lookup != nil && inst_loc_id.to_i != 0
+    if inst_id_lookup != nil && inst_loc_id.to_i != 0
       result = inst_id_lookup.venue
     else
       #Check if there is a direct name match in proximity
