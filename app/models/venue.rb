@@ -1,12 +1,18 @@
 class Venue < ActiveRecord::Base
   include PgSearch
-  pg_search_scope :fuzzy_name_search,
-                :against => :name,
-                :using => {
-                  :trigram => {
-                    :threshold => 0.3 #higher value corresponds to stricter comparison
-                  }
-                }
+  
+  pg_search_scope :fuzzy_name_search, lambda{ |target_name, rigor|
+    raise ArgumentError unless rigor <= 1.0
+    {
+      :against => :name,
+      :query => target_name,
+      :using => {
+        :trigram => {
+          :threshold => rigor #higher value corresponds to stricter comparison
+        }
+      }
+    }
+  }
 
   acts_as_mappable :default_units => :kms,
                      :default_formula => :sphere,
@@ -44,7 +50,7 @@ class Venue < ActiveRecord::Base
 
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
-    name_search = Venue.fuzzy_name_search(query).order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
+    name_search = Venue.fuzzy_name_search(query, 0.5).order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
 =begin    
     Venue.where("LOWER(name) LIKE ?", query.downcase+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
 
@@ -55,11 +61,214 @@ class Venue < ActiveRecord::Base
       return name_search
     end
 =end
-    return name_search
+    #return name_search
   end
 
-  #LYTiT database venue match-search
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
+    lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
+    
+    if lat_long_lookup == nil
+      center_point = [vlatitude, vlongitude]
+      if vaddress == nil
+        if vcity != nil #city search
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
+          result = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname).first
+        end
+
+        if vstate != nil && vcity == nil #state search
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
+          result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname).first
+        end
+
+        if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
+          result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname).first
+        end
+      else #venue search
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+        result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
+      end
+    else
+      result = lat_long_lookup
+    end
+
+    if result == nil
+      result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+    end
+
+    result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+
+    return result 
+  end
+
+  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude)
+    venue = Venue.new
+    venue.fetched_at = Time.now
+
+    venue.name = name
+    venue.latitude = latitude
+    venue.longitude = longitude
+    venue.save
+
+    venue.update_columns(address: address) rescue venue.update_columns(address: nil)
+    part1 = [address, city].compact.join(', ')
+    part2 = [part1, state].compact.join(', ')
+    part3 = [part2, postal_code].compact.join(' ')
+    part4 = [part3, country].compact.join(', ')
+
+    venue.update_columns(formatted_address: part4) rescue venue.update_columns(formatted_address: nil)
+    venue.update_columns(city: city) rescue venue.update_columns(city: nil)
+    venue.update_columns(state: state) rescue venue.update_columns(state: nil)
+    venue.update_columns(country: country) rescue venue.update_columns(country: nil)
+
+    venue.postal_code = postal_code.to_s
+    venue.phone_number = formatTelephone(phone)
+
+    if venue.latitude < 0 && venue.longitude >= 0
+      quadrant = "a"
+    elsif venue.latitude < 0 && venue.longitude < 0
+      quadrant = "b"
+    elsif venue.latitude >= 0 && venue.longitude < 0
+      quadrant = "c"
+    else
+      quadrant = "d"
+    end
+    venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
+    venue.save
+
+    if address != nil && name != nil
+      if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
+        venue.is_address = true
+      end
+    end
+
+    venue.save
+    venue.delay.set_time_zone_and_offset
+    return venue    
+  end
+
+  def set_time_zone_and_offset
+    Timezone::Configure.begin do |c|
+    c.username = 'LYTiT'
+    end
+    timezone = Timezone::Zone.new :latlon => [self.latitude, self.longitude] rescue nil
+
+    self.time_zone = timezone.active_support_time_zone rescue nil
+    self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+  end
+
+  def calibrate_attributes(auth_name, auth_address, auth_city, auth_state, auth_country, auth_postal_code, auth_phone, auth_latitude, auth_longitude)
+    #We calibrate with regards to the Apple Maps database
+
+    #Name
+    if self.name != auth_name
+      self.name = auth_name
+    end
+
+    #Address
+    if self.city == nil || self.state == nil #Add venue details if they are not present
+      part1 = [auth_address, auth_city].compact.join(', ')
+      part2 = [part1, auth_state].compact.join(', ')
+      part3 = [part2, auth_postal_code].compact.join(' ')
+      part4 = [part3, auth_country].compact.join(', ')
+
+      
+      self.update_columns(formatted_address: part4) rescue self.update_columns(formatted_address: nil)
+      self.update_columns(city: auth_city) rescue self.update_columns(city: nil)
+      self.update_columns(state: auth_state) rescue self.update_columns(state: nil)
+      self.update_columns(country: auth_country) rescue self.update_columns(country: nil)
+
+      self.phone_number = formatTelephone(auth_phone)
+      self.save
+    end
+
+    #Geo
+    if self.latitude != auth_latitude
+      self.latitude = auth_latitude
+    end
+
+    if self.longitude != auth_longitude
+      self.longitude = auth_longitude
+    end      
+
+    #LSphere
+    if self.l_sphere == nil
+      if self.latitude < 0 && self.longitude >= 0
+        quadrant = "a"
+      elsif self.latitude < 0 && self.longitude < 0
+        quadrant = "b"
+      elsif self.latitude >= 0 && self.longitude < 0
+        quadrant = "c"
+      else
+        quadrant = "d"
+      end
+      self.l_sphere = quadrant+(self.latitude.round(1).abs).to_s+(self.longitude.round(1).abs).to_s
+      self.save
+    end
+
+    #Timezones
+    if self.time_zone == nil #Add timezone of venue if not present
+      Timezone::Configure.begin do |c|
+        c.username = 'LYTiT'
+      end
+      timezone = Timezone::Zone.new :latlon => [latitude, longitude] rescue nil
+      self.time_zone = timezone.active_support_time_zone rescue nil
+    end
+
+    if self.time_zone_offset == nil
+      self.time_zone_offset = Time.now.in_time_zone(self.time_zone).utc_offset/3600.0  rescue nil
+    end
+    
+    self.save
+  end
+
+  #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
+  def self.formatTelephone(number)
+    if number == nil
+      return
+    end
+
+    digits = number.gsub(/\D/, '').split(//)
+    lead = digits[0]
+
+    if (digits.length == 11)
+      digits.shift
+    end
+
+    digits = digits.join
+    if (digits.length == 10)
+      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
+    end
+  end
+
+  #Temp method to reformat older telephones
+  def reformatTelephone
+    number = phone_number
+    if number == nil
+      return
+    end
+
+    digits = number.gsub(/\D/, '').split(//)
+    lead = digits[0]
+
+    if (digits.length == 11)
+      digits.shift
+    end
+
+    digits = digits.join
+    if (digits.length == 10)
+      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
+    end
+    update_columns(phone_number: number)
+  end  
+
+
+
+
+
+  #Old LYTiT database venue match-search
+=begin  
+  def self.old_fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, pin_drop)
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native ) 
     if vname == nil && vcountry == nil
@@ -281,67 +490,9 @@ class Venue < ActiveRecord::Base
       return venue
     end
   end
+=end
 
-  #Bounding area in which to search for a venue as determined by target lat and long.
-  def self.bounding_box(radius, lat, long)
-    box = Hash.new()
-    box["min_lat"] = lat.to_f - radius.to_i / (109.0 * 1000)
-    box["max_lat"] = lat.to_f + radius.to_i / (109.0 * 1000)
-    box["min_long"] = long.to_f - radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    box["max_long"] = long.to_f + radius.to_i / (113.2 * 1000 * Math.cos(lat.to_f * Math::PI / 180))
-    return box
-  end
-
-  def set_time_zone
-    Timezone::Configure.begin do |c|
-      c.username = 'LYTiT'
-    end
-    lat = 0/self.latitude == 0.0 ? self.latitude : 0.0
-    long = 0/self.longitude == 0.0 ? self.longitude : 0.0
-    timezone = Timezone::Zone.new :latlon => [lat, long] rescue nil
-    self.time_zone = timezone.active_support_time_zone rescue nil
-    self.save
-  end
-
-  #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
-  def self.formatTelephone(number)
-    if number == nil
-      return
-    end
-
-    digits = number.gsub(/\D/, '').split(//)
-    lead = digits[0]
-
-    if (digits.length == 11)
-      digits.shift
-    end
-
-    digits = digits.join
-    if (digits.length == 10)
-      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
-    end
-  end
-
-  #temp method to reformat older telephones
-  def reformatTelephone
-    number = phone_number
-    if number == nil
-      return
-    end
-
-    digits = number.gsub(/\D/, '').split(//)
-    lead = digits[0]
-
-    if (digits.length == 11)
-      digits.shift
-    end
-
-    digits = digits.join
-    if (digits.length == 10)
-      number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
-    end
-    update_columns(phone_number: number)
-  end  
+  
   #------------------------------------------------------------------------>
 
 
