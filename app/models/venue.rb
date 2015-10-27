@@ -442,7 +442,7 @@ class Venue < ActiveRecord::Base
         venue_instagrams = []
         for instagram in nearby_instagram_content
           if instagram.location.id == self.instagram_location_id && DateTime.strptime("#{instagram.created_time}",'%s') >= Time.now - 24.hours
-            venue_instagrams << instagram
+            venue_instagrams << instagram.to_hash
             VenueComment.delay.create_vc_from_instagram(instagram.to_hash, self, nil)            
           end
         end
