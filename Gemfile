@@ -61,6 +61,7 @@ gem 'jbuilder_cache_multi'
 gem 'twitter'
 gem 'kdtree'
 gem 'postgresql_cursor'
+gem 'pg_search', '= 1.0.3'
 
 group :development do
   gem 'better_errors'

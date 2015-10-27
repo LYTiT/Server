@@ -1,4 +1,12 @@
 class Venue < ActiveRecord::Base
+  include PgSearch
+  pg_search_scope :fuzzy_name_search,
+                :against => :name,
+                :using => {
+                  :trigram => {
+                    :threshold => 0.3 #higher value corresponds to stricter comparison
+                  }
+                }
 
   acts_as_mappable :default_units => :kms,
                      :default_formula => :sphere,
@@ -31,11 +39,14 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
+
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
-    name_search = Venue.where("LOWER(name) LIKE ?", query.downcase+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
+    name_search = Venue.fuzzy_name_search(query).order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
+=begin    
+    Venue.where("LOWER(name) LIKE ?", query.downcase+"%").order("(ACOS(least(1,COS(RADIANS(#{position_lat}))*COS(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{position_lat}))*SIN(RADIANS(#{position_long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{position_lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC LIMIT 10")
 
     if name_search == nil
       in_view_search = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ? AND LOWER(name) LIKE ?", sw_lat, ne_lat, sw_long, ne_long, "%"+query.downcase+"%").limit(10)
@@ -43,7 +54,8 @@ class Venue < ActiveRecord::Base
     else
       return name_search
     end
-
+=end
+    return name_search
   end
 
   #LYTiT database venue match-search
