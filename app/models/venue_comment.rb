@@ -147,9 +147,22 @@ class VenueComment < ActiveRecord::Base
 			end
 
 			#Instagram sometimes returns posts outside the vortex radius, we filter them out
-			if vortex != nil && origin_venue != nil
-				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+			if vortex != nil && lytit_venue != nil
+				if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
 					return nil
+				else
+					if lytit_venue.city == nil
+						if vortex.city.last == ")"
+							raw_city = vortex.city
+							lytit_venue.update_columns(city: raw_city.chomp(raw_city.last(3)).strip)
+						else
+							lytit_venue.update_columns(city: vortex.city)
+						end
+					end
+
+					if lytit_venue.country == nil
+						lytit_venue.update_columns(country: vortex.country)
+					end
 				end
 			end
 
@@ -227,7 +240,12 @@ class VenueComment < ActiveRecord::Base
 				return nil
 			else
 				if lytit_venue.city == nil
-					lytit_venue.update_columns(city: vortex.city)
+					if vortex.city.last == ")"
+						raw_city = vortex.city
+						lytit_venue.update_columns(city: raw_city.chomp(raw_city.last(3)).strip)
+					else
+						lytit_venue.update_columns(city: vortex.city)
+					end
 				end
 
 				if lytit_venue.country == nil
