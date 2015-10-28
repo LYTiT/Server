@@ -206,7 +206,7 @@ class Venue < ActiveRecord::Base
     end
 
     #Address
-    if self.city == nil || self.state == nil #Add venue details if they are not present
+    if (self.city == nil || self.state == nil) or (self.city != auth_city) #Add venue details if they are not present
       part1 = [auth_address, auth_city].compact.join(', ')
       part2 = [part1, auth_state].compact.join(', ')
       part3 = [part2, auth_postal_code].compact.join(' ')
