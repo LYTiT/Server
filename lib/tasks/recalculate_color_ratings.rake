@@ -25,14 +25,13 @@ namespace :lytit do
       end
       #if there are multiple vortexes in a city we traverse through them to save instagram API calls
       if vortex.city_que != nil
-        vortex.update_columns(active: nil)
-        next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, vortex.city_que+1)
+        vortex.update_columns(active: false)
+        next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, vortex.group_que+1).first
         #if vortex is the last in que (no vortex exists with city_que+1) activate the first vortex in the city
         if next_city_vortex == nil
-          next_city_vortex = InstagramVortex.where("city = ? AND city_que = ?", vortex.city, 1)
+          next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, 1).first
         end
-          next_city_vortex.update_columns(active: true)
-          vortex.update_columns(active: false)
+        next_city_vortex.update_columns(active: true)
       end
     end
     
