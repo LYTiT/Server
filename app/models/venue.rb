@@ -549,7 +549,7 @@ class Venue < ActiveRecord::Base
       if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
-          if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days) >= venue.latest_posted_comment_time)
+          if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= venue.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= venue.last_instagram_pull_time))
             new_instagrams << venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
