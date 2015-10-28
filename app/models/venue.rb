@@ -715,6 +715,19 @@ class Venue < ActiveRecord::Base
     return result_city
   end
 
+  def self.reverse_geo_city_lookup(lat, long)
+    query = lat.to_s + "," + long.to_s
+    result = Geocoder.search(query).first 
+    city = result.city || result.county
+    city.slice!(" County")
+  end
+
+  def self.reverse_geo_country_lookup(lat, long)
+    query = lat.to_s + "," + long.to_s
+    result = Geocoder.search(query).first 
+    country = result.country
+  end
+
   def get_city_implicitly
     result = city || cord_to_city rescue nil
   end
