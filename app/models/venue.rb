@@ -566,11 +566,14 @@ class Venue < ActiveRecord::Base
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
-      if new_instagrams.length > 0
+      if new_instagrams.compact! != nil
         total_media = []
         total_media << new_instagrams#.uniq!
-        total_media << venue.venue_comments
-        total_media.flatten!.compact!
+        lytit_vcs = venue.venue_comments
+        if lytit_vcs > 0
+          total_media << venue.venue_comments
+        end
+        total_media.flatten!
         return Kaminari.paginate_array(total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse)
       else
         return venue.venue_comments.order("time_wrapper desc")
