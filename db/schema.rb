@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151026233949) do
+ActiveRecord::Schema.define(version: 20151028200345) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -247,11 +247,12 @@ ActiveRecord::Schema.define(version: 20151026233949) do
     t.string   "city"
     t.float    "pull_radius"
     t.boolean  "active"
-    t.string   "description"
+    t.string   "details"
     t.integer  "city_que"
     t.integer  "movement_direction"
     t.integer  "turn_cycle"
     t.datetime "last_user_ping"
+    t.string   "country"
   end
 
   create_table "likes", force: true do |t|

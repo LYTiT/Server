@@ -215,10 +215,16 @@ class Api::V1::VenuesController < ApiBaseController
 		@comments = live_comments.page(params[:page]).per(10)
 	end
 
-	def get_feeds
+	def get_venue_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@venue = Venue.find_by_id(params[:venue_id])
-		@feeds = @venue.feeds.order("name ASC")
+		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{params[:venue_id]}"
+		@feeds = Feed.where("id IN (#{feed_ids})").order("name ASC")
+	end
+
+	def get_cluster_feeds
+		@user = User.find_by_authentication_token(params[:auth_token])
+		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id IN (#{params[:venue_ids]})"
+		@feeds = Feed.where("id IN (#{feed_ids})").order("name ASC")
 	end
 
 	def get_tweets

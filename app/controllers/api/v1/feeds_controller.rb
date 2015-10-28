@@ -178,7 +178,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def share_with_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
-		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], params[:user_id], feed_ids)
+		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], params[:user_id], feed_ids, params[:comment])
 		render json: { success: true }
 	end
 

@@ -6,7 +6,7 @@ class FeedShare < ActiveRecord::Base
 	has_one :feed_activity, :dependent => :destroy
 
 
-	def self.implicit_creation(instagram_details, vc_id, u_id, target_feed_ids)
+	def self.implicit_creation(instagram_details, vc_id, u_id, target_feed_ids, comment)
 		if vc_id == nil
 			vc_id = VenueComment.convert_instagram_details_to_vc(instagram_details).id
 		end
@@ -15,7 +15,8 @@ class FeedShare < ActiveRecord::Base
 
 		for target_feed_id in target_feed_ids
 			fs = FeedShare.create!(:user_id => u_id, :venue_comment_id => vc_id, :feed_id => target_feed_id)
-			FeedActivity.create!(:feed_share_id => fs.id, :activity_type => "shared moment", :feed_id => target_feed_id, :user_id => u_id, :venue_id => vc_venue.id, :adjusted_sort_position => fs.created_at.to_i)
+			fa = FeedActivity.create!(:feed_share_id => fs.id, :activity_type => "shared moment", :feed_id => target_feed_id, :user_id => u_id, :venue_id => vc_venue.id, :adjusted_sort_position => fs.created_at.to_i)
+			fac = FeedActivityComment.create!(:feed_activity_id => fa.id, :user_id => user_id, :comment => comment)
 			fs.new_feed_share_notification
 		end
 	end
