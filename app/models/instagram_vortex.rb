@@ -1,4 +1,17 @@
 class InstagramVortex < ActiveRecord::Base
+	pg_search_scope :fuzzy_country_name_search, lambda{ |target_name, rigor|
+	  raise ArgumentError unless rigor <= 1.0
+	  {
+	    :against => :country,
+	    :query => target_name,
+	    :using => {
+	      :trigram => {
+	        :threshold => rigor #higher value corresponds to stricter comparison
+	      }
+	    }
+	  }
+	}
+
 	acts_as_mappable :default_units => :kms,
 	             :default_formula => :sphere,
 	             :distance_field_name => :distance,

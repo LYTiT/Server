@@ -1,4 +1,4 @@
-json.array! @feeds do |feed|
+json.lists(@feeds) do |feed|
 	json.id feed.id
 	json.name feed.name
 	json.created_at feed.created_at
@@ -11,4 +11,8 @@ json.array! @feeds do |feed|
 	json.creator feed.user
 	json.has_added feed.has_added?(@user)
 	json.list_description feed.description
+end
+json.pagination do 
+  json.current_page @feeds.current_page
+  json.total_pages @feeds.total_pages
 end

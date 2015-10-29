@@ -135,6 +135,23 @@ class Venue < ActiveRecord::Base
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
+    if city == nil
+      closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).order("distance ASC").first
+      if closest_venue != nil
+        city = closest_venue.city
+        country = closest_venue.country
+      else
+        city = Venue.self.reverse_geo_city_lookup(latitude, longitude)
+        raw_country = Venue.self.reverse_geo_country_lookup(latitude, longitude)
+        lytit_country = InstagramVortex.fuzzy_country_name_search(raw_country, 0.85).first
+        if lytit_country != nil
+          country = lytit_country
+        else
+          country = raw_country
+        end
+      end
+    end
+
     city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s #Removing accent marks
 
     venue.update_columns(address: address) 

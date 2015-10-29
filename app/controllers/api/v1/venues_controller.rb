@@ -222,7 +222,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_cluster_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feeds = Feed.feeds_in_cluster(params[:cluster_venue_ids])
+		@feeds = Feed.feeds_in_cluster(params[:cluster_venue_ids]).page(params[:page]).per(10)
 	end
 
 	def get_tweets
