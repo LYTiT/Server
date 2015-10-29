@@ -24,10 +24,10 @@ namespace :lytit do
         VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex)
       end
       #if there are multiple vortexes in a city we traverse through them to save instagram API calls
-      if vortex.city_que != nil
+      if vortex.group_que != nil
         vortex.update_columns(active: false)
         next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, vortex.group_que+1).first
-        #if vortex is the last in que (no vortex exists with city_que+1) activate the first vortex in the city
+        #if vortex is the last in que (no vortex exists with group_que+1) activate the first vortex in the city
         if next_city_vortex == nil
           next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, 1).first
         end
