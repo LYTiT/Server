@@ -1,4 +1,6 @@
 class InstagramVortex < ActiveRecord::Base
+	include PgSearch
+	
 	pg_search_scope :fuzzy_country_name_search, lambda{ |target_name, rigor|
 	  raise ArgumentError unless rigor <= 1.0
 	  {
