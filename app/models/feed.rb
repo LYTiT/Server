@@ -38,6 +38,16 @@ class Feed < ActiveRecord::Base
 		self.venue_comments.where("venue_comments.created_at > ?", latest_viewed_time_wrapper).count
 	end
 
+	def self.feeds_in_venue(venue_id)
+		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = (#{venue_id})"
+		Feed.where("id IN (#{feed_ids})").order("name ASC")
+	end
+
+	def self.feeds_in_cluster(cluster_venue_ids)
+		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id IN (#{cluster_venue_ids})"
+		Feed.where("id IN (#{feed_ids})").order("name ASC")		
+	end
+
 	def update_media
 		self.venues.each do |v|
 			v.instagram_pull_check

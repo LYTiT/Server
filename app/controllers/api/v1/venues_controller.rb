@@ -217,14 +217,22 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_venue_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
-		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{params[:venue_id]}"
-		@feeds = Feed.where("id IN (#{feed_ids})").order("name ASC")
+		@feeds = Feed.feeds_in_venue(params[:venue_id])
+		if @feeds.count > 0
+			render 'get_venue_feeds.json.jbuilder'
+		else
+			render json: @feeds.as_json
+		end
 	end
 
 	def get_cluster_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
-		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id IN (#{params[:cluster_venue_ids]})"
-		@feeds = Feed.where("id IN (#{feed_ids})").order("name ASC")
+		@feeds = Feed.feeds_in_cluster(params[:cluster_venue_ids])
+		if @feeds.count > 0
+			render 'get_cluster_feeds.json.jbuilder'
+		else
+			render json: @feeds.as_json
+		end
 	end
 
 	def get_tweets
