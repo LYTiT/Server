@@ -184,7 +184,7 @@ class VenueComment < ActiveRecord::Base
 					origin_venue.update_columns(last_instagram_post: instagram_id)
 				end
 
-				if origin_venue.last_instagram_pull_time < created_time
+				if origin_venue.last_instagram_pull_time != nil and origin_venue.last_instagram_pull_time < created_time
 					origin_venue.update_columns(last_instagram_pull_time: created_time)
 				end
 
