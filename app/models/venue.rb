@@ -134,6 +134,8 @@ class Venue < ActiveRecord::Base
 
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
+    
+    city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s #Removing accent marks
 
     venue.update_columns(address: address) 
     part1 = [address, city].compact.join(', ')
@@ -193,7 +195,7 @@ class Venue < ActiveRecord::Base
 
   def calibrate_attributes(auth_name, auth_address, auth_city, auth_state, auth_country, auth_postal_code, auth_phone, auth_latitude, auth_longitude)
     #We calibrate with regards to the Apple Maps database
-
+    auth_city = auth_city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s #Removing accent marks
     #Name
     if self.name != auth_name
       self.name = auth_name
