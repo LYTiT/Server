@@ -133,13 +133,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
-    venue = Venue.new
-    venue.fetched_at = Time.now
-
-    venue.name = name
-    venue.latitude = latitude
-    venue.longitude = longitude
-    venue.save
+    venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
 
     venue.update_columns(address: address) 
     part1 = [address, city].compact.join(', ')
