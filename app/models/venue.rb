@@ -1070,7 +1070,7 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    if not self.rating || self.rating.round(1) == 0.0
+    if self.rating == nil or self.rating.round(1) == 0.0
       visible = false
     end
 
