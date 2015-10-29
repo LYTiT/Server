@@ -136,7 +136,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
-		begin
+		#begin
 			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
 			if origin_venue == nil
 				if Venue.name_is_proper?(instagram_hash["location"]["name"]) == true
@@ -147,16 +147,16 @@ class VenueComment < ActiveRecord::Base
 			end
 
 			#Instagram sometimes returns posts outside the vortex radius, we filter them out
-			if vortex != nil && lytit_venue != nil
-				if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
+			if vortex != nil && origin_venue != nil
+				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
 					return nil
 				else
-					if lytit_venue.city == nil
-						lytit_venue.update_columns(city: vortex.city)
+					if origin_venue.city == nil
+						origin_venue.update_columns(city: vortex.city)
 					end
 
-					if lytit_venue.country == nil
-						lytit_venue.update_columns(country: vortex.country)
+					if origin_venue.country == nil
+						origin_venue.update_columns(country: vortex.country)
 					end
 				end
 			end
@@ -207,9 +207,9 @@ class VenueComment < ActiveRecord::Base
 
 				sphere = LytSphere.create_new_sphere(origin_venue) rescue nil
 			end
-		rescue
-			puts "Failed to convert instagram to Venue Comment"
-		end
+		#rescue
+		#	puts "Failed to convert instagram to Venue Comment"
+		#end
 	end
 
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
