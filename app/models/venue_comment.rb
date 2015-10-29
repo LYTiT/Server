@@ -152,12 +152,7 @@ class VenueComment < ActiveRecord::Base
 					return nil
 				else
 					if lytit_venue.city == nil
-						if vortex.city.last == ")"
-							raw_city = vortex.city
-							lytit_venue.update_columns(city: raw_city.chomp(raw_city.last(3)).strip)
-						else
-							lytit_venue.update_columns(city: vortex.city)
-						end
+						lytit_venue.update_columns(city: vortex.city)
 					end
 
 					if lytit_venue.country == nil
