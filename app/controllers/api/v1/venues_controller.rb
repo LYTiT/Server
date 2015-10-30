@@ -470,7 +470,7 @@ class Api::V1::VenuesController < ApiBaseController
         <= #{nearby_radius}").order("popularity_rank DESC").limit(20)[rand_position]
 		else
 			@venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius}").order("popularity_rank DESC").limit(20)[rand_position]
+        > #{nearby_radius}").order("popularity_rank DESC").limit(50)[rand_position]
 		end
 	end
 
