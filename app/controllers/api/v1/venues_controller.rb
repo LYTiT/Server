@@ -314,7 +314,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def refresh_map_view
 		Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
-		@venues = Venue.where("color_rating > -1.0").order("color_rating desc")
+		@venues = Venue.where("color_rating > -1.0")
 		render 'display.json.jbuilder'
 	end
 
@@ -446,9 +446,8 @@ class Api::V1::VenuesController < ApiBaseController
 			render 'get_cluster_contexts.json.jbuilder'
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
+			@key = "contexts/venue/#{params[:venue_id]}"
 			@contexts = MetaData.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND venue_id = ?", params[:venue_id]).order("relevance_score DESC LIMIT 5")
-
-			#@venue.meta_datas.where("(NOW() - created_at) <= INTERVAL '1 DAY'").order("relevance_score DESC LIMIT 5")
 			MetaData.delay.bulck_relevance_score_update(@contexts)
 			render 'get_contexts.json.jbuilder'
 		end
