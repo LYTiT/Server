@@ -448,8 +448,11 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
 			@key = "contexts/venue/#{params[:venue_id]}"
-			@contexts = MetaData.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND venue_id = ?", params[:venue_id]).order("relevance_score DESC LIMIT 5")
-			puts "THE CONTEXTS HAVE BEEN RETRIEVED +++++++++++++++++++++++++++++++++=======>   #{@contexts.count}"
+
+			@contexts = Rails.cache.fetch(@key, :expires_in => 3.minutes) do
+				MetaData.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND venue_id = ?", params[:venue_id]).order("relevance_score DESC LIMIT 5")
+			end
+			
 			MetaData.delay.bulck_relevance_score_update(@contexts)
 			render 'get_contexts.json.jbuilder'
 		end
