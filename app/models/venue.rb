@@ -734,6 +734,9 @@ class Venue < ActiveRecord::Base
     query = lat.to_s + "," + long.to_s
     result = Geocoder.search(query).first 
     city = result.city || result.county
+    if city == nil
+      city = result.state
+    end
     city.slice!(" County")
   end
 
