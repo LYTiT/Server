@@ -234,8 +234,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		
 		if venue_ids.count == 1
-			@venue = Venue.find_by_id(venue_ids.first)
-			@key = "venue/#{venue_ids.first}/tweets/#{params[:page]}"
+			@venue = Venue.find_by_id(venue_ids.first)			
 			begin
 				venue_tweets = @venue.venue_twitter_tweets
 			rescue
