@@ -443,7 +443,7 @@ class Api::V1::VenuesController < ApiBaseController
 		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
 			@contexts = MetaData.cluster_top_meta_tags(params[:cluster_venue_ids])
-			@key = "contexts/cluster/"
+			@key = "contexts/cluster/#{params[:cluster_venue_ids].first(10)}_#{params[:cluster_venue_ids].length}"
 			render 'get_cluster_contexts.json.jbuilder'
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
@@ -452,7 +452,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@contexts = Rails.cache.fetch(@key, :expires_in => 3.minutes) do
 				MetaData.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND venue_id = ?", params[:venue_id]).order("relevance_score DESC LIMIT 5")
 			end
-			
+
 			MetaData.delay.bulck_relevance_score_update(@contexts)
 			render 'get_contexts.json.jbuilder'
 		end
