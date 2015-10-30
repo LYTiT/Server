@@ -13,7 +13,3 @@ json.cache_collection! @tweets, expires_in: 3.minutes, key: @key do |tweet|
 	json.twitter_handle Tweet.implicit_handle(tweet)
 end
 
-json.pagination do 
-  json.current_page @tweets.current_page
-  json.total_pages @tweets.total_pages
-end
