@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151029004801) do
+ActiveRecord::Schema.define(version: 20151030021906) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -178,6 +178,7 @@ ActiveRecord::Schema.define(version: 20151029004801) do
   end
 
   add_index "feed_users", ["feed_id"], name: "index_feed_users_on_feed_id", using: :btree
+  add_index "feed_users", ["id", "user_id"], name: "index_feed_users_on_id_and_user_id", unique: true, using: :btree
   add_index "feed_users", ["user_id"], name: "index_feed_users_on_user_id", using: :btree
 
   create_table "feed_venues", force: true do |t|
@@ -190,6 +191,7 @@ ActiveRecord::Schema.define(version: 20151029004801) do
   end
 
   add_index "feed_venues", ["feed_id"], name: "index_feed_venues_on_feed_id", using: :btree
+  add_index "feed_venues", ["id", "venue_id"], name: "index_feed_venues_on_id_and_venue_id", unique: true, using: :btree
   add_index "feed_venues", ["venue_id"], name: "index_feed_venues_on_venue_id", using: :btree
 
   create_table "feeds", force: true do |t|
