@@ -1,4 +1,5 @@
-json.tweets(@tweets) do |tweet|
+json.cache_collection! @tweets, expires_in: 3.minutes, key: @key do |tweet|
+
 	json.id Tweet.implicit_id(tweet)
 	json.twitter_id Tweet.implicit_twitter_id(tweet)
 	json.comment Tweet.implicit_text(tweet)
