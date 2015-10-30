@@ -100,10 +100,12 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    if (vlatitude != nil && vlongitude != nil) and result == nil
-      result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
-    else
-      return nil
+    if result == nil
+      if vlatitude != nil && vlongitude != nil)  
+        result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
+      else
+        return nil
+      end
     end
 
     result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
