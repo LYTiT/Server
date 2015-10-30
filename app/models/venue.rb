@@ -100,8 +100,10 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    if result == nil
+    if result == nil and (vlatitude != nil && vlongitude != nil)
       result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
+    else
+      return nil
     end
 
     result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
@@ -141,8 +143,8 @@ class Venue < ActiveRecord::Base
         city = closest_venue.city
         country = closest_venue.country
       else
-        city = Venue.self.reverse_geo_city_lookup(latitude, longitude)
-        raw_country = Venue.self.reverse_geo_country_lookup(latitude, longitude)
+        city = Venue.reverse_geo_city_lookup(latitude, longitude)
+        raw_country = Venue.reverse_geo_country_lookup(latitude, longitude)
         lytit_country = InstagramVortex.fuzzy_country_name_search(raw_country, 0.85).first
         if lytit_country != nil
           country = lytit_country
@@ -152,7 +154,7 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s #Removing accent marks
+    city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s rescue nil#Removing accent marks
 
     venue.update_columns(address: address) 
     part1 = [address, city].compact.join(', ')
@@ -212,7 +214,7 @@ class Venue < ActiveRecord::Base
 
   def calibrate_attributes(auth_name, auth_address, auth_city, auth_state, auth_country, auth_postal_code, auth_phone, auth_latitude, auth_longitude)
     #We calibrate with regards to the Apple Maps database
-    auth_city = auth_city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s #Removing accent marks
+    auth_city = auth_city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s rescue nil#Removing accent marks
     #Name
     if self.name != auth_name
       self.name = auth_name
@@ -226,10 +228,10 @@ class Venue < ActiveRecord::Base
       part4 = [part3, auth_country].compact.join(', ')
 
       
-      self.update_columns(formatted_address: part4) rescue self.update_columns(formatted_address: nil)
-      self.update_columns(city: auth_city) rescue self.update_columns(city: nil)
-      self.update_columns(state: auth_state) rescue self.update_columns(state: nil)
-      self.update_columns(country: auth_country) rescue self.update_columns(country: nil)
+      self.update_columns(formatted_address: part4)
+      self.update_columns(city: auth_city)
+      self.update_columns(state: auth_state)
+      self.update_columns(country: auth_country) 
 
       if auth_phone != nil
         self.phone_number = formatTelephone(auth_phone)
@@ -238,11 +240,11 @@ class Venue < ActiveRecord::Base
     end
 
     #Geo
-    if self.latitude != auth_latitude
+    if auth_latitude != nil and self.latitude != auth_latitude
       self.latitude = auth_latitude
     end
 
-    if self.longitude != auth_longitude
+    if auth_longitude != nil and self.longitude != auth_longitude
       self.longitude = auth_longitude
     end      
 
