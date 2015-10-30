@@ -101,7 +101,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result == nil
-      if vlatitude != nil && vlongitude != nil)  
+      if vlatitude != nil && vlongitude != nil 
         result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
       else
         return nil
