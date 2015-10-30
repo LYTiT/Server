@@ -2,6 +2,7 @@ class FeedVenue < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :user
 	belongs_to :venue
+	validates :venue_id, presence: true
 
 	has_one :feed_activity, :dependent => :destroy
 

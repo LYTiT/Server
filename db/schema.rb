@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151030021906) do
+ActiveRecord::Schema.define(version: 20151030025455) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -357,6 +357,7 @@ ActiveRecord::Schema.define(version: 20151030021906) do
     t.float    "relevance_score",  default: 0.0
   end
 
+  add_index "meta_data", ["created_at"], name: "index_meta_data_on_created_at", using: :btree
   add_index "meta_data", ["meta", "venue_comment_id"], name: "index_meta_data_on_meta_and_venue_comment_id", unique: true, using: :btree
   add_index "meta_data", ["meta"], name: "index_meta_data_on_meta", using: :btree
   add_index "meta_data", ["relevance_score"], name: "index_meta_data_on_relevance_score", using: :btree

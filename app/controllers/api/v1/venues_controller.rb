@@ -446,7 +446,7 @@ class Api::V1::VenuesController < ApiBaseController
 			render 'get_cluster_contexts.json.jbuilder'
 		else
 			@venue = Venue.find_by_id(params[:venue_id])
-			@contexts = @venue.meta_datas.order("relevance_score DESC LIMIT 5")
+			@contexts = @venue.meta_datas.where("(NOW() - created_at) <= INTERVAL '1 DAY'").order("relevance_score DESC LIMIT 5")
 			MetaData.delay.bulck_relevance_score_update(@contexts)
 			render 'get_contexts.json.jbuilder'
 		end

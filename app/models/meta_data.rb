@@ -35,7 +35,7 @@ class MetaData < ActiveRecord::Base
 	end
 
 	def self.cluster_top_meta_tags(venue_ids)
-		sql = "SELECT meta, SUM(relevance_score)*(COUNT(distinct (case when venue_id IN (#{venue_ids}) then venue_id end))) AS weighted_avg FROM meta_data WHERE venue_id IN (#{venue_ids}) GROUP BY meta ORDER BY weighted_avg DESC LIMIT 5"
+		sql = "SELECT meta, SUM(relevance_score)*(COUNT(distinct (case when venue_id IN (#{venue_ids}) then venue_id end))) AS weighted_avg FROM meta_data WHERE venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' GROUP BY meta ORDER BY weighted_avg DESC LIMIT 5"
 		results = ActiveRecord::Base.connection.execute(sql)
 	end
 end

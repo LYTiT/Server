@@ -1,6 +1,8 @@
 class FeedUser < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :feed
+	validates :user_id, presence: true
+
 
 	has_one :feed_activity, :dependent => :destroy
 
