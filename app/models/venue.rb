@@ -100,7 +100,7 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    if result == nil and (vlatitude != nil && vlongitude != nil)
+    if (vlatitude != nil && vlongitude != nil) and result == nil
       result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
     else
       return nil
