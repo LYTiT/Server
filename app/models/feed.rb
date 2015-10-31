@@ -5,7 +5,8 @@ class Feed < ActiveRecord::Base
   		:using => {
     		:tsearch => {
     			:any_word => true, 
-    			:ignoring => :accents
+    			:ignoring => :accents,
+    			:prefix => true
     		}
     	}, 
   		:against => {
