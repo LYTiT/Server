@@ -1,4 +1,18 @@
 class Feed < ActiveRecord::Base
+	include PgSearch
+
+  	pg_search_scope :search,
+  		:using => {
+    		:tsearch => {
+    			:any_word => true, 
+    			:ignoring => :accents
+    		}
+    	}, 
+  		:against => {
+    		:name => 'A',
+    		:description => 'B'
+    	}    	
+    	
 	has_many :feed_venues, :dependent => :destroy
 	has_many :venues, through: :feed_venues
 	has_many :venue_comments, through: :venues

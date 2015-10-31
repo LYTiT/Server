@@ -634,12 +634,16 @@ class Venue < ActiveRecord::Base
   end
 
   def self.instagram_content_pull(lat, long)
-
     if lat != nil && long != nil
       
       surrounding_lyts_radius = 10000 * 1/1000
       if not Venue.within(surrounding_lyts_radius.to_f, :units => :kms, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
-        new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100)
+        new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100, :min_timestamp => (Time.now-24.hours).to_time.to_i)
+
+        #If more than 70 Instagram in area over the past day we do a vortex proximity check to see if one needs to be dropped
+        if new_instagrams.count > 70
+          InstagramVortex.check_nearby_vortex_existence(lat, long)
+        end
 
         for instagram in new_instagrams
           VenueComment.convert_instagram_to_vc(instagram, nil, nil)
