@@ -1,0 +1,75 @@
+<% provide(:title, "Lumen Game FAQ") %>
+<%= favicon_link_tag %>
+<nav class="navbar navbar-default navbar-flat">
+   <div class="container">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         </button>
+         <div class="navbar-brand" href="/"><%= image_tag "lytit_official_white_resized.png"%> </div>
+      </div>
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="navbar-collapse collapse navbar-collapse-flat">
+         <ul class="nav navbar-nav navbar-right">
+            <li class="<%= yield(:home) %>"><%= link_to "HOME", root_path %></li>
+            <li class="<%= yield(:lumen_game) %>"><%= link_to "LUMEN GAME", lumen_game_path %></li>
+            <!--<li class="<%= yield(:blog) %>"><%= link_to "BLOG", blog_path %></li>-->
+            <li class="<%= yield(:contact) %>"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a>
+            <li class="twitter" href="/"><%= link_to "L", "https://twitter.com/LYTiTApp"%></li>
+            <li class="facebook" href="/"><%= link_to "F", "https://facebook.com/LYTiTApp" %></li>
+         </ul>
+      </div>
+      <!-- /.navbar-collapse -->
+   </div>
+   <!-- /.container-fluid -->
+</nav>
+<div class="container">
+   <div class="LumenGameDetails">
+      <h1>FAQ</h1>
+      <h2><b>What are Lumens?</b></h2>
+      <p>Lumens are points assigned within LYTiT for engaging with the application. They are awarded when you Map Moments (post texts, images, and videos) and respond to Moment Requests. Image and video posts further accumulate Lumens when others view them (a video acquires more Lumens per view than an image does).</p>
+      <br /><br />
+      <h2><b>What is the Lumen Game?</b></h2>
+      <p>The Lumen Game is a contest that celebrates the launch of the LYTiT application amongst college students. The premise is that at the end of each month 45 students who were the frist to acquire 100 Lumens in that month are awarded $100.</p>
+      <br /><br />
+      <h2><b>How do I play?</b></h2>
+      <p>To participate in the Lumen Game you must be a college student with a valid <a style="font-style: italic;padding-right:2px;">.edu</a> e-mail. Upon downloading the LYTiT application all you need to do is create an account using your <a style="font-style: italic;padding-right:2px;">.edu</a> e-mail and you will be automatically entered into the Game.</p>
+      <br /><br />
+      <h2><b>So I have to have a total of at least 100 Lumens to win?</b></h2>
+      <p>No! Lumen Game winners are selected on a gross Lumen basis - you need to EARN at least 100 Lumens over the course of the month and not necessarily ever have a balance of 100 Lumens (i.e. Lumens spent on requests are not subtracted from your earnings in the Lumen Game).</p>
+      <br /><br />
+      <h2><b>How do I know if I won?</b></h2>
+      <p>On the first day of the month, the previous month's winners will be determined and if you are one of them you will be sent an e-mail as well as an in app notificaiton. Additionally, the Lumen break-out graph in your profile will turn gold.</p>
+      <br /><br />
+      <h2><b>Do my previous month's Lumens count for the next month's Lumen Game?</b></h2>
+      <p>No, over the course of the new month you must earn 100 new Lumens.</p>
+      <br /><br />
+      <br /><br /><br /><br />
+   </div>
+   </div>
+</div>
+<div class="footer-area">
+   <div class="container">
+      <div class="row">
+         <div class="col-sm-4">
+            <p class="copy-right">© 2015 LYTiT, INC.</p>
+         </div>
+         <!--/col-sm-5 -->
+         <div class="col-sm-8 footer-right">
+            <ul>
+               <li><%= link_to "Terms & Conditions", tnc_path %></li>
+               <li><%= link_to "Privacy", privacy_path %></li>
+               <li><a href="mailto:support@lytit.com">Support</a></li>
+            </ul>
+         </div>
+         <!--/col-sm-7 -->
+      </div>
+      <!--/row -->
+   </div>
+   <!--/container -->
+</div>
+<!--/footer-area -->

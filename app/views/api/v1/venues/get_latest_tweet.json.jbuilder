@@ -1,0 +1,7 @@
+json.id @tweet.try(:id)
+json.twitter_id @tweet.try(:twitter_id)
+json.comment @tweet.try(:tweet_text)
+json.created_at @tweet.try(:timestamp)
+json.user_name @tweet.try(:author_name)
+json.media_url @tweet.try(:author_avatar)
+json.user_id @tweet.try(:author_id)

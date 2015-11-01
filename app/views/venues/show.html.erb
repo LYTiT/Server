@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-8 col-sm-7 venue_messages">
+      <div class="venue-selector-container">
+        <% if @venue.errors.full_messages.present? %>
+          <div class="alert alert-danger">
+            <strong>Oops! Please fix the following and try again.</strong>
+            <ul>
+              <% @venue.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+        <% if flash[:notice].present? %>
+          <div class="alert alert-success">
+            <strong>Well done!</strong>
+            <%= flash[:notice] %>
+          </div>
+        <% end %>
+        <h1 class="venue-selector <%= current_user.venues.size > 1 ? 'active' : nil %>">
+          <a href="#"><%= @venue.name %></a>
+          <small>Please type in up to four promotions/messages that will be displayed on your venue page.</small>
+        </h1>      
+        <% if current_user.venues.size > 1 %>
+          <ul class="list-group">
+            <% current_user.venues.order(:name).each do |venue| %>
+              <li class="list-group-item">
+                <%= link_to venue.name, venue %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+      <%= form_for @venue, method: :put, html: {onsubmit: "venue_messages.assign_positions();"}  do |f| %>
+        <ul class="list-group venue_messages_list messages_list" id="messages_list">
+          <%= f.fields_for :venue_messages do |builder| %>
+            <% render "venue_message_fields", :f => builder %>
+          <% end %>
+        </ul>
+        <ul class="list-group venue_messages_list add_to_list <%= @venue.messages.size == 4 ? "hide" : "" %>">
+          <li class="list-group-item" onclick="<%= function_to_add_fields "Type in your promotion/message.", f, :venue_messages, ".venue_messages_list.messages_list" %>">Type in your promotion/message.</li>
+        </ul>
+        <!--
+        <div class="input-group display_menu <%#= @venue.menu_link.present? ? "link" : "no_link" %>">
+          <span class="input-group-addon">
+            <input id="display_menu_opt" type="checkbox" <%#= @venue.menu_link.present? ? "checked" : nil %>>
+          </span>
+          <%#= f.text_field :menu_link, class: "form-control" %>
+          <div class="default">Display Menu</div>
+          <div class="value">
+            <%#= link_to @venue.menu_link, @venue.menu_link, target: "_blank" %>
+            <a href="#" class="btn btn-xs btn-primary btn-edit">Edit</a>
+          </div>
+        </div>
+        -->
+        <input type="submit" value="Save/Publish" class="btn btn-primary btn-save"> 
+      <% end %>
+    </div>
+    <div class="col-md-4 col-sm-5 venue_messages">
+      <div class="iphone_mockup_container">
+        <%= image_tag "iphone_mockup.png" %>
+        <span class="venue_name"><%= @venue.name %></span>
+        <div class="marquee venue_message"><%= @venue.messages.first.try(:message) %></div>s
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade" style="display: none;"></div>

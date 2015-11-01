@@ -1,0 +1,9 @@
+json.id @venue.id
+json.name @venue.name
+json.formatted_address @venue.address
+json.city @venue.city
+json.latitude @venue.latitude
+json.longitude @venue.longitude
+json.color_rating @venue.color_rating
+json.time_zone_offset @venue.time_zone_offset
+json.instagram_location_id @venue.instagram_location_id

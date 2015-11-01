@@ -1,0 +1,12 @@
+json.id @venue_comment.id
+json.comment @venue_comment.comment
+json.media_type @venue_comment.media_type
+json.media_url @venue_comment.image_url_1
+json.user_id @venue_comment.user_id
+json.user_name @venue_comment.user.try(:name)
+json.username_private @venue_comment.username_private
+json.venue_id @venue_comment.venue_id
+json.venue_name @venue_comment.venue.try(:name)
+json.total_views @venue_comment.views
+json.created_at @venue_comment.created_at
+json.updated_at @venue_comment.updated_at

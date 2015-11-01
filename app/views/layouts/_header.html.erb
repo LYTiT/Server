@@ -1,0 +1,23 @@
+<div role="navigation" class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <div class="pull-left">
+        <% if signed_in? %>
+          <button class="icon-menu link-menu jsc-sidebar-trigger navbar-toggle show menu-button" id="hamburger-menu-button" type="button">
+            <span class="hamburger">
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </span>
+            <span class="text">Menu</span>
+          </button>
+        <% end %>
+      </div>
+      <div class="pull-right">
+        <a href="/" class="navbar-brand">
+         <!-- <%= image_tag "icon.png" %> -->
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

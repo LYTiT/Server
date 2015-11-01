@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head lang="en" data-placeholder-focus="false">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LYTiT</title>
+  <%= stylesheet_link_tag :application, :media => 'all' %>
+  <%= csrf_meta_tags %>
+  <style>
+    html {
+      height: 100%;
+      overflow-x: hidden;
+    }
+  </style>
+</head>
+<body class="<%= body_class %> venue_manager">
+  <div class="wrapper jsc-sidebar-content jsc-sidebar-pulled">  
+  <%= render 'layouts/header' %>
+  <div class="container main-content">
+    <%= yield %>
+  </div>
+  </div>
+  <%= render 'layouts/hamburger_menu' %>
+  <%= render 'layouts/contact_us' %>
+  <%= render 'layouts/delete_message_popup' %>
+  <%= render 'javascript' %>
+</body>
+</html>
