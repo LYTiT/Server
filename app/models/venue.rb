@@ -630,7 +630,7 @@ class Venue < ActiveRecord::Base
       end
 
       new_instagrams.compact!
-      if a.count > 0
+      if new_instagrams.count > 0
         total_media = []
         total_media << new_instagrams#.uniq!
         lytit_vcs = venue.venue_comments
