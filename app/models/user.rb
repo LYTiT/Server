@@ -440,7 +440,7 @@ class User < ActiveRecord::Base
 
   def aggregate_list_feed
     user_feed_ids = "SELECT feed_id from feed_users WHERE user_id = #{self.id}"
-    FeedActivity.where("feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL", last_activity_id).includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")    
+    FeedActivity.where("feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")    
   end
 
   #------------------------------------------------------------->
