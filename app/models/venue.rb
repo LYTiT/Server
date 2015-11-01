@@ -629,7 +629,8 @@ class Venue < ActiveRecord::Base
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
-      if new_instagrams.compact!.first != nil
+      new_instagrams.compact!
+      if a.count > 0
         total_media = []
         total_media << new_instagrams#.uniq!
         lytit_vcs = venue.venue_comments
