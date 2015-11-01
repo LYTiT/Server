@@ -1,4 +1,4 @@
-json.cache! @comments do |json|
+json.cache_collection! @comments, expires_in: 3.minutes, key: @view_cache_key  do |json|
   json.comments(@comments) do |comment|
     json.id VenueComment.implicit_id(comment)
     json.instagram_id VenueComment.implicit_instagram_id(comment)
