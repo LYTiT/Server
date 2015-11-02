@@ -204,8 +204,16 @@ class Api::V1::VenuesController < ApiBaseController
 			num_page_entries = 1000
 		end
 
-		venues = Venue.all.where("color_rating > -1.0").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
-		@venues = venues.page(params[:page]).per(num_page_entries)
+		cache_key = "lyt_map_by_parts"
+		venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+			Venue.all.where("color_rating > -1.0")
+		end
+
+		ordered_venues = venues.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
+		user_city = ordered_venues.first.city || ordered_venues[1].city || ordered_venues[2].city || ordered_venues[3].city || ordered_venues[4].city
+		@view_cache_key = cache_key+"/#{user_city}/part_"+params[:page]
+
+		@venues = ordered_venues.page(params[:page]).per(num_page_entries)
 		render 'display_by_parts.json.jbuilder'
 	end
 

@@ -1,3 +1,4 @@
+json.cache! @venues, expires_in: 5.minutes, key: @view_cache_key  do |json|
   json.venues(@venues) do |v|
     json.id v.id
     json.name v.name
@@ -10,3 +11,4 @@
     json.instagram_location_id v.instagram_location_id
     json.total_pages @venues.total_pages
   end
+end
