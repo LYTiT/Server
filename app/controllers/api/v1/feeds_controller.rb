@@ -166,7 +166,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_likers
 		fa = FeedActivity.find_by_id(params[:feed_activity_id])
-		liker_ids = "SELECT user_id FROM likes WHERE feed_id = #{fa.id}"
+		liker_ids = "SELECT liker_id FROM likes WHERE feed_activity_id = #{fa.id}"
 		@likers = User.where("id IN (#{liker_ids})").page(params[:page]).per(10)
 	end
 
