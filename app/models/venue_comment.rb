@@ -15,7 +15,11 @@ class VenueComment < ActiveRecord::Base
 	before_destroy :deincrement_feed_moment_counts
 
 	def deincrement_feed_moment_counts
-		self.venue.feeds.update_all("num_moments = num_moments-1")		
+		begin
+			self.venue.feeds.update_all("num_moments = num_moments-1")
+		rescue
+			"Something went wrong"
+		end
 	end
 
 	def comment_or_media
