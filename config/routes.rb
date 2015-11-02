@@ -102,6 +102,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_venue_comments'
         get 'get_activity_object'
+        get 'get_likers'
       end
 
       resources :support_issues do
@@ -110,7 +111,6 @@ LytitServer::Application.routes.draw do
         end
         get 'get_support_chat'
         post 'send_support_message'
-        get 'get_likers'
       end
 
       resources :announcement do
