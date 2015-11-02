@@ -30,7 +30,8 @@ class FeedUser < ActiveRecord::Base
 		    :user_id => user.id,
 		    :user_name => user.name,
 		    :feed_id => feed.id,
-		    :feed_name => feed.name
+		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color
 
 		}
 

@@ -42,6 +42,7 @@ class FeedVenue < ActiveRecord::Base
 		    :user_name => user.name,
 		    :feed_id => feed_id,
 		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color,
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
 		    :added_note => description

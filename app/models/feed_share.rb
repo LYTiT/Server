@@ -42,7 +42,8 @@ class FeedShare < ActiveRecord::Base
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
 		    :feed_id => feed_id,
-		    :feed_name => feed.name
+		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color
 		}
 
 
