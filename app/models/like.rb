@@ -40,7 +40,7 @@ class Like < ActiveRecord::Base
 		    :activity_user_id => liked_id,
 		    :feed_id => feed_activity.feed_id,
 		    :feed_name => feed_activity.feed.try(:name),
-		    :feed_color => feed.feed_color,
+		    :feed_color => feed_activity.feed.feed_color,
 		    :venue_id => feed_activity.venue_id,
 		    :venue_name => feed_activity.venue.try(:name),
 
