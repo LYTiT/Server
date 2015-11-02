@@ -12,6 +12,11 @@ namespace :lytit do
       Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
     end
 
+    $scheduler.every '3h' do
+      puts "Venue Comment Cleanup"
+      VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
+    end
+
     #Instagram Pulling and LYT Updating ------------------------------>
     $scheduler.every '10m' do
       puts "Scheduler run at #{Time.now}"
