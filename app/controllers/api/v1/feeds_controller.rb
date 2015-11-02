@@ -164,6 +164,12 @@ class Api::V1::FeedsController < ApiBaseController
 		@activity = FeedActivity.find_by_id(params[:feed_activity_id])
 	end
 
+	def get_likers
+		fa = FeedActivity.find_by_id(params[:feed_activity_id])
+		liker_ids = "SELECT user_id FROM likes WHERE feed_id = #{fa.id}"
+		@likers = User.where("id IN (#{liker_ids})").page(params[:page]).per(10)
+	end
+
 	def add_new_topic_to_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
 		FeedTopic.delay.implicit_creation(params[:user_id], params[:topic], feed_ids)

@@ -110,6 +110,7 @@ LytitServer::Application.routes.draw do
         end
         get 'get_support_chat'
         post 'send_support_message'
+        get 'get_likers'
       end
 
       resources :announcement do
