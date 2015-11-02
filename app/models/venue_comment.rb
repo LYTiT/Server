@@ -18,7 +18,7 @@ class VenueComment < ActiveRecord::Base
 		begin
 			self.venue.feeds.update_all("num_moments = num_moments-1")
 		rescue
-			"Something went wrong"
+			p "Something went wrong"
 		end
 	end
 

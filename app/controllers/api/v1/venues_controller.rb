@@ -186,7 +186,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def refresh_map_view
 		Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
-		@venues = Venue.where("color_rating > -1.0")
+		cache_key = "lyt_map"
+		@view_cache_key = cache_key+"/view"
+		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+			Venue.where("color_rating > -1.0")
+		end
 		render 'display.json.jbuilder'
 	end
 
