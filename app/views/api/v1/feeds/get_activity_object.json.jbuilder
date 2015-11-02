@@ -7,7 +7,14 @@ json.created_at @activity.created_at
 json.num_chat_participants @activity.num_participants
 json.latest_chat_message @activity.latest_comment_time
 
-json.activity_venue @activity.venue
+json.venue_id activity.venue_id
+json.venue_name activity.venue.try(:name)
+json.city activity.venue.try(:city)
+json.country activity.venue.try(:country)
+json.latitude activity.venue.try(:latitude)
+json.longitude activity.venue.try(:longitude)
+json.color_rating activity.venue.try(:color_rating)
+json.instagram_location_id activity.venue.try(:instagram_location_id)
 json.added_note @activity.feed_venue.try(:description)
 
 json.venue_comment_id @activity.feed_share.try(:venue_comment_id)
