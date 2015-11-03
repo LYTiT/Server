@@ -257,7 +257,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_aggregate_activity
-		@user = User.where("id = ?", params[:user_id]).eager_load(:likes).where("likes.created_at > ?", Time.now-1.day)
+		@user = User.where("id = ?", params[:user_id]).eager_load(:likes).where("likes.created_at > ?", Time.now-1.day).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 	end
 	#-------------------------------------------------->
