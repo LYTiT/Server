@@ -154,7 +154,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_activity
-		@user = User.where("authentication_token = ?", params[:auth_token]).eager_load(:likes).where("likes.created_at > ?", Time.now-1.day)
+		@user = User.where("authentication_token = ?", params[:auth_token]).eager_load(:likes).where("likes.created_at > ?", Time.now-1.day).first
 		@feed = Feed.find_by_id(params[:feed_id])
 		@activities = @feed.activity_of_the_day.page(params[:page]).per(10)
 	end
