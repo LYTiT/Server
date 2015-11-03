@@ -161,12 +161,12 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_activity_object
 		@user = User.find_by_id(params[:user_id])
-		@activity = FeedActivity.find_by_id(params[:feed_activity_id])
+		@activity = Activity.find_by_id(params[:activity_id])
 	end
 
 	def get_likers
-		fa = FeedActivity.find_by_id(params[:feed_activity_id])
-		liker_ids = "SELECT liker_id FROM likes WHERE feed_activity_id = #{fa.id}"
+		fa = Activity.find_by_id(params[:activity_id])
+		liker_ids = "SELECT liker_id FROM likes WHERE activity_id = #{fa.id}"
 		@likers = User.where("id IN (#{liker_ids})").page(params[:page]).per(10)
 	end
 
@@ -182,28 +182,28 @@ class Api::V1::FeedsController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def like_feed_activity
+	def like_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
-		if params[:feed_activity_id] != nil
-			fa = FeedActivity.find_by_id(params[:feed_activity_id])
+		if params[:activity_id] != nil
+			fa = Activity.find_by_id(params[:activity_id])
 		else
-			fa = FeedActivity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
+			fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
 		end
 		fa.increment!(:num_likes, 1)
-		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :feed_activity_id => fa.id)
+		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :activity_id => fa.id)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not like feed activity'] } }, status: :unprocessable_entity
 		end
 	end
 
-	def unlike_feed_activity
-		if params[:feed_activity_id] != nil
-			fa = FeedActivity.find_by_id(params[:feed_activity_id])
+	def unlike_activity
+		if params[:activity_id] != nil
+			fa = Activity.find_by_id(params[:activity_id])
 		else
-			fa = FeedActivity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
+			fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
 		end
-		if Like.where("liker_id = ? AND feed_activity_id = ?", params[:user_id], params[:feed_activity_id]).first.try(:delete)
+		if Like.where("liker_id = ? AND activity_id = ?", params[:user_id], params[:activity_id]).first.try(:delete)
 			fa.decrement!(:num_likes, 1)
 			render json: { success: true }
 		else
@@ -211,13 +211,13 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def add_feed_activity_comment
-		fac = FeedActivityComment.create!(:feed_activity_id => params[:feed_activity_id], :user_id => params[:user_id], :comment => params[:comment])
+	def add_activity_comment
+		fac = ActivityComment.create!(:activity_id => params[:activity_id], :user_id => params[:user_id], :comment => params[:comment])
 		if fac
-			if params[:feed_activity_id] != nil
-				fa = FeedActivity.find_by_id(params[:feed_activity_id])
+			if params[:activity_id] != nil
+				fa = Activity.find_by_id(params[:activity_id])
 			else
-				fa = FeedActivity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
+				fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
 			end
 			fa.update_comment_parameters(Time.now, params[:user_id])
 			render json: { success: true }
@@ -226,8 +226,8 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def get_feed_activity_comments
-		@activity_comments = FeedActivity.find_by_id(params[:feed_activity_id]).feed_activity_comments.includes(:user).order("id DESC").page(params[:page]).per(10)
+	def get_activity_comments
+		@activity_comments = Activity.find_by_id(params[:activity_id]).activity_comments.includes(:user).order("id DESC").page(params[:page]).per(10)
 	end
 
 	def get_venue_comments

@@ -4,14 +4,14 @@ class FeedVenue < ActiveRecord::Base
 	belongs_to :venue
 	validates :venue_id, presence: true
 
-	has_one :feed_activity, :dependent => :destroy
+	has_one :activity, :dependent => :destroy
 
 	after_create :new_venue_notification
 	after_create :create_feed_acitivity
 	after_create :adjust_feed_moment_count
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
 	end
 
 	def adjust_feed_moment_count
@@ -46,7 +46,7 @@ class FeedVenue < ActiveRecord::Base
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
 		    :added_note => description,
-		    :activity_id => self.feed_activity_id
+		    :activity_id => self.activity_id
 
 		}
 

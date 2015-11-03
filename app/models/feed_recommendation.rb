@@ -1,12 +1,12 @@
 class FeedRecommendation < ActiveRecord::Base
 	belongs_to :feed
 
-	has_one :feed_activity, :dependent => :destroy
+	has_one :activity, :dependent => :destroy
 	after_create :create_feed_acitivity
 	after_create :spotlyt_notification
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :activity_type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at).to_i)
+		Activity.create!(:feed_id => feed_id, :activity_type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at).to_i)
 	end
 
 	def set_image_url

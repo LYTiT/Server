@@ -130,6 +130,113 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE activities (
+    id integer NOT NULL,
+    feed_id integer,
+    activity_type character varying(255),
+    feed_share_id integer,
+    feed_venue_id integer,
+    feed_user_id integer,
+    feed_recommendation_id integer,
+    adjusted_sort_position bigint,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone,
+    num_likes integer DEFAULT 0,
+    num_comments integer DEFAULT 0,
+    feed_topic_id integer,
+    user_id integer,
+    venue_id integer,
+    latest_comment_time timestamp without time zone,
+    num_participants integer DEFAULT 0
+);
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE activities_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE activities_id_seq OWNED BY activities.id;
+
+
+--
+-- Name: activity_comments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE activity_comments (
+    id integer NOT NULL,
+    feed_activity_id integer,
+    user_id integer,
+    comment text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: activity_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE activity_comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activity_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE activity_comments_id_seq OWNED BY activity_comments.id;
+
+
+--
+-- Name: activity_feeds; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE activity_feeds (
+    id integer NOT NULL,
+    activity_id integer,
+    feed_id integer
+);
+
+
+--
+-- Name: activity_feeds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE activity_feeds_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: activity_feeds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE activity_feeds_id_seq OWNED BY activity_feeds.id;
+
+
+--
 -- Name: announcement_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -334,83 +441,6 @@ CREATE SEQUENCE exported_data_csvs_id_seq
 --
 
 ALTER SEQUENCE exported_data_csvs_id_seq OWNED BY exported_data_csvs.id;
-
-
---
--- Name: feed_activities; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE feed_activities (
-    id integer NOT NULL,
-    feed_id integer,
-    activity_type character varying(255),
-    feed_share_id integer,
-    feed_venue_id integer,
-    feed_user_id integer,
-    feed_recommendation_id integer,
-    adjusted_sort_position bigint,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    num_likes integer DEFAULT 0,
-    num_comments integer DEFAULT 0,
-    feed_topic_id integer,
-    user_id integer,
-    venue_id integer,
-    latest_comment_time timestamp without time zone,
-    num_participants integer DEFAULT 0
-);
-
-
---
--- Name: feed_activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE feed_activities_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: feed_activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE feed_activities_id_seq OWNED BY feed_activities.id;
-
-
---
--- Name: feed_activity_comments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE feed_activity_comments (
-    id integer NOT NULL,
-    feed_activity_id integer,
-    user_id integer,
-    comment text,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: feed_activity_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE feed_activity_comments_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: feed_activity_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE feed_activity_comments_id_seq OWNED BY feed_activity_comments.id;
 
 
 --
@@ -1732,6 +1762,27 @@ ALTER SEQUENCE vortex_paths_id_seq OWNED BY vortex_paths.id;
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY activities ALTER COLUMN id SET DEFAULT nextval('activities_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY activity_comments ALTER COLUMN id SET DEFAULT nextval('activity_comments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY activity_feeds ALTER COLUMN id SET DEFAULT nextval('activity_feeds_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY announcement_users ALTER COLUMN id SET DEFAULT nextval('announcement_users_id_seq'::regclass);
 
 
@@ -1768,20 +1819,6 @@ ALTER TABLE ONLY delayed_jobs ALTER COLUMN id SET DEFAULT nextval('delayed_jobs_
 --
 
 ALTER TABLE ONLY exported_data_csvs ALTER COLUMN id SET DEFAULT nextval('exported_data_csvs_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY feed_activities ALTER COLUMN id SET DEFAULT nextval('feed_activities_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY feed_activity_comments ALTER COLUMN id SET DEFAULT nextval('feed_activity_comments_id_seq'::regclass);
 
 
 --
@@ -2037,6 +2074,14 @@ ALTER TABLE ONLY vortex_paths ALTER COLUMN id SET DEFAULT nextval('vortex_paths_
 
 
 --
+-- Name: activity_feeds_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY activity_feeds
+    ADD CONSTRAINT activity_feeds_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: announcement_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2088,7 +2133,7 @@ ALTER TABLE ONLY exported_data_csvs
 -- Name: feed_activities_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY feed_activities
+ALTER TABLE ONLY activities
     ADD CONSTRAINT feed_activities_pkey PRIMARY KEY (id);
 
 
@@ -2320,7 +2365,7 @@ ALTER TABLE ONLY tweets
 -- Name: user_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
-ALTER TABLE ONLY feed_activity_comments
+ALTER TABLE ONLY activity_comments
     ADD CONSTRAINT user_comments_pkey PRIMARY KEY (id);
 
 
@@ -2396,6 +2441,48 @@ CREATE INDEX delayed_jobs_priority ON delayed_jobs USING btree (priority, run_at
 
 
 --
+-- Name: index_activities_on_adjusted_sort_position; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activities_on_adjusted_sort_position ON activities USING btree (adjusted_sort_position);
+
+
+--
+-- Name: index_activities_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activities_on_feed_id ON activities USING btree (feed_id);
+
+
+--
+-- Name: index_activity_comments_on_feed_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activity_comments_on_feed_activity_id ON activity_comments USING btree (feed_activity_id);
+
+
+--
+-- Name: index_activity_comments_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activity_comments_on_user_id ON activity_comments USING btree (user_id);
+
+
+--
+-- Name: index_activity_feeds_on_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activity_feeds_on_activity_id ON activity_feeds USING btree (activity_id);
+
+
+--
+-- Name: index_activity_feeds_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_activity_feeds_on_feed_id ON activity_feeds USING btree (feed_id);
+
+
+--
 -- Name: index_announcement_users_on_announcement_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2449,34 +2536,6 @@ CREATE INDEX index_comment_views_on_venue_comment_id ON comment_views USING btre
 --
 
 CREATE UNIQUE INDEX index_comment_views_on_venue_comment_id_and_user_id ON comment_views USING btree (venue_comment_id, user_id);
-
-
---
--- Name: index_feed_activities_on_adjusted_sort_position; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_activities_on_adjusted_sort_position ON feed_activities USING btree (adjusted_sort_position);
-
-
---
--- Name: index_feed_activities_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_activities_on_feed_id ON feed_activities USING btree (feed_id);
-
-
---
--- Name: index_feed_activity_comments_on_feed_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_activity_comments_on_feed_activity_id ON feed_activity_comments USING btree (feed_activity_id);
-
-
---
--- Name: index_feed_activity_comments_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_activity_comments_on_user_id ON feed_activity_comments USING btree (user_id);
 
 
 --
@@ -3585,4 +3644,8 @@ INSERT INTO schema_migrations (version) VALUES ('20151031024744');
 INSERT INTO schema_migrations (version) VALUES ('20151031025015');
 
 INSERT INTO schema_migrations (version) VALUES ('20151031083835');
+
+INSERT INTO schema_migrations (version) VALUES ('20151103071147');
+
+INSERT INTO schema_migrations (version) VALUES ('20151103073516');
 

@@ -36,7 +36,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def activity
-		self.feed_activities.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :feed_activity_comments, :venue_comment).order("adjusted_sort_position DESC")
+		self.feed_activities.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :activity_comments, :venue_comment).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url

@@ -4,13 +4,13 @@ class FeedUser < ActiveRecord::Base
 	validates :user_id, presence: true
 
 
-	has_one :feed_activity, :dependent => :destroy
+	has_one :activity, :dependent => :destroy
 
 	after_create :new_user_notification
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		FeedActivity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+		Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
 	end
 
 	def new_user_notification

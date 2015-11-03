@@ -1,19 +1,20 @@
 class FeedTopic < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :user
-	has_one :feed_activity, :dependent => :destroy
+	has_one :activity, :dependent => :destroy
 
 	after_create :create_feed_acitivity
 	after_create :new_topic_notification
 
 	def self.implicit_creation(u_id, topic_message, target_feed_ids)
+		ft = FeedTopic.create!(:user_id => u_id, :feed_id => target_feed_id, :message => topic_message)
 		for target_feed_id in target_feed_ids
-			FeedTopic.create!(:user_id => u_id, :feed_id => target_feed_id, :message => topic_message)
+			TopicLinkedFeeds.create!(:feed_topic_id => self.id, :feed_id => target_feed_id)
 		end
 	end
 
 	def create_feed_acitivity
-		FeedActivity.implicit_topic_activity_create(self.id, self.user_id, self.feed_id, self.message)
+		Activity.implicit_topic_activity_create(self.id, self.user_id, self.feed_id, self.message)
 	end
 
 	def new_topic_notification
@@ -28,7 +29,7 @@ class FeedTopic < ActiveRecord::Base
 	def send_new_topic_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :activity_id => feed_activity.id,
+		    :activity_id => activity.id,
 		    :type => 'new_topic_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,
@@ -44,7 +45,7 @@ class FeedTopic < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		preview = "#{user.name} opened a new topic in #{feed_activity.feed.name}"
+		preview = "#{user.name} opened a new topic in #{activity.feed.name}"
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})

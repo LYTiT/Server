@@ -4,7 +4,7 @@ class Like < ActiveRecord::Base
 	
 	belongs_to :feed_venue
 
-	belongs_to :feed_activity
+	belongs_to :activity
 
 	validates :liker_id, presence: true
 	validates :liked_id, presence: true
@@ -12,38 +12,38 @@ class Like < ActiveRecord::Base
 	after_create :new_like_notification
 
 	def new_like_notification
-		if feed_activity.user_id != liker_id
+		if activity.user_id != liker_id
 			self.delay.send_new_like_notification
 		end
 	end
 
 	def send_new_like_notification
-		if feed_activity.activity_type == "added venue"
+		if activity.activity_type == "added venue"
 			payload_type = "added_venue_like_notification"
-			message = "#{liker.name} liked your added venue to #{feed_activity.feed.name}"
+			message = "#{liker.name} liked your added venue to #{activity.feed.name}"
 			notification_type = "Added venue like"
 		else
 			payload_type = "share_like_notification"
-			message = "#{liker.name} liked your shared Moment in #{feed_activity.feed.name}"
+			message = "#{liker.name} liked your shared Moment in #{activity.feed.name}"
 			notification_type = "Message like"
 		end
 
 		payload = {
 		    :object_id => self.id, 
 		    :type => "like_notification",
-		    :activity_id => feed_activity.id,
-		    :activity_type => feed_activity.activity_type,
-		    :media_type => feed_activity.feed_share.try(:media_type),
+		    :activity_id => activity.id,
+		    :activity_type => activity.activity_type,
+		    :media_type => activity.feed_share.try(:media_type),
 		    :user_name => liker.name,
 		    :user_phone => liker.phone_number,
 		    :user_id => liker_id,
 		    :activity_user_name => liked.try(:name),
 		    :activity_user_id => liked_id,
-		    :feed_id => feed_activity.feed_id,
-		    :feed_name => feed_activity.feed.try(:name),
-		    :feed_color => feed_activity.feed.feed_color,
-		    :venue_id => feed_activity.venue_id,
-		    :venue_name => feed_activity.venue.try(:name),
+		    :feed_id => activity.feed_id,
+		    :feed_name => activity.feed.try(:name),
+		    :feed_color => activity.feed.feed_color,
+		    :venue_id => activity.venue_id,
+		    :venue_name => activity.venue.try(:name),
 
 		}
 		

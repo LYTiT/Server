@@ -3,7 +3,7 @@ class FeedShare < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue_comment
 
-	has_one :feed_activity, :dependent => :destroy
+	has_one :activity, :dependent => :destroy
 
 
 	def self.implicit_creation(instagram_details, vc_id, u_id, target_feed_ids, comment)
@@ -15,9 +15,9 @@ class FeedShare < ActiveRecord::Base
 
 		for target_feed_id in target_feed_ids
 			fs = FeedShare.create!(:user_id => u_id, :venue_comment_id => vc_id, :feed_id => target_feed_id)
-			fa = FeedActivity.create!(:feed_share_id => fs.id, :activity_type => "shared moment", :feed_id => target_feed_id, :user_id => u_id, :venue_id => vc_venue.id, :adjusted_sort_position => fs.created_at.to_i)
+			fa = Activity.create!(:feed_share_id => fs.id, :activity_type => "shared moment", :feed_id => target_feed_id, :user_id => u_id, :venue_id => vc_venue.id, :adjusted_sort_position => fs.created_at.to_i)
 			if comment != nil && comment != ""
-				fac = FeedActivityComment.create!(:feed_activity_id => fa.id, :user_id => u_id, :comment => comment)
+				fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
 				fa.update_comment_parameters(Time.now, u_id)
 			end
 			fs.new_feed_share_notification
@@ -36,7 +36,7 @@ class FeedShare < ActiveRecord::Base
 	def send_new_feed_share_notification(member)
 		payload = {
 		    :object_id => self.id, 
-		    :activity_id => feed_activity.id,
+		    :activity_id => activity.id,
 		    :type => 'share_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,

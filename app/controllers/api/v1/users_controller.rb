@@ -256,7 +256,7 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
-	def get_aggregate_feed_activity
+	def get_aggregate_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 	end

@@ -1,4 +1,4 @@
-class FeedActivity < ActiveRecord::Base
+class Activity < ActiveRecord::Base
 	belongs_to :feed
 	belongs_to :user
 	belongs_to :venue
@@ -12,13 +12,13 @@ class FeedActivity < ActiveRecord::Base
 	belongs_to :feed_recommendation
 
 	has_many :likes, :dependent => :destroy
-	has_many :feed_activity_comments, :dependent => :destroy
+	has_many :activity_comments, :dependent => :destroy
 
 	def self.implicit_topic_activity_find(u_id, f_id, topic_message)
 		type = "premature new topic: #{topic_message.first(50)}..."
-		lookup = FeedActivity.where("user_id = ? AND feed_id = ? AND activity_type = ? AND created_at > ?", u_id, f_id, type, Time.now-10.minutes).order("created_at DESC").first
+		lookup = Activity.where("user_id = ? AND feed_id = ? AND activity_type = ? AND created_at > ?", u_id, f_id, type, Time.now-10.minutes).order("created_at DESC").first
 		if lookup == nil
-			fa = FeedActivity.create!(:feed_id => f_id, :user_id => u_id, :activity_type => type, :adjusted_sort_position => nil)
+			fa = Activity.create!(:feed_id => f_id, :user_id => u_id, :activity_type => type, :adjusted_sort_position => nil)
 			return fa
 		else
 			return lookup
@@ -27,12 +27,12 @@ class FeedActivity < ActiveRecord::Base
 
 	def self.implicit_topic_activity_create(f_t_id, u_id, f_id, topic_message)
 		type = "premature new topic: #{topic_message.first(50)}..."
-		lookup = FeedActivity.where("user_id = ? AND feed_id = ? AND activity_type = ? AND created_at > ?", u_id, f_id, type, Time.now-10.minutes).order("created_at DESC").first
+		lookup = Activity.where("user_id = ? AND feed_id = ? AND activity_type = ? AND created_at > ?", u_id, f_id, type, Time.now-10.minutes).order("created_at DESC").first
 		if lookup != nil
 			lookup.update_columns(feed_topic_id: f_t_id)
 			lookup.update_columns(activity_type: "new topic")
 		else
-			FeedActivity.create!(:feed_topic_id => f_t_id, :feed_id => f_id, :user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
+			Activity.create!(:feed_topic_id => f_t_id, :feed_id => f_id, :user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i)
 		end
 	end
 
@@ -47,7 +47,7 @@ class FeedActivity < ActiveRecord::Base
 	def update_comment_parameters(t, u_id)
 		increment!(:num_comments, 1)
 		update_columns(latest_comment_time: t)
-		if FeedActivityComment.where("user_id = ? AND feed_activity_id = ?", u_id, self.id).count == 1
+		if ActivityComment.where("user_id = ? AND activity_id = ?", u_id, self.id).count == 1
 			self.increment!(:num_participants, 1)
 		end
 	end
@@ -85,7 +85,5 @@ class FeedActivity < ActiveRecord::Base
 			return	nil
 		end
 	end
-
-	
 
 end
