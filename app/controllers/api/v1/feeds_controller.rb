@@ -177,7 +177,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_new_topic_to_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
-		Activity.delay.new_list_topic(params[:user_id], params[:topic], feed_ids)
+		new_topic = Activity.new_list_topic(params[:user_id], params[:topic], feed_ids)
 		render json: { success: true }
 	end
 
