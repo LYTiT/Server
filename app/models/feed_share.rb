@@ -43,7 +43,8 @@ class FeedShare < ActiveRecord::Base
 		    :user_phone => user.phone_number,
 		    :feed_id => feed_id,
 		    :feed_name => feed.name,
-		    :feed_color => feed.feed_color
+		    :feed_color => feed.feed_color,
+		    :media_type => feed.venue_comment.media_type
 		}
 
 
