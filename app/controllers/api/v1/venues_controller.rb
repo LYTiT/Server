@@ -51,8 +51,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
 				if params[:meta_query] != nil
-					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
-					render 'meta_search_comments.json.jbuilder'
+					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)					
 				else		
 					@venue.delay.account_page_view
 					cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
@@ -60,9 +59,15 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
 			end
-			@view_cache_key = cache_key+"view"
-			@comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
-				Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
+
+			if cache_key != nil
+				@view_cache_key = cache_key+"view"
+				@comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
+					Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
+				end
+				render 'get_comments.json.jbuilder'
+			else
+				render 'meta_search_comments.json.jbuilder'
 			end
 		end
 	end
