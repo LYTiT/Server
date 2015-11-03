@@ -179,7 +179,7 @@ ALTER SEQUENCE activities_id_seq OWNED BY activities.id;
 
 CREATE TABLE activity_comments (
     id integer NOT NULL,
-    feed_activity_id integer,
+    activity_id integer,
     user_id integer,
     comment text,
     created_at timestamp without time zone,
@@ -838,7 +838,7 @@ CREATE TABLE likes (
     liker_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    feed_activity_id integer
+    activity_id integer
 );
 
 
@@ -2455,10 +2455,10 @@ CREATE INDEX index_activities_on_feed_id ON activities USING btree (feed_id);
 
 
 --
--- Name: index_activity_comments_on_feed_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_activity_comments_on_activity_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_activity_comments_on_feed_activity_id ON activity_comments USING btree (feed_activity_id);
+CREATE INDEX index_activity_comments_on_activity_id ON activity_comments USING btree (activity_id);
 
 
 --
@@ -3648,4 +3648,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151031083835');
 INSERT INTO schema_migrations (version) VALUES ('20151103071147');
 
 INSERT INTO schema_migrations (version) VALUES ('20151103073516');
+
+INSERT INTO schema_migrations (version) VALUES ('20151103081239');
 
