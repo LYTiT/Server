@@ -20,6 +20,7 @@ class FeedActivityComment < ActiveRecord::Base
 		    :object_id => self.id, 
 		    :activity_id => feed_activity_id,
 		    :activity_type => feed_activity.activity_type,
+		    :media_type => feed_activity.feed_share.try(:media_type),
 		    :activity_user_name => feed_activity.user.try(:name),
 		    :activity_user_id => feed_activity.user_id,
 		    :activity_user_phone => feed_activity.user.try(:phone_number),
