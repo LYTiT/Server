@@ -37,9 +37,9 @@ class Feed < ActiveRecord::Base
 		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:venue).order("id DESC")
 	end
 
-	def activity
+	def activity_of_the_day
 		activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id = #{self.id} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL"
-		Activity.where("id IN(#{activity_ids})").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")
+		Activity.where("id IN(#{activity_ids})").includes.includes(:user, :venue, :feed, :likes).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url

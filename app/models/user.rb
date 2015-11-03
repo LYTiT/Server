@@ -442,7 +442,7 @@ class User < ActiveRecord::Base
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
     #Activity.where("feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")    
     activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
-    Activity.where("id IN (#{activity_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")
+    Activity.where("id IN (#{activity_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :feed, :likes).order("adjusted_sort_position DESC")
   end
 
   #------------------------------------------------------------->

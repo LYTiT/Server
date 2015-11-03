@@ -156,7 +156,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
-		@activities = @feed.activity.page(params[:page]).per(10)
+		@activities = @feed.activity_of_the_day.page(params[:page]).per(10)
 	end
 
 	def get_activity_object
