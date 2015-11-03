@@ -10,8 +10,6 @@ class VenueComment < ActiveRecord::Base
 	has_many :meta_datas, :dependent => :destroy
 	has_many :activities, :dependent => :destroy
 
-	has_many :feed_shares, :dependent => :destroy
-
 	validate :comment_or_media
 
 	before_destroy :deincrement_feed_moment_counts

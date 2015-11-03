@@ -33,7 +33,7 @@ class Like < ActiveRecord::Base
 		    :type => "like_notification",
 		    :activity_id => activity.id,
 		    :activity_type => activity.activity_type,
-		    :media_type => activity.feed_share.try(:media_type),
+		    :media_type => activity.venue_comment.try(:media_type),
 		    :user_name => liker.name,
 		    :user_phone => liker.phone_number,
 		    :user_id => liker_id,

@@ -1,35 +1,39 @@
-json.id @activity.id
-json.activity_type @activity.activity_type
-json.user_id @activity.user_id
-json.user_name @activity.user.try(:name)
-json.user_phone @activity.user.try(:phone_number)
-json.created_at @activity.created_at
-json.num_chat_participants @activity.num_participants
-json.latest_chat_message @activity.latest_comment_time
+  json.feed_id @activity.feeds.first.id
+  json.feed_name @activity.feeds.first.try(:name)
+  json.feed_color @activity.feeds.first.try(:feed_color)
 
-json.venue_id @activity.venue_id
-json.venue_name @activity.venue.try(:name)
-json.city @activity.venue.try(:city)
-json.country @activity.venue.try(:country)
-json.latitude @activity.venue.try(:latitude)
-json.longitude @activity.venue.try(:longitude)
-json.color_rating @activity.venue.try(:color_rating)
-json.instagram_location_id @activity.venue.try(:instagram_location_id)
-json.added_note @activity.feed_venue.try(:description)
+  json.id @activity.id
+  json.@activity_type @activity.@activity_type
+  json.user_id @activity.user_id
+  json.user_name @activity.user.try(:name)
+  json.user_phone @activity.user.try(:phone_number)
+  json.created_at @activity.created_at
+  json.num_chat_participants @activity.num_participants
+  json.latest_chat_time @activity.latest_comment_time
+  
+  json.venue_id @activity.venue_id
+  json.venue_name @activity.venue.try(:name)
+  json.city @activity.venue.try(:city)
+  json.country @activity.venue.try(:country)
+  json.latitude @activity.venue.try(:latitude)
+  json.longitude @activity.venue.try(:longitude)
+  json.color_rating @activity.venue.try(:color_rating)
+  json.instagram_location_id @activity.venue.try(:instagram_location_id)
 
-json.venue_comment_id @activity.feed_share.try(:venue_comment_id)
-json.venue_comment_created_at @activity.feed_share.try(:venue_comment).try(:created_at)
-json.media_type @activity.feed_share.try(:venue_comment).try(:media_type)
-json.image_url_1 @activity.feed_share.try(:venue_comment).try(:image_url_1)
-json.image_url_2 @activity.feed_share.try(:venue_comment).try(:image_url_2)
-json.image_url_3 @activity.feed_share.try(:venue_comment).try(:image_url_3)
-json.video_url_1 @activity.feed_share.try(:venue_comment).try(:video_url_1)
-json.video_url_2 @activity.feed_share.try(:venue_comment).try(:video_url_2)
-json.video_url_3 @activity.feed_share.try(:venue_comment).try(:video_url_3)
-json.content_origin @activity.feed_share.try(:venue_comment).try(:content_origin)
-json.thirdparty_username @activity.feed_share.try(:venue_comment).try(:thirdparty_username)
+  json.venue_comment_id @activity.venue_comment_id
+  json.venue_comment_created_at @activity.venue_comment.try(:created_at)
+  json.media_type @activity.venue_comment.try(:media_type)
+  json.image_url_1 @activity.venue_comment.try(:image_url_1)
+  json.image_url_2 @activity.venue_comment.try(:image_url_2)
+  json.image_url_3 @activity.venue_comment.try(:image_url_3)
+  json.video_url_1 @activity.venue_comment.try(:video_url_1)
+  json.video_url_2 @activity.venue_comment.try(:video_url_2)
+  json.video_url_3 @activity.venue_comment.try(:video_url_3)
+  json.content_origin @activity.venue_comment.try(:content_origin)
+  json.thirdparty_username @activity.venue_comment.try(:thirdparty_username)
 
-json.num_likes @activity.num_likes
-json.has_liked @user.likes.where("activity_id = ?", @activity.id).any?
-
-json.topic @activity.feed_topic.try(:message)
+  json.num_likes @activity.num_likes
+  json.has_liked @user.likes.where("@activity_id = ?", @activity.id).any?
+  
+  json.topic @activity.message
+  json.num_@activity_lists @activity.feeds.count

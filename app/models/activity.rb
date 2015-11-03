@@ -2,11 +2,12 @@ class Activity < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
+	belong_to :feed
+
 	belongs_to :venue_comment
 	belongs_to :feed_venue
 	belongs_to :feed_user
-	belongs_to :feed_topic
-	belongs_to :feed_share
+
 
 	belongs_to :feed_recommendation
 
@@ -75,16 +76,15 @@ class Activity < ActiveRecord::Base
 			vc = VenueComment.find_by_id(vc_id)
 		end
 
-		for f_id in f_ids
-			fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc_id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i)
-			new_activity_feed = ActivityFeed.create!(:activity_id => fa.id, :feed_id => f_id)
+		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc_id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first)
+		if comment != nil && comment != ""
+			fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
+			fa.update_comment_parameters(Time.now, u_id)
+		end	
 
-			if comment != nil && comment != ""
-				fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
-				fa.update_comment_parameters(Time.now, u_id)
-			end
-			fa.new_feed_share_notification(f_ids)
-		end
+		f_ids.each{|f_id| ActivityFeed.create!(:activity_id => fa.id, :feed_id => f_id)}
+
+		fa.new_feed_share_notification(f_ids)
 	end
 
 	def new_feed_share_notification(f_ids)
@@ -107,9 +107,9 @@ class Activity < ActiveRecord::Base
 		    :user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feeds.first.id,
-		    :feed_name => feeds.first.name,
-		    :feed_color => feeds.first.feed_color,
+		    :feed_id => feed_id,
+		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color,
 		    :num_activity_lists => feeds.count,
 		    :media_type => venue_comment.try(:media_type)
 		}
@@ -150,7 +150,7 @@ class Activity < ActiveRecord::Base
 
 #Feed Topics--------->
 	def self.new_list_topic(u_id, topic_message, f_ids)
-		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message)
+		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first)
 		ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
 		new_activity.send_new_topic_notification(f_ids)
 	end
@@ -174,9 +174,9 @@ class Activity < ActiveRecord::Base
 			:user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feeds.first.id,
-		    :feed_name => feeds.first.name,
-		    :feed_color => feeds.first.feed_color,
+		    :feed_id => feed_id,
+		    :feed_name => feed.name,
+		    :feed_color => feed.feed_color,
 		    :num_activity_lists => feeds.count,
 		    :topic => self.message
 		}
@@ -212,20 +212,6 @@ class Activity < ActiveRecord::Base
 		  :deleted => false
 		}
 		Notification.create(notification)
-	end
-
-
-	def self.convert_outstanding_topics_and_shares
-		feed_shares = FeedShare.all
-		for feed_share in feed_shares
-			feed_share.activity.update_columns(venue_comment_id: feed_share.venue_comment_id)
-		end
-
-		feed_topics = FeedTopic.all
-		for feed_topic in feed_topics
-			feed_topic.activity.update_columns(message: feed_topic.message)
-		end
-
 	end
 
 end
