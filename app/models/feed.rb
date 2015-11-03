@@ -76,7 +76,12 @@ class Feed < ActiveRecord::Base
 	end
 
 	def is_subscribed?(target_user)
-		FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, id).first.is_subscribed
+		fu = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, id).first
+		if fu != nil
+			fu.is_subscribed
+		else
+			false
+		end
 	end
 
 	def calibrate_num_members

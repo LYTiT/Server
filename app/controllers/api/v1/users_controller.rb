@@ -226,7 +226,7 @@ class Api::V1::UsersController < ApiBaseController
 			@user.delay.update_user_feeds
 		end
 		@venue_id = params[:venue_id]
-		@feeds = @user.feeds.includes(:venues).order("name asc")
+		@feeds = @user.feeds.includes(:venues).order("name asc").page(params[:page]).per(20)
 	end
 
 	def calculate_lumens
