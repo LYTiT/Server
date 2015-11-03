@@ -119,7 +119,7 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_shared_venue_comment_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		if activity.activity_feeds.count == 1
+		if activity.feeds.count == 1
 			preview = "#{user.name} shared a Moment in #{feeds.first.name}"
 		else
 			preview = "#{user.name} shared a Moment with a few of your Lists"
