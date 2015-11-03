@@ -605,6 +605,12 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.meta_search_results(v_id, query)
+		query = '%'+query+'%'
+		meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE meta LIKE '#{query}'"
+		VenueComment.where("id IN (#{meta_vc_ids})").order("time_wrapper DESC")
+	end
+
 	def self.twitter_test(query, radius)
 		client = Twitter::REST::Client.new do |config|
 		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
