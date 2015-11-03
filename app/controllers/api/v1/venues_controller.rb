@@ -50,13 +50,8 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
-				if params[:meta_query] != nil
-					@comments = VenueComment.meta_search_results(@venue.id).page(params[:page]).per(10)
-					render 'meta_search_comments.json.jbuilder'
-				else		
-					@venue.delay.account_page_view
-					cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
-				end
+				@venue.delay.account_page_view
+				cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
 			else
 				cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
 			end
@@ -75,18 +70,23 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id])
 		end
 
-		if @venue.instagram_location_id == nil
-			initial_instagrams = @venue.set_instagram_location_id(100)
-			@venue.delay.account_page_view
-		end
-
-		if initial_instagrams != nil
-			live_comments = Kaminari.paginate_array(initial_instagrams)
+		if params[:meta_query] != nil
+			@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
+			render 'meta_search_comments.json.jbuilder'
 		else
-			live_comments = Venue.get_comments([@venue.id])	
-		end
+			if @venue.instagram_location_id == nil
+				initial_instagrams = @venue.set_instagram_location_id(100)
+				@venue.delay.account_page_view
+			end
 
-		@comments = live_comments.page(params[:page]).per(10)
+			if initial_instagrams != nil
+				live_comments = Kaminari.paginate_array(initial_instagrams)
+			else
+				live_comments = Venue.get_comments([@venue.id])	
+			end
+
+			@comments = live_comments.page(params[:page]).per(10)
+		end
 	end
 
 	def get_venue_feeds
