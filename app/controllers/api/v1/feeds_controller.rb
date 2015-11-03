@@ -172,13 +172,13 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_new_topic_to_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
-		FeedTopic.delay.implicit_creation(params[:user_id], params[:topic], feed_ids)
+		Activity.delay.new_list_topic(params[:user_id], params[:topic], feed_ids)
 		render json: { success: true }
 	end
 
 	def share_with_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
-		FeedShare.delay.implicit_creation(params[:venue_comment_details], params[:venue_comment_id], params[:user_id], feed_ids, params[:comment])
+		Activity.delay.new_list_share(params[:venue_comment_details], params[:venue_comment_id], params[:user_id], feed_ids, params[:comment])
 		render json: { success: true }
 	end
 

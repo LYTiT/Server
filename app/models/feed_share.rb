@@ -27,7 +27,9 @@ class FeedShare < ActiveRecord::Base
 	def new_feed_share_notification
 		feed_users = FeedUser.where("feed_id = ?", feed_id)
 		for feed_user in feed_users
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
+			notification_type = "feed_share/#{self.activity.id}"
+			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
 				self.send_new_feed_share_notification(feed_user.user)
 			end
 		end
@@ -44,16 +46,22 @@ class FeedShare < ActiveRecord::Base
 		    :feed_id => feed_id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color,
-		    :media_type => feed.venue_comment.media_type
+		    :num_activity_lists => activity.activity_feeds.count,
+		    :media_type => activity.venue_comment.media_type
 		}
 
 
-		type = "Feed share"
+		type = "feed_share/#{self.activity.id}"
 
 		notification = self.store_new_shared_venue_comment_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		preview = "#{user.name} shared a Moment with #{feed.name}"
+		if activity.activity_feeds.count == 1
+			preview = "#{user.name} shared a Moment with one of your Lists"
+		else
+			preview = "#{user.name} shared a Moment with a few of your Lists"
+		end
+		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})

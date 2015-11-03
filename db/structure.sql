@@ -150,7 +150,9 @@ CREATE TABLE activities (
     user_id integer,
     venue_id integer,
     latest_comment_time timestamp without time zone,
-    num_participants integer DEFAULT 0
+    num_participants integer DEFAULT 0,
+    venue_comment_id integer,
+    message text
 );
 
 
@@ -3650,4 +3652,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151103071147');
 INSERT INTO schema_migrations (version) VALUES ('20151103073516');
 
 INSERT INTO schema_migrations (version) VALUES ('20151103081239');
+
+INSERT INTO schema_migrations (version) VALUES ('20151103102602');
 

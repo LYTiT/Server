@@ -20,7 +20,6 @@ class Feed < ActiveRecord::Base
 	has_many :feed_users, :dependent => :destroy
 	has_many :users, through: :feed_users
 	has_many :feed_recommendations, :dependent => :destroy
-	has_many :activities, :dependent => :destroy
 	has_many :feed_invitations, :dependent => :destroy
 	has_many :feed_shares, :dependent => :destroy
 	has_many :activity_feeds, :dependent => :destroy

@@ -18,9 +18,11 @@ class FeedTopic < ActiveRecord::Base
 	end
 
 	def new_topic_notification
-		feed_users = FeedUser.where("feed_id = ?", feed_id)
+		feed_users = FeedUser.where("feed_id = ?", feed_id)		
 		for feed_user in feed_users
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
+			notification_type = "feed_topic/#{self.activity.id}"
+			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && notification_check
 				self.delay.send_new_topic_notification(feed_user.user)
 			end
 		end
@@ -40,12 +42,17 @@ class FeedTopic < ActiveRecord::Base
 		}
 
 
-		type = "New feed topic opened"
+		type = "feed_topic/#{self.activity.id}"
 
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		preview = "#{user.name} opened a new topic in #{activity.feed.name}"
+		if activity.feed_users.count == 1
+			preview = "#{user.name} opened a new topic in #{activity.feed.name}"
+		else
+			preview = "#{user.name} opened a new topic in a few of your Lists"
+		end
+
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
