@@ -1,4 +1,6 @@
 class ActivityFeed < ActiveRecord::Base
+	belongs_to :feed
+	belongs_to :activity
 
 	def self.populate
 		total_activity = Activity.all

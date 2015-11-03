@@ -20,9 +20,11 @@ class Feed < ActiveRecord::Base
 	has_many :feed_users, :dependent => :destroy
 	has_many :users, through: :feed_users
 	has_many :feed_recommendations, :dependent => :destroy
-	has_many :feed_activities, :dependent => :destroy
+	has_many :activities, :dependent => :destroy
 	has_many :feed_invitations, :dependent => :destroy
 	has_many :feed_shares, :dependent => :destroy
+	has_many :activity_feeds, :dependent => :destroy
+
 
 	belongs_to :user
 
@@ -36,7 +38,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def activity
-		self.feed_activities.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :activity_comments, :venue_comment).order("adjusted_sort_position DESC")
+		self.activities.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :activity_comments, :venue_comment).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url

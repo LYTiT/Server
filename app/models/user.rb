@@ -36,7 +36,7 @@ class User < ActiveRecord::Base
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
 
-  has_many :feed_activities, :dependent => :destroy
+  has_many :activities, :dependent => :destroy
   has_many :activity_comments, :dependent => :destroy
 
   has_many :support_issues, :dependent => :destroy
@@ -439,8 +439,10 @@ class User < ActiveRecord::Base
   #IV. Lists
 
   def aggregate_list_feed
-    user_feed_ids = "SELECT feed_id from feed_users WHERE user_id = #{self.id}"
-    Activity.where("feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")    
+    
+
+    #user_feed_ids = "SELECT feed_id from feed_users WHERE user_id = #{self.id}"
+    #Activity.where("feed_id IN (#{user_feed_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :feed, :feed_share, :likes).order("adjusted_sort_position DESC")    
   end
 
   #------------------------------------------------------------->

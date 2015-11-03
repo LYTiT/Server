@@ -13,6 +13,7 @@ class Activity < ActiveRecord::Base
 
 	has_many :likes, :dependent => :destroy
 	has_many :activity_comments, :dependent => :destroy
+	has_many :activity_feeds, :dependent => :destroy
 
 	def self.implicit_topic_activity_find(u_id, f_id, topic_message)
 		type = "premature new topic: #{topic_message.first(50)}..."

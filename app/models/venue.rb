@@ -62,7 +62,7 @@ class Venue < ActiveRecord::Base
   has_many :instagram_location_id_lookups, :dependent => :destroy
   has_many :feed_venues
   has_many :feeds, through: :feed_venues
-  has_many :feed_activities, :dependent => :destroy
+  has_many :activities, :dependent => :destroy
 
   belongs_to :user
 
