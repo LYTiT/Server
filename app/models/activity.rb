@@ -156,7 +156,7 @@ class Activity < ActiveRecord::Base
 	end
 
 	def new_topic_notification(f_ids)
-		feed_users = FeedUser.where("feed_id = ?", f_ids).includes(:users)
+		feed_users = FeedUser.where("feed_id IN (?)", f_ids).includes(:users)
 		for feed_user in feed_users
 			notification_type = "feed_topic/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
