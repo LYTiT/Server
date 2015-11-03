@@ -103,6 +103,9 @@ LytitServer::Application.routes.draw do
         get 'get_venue_comments'
         get 'get_activity_object'
         get 'get_likers'
+        collection do
+          get 'get_activity_lists'
+        end
       end
 
       resources :support_issues do
