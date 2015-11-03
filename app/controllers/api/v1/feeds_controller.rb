@@ -164,6 +164,11 @@ class Api::V1::FeedsController < ApiBaseController
 		@activity = Activity.find_by_id(params[:activity_id])
 	end
 
+	def get_activity_lists
+		@activity = Activity.find_by_id(params[:activity_id])
+		@lists = @activity.feeds
+	end
+
 	def get_likers
 		fa = Activity.find_by_id(params[:activity_id])
 		liker_ids = "SELECT liker_id FROM likes WHERE activity_id = #{fa.id}"

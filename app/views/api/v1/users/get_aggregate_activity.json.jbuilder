@@ -1,7 +1,7 @@
 json.activity(@activities) do |activity|
-  json.feed_id activity.feed_id
-  json.feed_name activity.feed.try(:name)
-  json.feed_color activity.feed.try(:feed_color)
+  json.feed_id activity.feeds.first.id
+  json.feed_name activity.feeds.first.try(:name)
+  json.feed_color activity.feeds.first.try(:feed_color)
 
   json.id activity.id
   json.activity_type activity.activity_type
@@ -21,23 +21,23 @@ json.activity(@activities) do |activity|
   json.color_rating activity.venue.try(:color_rating)
   json.instagram_location_id activity.venue.try(:instagram_location_id)
 
-  json.venue_comment_id activity.feed_share.try(:venue_comment_id)
-  json.venue_comment_created_at activity.feed_share.try(:venue_comment).try(:created_at)
-  json.media_type activity.feed_share.try(:venue_comment).try(:media_type)
-  json.image_url_1 activity.feed_share.try(:venue_comment).try(:image_url_1)
-  json.image_url_2 activity.feed_share.try(:venue_comment).try(:image_url_2)
-  json.image_url_3 activity.feed_share.try(:venue_comment).try(:image_url_3)
-  json.video_url_1 activity.feed_share.try(:venue_comment).try(:video_url_1)
-  json.video_url_2 activity.feed_share.try(:venue_comment).try(:video_url_2)
-  json.video_url_3 activity.feed_share.try(:venue_comment).try(:video_url_3)
-  json.content_origin activity.feed_share.try(:venue_comment).try(:content_origin)
-  json.thirdparty_username activity.feed_share.try(:venue_comment).try(:thirdparty_username)
+  json.venue_comment_id activity.venue_comment_id
+  json.venue_comment_created_at activity.venue_comment.try(:created_at)
+  json.media_type activity.venue_comment.try(:media_type)
+  json.image_url_1 activity.venue_comment.try(:image_url_1)
+  json.image_url_2 activity.venue_comment.try(:image_url_2)
+  json.image_url_3 activity.venue_comment.try(:image_url_3)
+  json.video_url_1 activity.venue_comment.try(:video_url_1)
+  json.video_url_2 activity.venue_comment.try(:video_url_2)
+  json.video_url_3 activity.venue_comment.try(:video_url_3)
+  json.content_origin activity.venue_comment.try(:content_origin)
+  json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
 
   json.num_likes activity.num_likes
   json.has_liked @user.likes.where("activity_id = ?", activity.id).any?
   
-  json.topic activity.feed_topic.try(:message)
-  json.num_activity_lists activity.activity_feeds.count
+  json.topic activity.message
+  json.num_activity_lists activity.feeds.count
 end
 json.pagination do 
   json.current_page @activities.current_page

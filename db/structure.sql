@@ -137,7 +137,6 @@ CREATE TABLE activities (
     id integer NOT NULL,
     feed_id integer,
     activity_type character varying(255),
-    feed_share_id integer,
     feed_venue_id integer,
     feed_user_id integer,
     feed_recommendation_id integer,
@@ -146,7 +145,6 @@ CREATE TABLE activities (
     updated_at timestamp without time zone,
     num_likes integer DEFAULT 0,
     num_comments integer DEFAULT 0,
-    feed_topic_id integer,
     user_id integer,
     venue_id integer,
     latest_comment_time timestamp without time zone,
@@ -511,72 +509,6 @@ CREATE SEQUENCE feed_recommendations_id_seq
 --
 
 ALTER SEQUENCE feed_recommendations_id_seq OWNED BY feed_recommendations.id;
-
-
---
--- Name: feed_shares; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE feed_shares (
-    id integer NOT NULL,
-    feed_id integer,
-    venue_comment_id integer,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: feed_shares_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE feed_shares_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: feed_shares_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE feed_shares_id_seq OWNED BY feed_shares.id;
-
-
---
--- Name: feed_topics; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE feed_topics (
-    id integer NOT NULL,
-    feed_id integer,
-    user_id integer,
-    message text,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: feed_topics_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE feed_topics_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: feed_topics_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE feed_topics_id_seq OWNED BY feed_topics.id;
 
 
 --
@@ -1841,20 +1773,6 @@ ALTER TABLE ONLY feed_recommendations ALTER COLUMN id SET DEFAULT nextval('feed_
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY feed_shares ALTER COLUMN id SET DEFAULT nextval('feed_shares_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY feed_topics ALTER COLUMN id SET DEFAULT nextval('feed_topics_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY feed_users ALTER COLUMN id SET DEFAULT nextval('feed_users_id_seq'::regclass);
 
 
@@ -2153,22 +2071,6 @@ ALTER TABLE ONLY feed_invitations
 
 ALTER TABLE ONLY feed_recommendations
     ADD CONSTRAINT feed_recommendations_pkey PRIMARY KEY (id);
-
-
---
--- Name: feed_shares_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY feed_shares
-    ADD CONSTRAINT feed_shares_pkey PRIMARY KEY (id);
-
-
---
--- Name: feed_topics_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY feed_topics
-    ADD CONSTRAINT feed_topics_pkey PRIMARY KEY (id);
 
 
 --
@@ -2559,34 +2461,6 @@ CREATE INDEX index_feed_invitations_on_inviter_id ON feed_invitations USING btre
 --
 
 CREATE INDEX index_feed_recommendations_on_feed_id ON feed_recommendations USING btree (feed_id);
-
-
---
--- Name: index_feed_shares_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_shares_on_feed_id ON feed_shares USING btree (feed_id);
-
-
---
--- Name: index_feed_shares_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_shares_on_user_id ON feed_shares USING btree (user_id);
-
-
---
--- Name: index_feed_topics_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_topics_on_feed_id ON feed_topics USING btree (feed_id);
-
-
---
--- Name: index_feed_topics_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_topics_on_user_id ON feed_topics USING btree (user_id);
 
 
 --
@@ -3654,4 +3528,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151103073516');
 INSERT INTO schema_migrations (version) VALUES ('20151103081239');
 
 INSERT INTO schema_migrations (version) VALUES ('20151103102602');
+
+INSERT INTO schema_migrations (version) VALUES ('20151103104710');
 
