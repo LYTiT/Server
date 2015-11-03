@@ -166,7 +166,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_activity_lists
 		@activity = Activity.find_by_id(params[:activity_id])
-		@lists = @activity.feeds
+		@lists = @activity.feeds.page(params[:page]).per(10)
 	end
 
 	def get_likers
