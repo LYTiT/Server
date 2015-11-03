@@ -22,7 +22,6 @@ gem 'simple_form'
 gem 'title'
 gem 'uglifier'
 gem 'unicorn'
-gem 'google_places', :git => "git://github.com/RaviAsnani/google_places.git"
 gem "paranoia", "~> 2.0"
 gem 'haml-rails'
 gem 'geokit-rails'
@@ -39,7 +38,6 @@ gem 'aws-sdk', '~> 1.5.7'
 gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
 gem 'bson_ext'
 gem 'mongo'
-gem 'levenshtein-ffi', :require => 'levenshtein'
 gem 'kaminari'
 gem 'descriptive_statistics'
 gem 'geocoder'
@@ -51,7 +49,6 @@ gem 'heroku-deflater', :group => :production
 gem 'typhoeus'
 gem 'instagram'
 gem 'httparty'
-gem 'text'
 gem 'fuzzy-string-match'
 gem 'dalli'
 gem 'memcachier'
