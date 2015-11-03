@@ -178,7 +178,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_new_topic_to_feed
 		feed_ids = params[:feed_ids].split(',').map(&:to_i)
 		new_topic = Activity.new_list_topic(params[:user_id], params[:topic], feed_ids)
-		render json: { success: true }
+		render json: new_topic
 	end
 
 	def share_with_feed

@@ -160,7 +160,7 @@ class Activity < ActiveRecord::Base
 		for feed_user in feed_users
 			notification_type = "feed_topic/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && notification_check
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
 				self.delay.send_new_topic_notification(feed_user.user)
 			end
 		end
