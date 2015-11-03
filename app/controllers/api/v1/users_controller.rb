@@ -226,7 +226,7 @@ class Api::V1::UsersController < ApiBaseController
 			@user.delay.update_user_feeds
 		end
 		@venue_id = params[:venue_id]
-		@feeds = @user.feeds.includes(:venues).order("name asc").page(params[:page]).per(20)
+		@feeds = @user.feeds.includes(:feed_venues).order("name asc").page(params[:page]).per(20)
 	end
 
 	def calculate_lumens
@@ -257,7 +257,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_aggregate_activity
-		@user = User.find_by_authentication_token(params[:auth_token])
+		@user = User.where("id = ?", params[:user_id]).eager_load(:likes).where("likes.created_at > ?", Time.now-1.day)
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 	end
 	#-------------------------------------------------->

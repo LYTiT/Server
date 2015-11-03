@@ -6,4 +6,5 @@ json.num_users @feed.num_users
 json.has_added @feed.has_added?(@user)
 json.feed_color @feed.feed_color
 json.list_description @feed.description
+json.subscribed @feed.is_subscribed?(@user)
 json.private_list @feed.is_private?
