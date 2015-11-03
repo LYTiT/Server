@@ -1,6 +1,6 @@
-  json.feed_id @activity.feeds.first.id
-  json.feed_name @activity.feeds.first.try(:name)
-  json.feed_color @activity.feeds.first.try(:feed_color)
+  json.feed_id @activity.feeds_id
+  json.feed_name @activity.feed.try(:name)
+  json.feed_color @activity.feed.try(:feed_color)
 
   json.id @activity.id
   json.@activity_type @activity.@activity_type

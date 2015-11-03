@@ -2,7 +2,7 @@ class Activity < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue
 
-	belong_to :feed
+	belongs_to :feed
 
 	belongs_to :venue_comment
 	belongs_to :feed_venue
