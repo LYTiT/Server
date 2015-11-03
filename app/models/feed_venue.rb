@@ -45,7 +45,8 @@ class FeedVenue < ActiveRecord::Base
 		    :feed_color => feed.feed_color,
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
-		    :added_note => description
+		    :added_note => description,
+		    :activity_id => self.feed_activity_id
 
 		}
 
