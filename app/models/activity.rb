@@ -76,7 +76,7 @@ class Activity < ActiveRecord::Base
 			vc = VenueComment.find_by_id(vc_id)
 		end
 
-		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc_id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first)
+		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first)
 		if comment != nil && comment != ""
 			fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
 			fa.update_comment_parameters(Time.now, u_id)
