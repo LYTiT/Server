@@ -17,11 +17,6 @@ class Activity < ActiveRecord::Base
 	has_many :feeds, through: :activity_feeds
 
 
-	def self.set_num_lists
-		Activity.all.each{|a| a.update_columns(num_lists: a.feeds.count)}
-	end
-
-
 	def did_like?(user) 
 		if like_id == nil
 			nil
