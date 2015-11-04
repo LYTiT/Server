@@ -13,7 +13,7 @@ json.cache! @comments, expires_in: 3.minutes, key: @view_cache_key  do |json|
     json.video_url_1 VenueComment.implicit_video_url_1(comment)
     json.video_url_2 VenueComment.implicit_video_url_2(comment)
     json.video_url_3 VenueComment.implicit_video_url_3(comment)
-    json.venue_id VenueComment.implicit_venue_id(comment)
+    json.venue_id VenueComment.implicit_venue_id(comment, @venue)
     json.venue_name VenueComment.implicit_venue_name(comment)
     json.created_at VenueComment.implicit_created_at(comment)
     json.content_origin VenueComment.implicit_content_origin(comment)
