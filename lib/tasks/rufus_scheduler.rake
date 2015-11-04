@@ -9,12 +9,12 @@ namespace :lytit do
     #Heroku restart every 18 hours------------------->
     $scheduler.every '18h' do
       puts "Restarting Heroku Dynos"
-      Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
+      #Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
     end
 
     $scheduler.every '3h' do
       puts "Venue Comment Cleanup"
-      VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
+      VenueComment.cleanup_and_recalibration
     end
 
     #Instagram Pulling and LYT Updating ------------------------------>
