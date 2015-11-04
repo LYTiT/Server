@@ -37,7 +37,7 @@ json.activity(@activities) do |activity|
   json.has_liked @user.likes.where("activity_id = ?", activity.id).any?
   
   json.topic activity.message
-  json.num_activity_lists activity.feeds.count
+  json.num_activity_lists activity.num_lists
 end
 json.pagination do 
   json.current_page @activities.current_page

@@ -17,6 +17,10 @@ class Activity < ActiveRecord::Base
 	has_many :feeds, through: :activity_feeds
 
 
+	def self.set_num_lists
+		Activity.all.each{|a| a.update_columns(num_lists: a.feeds.count)}
+	end
+
 
 	def did_like?(user) 
 		if like_id == nil
@@ -76,7 +80,7 @@ class Activity < ActiveRecord::Base
 			vc = VenueComment.find_by_id(vc_id)
 		end
 
-		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first)
+		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
 		if comment != nil && comment != ""
 			fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
 			fa.update_comment_parameters(Time.now, u_id)
@@ -150,7 +154,7 @@ class Activity < ActiveRecord::Base
 
 #Feed Topics--------->
 	def self.new_list_topic(u_id, topic_message, f_ids)
-		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first)
+		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first, :num_lists => f_ids.count)
 		ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
 		new_activity.new_topic_notification(f_ids)
 	end

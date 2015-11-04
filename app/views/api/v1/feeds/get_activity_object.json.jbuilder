@@ -36,4 +36,4 @@
   json.has_liked @user.likes.where("@activity_id = ?", @activity.id).any?
   
   json.topic @activity.message
-  json.num_@activity_lists @activity.feeds.count
+  json.num_activity_lists @activity.num_lists
