@@ -1,21 +1,22 @@
-json.array! @venues do |v|
-  json.id v.id
-  json.activity_id v.activities.where("feed_id = ?", @feed.id).first.try(:id)
-  json.name v.name
-  json.formatted_address v.formatted_address
-  json.address v.address
-  json.city v.city
-  json.state v.state
-  json.country v.country
-  json.postal_code v.postal_code
-  json.latitude v.latitude
-  json.longitude v.longitude
-  json.phone_number v.phone_number
-  json.color_rating v.color_rating
-  json.compare_type v.type
-  json.time_zone_offset v.time_zone_offset
-  json.added_by_user v.activities.where("feed_id = ?", @feed.id).first.try(:user).try(:name)
-  json.num_likes v.activities.where("feed_id = ?", @feed.id).first.try(:num_likes)
-  json.description v.feed_venues.where("feed_id = ?", @feed.id).first.try(:description)
-  json.did_like @user.likes.where("activity_id = ?", v.activities.where("feed_id = ?", @feed.id).first.try(:id)).any?
+json.array! @added_venue_activities do |added_venue_activity|
+  json.id added_venue_activity.venue.id
+  json.activity_id added_venue_activity.id
+  json.name added_venue_activity.venue.name
+  json.formatted_address added_venue_activity.venue.formatted_address
+  json.address added_venue_activity.venue.address
+  json.city added_venue_activity.venue.city
+  json.state added_venue_activity.venue.state
+  json.country added_venue_activity.venue.country
+  json.postal_code added_venue_activity.venue.postal_code
+  json.latitude added_venue_activity.venue.latitude
+  json.longitude added_venue_activity.venue.longitude
+  json.phone_number added_venue_activity.venue.phone_number
+  json.color_rating added_venue_activity.venue.color_rating
+  json.time_zone_offset added_venue_activity.venue.time_zone_offset
+
+  json.added_by_user added_venue_activity.user.try(:name)
+  json.num_likes added_venue_activity.num_likes
+  json.description added_venue_activity.feed_venue.description
+
+  json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).any?
 end
