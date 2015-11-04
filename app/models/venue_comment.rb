@@ -616,7 +616,7 @@ class VenueComment < ActiveRecord::Base
 		#query = '%'+query.downcase+'%'
 		#meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE venue_id = #{v_id} AND meta LIKE '#{query}'"
 		if meta_vc_ids != nil
-			VenueComment.where("id IN (#{meta_vc_ids})").order("time_wrapper DESC")
+			VenueComment.where("id IN (?)", meta_vc_ids).order("time_wrapper DESC")
 		else
 			nil
 		end
