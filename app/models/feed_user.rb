@@ -6,15 +6,12 @@ class FeedUser < ActiveRecord::Base
 
 	has_one :activity, :dependent => :destroy
 
-	after_create :new_user_notification
-	after_create :create_feed_acitivity
+	after_create :new_user_notification_and_activity
 
-	def create_feed_acitivity
-		a = Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
-		ActivityFeed.create!(:feed_id => feed_id, :activity_type => a.id)
-	end
 
-	def new_user_notification
+	def new_user_notification_and_activity
+		a = Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 		begin
 			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id
 				self.send_new_user_notification
@@ -32,7 +29,8 @@ class FeedUser < ActiveRecord::Base
 		    :user_name => user.name,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
-		    :feed_color => feed.feed_color
+		    :feed_color => feed.feed_color,
+		    :activity_id => self.activity.id
 
 		}
 
