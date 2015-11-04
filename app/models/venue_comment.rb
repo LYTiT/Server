@@ -27,7 +27,7 @@ class VenueComment < ActiveRecord::Base
 		MetaData.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
 		VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
 
-		Feed.joins(:feed_venue).where("venue_id IN (?)", associated_venue_ids).each{|feed| feed.update_columns(num_moments: feed.venue_comments.count)}
+		Feed.joins(:feed_venues).where("venue_id IN (?)", associated_venue_ids).each{|feed| feed.update_columns(num_moments: feed.venue_comments.count)}
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
 	end
 
