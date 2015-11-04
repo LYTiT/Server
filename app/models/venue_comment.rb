@@ -15,9 +15,19 @@ class VenueComment < ActiveRecord::Base
 	before_destroy :deincrement_feed_moment_counts
 
 	def VenueComment.cleanup_and_recalibration
-		old_venue_comments = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram')
-		associated_venue_ids = old_venue_comments.pluck(:venue_id)
-		old_venue_comments_ids = old_venue_comments.pluck(:id)
+		expired_venue_comment_ids = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').pluck(:id)
+		associated_venue_ids = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').pluck(:venue_id)
+
+		expired_activity_ids = Activity.where("id IN (?)", expired_venue_comment_ids).pluck(:id)
+		Like.where("activity_id IN (?)", expired_activity_ids).delete_all
+		ActivityComment.where("activity_id IN (?)", expired_activity_ids).delete_all
+		ActivityFeed.where("activity_id IN (?)", expired_activity_ids).delete_all
+
+		Activity.where("id IN (?)", expired_venue_comment_ids).delete_all
+		MetaData.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
+		VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
+
+		Feed.joins(:feed_venue).where("venue_id IN (?)", associated_venue_ids).each
 	end
 
 	def deincrement_feed_moment_counts
