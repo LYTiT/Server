@@ -14,6 +14,12 @@ class VenueComment < ActiveRecord::Base
 
 	before_destroy :deincrement_feed_moment_counts
 
+	def VenueComment.cleanup_and_recalibration
+		old_venue_comments = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram')
+		associated_venue_ids = old_venue_comments.pluck(:venue_id)
+		old_venue_comments_ids = old_venue_comments.pluck(:id)
+	end
+
 	def deincrement_feed_moment_counts
 		begin
 			self.venue.feeds.update_all("num_moments = num_moments-1")
@@ -606,10 +612,14 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.meta_search_results(v_id, query)
-		meta_vc_ids = MetaData.where("venue_id = ?", v_id).search("query").pluck(:venue_comment_id)
+		meta_vc_ids = MetaData.where("venue_id = ?", v_id).search(query).pluck(:venue_comment_id)
 		#query = '%'+query.downcase+'%'
 		#meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE venue_id = #{v_id} AND meta LIKE '#{query}'"
-		VenueComment.where("id IN (#{meta_vc_ids})").order("time_wrapper DESC")
+		if meta_vc_ids != nil
+			VenueComment.where("id IN (#{meta_vc_ids})").order("time_wrapper DESC")
+		else
+			nil
+		end
 	end
 
 	def self.twitter_test(query, radius)
