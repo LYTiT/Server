@@ -19,4 +19,5 @@ json.array! @added_venue_activities do |added_venue_activity|
   json.description added_venue_activity.feed_venue.description
 
   json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).any?
+  json.total_pages @added_venue_activities.total_pages
 end
