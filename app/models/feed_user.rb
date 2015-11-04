@@ -10,7 +10,8 @@ class FeedUser < ActiveRecord::Base
 	after_create :create_feed_acitivity
 
 	def create_feed_acitivity
-		Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+		a = Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at + 2.hours).to_i)
+		ActivityFeed.create!(:feed_id => feed_id, :activity_type => a.id)
 	end
 
 	def new_user_notification
