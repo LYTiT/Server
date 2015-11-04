@@ -16,7 +16,7 @@ json.array! @added_venue_activities do |added_venue_activity|
 
   json.added_by_user added_venue_activity.user.try(:name)
   json.num_likes added_venue_activity.num_likes
-  json.description added_venue_activity.feed_venue.description
+  json.added_note added_venue_activity.feed_venue.description
 
   json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).any?
   json.total_pages @added_venue_activities.total_pages
