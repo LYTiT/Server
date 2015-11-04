@@ -1,6 +1,6 @@
 class MetaData < ActiveRecord::Base
 	include PgSearch
-
+=begin
 	pg_search_scope :search, #name and/or associated meta data
 	against: :meta,
 	using: {
@@ -10,7 +10,7 @@ class MetaData < ActiveRecord::Base
 	    prefix: true
 	  }
 	}                
-
+=end
 
 	belongs_to :venue, touch: true
 	belongs_to :venue_comment
