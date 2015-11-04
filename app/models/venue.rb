@@ -88,7 +88,7 @@ class Venue < ActiveRecord::Base
             in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
         end
       else
-        results = Venue.seach(query).limit(10)
+        results = Venue.search(query).limit(10)
       end
     end
   end
