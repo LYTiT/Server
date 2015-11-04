@@ -6,21 +6,18 @@ class FeedVenue < ActiveRecord::Base
 
 	has_one :activity, :dependent => :destroy
 
-	after_create :new_venue_notification
-	after_create :create_feed_acitivity
+	after_create :new_venue_notification_and_activity
 	after_create :adjust_feed_moment_count
 
-	def create_feed_acitivity
-		a = Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
-		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
-	end
 
 	def adjust_feed_moment_count
 		added_moment_count = venue.venue_comments.count || 0
 		feed.increment!(:num_moments, added_moment_count)
 	end
 
-	def new_venue_notification
+	def new_venue_notification_and_activity
+		a = Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 		feed_members = feed.feed_users
 
 		for feed_user in feed_members
@@ -47,7 +44,7 @@ class FeedVenue < ActiveRecord::Base
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
 		    :added_note => description,
-		    :activity_id => self.activity_id
+		    :activity_id => self.activity.id
 
 		}
 
