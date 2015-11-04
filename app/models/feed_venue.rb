@@ -11,7 +11,8 @@ class FeedVenue < ActiveRecord::Base
 	after_create :adjust_feed_moment_count
 
 	def create_feed_acitivity
-		Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		a = Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		ActivityFeed.create!(:feed_id => feed_id, :venue_id => venue_id)
 	end
 
 	def adjust_feed_moment_count
