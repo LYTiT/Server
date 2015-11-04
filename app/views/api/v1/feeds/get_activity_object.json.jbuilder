@@ -33,7 +33,7 @@
   json.thirdparty_username @activity.venue_comment.try(:thirdparty_username)
 
   json.num_likes @activity.num_likes
-  json.has_liked @user.likes.where("@activity_id = ?", @activity.id).any?
+  json.has_liked @activity.liked_by?(@user)
   
   json.topic @activity.message
   json.num_activity_lists @activity.num_lists
