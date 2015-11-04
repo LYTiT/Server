@@ -222,9 +222,6 @@ class Api::V1::UsersController < ApiBaseController
 	def get_user_feeds
 		#we use this method to also return list of feeds when inside a venue page(params[:venue_id]) and so must make a check if the venue is part of any of the user's feed.
 		@user = User.find_by_id(params[:user_id]) 
-		if params[:venue_id] == nil
-			@user.delay.update_user_feeds
-		end
 		@venue_id = params[:venue_id]
 		@feeds = @user.feeds.includes(:feed_venues).order("name asc").page(params[:page]).per(20)
 	end

@@ -17,12 +17,8 @@ class Activity < ActiveRecord::Base
 	has_many :feeds, through: :activity_feeds
 
 
-	def did_like?(user) 
-		if like_id == nil
-			nil
-		else
-			like.user == user
-		end
+	def liked_by?(user) 
+		self.likes.where("liker_id = ?", user.id).any?
 	end
 
 	def update_comment_parameters(t, u_id)
