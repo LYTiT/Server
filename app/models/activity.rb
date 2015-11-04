@@ -152,6 +152,7 @@ class Activity < ActiveRecord::Base
 		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first, :num_lists => f_ids.count)
 		ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
 		new_activity.new_topic_notification(f_ids)
+		return new_activity
 	end
 
 	def new_topic_notification(f_ids)
