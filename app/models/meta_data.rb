@@ -1,7 +1,16 @@
 class MetaData < ActiveRecord::Base
 	include PgSearch
 
-	multisearchable :against => :meta
+	pg_search_scope :search, #name and/or associated meta data
+	against: :meta,
+	using: {
+	  tsearch: {
+	    dictionary: 'english',
+	    any_word: true,
+	    prefix: true
+	  }
+	}                
+
 
 	belongs_to :venue, touch: true
 	belongs_to :venue_comment

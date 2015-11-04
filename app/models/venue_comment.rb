@@ -606,8 +606,9 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.meta_search_results(v_id, query)
-		query = '%'+query.downcase+'%'
-		meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE venue_id = #{v_id} AND meta LIKE '#{query}'"
+		meta_vc_ids = MetaData.where("venue_id = ?", v_id).search("query").pluck(:venue_comment_id)
+		#query = '%'+query.downcase+'%'
+		#meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE venue_id = #{v_id} AND meta LIKE '#{query}'"
 		VenueComment.where("id IN (#{meta_vc_ids})").order("time_wrapper DESC")
 	end
 
