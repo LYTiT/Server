@@ -116,7 +116,8 @@ class Api::V1::UsersController < ApiBaseController
 
 	def cross_reference_user_phonebook
 		user_phonebook = params[:phone_numbers].split(",")
-		@users = User.find_lytit_users_in_phonebook(user_phonebook)
+		@users = User.where("RIGHT(phone_number, 8) IN (?)", user_phonebook)
+		#@users = User.find_lytit_users_in_phonebook(user_phonebook)
 	end
 
 	def register_push_token
