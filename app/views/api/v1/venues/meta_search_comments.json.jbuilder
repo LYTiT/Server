@@ -12,15 +12,10 @@ json.comments(@comments) do |comment|
   json.video_url_1 VenueComment.implicit_video_url_1(comment)
   json.video_url_2 VenueComment.implicit_video_url_2(comment)
   json.video_url_3 VenueComment.implicit_video_url_3(comment)
-  json.venue_id VenueComment.implicit_venue_id(comment)
+  json.venue_id VenueComment.implicit_venue_id(comment, @venue)
   json.venue_name VenueComment.implicit_venue_name(comment)
   json.created_at VenueComment.implicit_created_at(comment)
   json.content_origin VenueComment.implicit_content_origin(comment)
   json.thirdparty_username VenueComment.thirdparty_username(comment)
-  json.total_pages @comments.total_pages
-end
-json.pagination do
-  json.venue_id @venue.try(:id)
-  json.current_page @comments.current_page
   json.total_pages @comments.total_pages
 end
