@@ -54,7 +54,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def search
-		@user = User.find_by_id(params[:user_id])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@feeds = Feed.search(params[:q]).includes(:feed_users).limit(15)
 	end
 
