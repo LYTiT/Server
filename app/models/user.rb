@@ -510,7 +510,7 @@ class User < ActiveRecord::Base
       phone_num = user.phone_number
       if phone_num.length > 7
         leading_digits = phone_num.first(phone_num.length-7)
-        phonebook_entry = phonebook[phonebook.index(phone_num.last(7))-1]
+        phonebook_entry = phonebook[phonebook.index(phone_num.last(7))-1].last(phone_num.length)
         leading_phonebook_entry_digits = phonebook_entry.first(phone_num.length-7)
 
         if leading_digits != leading_phonebook_entry_digits
