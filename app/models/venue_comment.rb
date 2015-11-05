@@ -569,6 +569,8 @@ class VenueComment < ActiveRecord::Base
 	def self.implicit_venue_id(post, origin_venue)
 		if origin_venue != nil
 			origin_venue.id
+		elsif post.is_a?(Hash)
+			nil
 		else
 			post.venue_id
 		end
