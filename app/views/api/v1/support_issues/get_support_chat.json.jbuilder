@@ -4,7 +4,7 @@ json.chat_messages(@messages) do |message|
   json.user_id message.user_id
   json.user_name message.support_issue.user.try(:name)
   json.chat_message message.message
-  json.timestamp message.created_at
+  json.created_at message.created_at
 end
 
 json.pagination do 
