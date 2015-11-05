@@ -60,7 +60,7 @@ class Api::V1::VenuesController < ApiBaseController
 				cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
 			end
 
-			if cache_key != nil
+			if params[:meta_query] == nil
 				@view_cache_key = cache_key+"view"
 				@comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
 					Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
