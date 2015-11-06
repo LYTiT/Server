@@ -219,11 +219,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_activity_comment
 		fac = ActivityComment.create!(:activity_id => params[:activity_id], :user_id => params[:user_id], :comment => params[:comment])
 		if fac
-			if params[:activity_id] != nil
-				fa = Activity.find_by_id(params[:activity_id])
-			else
-				fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
-			end
+			fa = Activity.find_by_id(params[:activity_id])
 			fa.update_comment_parameters(Time.now, params[:user_id])
 			render json: { success: true }
 		else

@@ -6,7 +6,8 @@ class ActivityComment < ActiveRecord::Base
 
 	def new_chat_notification
 		conversation_participant_ids = "SELECT user_id FROM activity_comments WHERE activity_id = #{self.activity_id}"
-		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id = ?", activity.user_id, self.activity.feed_id)
+		activity_feed_ids = "SELECT feed_id FROM activity_feeds where activity_id = #{self.activity_id}"
+		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id IN (#{activity_feed_ids})", activity.user_id)
 
 		for feed_user in feed_users
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
