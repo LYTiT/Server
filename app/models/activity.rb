@@ -115,7 +115,7 @@ class Activity < ActiveRecord::Base
 		payload[:notification_id] = notification.id
 
 		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
-		member_activity_feed_memberships = member.feed_user.where("feed_id IN (#{underlying_feed_ids})")
+		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if member_activity_feed_memberships.count == 1
 			preview = "#{user.name} shared a Moment in #{member_activity_feed_memberships.first.feed.name}"
@@ -187,7 +187,7 @@ class Activity < ActiveRecord::Base
 		payload[:notification_id] = notification.id
 
 		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
-		member_activity_feed_memberships = member.feed_user.where("feed_id IN (#{underlying_feed_ids})")
+		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if member_activity_feed_memberships.count == 1
 			preview = "#{user.name} opened a new topic in #{member_activity_feed_memberships.first.feed.name}"
