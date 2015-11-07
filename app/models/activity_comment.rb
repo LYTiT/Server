@@ -52,7 +52,7 @@ class ActivityComment < ActiveRecord::Base
 		elsif activity.activity_type == "new member"
 			formatted_activity_type = "New Member"
 		elsif activity.activity_type == "shared moment"
-			formatted_activity_type  "Moment"
+			formatted_activity_type = "Moment"
 		else
 			formatted_activity_type = "Topic"
 		end
