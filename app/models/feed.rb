@@ -33,7 +33,7 @@ class Feed < ActiveRecord::Base
 
 	def comments
 		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
-		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:venue).order("id DESC")
+		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY'").includes(:venue).order("time_wrapper DESC")
 	end
 
 	def activity_of_the_day
