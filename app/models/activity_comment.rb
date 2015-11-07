@@ -12,7 +12,7 @@ class ActivityComment < ActiveRecord::Base
 		for feed_user in feed_users
 			notification_type = "activity_comment/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)  && (notification_check == true)
+			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user != nil)  && (notification_check == true)
 				self.send_new_chat_notification(feed_user.user)
 			end
 		end
@@ -51,8 +51,10 @@ class ActivityComment < ActiveRecord::Base
 		else
 			formatted_activity_type = "Topic"
 		end
+
+		feed_name = member_activity_feed_memberships.first.feed.name rescue member_activity_feed_memberships.last.feed.name
 		
-		preview = "#{user.name} about" + ' "' + "#{member_activity_feed_memberships.first.feed.try(:name)}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
+		preview = "#{user.name} about" + ' "' + "#{feed_name}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
 
 		notification_type = "activity_comment/#{self.id}"
 		notification = self.store_new_chat_notification(payload, member, notification_type)
