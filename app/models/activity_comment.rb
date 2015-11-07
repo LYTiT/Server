@@ -39,8 +39,8 @@ class ActivityComment < ActiveRecord::Base
 		}
 		
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
-		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.activity_id}"
+		member_activity_feed_memberships = FeedUser.where("user_id = ? AND feed_id IN (#{underlying_feed_ids})", member.id)
 
 		if activity.activity_type == "added venue"
 			formatted_activity_type = "Added Venue"
@@ -52,7 +52,7 @@ class ActivityComment < ActiveRecord::Base
 			formatted_activity_type = "Topic"
 		end
 
-		feed_name = member_activity_feed_memberships.first.feed.name rescue nil
+		feed_name = member_activity_feed_memberships.first.feed.name rescue "one of your List"
 		
 		preview = "#{user.name} about" + ' "' + "#{feed_name}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
 
