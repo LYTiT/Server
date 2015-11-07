@@ -1,8 +1,8 @@
 json.activity(@activities) do |activity|
-  json.feed_id activity.feed_id
-  json.feed_name activity.feed.try(:name)
-  json.feed_color activity.feed.try(:feed_color)
-  json.list_creator_id  activity.feed.try(:user_id)
+  json.feed_id @feed.id
+  json.feed_name @feed.name
+  json.feed_color @feed.feed_color
+  json.list_creator_id  @feed.user_id
 
   json.id activity.id
   json.activity_type activity.activity_type

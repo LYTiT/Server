@@ -154,7 +154,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_activity
-		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
 		@activities = @feed.activity_of_the_day.page(params[:page]).per(10)
 	end
@@ -191,8 +191,6 @@ class Api::V1::FeedsController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:activity_id] != nil
 			fa = Activity.find_by_id(params[:activity_id])
-		else
-			fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
 		end
 		fa.increment!(:num_likes, 1)
 		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :activity_id => fa.id)

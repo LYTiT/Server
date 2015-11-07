@@ -114,8 +114,11 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_shared_venue_comment_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		if feeds.count == 1
-			preview = "#{user.name} shared a Moment in #{feeds.first.name}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		member_activity_feed_memberships = member.feed_user.where("feed_id IN (#{underlying_feed_ids})")
+
+		if member_activity_feed_memberships.count == 1
+			preview = "#{user.name} shared a Moment in #{member_activity_feed_memberships.first.feed.name}"
 		else
 			preview = "#{user.name} shared a Moment with a few of your Lists"
 		end
@@ -183,8 +186,11 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		if feeds.count == 1
-			preview = "#{user.name} opened a new topic in #{feeds.first.name}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		member_activity_feed_memberships = member.feed_user.where("feed_id IN (#{underlying_feed_ids})")
+
+		if member_activity_feed_memberships.count == 1
+			preview = "#{user.name} opened a new topic in #{member_activity_feed_memberships.first.feed.name}"
 		else
 			preview = "#{user.name} opened a new topic in a few of your Lists"
 		end

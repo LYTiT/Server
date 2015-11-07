@@ -42,7 +42,22 @@ class ActivityComment < ActiveRecord::Base
 		payload[:notification_id] = notification.id
 		#end
 
-		preview = "#{user.name} in"+' "'+"#{activity.feed.name}"+'"'+":\n#{comment}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		member_activity_feed_memberships = member.feed_user.where("feed_id IN (#{underlying_feed_ids})")
+
+		if activity.activity_type = "added venue"
+			formatted_activity_type = "Added Venue"
+		elsif activity.activity_type = "new member"
+			formatted_activity_type = "New Member"
+		elsif activity.activity_type ="shared moment"
+			formatted_activity_type = "Moment"
+		else
+			formatted_activity_type = "Topic"
+		end
+
+		
+		preview = "#{user.name} about"+' "'+"#{member_activity_feed_memberships.first.feed.name}"+'"'+"'s #{formatted_activity_type}:\n#{comment}"
+		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})

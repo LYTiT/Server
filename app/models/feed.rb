@@ -38,7 +38,7 @@ class Feed < ActiveRecord::Base
 
 	def activity_of_the_day
 		activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id = #{self.id} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL"
-		Activity.where("id IN(#{activity_ids})").includes(:user, :venue, :venue_comment, :likes).order("adjusted_sort_position DESC")
+		Activity.where("id IN(#{activity_ids})").includes(:feed, :user, :venue, :venue_comment, :likes).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url
@@ -62,7 +62,7 @@ class Feed < ActiveRecord::Base
 
 	def self.feeds_in_cluster(cluster_venue_ids)
 		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id IN (#{cluster_venue_ids})"
-		Feed.where("id IN (#{feed_ids})").order("name ASC")		
+		Feed.where("id IN (#{feed_ids})").includes(:user, :feed_users).order("name ASC")		
 	end
 
 	def update_media
@@ -72,7 +72,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def has_added?(new_user)
-		FeedUser.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
+		self.feed_user.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
 	end
 
 	def is_subscribed?(target_user)

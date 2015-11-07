@@ -439,7 +439,7 @@ class User < ActiveRecord::Base
   def aggregate_list_feed
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
     activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
-    Activity.where("id IN (#{activity_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:user, :venue, :venue_comment, :likes).order("adjusted_sort_position DESC")
+    Activity.where("id IN (#{activity_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL").includes(:feed, :user, :venue, :venue_comment, :likes).order("adjusted_sort_position DESC")
   end
 
   #------------------------------------------------------------->
@@ -544,7 +544,7 @@ class User < ActiveRecord::Base
     LytitVote.where("created_at < ?", Time.now - 24.hours).delete_all
   end
 
-  def self.clear_user_notifications(user_ids)
+  def User.clear_user_notifications(user_ids)
     user_ids.each{|user_id| Notification.where(user_id: user_id, read: false, deleted: false).delete_all}
   end
 

@@ -8,7 +8,7 @@ json.array! @lists do |list|
 	json.feed_color list.feed_color
 	json.users_can_add_places list.open
 	json.creator list.user
-	json.has_added 1
+	json.has_added feed.has_added?(@user)
 	json.list_description list.description
 	json.total_pages @lists.total_pages
 end
