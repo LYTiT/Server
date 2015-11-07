@@ -10,6 +10,8 @@ class ActivityComment < ActiveRecord::Base
 		feed_users = FeedUser.where("(user_id IN (#{conversation_participant_ids}) OR user_id = ?) AND feed_id IN (#{activity_feed_ids})", activity.user_id)
 
 		for feed_user in feed_users
+			notification_type = "activity_comment/#{self.id}"
+			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0) && (notification_check == true)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user_id != nil)
 				self.send_new_chat_notification(feed_user.user)
 			end
@@ -36,7 +38,7 @@ class ActivityComment < ActiveRecord::Base
 
 		}
 
-		notification_type = "New comment for Feed Activity #{activity_id}"
+		notification_type = "activity_comment/#{self.id}"
 		#if Notification.where(user_id: member.id, message: notification_type, read: false, deleted: false).count == 0
 		notification = self.store_new_chat_notification(payload, member, notification_type)
 		payload[:notification_id] = notification.id
