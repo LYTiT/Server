@@ -47,17 +47,17 @@ class ActivityComment < ActiveRecord::Base
 		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
 		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
-		if activity.activity_type = "added venue"
+		if activity.activity_type == "added venue"
 			formatted_activity_type = "Added Venue"
-		elsif activity.activity_type = "new member"
+		elsif activity.activity_type == "new member"
 			formatted_activity_type = "New Member"
-		elsif activity.activity_type ="shared moment"
-			formatted_activity_type = "Moment"
+		elsif activity.activity_type == "shared moment"
+			formatted_activity_type  "Moment"
 		else
 			formatted_activity_type = "Topic"
 		end
 		
-		preview = "#{user.name} about" + ' "' + "#{member_activity_feed_memberships.first.feed.try(:name)}'s" + '"' + "#{formatted_activity_type}:\n#{comment}"
+		preview = "#{user.name} about" + ' "' + "#{member_activity_feed_memberships.first.feed.try(:name)}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
 		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
