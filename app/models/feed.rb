@@ -72,7 +72,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def has_added?(new_user)
-		self.feed_user.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
+		self.feed_users.where("user_id = ? AND feed_id = ?", new_user.id, id).any?
 	end
 
 	def is_subscribed?(target_user)

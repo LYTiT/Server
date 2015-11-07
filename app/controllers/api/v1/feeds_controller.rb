@@ -167,7 +167,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity_lists
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@activity = Activity.find_by_id(params[:activity_id])
-		@lists = @activity.feeds.page(params[:page]).per(10)
+		@lists = @activity.feeds.includes(:feed_users).page(params[:page]).per(10)
 	end
 
 	def get_likers
