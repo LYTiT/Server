@@ -55,7 +55,7 @@ class ActivityComment < ActiveRecord::Base
 			formatted_activity_type = "Topic"
 		end
 		
-		preview = "#{user.name} about"+' "'+"#{member_activity_feed_memberships.first.feed.name}"+'"'+"'s #{formatted_activity_type}:\n#{comment}"
+		preview = "#{user.name} about" + ' "' + "#{member_activity_feed_memberships.first.feed.try(:name)}'s" + '"' + "#{formatted_activity_type}:\n#{comment}"
 		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
