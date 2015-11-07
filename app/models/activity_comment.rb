@@ -42,7 +42,7 @@ class ActivityComment < ActiveRecord::Base
 		payload[:notification_id] = notification.id
 		#end
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
 		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if activity.activity_type = "added venue"

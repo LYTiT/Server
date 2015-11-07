@@ -114,7 +114,7 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_shared_venue_comment_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
 		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if member_activity_feed_memberships.count == 1
@@ -186,7 +186,7 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHRE activity_id = #{self.id}"
+		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
 		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if member_activity_feed_memberships.count == 1
