@@ -37,12 +37,7 @@ class ActivityComment < ActiveRecord::Base
 		    :chat_message => self.comment,
 
 		}
-
-		notification_type = "activity_comment/#{self.id}"
-		#if Notification.where(user_id: member.id, message: notification_type, read: false, deleted: false).count == 0
-		notification = self.store_new_chat_notification(payload, member, notification_type)
-		payload[:notification_id] = notification.id
-		#end
+		
 
 		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
 		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
@@ -58,6 +53,10 @@ class ActivityComment < ActiveRecord::Base
 		end
 		
 		preview = "#{user.name} about" + ' "' + "#{member_activity_feed_memberships.first.feed.try(:name)}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
+
+		notification_type = "activity_comment/#{self.id}"
+		notification = self.store_new_chat_notification(payload, member, notification_type)
+		payload[:notification_id] = notification.id
 		
 		if member.push_token
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
