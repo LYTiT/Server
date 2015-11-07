@@ -52,7 +52,7 @@ class ActivityComment < ActiveRecord::Base
 			formatted_activity_type = "Topic"
 		end
 
-		feed_name = member_activity_feed_memberships.first.feed.name rescue member_activity_feed_memberships.last.feed.name
+		feed_name = member_activity_feed_memberships.first.feed.name rescue nil
 		
 		preview = "#{user.name} about" + ' "' + "#{feed_name}'s" + '"' + " #{formatted_activity_type}:\n#{comment}"
 
