@@ -206,7 +206,7 @@ class Api::V1::UsersController < ApiBaseController
 	#Functionality Methods------------------------------->
 	def get_map_details
 		@user = User.find_by_id(params[:user_id])
-		render 'get_map_details.json.jbuilder'
+		render 'get_startup_details.json.jbuilder'
 	end
 
 	def get_comments_by_time
