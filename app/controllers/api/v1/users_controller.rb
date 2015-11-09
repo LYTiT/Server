@@ -72,8 +72,8 @@ class Api::V1::UsersController < ApiBaseController
 		end
 
 		if params[:phone_number] != nil && params[:phone_number].to_s != @user.phone_number
-			@user.phone_number = params[:phone_number]
-			@user.country_code = params[:country_code]
+			@user.phone_number = params[:phone_number].to_s
+			@user.country_code = params[:country_code].to_s
 		end
 
 		if @user.save		

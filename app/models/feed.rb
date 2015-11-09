@@ -120,6 +120,21 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def geo_mass_center
+		#Calculation for the geographic midpoint of a List based on locations of underlying Venues
+		underlying_venues = self.venues
+		
+		for venue in underlying_venues
+			#conversion to cartesian coordinates
+			lat_radians = venue.latitude * Math::PI/180
+			long_radians = venue.longitude * Math::PI/180
+			
+			x = Math.cos(lat_radians) * Math.cos(long_radians)
+			y = Math.cos(lat_radians) * Math.sin(long_radians)
+			z = Math.sin(lat_radians)
+		end
+	end
+
 	def self.initial_recommendations(selected_categories)
 		if selected_categories != nil
 			FeedRecommendation.where("category IN (?) AND active IS TRUE", selected_categories)
