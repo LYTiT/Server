@@ -71,15 +71,19 @@ class Activity < ActiveRecord::Base
 			vc = VenueComment.find_by_id(vc_id)
 		end
 
-		fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
-		if comment != nil && comment != ""
-			fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
-			fa.update_comment_parameters(Time.now, u_id)
-		end	
+		if vc != nil
+			fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
+			if comment != nil && comment != ""
+				fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
+				fa.update_comment_parameters(Time.now, u_id)
+			end	
 
-		f_ids.each{|f_id| ActivityFeed.create!(:activity_id => fa.id, :feed_id => f_id)}
+			f_ids.each{|f_id| ActivityFeed.create!(:activity_id => fa.id, :feed_id => f_id)}
 
-		fa.new_feed_share_notification(f_ids)
+			fa.new_feed_share_notification(f_ids)
+		else
+			puts "No underlying venue comment to share"
+		end
 	end
 
 	def new_feed_share_notification(f_ids)
@@ -122,6 +126,8 @@ class Activity < ActiveRecord::Base
 		    :video_url_1 => venue_comment.try(:video_url_1),
 		    :video_url_2 => venue_comment.try(:video_url_2),
 		    :video_url_3 => venue_comment.try(:video_url_3),
+		    :thirdparty_username => venue_comment.try(:thirdparty_username),
+
 		    :venue_id => venue_id,
   			:venue_name => venue.try(:name),
   			:city => venue.try(:city),
