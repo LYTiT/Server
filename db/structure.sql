@@ -600,7 +600,9 @@ CREATE TABLE feeds (
     latest_content_time timestamp without time zone,
     description text,
     code character varying(255),
-    num_moments integer DEFAULT 0
+    num_moments integer DEFAULT 0,
+    central_mass_latitude double precision,
+    central_mass_longitude double precision
 );
 
 
@@ -3533,4 +3535,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151103102602');
 INSERT INTO schema_migrations (version) VALUES ('20151103104710');
 
 INSERT INTO schema_migrations (version) VALUES ('20151104002343');
+
+INSERT INTO schema_migrations (version) VALUES ('20151109052142');
 

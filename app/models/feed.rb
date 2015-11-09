@@ -12,7 +12,13 @@ class Feed < ActiveRecord::Base
   		:against => {
     		:name => 'A',
     		:description => 'B'
-    	}    	
+    	}
+
+	acts_as_mappable :default_units => :kms,
+	                 :default_formula => :sphere,
+	                 :distance_field_name => :distance,
+	                 :lat_column_name => :central_mass_latitude,
+	                 :lng_column_name => :central_mass_longitude    	    	
     	
 	has_many :feed_venues, :dependent => :destroy
 	has_many :venues, through: :feed_venues
@@ -120,10 +126,13 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
-	def geo_mass_center
+	def set_geo_mass_center
 		#Calculation for the geographic midpoint of a List based on locations of underlying Venues
 		underlying_venues = self.venues
-		
+		total_weight = 0
+		sum_x = 0
+		sum_y = 0
+		sum_z = 0
 		for venue in underlying_venues
 			#conversion to cartesian coordinates
 			lat_radians = venue.latitude * Math::PI/180
@@ -132,7 +141,30 @@ class Feed < ActiveRecord::Base
 			x = Math.cos(lat_radians) * Math.cos(long_radians)
 			y = Math.cos(lat_radians) * Math.sin(long_radians)
 			z = Math.sin(lat_radians)
+
+			#set weight if neccessary
+			venue_weight = 1
+			total_weight += venue_weight
+
+			sum_x += x * venue_weight 
+			sum_y += y * venue_weight
+			sum_z += z * venue_weight
 		end
+
+		weighted_x = sum_x / total_weight
+		weighted_y = sum_y / total_weight
+		weighted_z = sum_z / total_weight
+
+		central_long_radians = Math.atan2(weighted_y, weighted_x)
+		hyp = Math.sqrt(weighted_x ** 2 + weighted_y ** 2)
+		central_lat_radians = Math.atan2(weighted_z, hyp) 
+
+		geo_mass_lat = central_lat_radians * 180/Math::PI
+		geo_mass_long = central_long_radians * 180/Math::PI
+
+		self.update_columns(central_mass_latitude: geo_mass_lat)
+		self.update_columns(central_mass_longitude: geo_mass_long)
+		return [geo_mass_lat, geo_mass_long]
 	end
 
 	def self.initial_recommendations(selected_categories)
