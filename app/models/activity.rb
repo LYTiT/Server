@@ -89,38 +89,63 @@ class Activity < ActiveRecord::Base
 			notification_type = "feed_share/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
-				self.send_new_feed_share_notification(feed_user.user)
+				self.send_new_feed_share_notification(feed_user.user, feed_user.feed)
 			end
 		end
 	end
 
-	def send_new_feed_share_notification(member)
+	def send_new_feed_share_notification(member, activity_feed_of_member)
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
-		    :type => 'share_notification', 
+		    :type => 'share_notification',
+		    :created_at => created_at,
+		    :num_likes => num_likes,
+  			:has_liked => self.liked_by?(member),
+
+  			:num_chat_participants => num_participants,
+  			:latest_chat_time => latest_comment_time,
+
 		    :user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feed_id,
-		    :feed_name => feed.name,
-		    :feed_color => feed.feed_color,
-		    :num_activity_lists => feeds.count,
-		    :media_type => venue_comment.try(:media_type)
+
+		    :feed_id => activity_feed_of_member.id,
+		    :feed_name => activity_feed_of_member.name,
+		    :feed_color => activity_feed_of_member.feed_color,
+
+		    :num_activity_lists => num_lists,
+
+		    :media_type => venue_comment.try(:media_type),
+		    :image_url_1 => venue_comment.try(:image_url_1),
+		    :image_url_2 => venue_comment.try(:image_url_2),
+		    :image_url_3 => venue_comment.try(:image_url_3),
+		    :video_url_1 => venue_comment.try(:video_url_1),
+		    :video_url_2 => venue_comment.try(:video_url_2),
+		    :video_url_3 => venue_comment.try(:video_url_3),
+		    :venue_id => venue_id,
+  			:venue_name => venue.try(:name),
+  			:city => venue.try(:city),
+  			:country => venue.try(:country),
+		  	:latitude => venue.try(:latitude),
+  			:longitude => venue.try(:longitude),
+  			:color_rating => venue.try(:color_rating),
+  			:instagram_location_id => venue.try(:instagram_location_id)		    
 		}
+
 
 		type = "feed_share/#{self.id}"
 
 		notification = self.store_new_shared_venue_comment_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
-		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
+		#underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
+		#member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
-		if member_activity_feed_memberships.count == 1
-			preview = "#{user.name} shared a Moment in #{member_activity_feed_memberships.first.feed.name}"
+		if num_lists == 1
+			preview = "#{user.name} shared a Moment with #{activity_feed_of_member.name}"
 		else
-			preview = "#{user.name} shared a Moment with a few of your Lists"
+			preview = "#{user.name} shared a Moment with #{activity_feed_of_member.name} & others"
 		end
 		
 		if member.push_token
@@ -160,23 +185,30 @@ class Activity < ActiveRecord::Base
 			notification_type = "feed_topic/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
-				self.delay.send_new_topic_notification(feed_user.user)
+				self.delay.send_new_topic_notification(feed_user.user, feed_user.feed)
 			end
 		end
 	end
 
-	def send_new_topic_notification(member)
+	def send_new_topic_notification(member, activity_feed_of_member)
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
-		    :type => 'new_topic_notification', 
+		    :type => 'new_topic_notification',
+		    :created_at => created_at,
+		    :num_likes => num_likes,
+  			:has_liked => self.liked_by?(member),
+
+  			:num_chat_participants => num_participants,
+  			:latest_chat_time => latest_comment_time,
+
 			:user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
-		    :feed_id => feed_id,
-		    :feed_name => feed.name,
-		    :feed_color => feed.feed_color,
-		    :num_activity_lists => feeds.count,
+		    :feed_id => activity_feed_of_member.id,
+		    :feed_name => activity_feed_of_member.name,
+		    :feed_color => activity_feed_of_member.feed_color,
+		    :num_activity_lists => num_lists,
 		    :topic => self.message
 		}
 
@@ -186,13 +218,13 @@ class Activity < ActiveRecord::Base
 		notification = self.store_new_topic_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
-		member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
+		#underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.id}"
+		#member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
-		if member_activity_feed_memberships.count == 1
-			preview = "#{user.name} opened a new topic in #{member_activity_feed_memberships.first.feed.name}"
+		if num_lists == 1
+			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name}"
 		else
-			preview = "#{user.name} opened a new topic in a few of your Lists"
+			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name} & others"
 		end
 
 		if member.push_token

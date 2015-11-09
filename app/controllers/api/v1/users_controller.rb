@@ -67,7 +67,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def update_user
 		@user = User.find_by_authentication_token(params[:auth_token])
-		if params[:name] != nil and params[:name] != @user.name
+		if params[:name] != nil && params[:name] != @user.name
 			@user.name = params[:name]
 		end
 

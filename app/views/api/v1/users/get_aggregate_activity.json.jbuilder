@@ -15,6 +15,7 @@ json.activity(@activities) do |activity|
   
   json.venue_id activity.venue_id
   json.venue_name activity.venue.try(:name)
+  json.address activity.venue.try(:address)
   json.city activity.venue.try(:city)
   json.country activity.venue.try(:country)
   json.latitude activity.venue.try(:latitude)
