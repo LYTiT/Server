@@ -7,12 +7,16 @@ class FeedVenue < ActiveRecord::Base
 	has_one :activity, :dependent => :destroy
 
 	after_create :new_venue_notification_and_activity
-	after_create :adjust_feed_moment_count
+	after_create :calibrate_feed
 
 
-	def adjust_feed_moment_count
+	def calibrate_feed
+		#adjust moment count
 		added_moment_count = venue.venue_comments.count || 0
 		feed.increment!(:num_moments, added_moment_count)
+
+		#adjust geo mass center
+		feed.update_geo_mass_center
 	end
 
 	def new_venue_notification_and_activity
