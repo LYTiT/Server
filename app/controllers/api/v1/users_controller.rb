@@ -88,6 +88,7 @@ class Api::V1::UsersController < ApiBaseController
 		if params[:email] != nil and params[:email].length > 4
 			@user.email = params[:email]
 		end
+		#nilify the phone number so the user will have to reconfirm upon future login (can only be logged in on one device)
 		@user.password = params[:password]
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
