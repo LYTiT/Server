@@ -27,6 +27,7 @@ LytitServer::Application.routes.draw do
           get 'search'
         end
         get 'get_map_details'
+        get 'get_startup_details'
         get 'confirm_email'
         get 'get_venue_comment'
         get 'username_availability'
