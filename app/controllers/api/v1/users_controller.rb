@@ -22,7 +22,7 @@ class Api::V1::UsersController < ApiBaseController
 					existing_temp_user.destroy
 				else
 					previous_email = existing_temp_user.email
-					existing_temp_user.update_columns(email: previous_email+"(og)")
+					existing_temp_user.update_columns(email: previous_email+".og")
 				end
 			end
 		rescue
@@ -75,6 +75,7 @@ class Api::V1::UsersController < ApiBaseController
 			@user.phone_number = params[:phone_number].to_s
 			@user.country_code = params[:country_code].to_s
 		end
+
 
 		if @user.save		
 			render json: { success: true }
