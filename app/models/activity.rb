@@ -99,7 +99,6 @@ class Activity < ActiveRecord::Base
 		    :object_id => self.id, 
 		    :activity_id => self.id,
 		    :type => 'share_notification',
-		    :created_at => created_at,
 		    :num_likes => num_likes,
   			:has_liked => self.liked_by?(member),
 
@@ -195,7 +194,6 @@ class Activity < ActiveRecord::Base
 		    :object_id => self.id, 
 		    :activity_id => self.id,
 		    :type => 'new_topic_notification',
-		    :created_at => created_at,
 		    :num_likes => num_likes,
   			:has_liked => self.liked_by?(member),
 
