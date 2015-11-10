@@ -338,16 +338,21 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
-		if Venue.name_is_proper?(instagram_params["venue_name"]) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
-			if origin_venue_id == nil	
-				venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"])
+		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
+		if presence == nil
+			if Venue.name_is_proper?(instagram_params["venue_name"]) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
+				if origin_venue_id == nil	
+					venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"])
+				else
+					venue = Venue.find_by_id(origin_venue_id)
+				end
+				vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"])
+				return vc
 			else
-				venue = Venue.find_by_id(origin_venue_id)
+				return nil
 			end
-			vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"])
-			return vc
 		else
-			return nil
+			return presence
 		end
 	end
 
