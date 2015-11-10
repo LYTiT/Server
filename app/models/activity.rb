@@ -64,23 +64,24 @@ class Activity < ActiveRecord::Base
 	end
 
 #Feed Shares--------->
-	def self.new_list_share(instagram_details, vc_id, u_id, f_ids, comment)
+	def self.new_list_share(instagram_details, vc_id, origin_venue_id, u_id, f_ids, comment)
 		if vc_id == nil
-			vc = VenueComment.convert_instagram_details_to_vc(instagram_details)
+			vc = VenueComment.convert_instagram_details_to_vc(instagram_details, origin_venue_id)
 		else
 			vc = VenueComment.find_by_id(vc_id)
 		end
 
 		if vc != nil
-			fa = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
+			new_activity = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_id => vc.venue_id, :adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
 			if comment != nil && comment != ""
-				fac = ActivityComment.create!(:activity_id => fa.id, :user_id => u_id, :comment => comment)
-				fa.update_comment_parameters(Time.now, u_id)
+				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :comment => comment)
+				new_activity.update_comment_parameters(Time.now, u_id)
 			end	
 
-			f_ids.each{|f_id| ActivityFeed.create!(:activity_id => fa.id, :feed_id => f_id)}
+			ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
+			fa.delay.new_feed_share_notification(f_ids)
 
-			fa.new_feed_share_notification(f_ids)
+			return new_activity
 		else
 			puts "No underlying venue comment to share"
 		end
@@ -180,7 +181,7 @@ class Activity < ActiveRecord::Base
 	def self.new_list_topic(u_id, topic_message, f_ids)
 		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first, :num_lists => f_ids.count)
 		ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
-		new_activity.new_topic_notification(f_ids)
+		new_activity.delay.new_topic_notification(f_ids)
 		return new_activity
 	end
 
@@ -190,7 +191,7 @@ class Activity < ActiveRecord::Base
 			notification_type = "feed_topic/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
-				self.delay.send_new_topic_notification(feed_user.user, feed_user.feed)
+				self.send_new_topic_notification(feed_user.user, feed_user.feed)
 			end
 		end
 	end

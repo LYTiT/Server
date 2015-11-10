@@ -1,5 +1,6 @@
 json.id @user.id
 json.name @user.name
+json.set_unpassword @user.password.nil?
 json.user_phone @user.phone_number
 json.user_phone_country @user.country_code
 json.support_issue_id @user.support_issues.first.id
