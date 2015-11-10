@@ -226,8 +226,8 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def get_activity_comments
-		@activity_comments = Activity.find_by_id(params[:activity_id]).activity_comments.includes(:user).order("id DESC").page(params[:page]).per(10)
+	def get_activity_comments		
+		@activity_comments = ActivityComment.where("activity_id = ?", params[:activity_id]).includes(:user).order("id DESC").page(params[:page]).per(10)
 	end
 
 	def get_venue_comments
