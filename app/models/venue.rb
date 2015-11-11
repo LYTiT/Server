@@ -65,7 +65,7 @@ class Venue < ActiveRecord::Base
   has_many :activities, :dependent => :destroy
   has_many :activities, :dependent => :destroy
   has_many :events, :dependent => :destroy
-  
+
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
@@ -1196,8 +1196,12 @@ class Venue < ActiveRecord::Base
       visible = false
     end
 
-    if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
+    if city == "New York" and (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map-30.minutes)
       visible = false
+    else
+      if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
+        visible = false
+      end
     end
 
     if visible == false
