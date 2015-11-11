@@ -1056,7 +1056,7 @@ class Venue < ActiveRecord::Base
       else
         inst_lytit_posts = []
         inst_lytit_posts << surrounding_instagrams
-        inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{surrounding_venue_ids})").order("rating DESC").order("name ASC").order("venue_comments.id DESC")
+        inst_lytit_posts << VenueComment.joins(:venue).where("venues.id IN (#{surrounding_venue_ids})").order("rating DESC").order("name ASC").order("venue_comments.time_wrapper DESC")
         inst_lytit_posts.flatten!
         surrounding_feed = inst_lytit_posts
       end
