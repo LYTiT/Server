@@ -23,7 +23,7 @@ class VenueComment < ActiveRecord::Base
 		ActivityComment.where("activity_id IN (?)", expired_activity_ids).delete_all
 		ActivityFeed.where("activity_id IN (?)", expired_activity_ids).delete_all
 
-		Activity.where("id IN (?)", expired_venue_comment_ids).delete_all
+		Activity.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
 		MetaData.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
 		VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
 
