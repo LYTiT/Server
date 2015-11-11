@@ -63,7 +63,9 @@ class Venue < ActiveRecord::Base
   has_many :feed_venues
   has_many :feeds, through: :feed_venues
   has_many :activities, :dependent => :destroy
-
+  has_many :activities, :dependent => :destroy
+  has_many :events, :dependent => :destroy
+  
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }

@@ -409,6 +409,110 @@ ALTER SEQUENCE delayed_jobs_id_seq OWNED BY delayed_jobs.id;
 
 
 --
+-- Name: event_announcements; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE event_announcements (
+    id integer NOT NULL,
+    event_id integer,
+    comment text,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: event_announcements_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE event_announcements_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_announcements_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE event_announcements_id_seq OWNED BY event_announcements.id;
+
+
+--
+-- Name: event_organizers; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE event_organizers (
+    id integer NOT NULL,
+    event_id integer,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: event_organizers_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE event_organizers_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: event_organizers_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE event_organizers_id_seq OWNED BY event_organizers.id;
+
+
+--
+-- Name: events; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE events (
+    id integer NOT NULL,
+    name character varying(255),
+    description text,
+    color text,
+    start_time timestamp without time zone,
+    end_time timestamp without time zone,
+    venue_id integer,
+    low_image_url character varying(255),
+    medium_image_url character varying(255),
+    regular_image_url character varying(255),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE events_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE events_id_seq OWNED BY events.id;
+
+
+--
 -- Name: exported_data_csvs; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1639,7 +1743,8 @@ CREATE TABLE venues (
     latest_rating_update_time timestamp without time zone,
     last_twitter_pull_time timestamp without time zone,
     meta_data_vector tsvector,
-    metaphone_name_vector tsvector
+    metaphone_name_vector tsvector,
+    event_id integer
 );
 
 
@@ -1749,6 +1854,27 @@ ALTER TABLE ONLY comment_views ALTER COLUMN id SET DEFAULT nextval('comment_view
 --
 
 ALTER TABLE ONLY delayed_jobs ALTER COLUMN id SET DEFAULT nextval('delayed_jobs_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_announcements ALTER COLUMN id SET DEFAULT nextval('event_announcements_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY event_organizers ALTER COLUMN id SET DEFAULT nextval('event_organizers_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY events ALTER COLUMN id SET DEFAULT nextval('events_id_seq'::regclass);
 
 
 --
@@ -2042,6 +2168,30 @@ ALTER TABLE ONLY comment_views
 
 ALTER TABLE ONLY delayed_jobs
     ADD CONSTRAINT delayed_jobs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_announcements_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY event_announcements
+    ADD CONSTRAINT event_announcements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: event_organizers_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY event_organizers
+    ADD CONSTRAINT event_organizers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: events_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY events
+    ADD CONSTRAINT events_pkey PRIMARY KEY (id);
 
 
 --
@@ -2443,6 +2593,41 @@ CREATE INDEX index_comment_views_on_venue_comment_id ON comment_views USING btre
 --
 
 CREATE UNIQUE INDEX index_comment_views_on_venue_comment_id_and_user_id ON comment_views USING btree (venue_comment_id, user_id);
+
+
+--
+-- Name: index_event_announcements_on_event_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_event_announcements_on_event_id ON event_announcements USING btree (event_id);
+
+
+--
+-- Name: index_event_announcements_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_event_announcements_on_user_id ON event_announcements USING btree (user_id);
+
+
+--
+-- Name: index_event_organizers_on_event_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_event_organizers_on_event_id ON event_organizers USING btree (event_id);
+
+
+--
+-- Name: index_event_organizers_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_event_organizers_on_user_id ON event_organizers USING btree (user_id);
+
+
+--
+-- Name: index_events_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_events_on_venue_id ON events USING btree (venue_id);
 
 
 --
@@ -3537,4 +3722,12 @@ INSERT INTO schema_migrations (version) VALUES ('20151103104710');
 INSERT INTO schema_migrations (version) VALUES ('20151104002343');
 
 INSERT INTO schema_migrations (version) VALUES ('20151109052142');
+
+INSERT INTO schema_migrations (version) VALUES ('20151111040621');
+
+INSERT INTO schema_migrations (version) VALUES ('20151111041931');
+
+INSERT INTO schema_migrations (version) VALUES ('20151111042510');
+
+INSERT INTO schema_migrations (version) VALUES ('20151111051755');
 
