@@ -136,8 +136,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_surrounding_tweets
 		venue_ids = params[:cluster_venue_ids].split(',')
-		lat = params[:latitude]
-		long =  params[:longitude]
+		lat = params[:cluster_latitude]
+		long =  params[:cluster_longitude]
 		zoom_level = params[:zoom_level]
 		map_scale = params[:map_scale]
 		fresh_pull = params[:fresh_pull]
