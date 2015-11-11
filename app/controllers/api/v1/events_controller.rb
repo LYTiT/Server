@@ -7,4 +7,7 @@ class Api::V1::EventsController < ApiBaseController
 		@event_announcements = Event.find_by_id(params[:event_id]).event_announcements.order("id DESC").page(params[:page]).per(10)
 	end
 
+	def create_event
+	end
+
 end

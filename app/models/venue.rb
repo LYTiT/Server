@@ -1196,10 +1196,10 @@ class Venue < ActiveRecord::Base
       visible = false
     end
 
-    if city == "New York" and (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map-30.minutes)
+    if city == "New York" && (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map-30.minutes)
       visible = false
     else
-      if (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
+      if city != "New York" && (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
         visible = false
       end
     end
