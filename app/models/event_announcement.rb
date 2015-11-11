@@ -1,4 +1,4 @@
-class EventOrganizer < ActiveRecord::Base
+class EventAnnouncement < ActiveRecord::Base
 	belongs_to :event
 	belongs_to :user
 end
