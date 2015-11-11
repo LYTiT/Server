@@ -677,8 +677,8 @@ class Venue < ActiveRecord::Base
         total_media = []
         total_media << new_instagrams#.uniq!
         lytit_vcs = venue.venue_comments
-        if lytit_vcs.count > 0
-          total_media << venue.venue_comments
+        if lytit_vcs.first != nil
+          total_media << lytit_vcs
         end
         total_media.flatten!
         return Kaminari.paginate_array(total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse)
