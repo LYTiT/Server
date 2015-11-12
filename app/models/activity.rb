@@ -180,8 +180,8 @@ class Activity < ActiveRecord::Base
 #Feed Topics--------->
 	def self.new_list_topic(u_id, topic_message, f_ids)
 		new_activity = Activity.create!(:user_id => u_id, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, :feed_id => f_ids.first, :num_lists => f_ids.count)
-		ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
-		new_activity.delay.new_topic_notification(f_ids)
+		ActivityFeed.bulk_creation(new_activity.id, f_ids)
+		new_activity.new_topic_notification(f_ids)
 		return new_activity
 	end
 
@@ -191,7 +191,7 @@ class Activity < ActiveRecord::Base
 			notification_type = "feed_topic/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.user_id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
-				self.send_new_topic_notification(feed_user.user, feed_user.feed)
+				self.delay.send_new_topic_notification(feed_user.user, feed_user.feed)
 			end
 		end
 	end
