@@ -125,7 +125,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def edit_venue_description
 		fv = FeedVenue.find_by_id(params[:feed_venue_id])
-		fv.description = params[:description]
+		fv.description = params[:added_note]
 		if fv.save
 			render json: { success: false }
 		else
