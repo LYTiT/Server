@@ -88,11 +88,11 @@ class Activity < ActiveRecord::Base
 	end
 
 	def new_feed_share_notification(f_ids)
-		feed_users = FeedUser.where("feed_id IN (?)", f_ids).includes(:user)
+		feed_users = FeedUser.where("feed_id IN (?)", f_ids).includes(:user, :feed)
 		
 		for feed_user in feed_users
 			notification_type = "feed_share/#{self.id}"
-			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
+			notification_check = (Notification.where(user_id: feed_user.user_id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
 				self.send_new_feed_share_notification(feed_user.user, feed_user.feed)
 			end
@@ -186,10 +186,10 @@ class Activity < ActiveRecord::Base
 	end
 
 	def new_topic_notification(f_ids)
-		feed_users = FeedUser.where("feed_id IN (?)", f_ids).includes(:user)
+		feed_users = FeedUser.where("feed_id IN (?)", f_ids).includes(:user, :feed)
 		for feed_user in feed_users
 			notification_type = "feed_topic/#{self.id}"
-			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
+			notification_check = (Notification.where(user_id: feed_user.user_id, message: notification_type).count == 0)
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil) && (notification_check == true)
 				self.send_new_topic_notification(feed_user.user, feed_user.feed)
 			end
