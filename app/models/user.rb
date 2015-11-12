@@ -546,8 +546,12 @@ class User < ActiveRecord::Base
     LytitVote.where("created_at < ?", Time.now - 24.hours).delete_all
   end
 
-  def User.clear_user_notifications(user_ids)
-    user_ids.each{|user_id| Notification.where(user_id: user_id, read: false, deleted: false).delete_all}
+  def User.clear_user_notifications(user_id_s)
+    if user_id_s.kind_of?(Array)
+      user_id_s.each{|user_id| Notification.where(user_id: user_id, read: false, deleted: false).delete_all}
+    else
+      Notification.where(user_id: user_id_s, read: false, deleted: false).delete
+    end
   end
 
 
