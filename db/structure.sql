@@ -1476,21 +1476,10 @@ CREATE TABLE users (
     role_id integer,
     username_private boolean DEFAULT false,
     gcm_token character varying(255),
-    lumens double precision DEFAULT 0.0,
-    lumen_percentile double precision,
-    video_lumens double precision DEFAULT 0.0,
-    image_lumens double precision DEFAULT 0.0,
-    text_lumens double precision DEFAULT 0.0,
-    bonus_lumens double precision DEFAULT 0.0,
-    total_views integer DEFAULT 0,
-    lumen_notification double precision DEFAULT 0.0,
     version character varying(255) DEFAULT '1.0.0'::character varying,
-    latest_rejection_time timestamp without time zone,
-    adjusted_view_discount double precision,
     email_confirmed boolean DEFAULT false,
     registered boolean DEFAULT false,
     vendor_id character varying(255),
-    monthly_gross_lumens double precision DEFAULT 0.0,
     asked_instagram_permission boolean DEFAULT false,
     country_code character varying(255),
     phone_number character varying(255),
@@ -2905,31 +2894,10 @@ CREATE INDEX index_tweets_on_venue_id ON tweets USING btree (venue_id);
 
 
 --
--- Name: index_users_on_bonus_lumens; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_bonus_lumens ON users USING btree (bonus_lumens);
-
-
---
 -- Name: index_users_on_email; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE INDEX index_users_on_email ON users USING btree (email);
-
-
---
--- Name: index_users_on_image_lumens; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_image_lumens ON users USING btree (image_lumens);
-
-
---
--- Name: index_users_on_lumens; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_lumens ON users USING btree (lumens);
 
 
 --
@@ -2944,20 +2912,6 @@ CREATE INDEX index_users_on_remember_token ON users USING btree (remember_token)
 --
 
 CREATE INDEX index_users_on_role_id ON users USING btree (role_id);
-
-
---
--- Name: index_users_on_text_lumens; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_text_lumens ON users USING btree (text_lumens);
-
-
---
--- Name: index_users_on_video_lumens; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_users_on_video_lumens ON users USING btree (video_lumens);
 
 
 --
@@ -3733,4 +3687,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151111042510');
 INSERT INTO schema_migrations (version) VALUES ('20151111051755');
 
 INSERT INTO schema_migrations (version) VALUES ('20151113090024');
+
+INSERT INTO schema_migrations (version) VALUES ('20151113094325');
 
