@@ -149,9 +149,9 @@ class Activity < ActiveRecord::Base
 		#member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if num_lists == 1
-			preview = "#{user.name} shared a Moment with #{activity_feed_of_member.name}"
+			preview = "#{user.name} shared a moment with #{activity_feed_of_member.name}"
 		else
-			preview = "#{user.name} shared a Moment with #{activity_feed_of_member.name} & others"
+			preview = "#{user.name} shared a moment with #{activity_feed_of_member.name} & others"
 		end
 		
 		if member.push_token

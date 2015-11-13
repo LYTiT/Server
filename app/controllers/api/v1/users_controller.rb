@@ -84,6 +84,11 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+	def refresh_user
+		user = User.find_by_authentication_token(params[:auth_token])
+		render json: user
+	end
+
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:email] != nil and params[:email].length > 4

@@ -53,6 +53,7 @@ LytitServer::Application.routes.draw do
         post 'unlike_added_venue'
         post 'update_user'
         get 'get_aggregate_activity'
+        get 'refresh_user'
       end
 
       resources :feeds, only: [:create] do
