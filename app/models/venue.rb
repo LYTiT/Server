@@ -77,7 +77,7 @@ class Venue < ActiveRecord::Base
 
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
-    if query.first =="$"  
+    if query.first =="/"  
       query[0] = ""
       meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
     else
