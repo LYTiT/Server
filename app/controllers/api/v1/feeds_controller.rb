@@ -194,6 +194,7 @@ class Api::V1::FeedsController < ApiBaseController
 			fa = Activity.find_by_id(params[:activity_id])
 		end
 		fa.increment!(:num_likes, 1)
+		fa.user.increment!(:num_likes, 1)
 		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :activity_id => fa.id)
 			render json: { success: true }
 		else
@@ -209,6 +210,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 		if Like.where("liker_id = ? AND activity_id = ?", params[:user_id], params[:activity_id]).first.try(:delete)
 			fa.decrement!(:num_likes, 1)
+			fa.user.decrement!(:num_likes, 1)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not unlike feed activity'] } }, status: :unprocessable_entity

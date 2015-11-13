@@ -12,4 +12,5 @@ json.array! @feeds do |feed|
 	json.has_added feed.users.where("users.id = ?", @user.id).any?
 	json.list_description feed.description
 	json.subscribed feed.is_subscribed?(@user)
+	json.num_likes @num_likes
 end

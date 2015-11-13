@@ -1493,7 +1493,8 @@ CREATE TABLE users (
     monthly_gross_lumens double precision DEFAULT 0.0,
     asked_instagram_permission boolean DEFAULT false,
     country_code character varying(255),
-    phone_number character varying(255)
+    phone_number character varying(255),
+    num_likes integer DEFAULT 0
 );
 
 
@@ -3730,4 +3731,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151111041931');
 INSERT INTO schema_migrations (version) VALUES ('20151111042510');
 
 INSERT INTO schema_migrations (version) VALUES ('20151111051755');
+
+INSERT INTO schema_migrations (version) VALUES ('20151113090024');
 

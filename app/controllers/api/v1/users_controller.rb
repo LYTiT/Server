@@ -230,6 +230,7 @@ class Api::V1::UsersController < ApiBaseController
 		#we use this method to also return list of feeds when inside a venue page(params[:venue_id]) and so must make a check if the venue is part of any of the user's feed.
 		@user = User.find_by_id(params[:user_id]) 
 		@venue_id = params[:venue_id]
+		@num_likes = @user.num_likes #HACK ALERT: This is placed into each List that is returned, need to return seperately
 		@feeds = @user.feeds.includes(:feed_venues).order("name asc").page(params[:page]).per(20)
 	end
 
