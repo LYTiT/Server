@@ -1548,16 +1548,9 @@ CREATE TABLE venue_comments (
     venue_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    username_private boolean DEFAULT false,
-    consider integer DEFAULT 2,
     views integer DEFAULT 0,
     adj_views double precision DEFAULT 0.0,
-    from_user boolean DEFAULT false,
-    session integer,
     offset_created_at character varying(255),
-    is_response boolean,
-    is_response_accepted boolean,
-    rejection_reason character varying(255),
     content_origin character varying(255),
     time_wrapper timestamp without time zone,
     instagram_id character varying(255),
@@ -3689,4 +3682,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151111051755');
 INSERT INTO schema_migrations (version) VALUES ('20151113090024');
 
 INSERT INTO schema_migrations (version) VALUES ('20151113094325');
+
+INSERT INTO schema_migrations (version) VALUES ('20151113095834');
 
