@@ -44,6 +44,7 @@ class Like < ActiveRecord::Base
 		    :feed_color => activity.feed.feed_color,
 		    :venue_id => activity.venue_id,
 		    :venue_name => activity.venue.try(:name),
+		    :num_likes => activity.num_likes
 
 		}
 		
