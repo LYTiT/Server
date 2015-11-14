@@ -19,5 +19,5 @@ json.array! @added_venue_activities do |added_venue_activity|
   json.feed_venue_id added_venue_activity.feed_venue_id
   json.added_note added_venue_activity.feed_venue.description
 
-  json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).first.any?
+  json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).first.present?
 end
