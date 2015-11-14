@@ -38,8 +38,7 @@ json.activity(@activities) do |activity|
   json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
 
   json.num_likes activity.num_likes
-  json.has_liked activity.likes.where("liker_id = ?", @user.id).any?
-  
+  json.has_liked activity.likes.where("liker_id = ?", @user.id).nil?  
   json.topic activity.message
   json.num_activity_lists activity.num_lists
 end

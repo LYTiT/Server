@@ -236,7 +236,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.find_by_id(params[:user_id]) 
 		@venue_id = params[:venue_id]
 		@num_likes = @user.num_likes #HACK ALERT: This is placed into each List that is returned, need to return seperately
-		@feeds = @user.feeds.includes(:feed_venues).order("name asc").page(params[:page]).per(20)
+		@feeds = @user.feeds.includes(:user, :feed_venues, :feed_users).order("name asc").page(params[:page]).per(20)
 	end
 
 	def calculate_lumens
