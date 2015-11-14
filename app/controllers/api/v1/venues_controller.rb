@@ -352,7 +352,9 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def explore_venues
-		@venue = Venue.discover(params[:proximity], params[:previous_venue_ids].split(',').map(&:to_i), params[:latitude], params[:longitude])
+		previous_venue_ids = params[:previous_venue_ids].split(',').map(&:to_i)
+		previous_venue_ids = previous_venue_ids || params[:previous_venue_ids].split(',').map(&:to_i)
+		@venue = Venue.discover(params[:proximity], previous_venue_ids, params[:latitude], params[:longitude])
 	end
 
 	def get_quick_venue_overview
