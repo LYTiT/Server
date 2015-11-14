@@ -23,6 +23,8 @@ json.activity(@activities) do |activity|
   json.color_rating activity.venue.try(:color_rating)
   json.instagram_location_id activity.venue.try(:instagram_location_id)
 
+  json.added_not activity.feed_venue.description
+
   json.venue_comment_id activity.venue_comment_id
   json.venue_comment_created_at activity.venue_comment.try(:created_at)
   json.media_type activity.venue_comment.try(:media_type)

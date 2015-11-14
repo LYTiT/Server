@@ -147,7 +147,7 @@ class Venue < ActiveRecord::Base
       else
         #Check if there is a direct name match in proximity
         center_point = [lat, long]
-        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.5, :units => :kms)
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
 
         name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
 
@@ -750,7 +750,11 @@ class Venue < ActiveRecord::Base
   #IV. Additional/Misc Functionalities ------------------------------------------->
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def last_post_time
-    (Time.now - latest_posted_comment_time)
+    latest_posted_comment_time != nil
+      (Time.now - latest_posted_comment_time)
+    else
+      nil
+    end
   end
 
   def type
