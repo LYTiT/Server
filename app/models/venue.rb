@@ -750,7 +750,7 @@ class Venue < ActiveRecord::Base
   #IV. Additional/Misc Functionalities ------------------------------------------->
   #determines the type of venue, ie, country, state, city, neighborhood, or just a regular establishment.
   def last_post_time
-    (Time.now - latest_posted_comment_time)
+    (Time.now - latest_posted_comment_time) #
   end
 
   def type
