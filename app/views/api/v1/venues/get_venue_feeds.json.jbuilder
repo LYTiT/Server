@@ -1,6 +1,7 @@
 json.array! @feeds do |feed|
 	json.id feed.id
 	json.name feed.name
+	json.open feed.open
 	json.created_at feed.created_at
 	json.venue_added 0
 	json.num_users	feed.num_users

@@ -1,6 +1,7 @@
 json.array! @feeds do |feed|
 	json.id feed.id
 	json.name feed.name
+	json.open feed.open
 	json.created_at feed.created_at
 	json.venue_added feed.feed_venues.where("venue_id =?", @venue.try(:id)).nil?
 	json.num_users	feed.num_users
