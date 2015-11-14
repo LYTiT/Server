@@ -352,8 +352,12 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def explore_venues
-		previous_venue_ids = params[:previous_venue_ids].split(',').map(&:to_i)
-		previous_venue_ids = previous_venue_ids || params[:previous_venue_ids].split(',').map(&:to_i)
+		previous_venue_ids = params[:previous_venue_ids]
+		if previous_venue_ids == nil
+			previous_venue_ids = []
+		else
+			previous_venue_ids = previous_venue_ids.split(',').map(&:to_i)
+		end
 		@venue = Venue.discover(params[:proximity], previous_venue_ids, params[:latitude], params[:longitude])
 	end
 
