@@ -11,8 +11,3 @@ json.tweets(@tweets) do |tweet|
 	json.user_id tweet.user.id
 	json.twitter_handle tweet.user.screen_name
 end
-
-json.pagination do 
-  json.current_page @tweets.current_page
-  json.total_pages @tweets.total_pages
-end

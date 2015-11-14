@@ -14,9 +14,4 @@ json.comments(@comments) do |comment|
   json.updated_at comment.updated_at
   json.content_origin comment.content_origin
   json.thirdparty_username comment.thirdparty_username
-  
-end
-json.pagination do 
-  json.current_page @comments.current_page
-  json.total_pages @comments.total_pages
 end

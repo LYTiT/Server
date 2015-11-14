@@ -18,7 +18,3 @@ json.comments(@comments) do |comment|
   json.longitude comment.venue.longitude
   json.color_rating comment.venue.color_rating
 end
-json.pagination do 
-  json.current_page @comments.current_page
-  json.total_pages @comments.total_pages
-end

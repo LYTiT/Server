@@ -13,7 +13,3 @@ json.lists(@feeds) do |feed|
 	json.has_added feed.has_added?(@user)
 	json.list_description feed.description
 end
-json.pagination do 
-  json.current_page @feeds.current_page
-  json.total_pages @feeds.total_pages
-end

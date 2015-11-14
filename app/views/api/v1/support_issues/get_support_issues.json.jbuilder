@@ -5,8 +5,3 @@ json.chat_messages(@issues) do |issue|
   json.chat_message issue.support_messages.order("id DESC").first.message
   json.created_at issue.support_messages.order("id DESC").first.created_at
 end
-
-json.pagination do 
-  json.current_page @issues.current_page
-  json.total_pages @issues.total_pages
-end

@@ -38,11 +38,7 @@ json.activity(@activities) do |activity|
   json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
 
   json.num_likes activity.num_likes
-  json.has_liked activity.likes.where("liker_id = ?", @user.id).nil?  
+  json.has_liked activity.likes.where("liker_id = ?", @user.id).first.nil?
   json.topic activity.message
   json.num_activity_lists activity.num_lists
-end
-json.pagination do 
-  json.current_page @activities.current_page
-  json.total_pages @activities.total_pages
 end
