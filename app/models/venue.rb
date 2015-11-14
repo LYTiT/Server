@@ -1351,5 +1351,3 @@ class Venue < ActiveRecord::Base
 
     old_votes_sum
   end
-
-end
