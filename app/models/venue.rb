@@ -414,6 +414,28 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def Venue.discover(proximity, previous_venue_ids, user_lat, user_long)
+    num_diverse_venues = 50
+    nearby_radius = 5000.0 * 1/1000 #* 0.000621371 #meters to miles
+
+    previous_venue_ids = previous_venue_ids || []
+
+    rand_position = Random.rand(num_diverse_venues)
+      if previous_venue_ids.include?(rand_position)
+        while previous_venue_ids.include?(rand_position) do
+          rand_position = Random.rand(num_diverse_venues)
+        end
+      end
+
+    if proximity == "nearby"
+      venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+    else
+      venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+    end    
+  end
+
   def self.trending_venues
     key = "trending_venues"
     Rails.cache.fetch key, expires_in: 3.minutes do
