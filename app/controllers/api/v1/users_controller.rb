@@ -91,8 +91,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def refresh_user
-		user = User.find_by_authentication_token(params[:auth_token])
-		render json: user
+		@user = User.find_by_authentication_token(params[:auth_token])
+		render 'created.json.jbuilder'
 	end
 
 	def set_email_password
