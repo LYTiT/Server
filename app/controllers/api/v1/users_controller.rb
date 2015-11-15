@@ -101,7 +101,7 @@ class Api::V1::UsersController < ApiBaseController
 
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
-			sign_out @user
+			sign_out
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not save user"} }, status: :unprocessable_entity
