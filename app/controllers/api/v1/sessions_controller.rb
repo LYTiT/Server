@@ -10,4 +10,15 @@ class Api::V1::SessionsController < ApiBaseController
 			render 'api/v1/users/created.json.jbuilder'
 		end
 	end
+
+	def delete
+		@user = User.authenticate_by_username(params[:name], params[:password])
+		if @user.present? and signed_in?(@user) == true
+			sign_out @user
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['No user present to sign out'] } }, status: :unprocessable_entity
+		end
+
+	end
 end

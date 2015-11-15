@@ -132,7 +132,10 @@ LytitServer::Application.routes.draw do
       post '/toggle_group_notification/:group_id' => 'users#toggle_group_notification'
       post '/forgot_password' => 'users#forgot_password'
 
-      resources :sessions, only: :create
+      resources :sessions, only: [:create] do
+        post 'delete'
+      end
+
       resources :venues, only: [:index, :show] do
         #resources :venue_ratings, only: [:create]
         #get '/posts', :action => :get_comments
