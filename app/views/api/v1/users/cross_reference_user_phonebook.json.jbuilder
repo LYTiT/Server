@@ -3,5 +3,5 @@ json.array! @users do |user|
 	json.name user.name
 	json.user_phone user.phone_number
 	json.num_lists	user.feed_users.count
-	json.num_stars user.num_likes
+	json.num_likes user.num_likes
 end
