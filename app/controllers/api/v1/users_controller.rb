@@ -6,12 +6,12 @@ class Api::V1::UsersController < ApiBaseController
 
 	def username_availability
 		@response = User.where("LOWER(name) = ?", params[:q].to_s.downcase).any?
-		render json: { bool_response: @response }
+		render json: { bool_response: !@response }
 	end
 
 	def email_availability
 		@response = User.where("LOWER(email) = ?", params[:q].to_s.downcase).any?
-		render json: { bool_response: @response }
+		render json: { bool_response: !@response }
 	end
 
 	def confirm_password
