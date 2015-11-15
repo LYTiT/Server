@@ -182,9 +182,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def User.check_sign_in_status(user)
-    user.signed_in? 
-  end
 
   private 
 

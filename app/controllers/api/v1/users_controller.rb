@@ -14,6 +14,12 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { bool_response: @response }
 	end
 
+	def confirm_password
+		@user = User.find_by_authentication_token(params[:authentication_token])
+		@response = @user.authenticated?(params[:password])
+		render json: { bool_response: @response }
+	end
+
 	def create
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first

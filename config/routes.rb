@@ -55,6 +55,7 @@ LytitServer::Application.routes.draw do
         get 'get_aggregate_activity'
         get 'refresh_user'
         post 'user_sign_out'
+        get 'confirm_password'
       end
 
       resources :feeds, only: [:create] do
