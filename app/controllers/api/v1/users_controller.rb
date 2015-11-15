@@ -15,7 +15,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def confirm_password
-		@user = User.find_by_authentication_token(params[:authentication_token])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@response = @user.authenticated?(params[:password])
 		render json: { bool_response: @response }
 	end
