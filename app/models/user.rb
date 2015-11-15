@@ -182,21 +182,6 @@ class User < ActiveRecord::Base
     end
   end
 
-  def User.random_check(num)
-    previous_venue_ids = [1,2,3]
-    rand_position = num
-    if previous_venue_ids.include?(rand_position) == true
-      while previous_venue_ids.include?(rand_position) == true do
-        rand_position = Random.rand(20)
-      end
-      return rand_position
-    else
-      num
-    end
-
-  end
-
-
   private 
 
   def generate_confirmation_token_for_venue_manager

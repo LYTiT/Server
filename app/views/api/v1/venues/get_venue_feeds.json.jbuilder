@@ -10,6 +10,6 @@ json.array! @feeds do |feed|
 	json.feed_color feed.feed_color
 	json.users_can_add_places feed.open
 	json.creator feed.user
-	json.has_added feed.users.where("users.id = ?", @user.id).any?
+	json.has_added feed.feed_users.where("user_id = ?", @user.id).first.present?
 	json.list_description feed.description
 end

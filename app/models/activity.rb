@@ -79,7 +79,7 @@ class Activity < ActiveRecord::Base
 			end	
 
 			ActivityFeed.bulk_creation(new_activity.id, f_ids)
-			new_activity.delay.new_feed_share_notification(f_ids)
+			new_activity.new_feed_share_notification(f_ids)
 
 			return new_activity
 		else
