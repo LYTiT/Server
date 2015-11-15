@@ -97,16 +97,33 @@ class Api::V1::UsersController < ApiBaseController
 		#nilify the phone number so the user will have to reconfirm upon future login (can only be logged in on one device)
 		if params[:password] != nil
 			@user.password = params[:password]
-		end
-
-		@user.active = false
+		end		
 
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could update user fields"} }, status: :unprocessable_entity
+		end
+	end
+
+	def user_sign_out
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if (params[:email] != nil and params[:email].length > 4) && @user.email != params[:email]
+			@user.email = params[:email]
+		end
+
+		if params[:password] != nil
+			@user.password = params[:password]
+		end
+		#to disable push notification that might be sent from underlying Lists
+		@user.active = false
+
+		if @user.save
 			sign_out
 			render json: { success: true }
 		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not save user"} }, status: :unprocessable_entity
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not sign out user"} }, status: :unprocessable_entity
 		end
 	end
 
