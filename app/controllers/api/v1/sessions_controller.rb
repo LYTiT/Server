@@ -11,7 +11,7 @@ class Api::V1::SessionsController < ApiBaseController
 		end
 	end
 
-	def delete
+	def destroy
 		@user = User.authenticate_by_username(params[:name], params[:password])
 		if @user.present? and signed_in?(@user) == true
 			sign_out @user

@@ -133,7 +133,7 @@ LytitServer::Application.routes.draw do
       post '/forgot_password' => 'users#forgot_password'
 
       resources :sessions, only: [:create] do
-        post 'delete'
+        post 'destroy'
       end
 
       resources :venues, only: [:index, :show] do
