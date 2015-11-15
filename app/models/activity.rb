@@ -78,8 +78,8 @@ class Activity < ActiveRecord::Base
 				new_activity.update_comment_parameters(Time.now, u_id)
 			end	
 
-			ActivityFeed.bulk_creation(new_activity.id, f_ids)
-			new_activity.new_feed_share_notification(f_ids)
+			ActivityFeed.delay.bulk_creation(new_activity.id, f_ids)
+			new_activity.delay.new_feed_share_notification(f_ids)
 
 			return new_activity
 		else
