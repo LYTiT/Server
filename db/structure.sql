@@ -1483,7 +1483,8 @@ CREATE TABLE users (
     asked_instagram_permission boolean DEFAULT false,
     country_code character varying(255),
     phone_number character varying(255),
-    num_likes integer DEFAULT 0
+    num_likes integer DEFAULT 0,
+    active boolean DEFAULT true
 );
 
 
@@ -3684,4 +3685,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151113090024');
 INSERT INTO schema_migrations (version) VALUES ('20151113094325');
 
 INSERT INTO schema_migrations (version) VALUES ('20151113095834');
+
+INSERT INTO schema_migrations (version) VALUES ('20151115094759');
 

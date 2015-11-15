@@ -6,6 +6,7 @@ class Api::V1::SessionsController < ApiBaseController
 		if @user.nil?
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Incorrect username or password'] } }, status: :unprocessable_entity
 		else
+			@user.update_columns(active: true)
 			sign_in @user
 			render 'api/v1/users/created.json.jbuilder'
 		end

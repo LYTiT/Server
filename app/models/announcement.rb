@@ -63,7 +63,7 @@ class Announcement < ActiveRecord::Base
 			notification = self.store_new_announcement(payload, member, message)
 			payload[:notification_id] = notification.id
 
-			if member.push_token
+			if member.push_token && member.active == true
 				count = Notification.where(user_id: member.id, read: false, deleted: false).count
 				APNS.delay.send_notification(member.push_token, {:priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 			end

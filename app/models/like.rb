@@ -52,7 +52,7 @@ class Like < ActiveRecord::Base
 		notification = self.store_new_message_notification(payload, notification_type)
 		payload[:notification_id] = notification.id
 
-		if liked.push_token
+		if liked.push_token && liked.active == true
 		  count = Notification.where(user_id: liked_id, read: false, deleted: false).count
 		  APNS.send_notification(liked.push_token, { :priority =>10, :alert => message, :content_available => 1, :other => payload, :badge => count})
 		end

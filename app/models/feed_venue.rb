@@ -59,7 +59,7 @@ class FeedVenue < ActiveRecord::Base
 		notification = self.store_new_venue_notification(payload, member, type)
 		payload[:notification_id] = notification.id
 
-		if member.push_token
+		if member.push_token && member.active == true
 		  count = Notification.where(user_id: member.id, read: false, deleted: false).count
 		  APNS.send_notification(member.push_token, { :priority =>10, :alert => type, :content_available => 1, :other => payload, :badge => count})
 		end

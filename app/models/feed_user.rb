@@ -39,7 +39,7 @@ class FeedUser < ActiveRecord::Base
 		notification = self.store_new_user_notification(payload, feed.user, "new list member")
 		payload[:notification_id] = notification.id
 
-		if feed.user.push_token
+		if feed.user.push_token && feed.user.active == true
 		  count = Notification.where(user_id: feed.user.id, read: false, deleted: false).count
 		  APNS.send_notification(feed.user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
 		end

@@ -99,6 +99,8 @@ class Api::V1::UsersController < ApiBaseController
 			@user.password = params[:password]
 		end
 
+		@user.active = false
+
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
 			sign_out
