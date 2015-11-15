@@ -91,11 +91,14 @@ class Api::V1::UsersController < ApiBaseController
 
 	def set_email_password
 		@user = User.find_by_authentication_token(params[:auth_token])
-		if params[:email] != nil and params[:email].length > 4
+		if (params[:email] != nil and params[:email].length > 4) && @user.email != params[:email]
 			@user.email = params[:email]
 		end
 		#nilify the phone number so the user will have to reconfirm upon future login (can only be logged in on one device)
-		@user.password = params[:password]
+		if params[:password] != nil
+			@user.password = params[:password]
+		end
+		
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
 			render json: { success: true }
