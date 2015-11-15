@@ -98,9 +98,10 @@ class Api::V1::UsersController < ApiBaseController
 		if params[:password] != nil
 			@user.password = params[:password]
 		end
-		
+
 		if @user.save
 			#Mailer.delay.welcome_user(@user)
+			sign_out @user
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Could not save user"} }, status: :unprocessable_entity
