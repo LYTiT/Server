@@ -2643,10 +2643,10 @@ CREATE INDEX index_feed_users_on_feed_id ON feed_users USING btree (feed_id);
 
 
 --
--- Name: index_feed_users_on_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_feed_users_on_feed_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_feed_users_on_id_and_user_id ON feed_users USING btree (id, user_id);
+CREATE UNIQUE INDEX index_feed_users_on_feed_id_and_user_id ON feed_users USING btree (feed_id, user_id);
 
 
 --
@@ -2664,10 +2664,10 @@ CREATE INDEX index_feed_venues_on_feed_id ON feed_venues USING btree (feed_id);
 
 
 --
--- Name: index_feed_venues_on_id_and_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_feed_venues_on_feed_id_and_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_feed_venues_on_id_and_venue_id ON feed_venues USING btree (id, venue_id);
+CREATE UNIQUE INDEX index_feed_venues_on_feed_id_and_venue_id ON feed_venues USING btree (feed_id, venue_id);
 
 
 --
@@ -3698,4 +3698,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151115094759');
 INSERT INTO schema_migrations (version) VALUES ('20151116065336');
 
 INSERT INTO schema_migrations (version) VALUES ('20151116070817');
+
+INSERT INTO schema_migrations (version) VALUES ('20151116105241');
 

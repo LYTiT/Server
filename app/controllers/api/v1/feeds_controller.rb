@@ -67,7 +67,7 @@ class Api::V1::FeedsController < ApiBaseController
 			feed.increment!(:num_users, 1)	
 			render json: { success: true }
 		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not add feed'] } }, status: :unprocessable_entity
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not join List'] } }, status: :unprocessable_entity
 		end
 	end
 
