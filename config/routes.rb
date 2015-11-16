@@ -214,7 +214,9 @@ LytitServer::Application.routes.draw do
 
       #we don't need to put an end here because there is no "do" we 
       #put end on "do"
-      resources :events, only: [:index, :create, :show]
+      resources :events, only: [:index, :create, :show] do 
+        get 'get_event'
+      end
 
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment

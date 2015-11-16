@@ -2993,6 +2993,13 @@ CREATE INDEX index_venues_on_color_rating ON venues USING btree (color_rating);
 
 
 --
+-- Name: index_venues_on_event_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_event_id ON venues USING btree (event_id);
+
+
+--
 -- Name: index_venues_on_instagram_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3689,4 +3696,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151113095834');
 INSERT INTO schema_migrations (version) VALUES ('20151115094759');
 
 INSERT INTO schema_migrations (version) VALUES ('20151116065336');
+
+INSERT INTO schema_migrations (version) VALUES ('20151116070817');
 
