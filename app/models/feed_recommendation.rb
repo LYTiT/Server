@@ -12,6 +12,11 @@ class FeedRecommendation < ActiveRecord::Base
 		recommendations = Feed.where("id IN (#{recommended_feed_ids})")
 	end
 
+	def FeedRecommendation.for_categories(categories)
+		feed_recommendation_ids = "SELECT feed_id FROM feed_recommendations WHERE category IN (#{categories}) AND active IS TRUE"
+		recommendations = Feed.where("feed_id IN (#{feed_recommendation_ids})")
+	end
+
 	def create_feed_acitivity
 		Activity.create!(:feed_id => feed_id, :activity_type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at).to_i)
 	end
