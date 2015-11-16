@@ -481,7 +481,7 @@ CREATE TABLE events (
     id integer NOT NULL,
     name character varying(255),
     description text,
-    color text,
+    color character varying(255),
     start_time timestamp without time zone,
     end_time timestamp without time zone,
     venue_id integer,
@@ -3687,4 +3687,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151113094325');
 INSERT INTO schema_migrations (version) VALUES ('20151113095834');
 
 INSERT INTO schema_migrations (version) VALUES ('20151115094759');
+
+INSERT INTO schema_migrations (version) VALUES ('20151116065336');
 
