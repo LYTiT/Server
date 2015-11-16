@@ -260,8 +260,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 	
 	def get_recommendations
-		feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE"
-		@recommendations = Feed.where("id IN (#{feed_ids})").includes(:users)
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@recommendations = FeedRecommendation.for_user(@user)
 	end
 
 	def invite_user

@@ -5,6 +5,13 @@ class FeedRecommendation < ActiveRecord::Base
 	after_create :create_feed_acitivity
 	after_create :spotlyt_notification
 
+
+	def FeedRecommendation.for_user(user)
+		user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
+		recommended_feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE AND feed_id NOT IN (#{user_feed_ids})"
+		recommendations = Feed.where("id IN (#{recommended_feed_ids})")
+	end
+
 	def create_feed_acitivity
 		Activity.create!(:feed_id => feed_id, :activity_type => "made spotlyt", :feed_recommendation_id => self.id, :adjusted_sort_position => (self.created_at).to_i)
 	end
