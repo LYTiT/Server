@@ -165,7 +165,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if @activity != nil
 			render 'get_activity_object.json.jbuilder'
 		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Activity object no longer exists'] } }, status: :unprocessable_entity
+			render json: nil
 		end
 	end
 
