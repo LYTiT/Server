@@ -28,7 +28,8 @@ class Api::V1::UsersController < ApiBaseController
 					existing_temp_user.destroy
 				else
 					previous_email = existing_temp_user.email
-					existing_temp_user.update_columns(email: previous_email+".og")
+					#duplicates cannot exist in database thus must modifiy email which vendor id based which is unique per phone
+					existing_temp_user.update_columns(email: previous_email+"#{Time.now.min}"+".og")
 				end
 			end
 		rescue
@@ -63,6 +64,8 @@ class Api::V1::UsersController < ApiBaseController
 		@user.name = params[:name]
 		@user.phone_number = params[:phone_number]
 		@user.country_code = params[:country_code]
+		@user.password = params[:password]
+
 		@user.registered = true
 		if @user.save		
 			render json: { success: true }
