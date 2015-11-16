@@ -124,6 +124,11 @@ LytitServer::Application.routes.draw do
         get 'get_announcement_details'
       end
 
+      resources :events do 
+        get 'get_event'
+        get 'get_announcements'
+      end
+
       resources :venue_comments do
         get 'get_venue_comment'
       end
@@ -211,11 +216,6 @@ LytitServer::Application.routes.draw do
       #why does this route appear in the middle of nowhere?
       #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
-
-      resources :events do 
-        get 'get_event'
-        get 'get_announcements'
-      end
 
       controller :venues, :defaults => {:format => 'json'} do
         post '/venues/addComment', :action => :add_comment
