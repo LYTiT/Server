@@ -1,3 +1,4 @@
+json.id @event.id
 json.name @event.name
 json.description @event.description
 json.start_date @event.start_time
