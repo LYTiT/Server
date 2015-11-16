@@ -162,6 +162,11 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity_object
 		@user = User.find_by_id(params[:user_id])
 		@activity = Activity.find_by_id(params[:activity_id])
+		if @activity != nil
+			render 'get_activity_object.json.jbuilder'
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Activity object no longer exists'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def get_activity_lists
