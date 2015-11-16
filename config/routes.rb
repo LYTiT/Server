@@ -212,9 +212,7 @@ LytitServer::Application.routes.draw do
       #why is it not under a controller or a resources tag?
       post '/venues/rate_venue' => 'venues#rate_venue'
 
-      #we don't need to put an end here because there is no "do" we 
-      #put end on "do"
-      resources :events, only: [:index, :create, :show] do 
+      resources :events do 
         get 'get_event'
         get 'get_announcements'
       end
