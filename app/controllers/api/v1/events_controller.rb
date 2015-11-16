@@ -1,5 +1,5 @@
 class Api::V1::EventsController < ApiBaseController
-	def get_event
+	def show
 		@event = Event.find_by_id(params[:event_id])
 	end
 

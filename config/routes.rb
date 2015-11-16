@@ -124,8 +124,7 @@ LytitServer::Application.routes.draw do
         get 'get_announcement_details'
       end
 
-      resources :events do 
-        get 'get_event'
+      resources :events, only: [:show] do 
         get 'get_announcements'
       end
 
