@@ -13,8 +13,9 @@ class FeedRecommendation < ActiveRecord::Base
 	end
 
 	def FeedRecommendation.for_categories(categories)
-		feed_recommendation_ids = "SELECT feed_id FROM feed_recommendations WHERE category IN (#{categories}) AND active IS TRUE"
-		recommendations = Feed.where("feed_id IN (#{feed_recommendation_ids})")
+		#categories are a string and have to be of format: " 'parks', 'dogs' " (Note the single quotation marks around each individual category)
+		feed_recommendation_ids = "SELECT feed_id FROM feed_recommendations WHERE category IN (#{categories})"
+		recommendations = Feed.where("id IN (#{feed_recommendation_ids})")
 	end
 
 	def create_feed_acitivity
