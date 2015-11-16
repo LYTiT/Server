@@ -216,6 +216,7 @@ LytitServer::Application.routes.draw do
       #put end on "do"
       resources :events, only: [:index, :create, :show] do 
         get 'get_event'
+        get 'get_announcements'
       end
 
       controller :venues, :defaults => {:format => 'json'} do
