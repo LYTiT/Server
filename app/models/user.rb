@@ -10,9 +10,9 @@ class User < ActiveRecord::Base
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
   validates_length_of :password, :minimum => 8, unless: :skip_password_validation?
 
-  has_many :venue_ratings, :dependent => :destroy
+  #has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
-  has_many :flagged_comments, :dependent => :destroy
+  #has_many :flagged_comments, :dependent => :destroy
   has_many :venues
 
   has_many :announcement_users, :dependent => :destroy
@@ -28,7 +28,7 @@ class User < ActiveRecord::Base
   has_many :sent_feed_invitations, foreign_key: "invitee_id", class_name: "FeedInvitation", dependent: :destroy
   has_many :inviters, through: :sent_feed_invitations, source: :inviter
 
-  has_many :temp_posting_housings, :dependent => :destroy
+  #has_many :temp_posting_housings, :dependent => :destroy
 
   has_many :feed_users, :dependent => :destroy
   has_many :feeds, through: :feed_users
@@ -38,7 +38,7 @@ class User < ActiveRecord::Base
   has_many :activity_comments, :dependent => :destroy
 
   has_many :support_issues, :dependent => :destroy
-  has_many :surrounding_pull_trackers, :dependent => :destroy
+  #has_many :surrounding_pull_trackers, :dependent => :destroy
   has_many :support_messages, :dependent => :destroy
   has_many :event_organizers, :dependent => :destroy
   has_many :event_announcements, :dependent => :destroy
@@ -164,6 +164,8 @@ class User < ActiveRecord::Base
     not_supported_users = User.where("id NOT IN (#{users_with_support})").pluck(:id)
     not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
   end
+
+  
   #-------------------------------------------------------------->
 
   def self.lumen_cleanup
