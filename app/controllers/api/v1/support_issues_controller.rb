@@ -10,11 +10,14 @@ class Api::V1::SupportIssuesController < ApiBaseController
 	end
 
 	def get_support_chat
-		support_issue = SupportIssue.find_by_id(params[:support_issue_id])
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if @user.is_admin? == true
-			support_issue.update_columns(latest_open_time: Time.now)
+			support_issue = SupportIssue.find_by_id(params[:support_issue_id])
+			support_issue.update_columns(latest_open_time: Time.now)						
+		else
+			support_issue = @user.support_issue
 		end
+
 		support_messages = support_issue.support_messages.order("id DESC")
 		@messages = support_messages.page(params[:page]).per(10)
 	end

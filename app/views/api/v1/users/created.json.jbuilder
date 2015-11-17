@@ -1,7 +1,6 @@
 json.id @user.id
 json.name @user.name
 json.num_likes @user.num_likes
-json.set_password @user.password.present?
 json.phone_number @user.phone_number
 json.country_code @user.country_code
 json.support_issue_id @user.support_issues.first.id

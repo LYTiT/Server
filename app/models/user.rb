@@ -37,7 +37,7 @@ class User < ActiveRecord::Base
   has_many :activities, :dependent => :destroy
   has_many :activity_comments, :dependent => :destroy
 
-  has_many :support_issues, :dependent => :destroy
+  has_one :support_issue, :dependent => :destroy
   #has_many :surrounding_pull_trackers, :dependent => :destroy
   has_many :support_messages, :dependent => :destroy
   has_many :event_organizers, :dependent => :destroy
@@ -165,7 +165,7 @@ class User < ActiveRecord::Base
     not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
   end
 
-  
+
   #-------------------------------------------------------------->
 
   def self.lumen_cleanup

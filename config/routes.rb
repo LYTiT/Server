@@ -116,7 +116,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_support_issues'
         end
-        get 'get_support_chat'
+        collection do
+          get 'get_support_chat'
+        end
         post 'send_support_message'
       end
 

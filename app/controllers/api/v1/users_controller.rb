@@ -61,7 +61,9 @@ class Api::V1::UsersController < ApiBaseController
 		@user.name = params[:name]
 		@user.phone_number = params[:phone_number]
 		@user.country_code = params[:country_code]
-		@user.password = params[:password]
+		if params[:password] != nil
+			@user.password = params[:password]
+		end
 
 		@user.registered = true
 		if @user.save		
