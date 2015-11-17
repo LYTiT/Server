@@ -37,13 +37,25 @@ class Feed < ActiveRecord::Base
 		self.code != nil
 	end
 
+	def Feed.calibrate_feed_venue_activity
+		feeds = Feed.all
+		for feed in feeds
+			for feed_venue in feed.feed_venues
+				if Activity.where("feed_venue_id = ?", feed_venue.id).nil? == true	
+					Activity.create!(:feed_id => feed_venue.feed.id, :activity_type => "added venue", :feed_venue_id => feed_venue.id, :venue_id => feed_venue.venue_id, :user_id => feed_venue.user_id, :adjusted_sort_position => (feed_venue.created_at).to_i)
+				end
+			end
+			feed.update_columns(num_venues: feed.feed_venues.count)
+		end
+	end
+
 	def comments
 		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (#{venue_ids})").includes(:venue).order("time_wrapper DESC")
 	end
 
 	def activity_of_the_day
-		activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id = #{self.id} AND (NOW() - created_at) <= INTERVAL '1 DAY' AND adjusted_sort_position IS NOT NULL"
+		activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id = #{self.id} AND adjusted_sort_position IS NOT NULL"
 		Activity.where("id IN(#{activity_ids})").includes(:feed, :user, :venue, :venue_comment).order("adjusted_sort_position DESC")
 	end
 
