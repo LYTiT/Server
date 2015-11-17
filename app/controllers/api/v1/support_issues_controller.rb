@@ -24,7 +24,13 @@ class Api::V1::SupportIssuesController < ApiBaseController
 
 	def send_support_message
 		@user = User.find_by_authentication_token(params[:auth_token])
-		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => params[:support_issue_id], :user_id => @user.id)
+		if @user.is_admin? == true
+			support_issue_id = params[:support_issue_id]
+		else
+			support_issue_id = @user.support_issue.id
+		end		
+
+		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => support_issue_id, :user_id => @user.id)
 		if sm != nil
 			render json: { success: true }	
 		else
