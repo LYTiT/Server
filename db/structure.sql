@@ -2489,6 +2489,13 @@ CREATE INDEX index_activities_on_adjusted_sort_position ON activities USING btre
 
 
 --
+-- Name: index_activities_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_activities_on_created_at ON activities USING btree (created_at);
+
+
+--
 -- Name: index_activities_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3700,4 +3707,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151116065336');
 INSERT INTO schema_migrations (version) VALUES ('20151116070817');
 
 INSERT INTO schema_migrations (version) VALUES ('20151116105241');
+
+INSERT INTO schema_migrations (version) VALUES ('20151117123159');
 
