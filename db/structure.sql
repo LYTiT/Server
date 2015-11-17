@@ -2492,7 +2492,7 @@ CREATE INDEX index_activities_on_adjusted_sort_position ON activities USING btre
 -- Name: index_activities_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_activities_on_created_at ON activities USING btree (created_at);
+CREATE INDEX index_activities_on_created_at ON activities USING btree (created_at);
 
 
 --
