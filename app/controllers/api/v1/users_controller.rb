@@ -93,7 +93,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def refresh_user
-		@user = User.find_by_authentication_token(params[:auth_token])
+		@user = User.find_by_authentication_token(params[:auth_token]).includes(:instagram_auth_tokens)
 		render 'created.json.jbuilder'
 	end
 
