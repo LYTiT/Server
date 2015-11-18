@@ -155,6 +155,12 @@ class Api::V1::UsersController < ApiBaseController
 	def cross_reference_user_phonebook
 		user_phonebook = params[:phone_numbers].split(",")
 		@users = User.find_lytit_users_in_phonebook(user_phonebook)
+		if params[:feed_id] != nil
+			@feed = Feed.find_by_id(params[:feed_id])
+			render "cross_reference_user_phonebook_for_invitation.json.jbuilder"
+		else
+			render "cross_reference_user_phonebook.json.jbuilder"
+		end
 	end
 
 	def register_push_token

@@ -12,8 +12,10 @@ class ActivityComment < ActiveRecord::Base
 		for feed_user in feed_users
 			notification_type = "activity_comment/#{self.id}"
 			notification_check = (Notification.where(user_id: feed_user.id, message: notification_type).count == 0)
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user != nil)  && (notification_check == true)
-				self.send_new_chat_notification(feed_user.user)
+			if feed_user != nil
+				if feed_user.is_subscribed == true && notification_check == true
+					self.send_new_chat_notification(feed_user.user)
+				end
 			end
 		end
 	end

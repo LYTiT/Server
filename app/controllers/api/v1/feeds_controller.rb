@@ -135,8 +135,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
-		feed_venue.destroy
-		Feed.find_by_id(params[:id]).decrement!(:num_venues, 1)
+		feed_venue.destroy		
 		render json: { success: true }
 	end
 
@@ -256,7 +255,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_initial_recommendations
-		@recommendations = FeedRecommendation.for_categories(params[:categories])
+		@recommendations = FeedRecommendation.for_categories(params[:categories], params[:latitude], params[:longitude])
 	end
 	
 	def get_recommendations

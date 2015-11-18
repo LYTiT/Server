@@ -106,6 +106,11 @@ class Feed < ActiveRecord::Base
 		self.update_columns(num_users: self.feed_users.count)
 	end
 
+	def relevance_to_user_score(user_lat, user_long)
+		#calculate a feed's relevance to user based on the proximity of its central mass point, and popularity (as determined by number of members and underlying venues)
+		proximity = Geocoder::Calculations.distance_between([feed.latitude, feed.longitude], [user_lat, user_long], :units => :km)
+	end
+
 	def new_content_for_user?(target_user)
 		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", target_user.id, self.id).first
 		if self.latest_content_time == nil
