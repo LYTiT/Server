@@ -7,8 +7,8 @@ class FeedVenue < ActiveRecord::Base
 	has_one :activity, :dependent => :destroy
 
 	after_create :new_venue_notification_and_activity
-	after_create :calibrate_feed
-	after_destroy :calibrate_feed
+	after_create :calibrate_feed_after_addition
+	after_destroy :calibrate_feed_after_deletion
 
 
 	def calibrate_feed_after_addition
