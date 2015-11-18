@@ -27,7 +27,13 @@ class Api::V1::SupportIssuesController < ApiBaseController
 		if @user.is_admin? == true
 			support_issue_id = params[:support_issue_id]
 		else
-			support_issue_id = @user.support_issue.id
+			user_support_issue = @user.support_issue
+			if user_support_issue != nil
+				support_issue_id = user_support_issue.id
+			else
+				new_support_issue = SupportIssue.create!(:user_id => @user.id)
+				support_issue_id = new_support_issue.id
+			end
 		end		
 
 		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => support_issue_id, :user_id => @user.id)
