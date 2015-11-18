@@ -32,7 +32,7 @@ class FeedInvitation < ActiveRecord::Base
 		
 		alert = "#{inviter.name} invited you to add the #{feed.name} List"
 		
-		if invitee.push_token && member.active == true
+		if invitee.push_token && invitee.active == true
 		  count = Notification.where(user_id: invitee_id, read: false, deleted: false).count
 		  APNS.send_notification(invitee.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
 		end
