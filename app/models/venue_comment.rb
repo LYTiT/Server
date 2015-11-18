@@ -512,7 +512,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["location"]["id"]
 		else
-			nil
+			post.venue.instagram_location_id
 		end
 	end	
 
