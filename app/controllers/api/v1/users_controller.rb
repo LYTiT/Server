@@ -39,7 +39,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.new(user_params)
 
 		if @user.save
-			if @user.name.first(10).downcase == @user.email.first(10).downcase && @user.email.last(8) == "temp.com"
+			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
 				@user.vendor_id = @user.name
 				@user.name = "lyt_"+(@user.id*2+3).to_s(16)
 				temp_user = true
