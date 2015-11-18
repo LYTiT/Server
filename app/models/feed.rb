@@ -134,8 +134,8 @@ class Feed < ActiveRecord::Base
 	end
 
 	def self.categories
-		default_categories = ["parks", "bars", "coffee"]
-		used_categories = FeedRecommendation.uniq.pluck(:category)
+		default_categories = ["parks", "bars", "coffee", "dog", "cat", "mouse", "house", "literature", "sports", "france", "germany", "netherlands", "russia", "travel", "cracerjacks", "watermellons"]
+		used_categories = []#FeedRecommendation.uniq.pluck(:category)
 		if used_categories.count == 0
 			return default_categories
 		else
