@@ -639,7 +639,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    instagrams.sort_by!{|instagram| -instagram.created_time}
+    instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
     instagrams.map!(&:to_hash)
 
     if instagrams.count > 0
