@@ -592,7 +592,7 @@ class Venue < ActiveRecord::Base
           puts ("making a venue get instagrams calls")
           venue_instagrams.concat(self.get_instagrams(true))
           #venue_instagrams.flatten!
-          venue_instagrams.sort_by!{|instagram| VenueComment.implicit_created_at(instagram).reverse}
+          venue_instagrams.sort_by!{|instagram| VenueComment.implicit_created_at(instagram)}
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
