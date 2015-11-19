@@ -38,10 +38,6 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_comments
 		#register feed open
 		@user = User.find_by_authentication_token(params[:auth_token])
-		feeduser = FeedUser.where("user_id = ? AND feed_id = ?", @user.id, params[:feed_id]).first
-		if feeduser != nil
-			feeduser.update_columns(last_visit: Time.now)
-		end
 		
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 
@@ -62,10 +58,15 @@ class Api::V1::VenuesController < ApiBaseController
 
 			if params[:meta_query] == nil
 				@view_cache_key = cache_key+"view"
-				@comments = Rails.cache.fetch(cache_key, :expires_in => 3.minutes) do
+				@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 					Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
 				end
-				render 'get_comments.json.jbuilder'
+
+				if venue_ids.count > 1
+					render 'pure_comments.json.jbuilder'
+				else
+					render 'get_comments.json.jbuilder'
+				end
 			else
 				render 'meta_search_comments.json.jbuilder'
 			end

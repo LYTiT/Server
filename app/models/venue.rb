@@ -615,10 +615,6 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    if venue_instagrams != nil
-      venue_instagrams#.uniq!
-    end
-
     return venue_instagrams
   end
 
@@ -673,7 +669,7 @@ class Venue < ActiveRecord::Base
     #dealing with an individual venue which could require an instagram pull
       venue = Venue.find_by_id(venue_ids.first)
       new_instagrams = []
-      instagram_refresh_rate = 5 #minutes
+      instagram_refresh_rate = 10 #minutes
       instagram_venue_id_ping_rate = 1 #days      
 
       if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
@@ -696,18 +692,16 @@ class Venue < ActiveRecord::Base
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
-      new_instagrams.compact!
+      new_instagrams.compact!.sort_by{|instagram| instagram["created_time"].to_i.reverse}
       if new_instagrams.count > 0
-        total_media = []
-        total_media << new_instagrams#.uniq!
-        lytit_vcs = venue.venue_comments
+        lytit_vcs = venue.venue_comments.order("time_wrapper DESC")
         if lytit_vcs.first != nil
-          total_media << lytit_vcs
+          new_instagrams.concat(lytit_vcs)
         end
-        total_media.flatten!
-        return Kaminari.paginate_array(total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse)
+        #total_media.flatten!
+        return Kaminari.paginate_array(new_instagrams) #Kaminari.paginate_array(total_media.sort_by{|post| VenueComment.implicit_created_at(post)}.reverse)
       else
-        return venue.venue_comments.order("time_wrapper desc")
+        return venue.venue_comments.order("time_wrapper DESC")
       end
     end
   end
