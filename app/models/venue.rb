@@ -613,7 +613,7 @@ class Venue < ActiveRecord::Base
         self.update_columns(instagram_location_id: 0)
       end
     end
-    
+
     venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
     return venue_instagrams
   end
@@ -676,19 +676,19 @@ class Venue < ActiveRecord::Base
         #try to establish instagram location id if previous attempts failed every 1 day
         if venue.instagram_location_id == 0 
           if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= venue.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= venue.last_instagram_pull_time))
-            new_instagrams << venue.set_instagram_location_id(100)
+            new_instagrams = venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
           end
         elsif venue.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= venue.last_instagram_pull_time)
-            new_instagrams << venue.set_instagram_location_id(100)
+            new_instagrams = venue.set_instagram_location_id(100)
             venue.update_columns(last_instagram_pull_time: Time.now)
         else
           if ((Time.now - instagram_refresh_rate.minutes) >= venue.last_instagram_pull_time)
-            new_instagrams << venue.get_instagrams(false)
+            new_instagrams = venue.get_instagrams(false)
           end
         end
       else
-        new_instagrams << venue.set_instagram_location_id(100)
+        new_instagrams = venue.set_instagram_location_id(100)
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
