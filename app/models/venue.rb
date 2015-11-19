@@ -590,9 +590,9 @@ class Venue < ActiveRecord::Base
         #if little content is offered on the geo pull make a venue specific pull
         if venue_instagrams.count < 3
           puts ("making a venue get instagrams calls")
-          venue_instagrams << self.get_instagrams(true)
-          venue_instagrams.flatten!
-          venue_instagrams.sort_by!{|instagram| VenueComment.implicit_created_at(instagram)}
+          venue_instagrams.concat(self.get_instagrams(true))
+          #venue_instagrams.flatten!
+          venue_instagrams.sort_by!{|instagram| VenueComment.implicit_created_at(instagram).reverse}
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
         else
@@ -615,7 +615,7 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    return venue_instagrams
+    return venue_instagrams.compact
   end
 
 
@@ -639,14 +639,14 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    instagrams.sort_by!{|instagram| instagram.created_time}
+    instagrams.sort_by!{|instagram| instagram.created_time.reverse}
     instagrams.map!(&:to_hash)
 
     if instagrams.count > 0
       VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
-    return instagrams
+    return instagrams.compact
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)

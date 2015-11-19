@@ -496,7 +496,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			nil
 		else
-			post.id rescue nil
+			post.id
 		end
 	end
 
@@ -504,7 +504,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["id"]
 		else
-			post.instagram_id rescue nil
+			post.instagram_id
 		end
 	end
 
@@ -512,7 +512,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["location"]["id"]
 		else
-			post.venue.instagram_location_id rescue nil
+			post.venue.instagram_location_id
 		end
 	end	
 
@@ -520,7 +520,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["type"]
 		else
-			post.media_type rescue nil
+			post.media_type
 		end
 	end
 
@@ -528,7 +528,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["images"]["thumbnail"]["url"]
 		else
-			post.image_url_1 rescue nil
+			post.image_url_1
 		end
 	end
 
@@ -536,7 +536,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["images"]["low_resolution"]["url"] || post["images"]["standard_resolution"]["url"]
 		else
-			post.image_url_2 rescue nil
+			post.image_url_2
 		end
 	end
 
@@ -544,7 +544,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["images"]["standard_resolution"]["url"]
 		else
-			post.image_url_3 rescue nil
+			post.image_url_3
 		end
 	end
 
@@ -556,7 +556,7 @@ class VenueComment < ActiveRecord::Base
 				nil
 			end
 		else
-			post.video_url_1 rescue nil
+			post.video_url_1
 		end
 	end
 
@@ -568,7 +568,7 @@ class VenueComment < ActiveRecord::Base
 				nil
 			end
 		else
-			post.video_url_2 rescue nil
+			post.video_url_2
 		end
 	end
 
@@ -580,7 +580,7 @@ class VenueComment < ActiveRecord::Base
 				nil
 			end
 		else
-			post.video_url_3 rescue nil
+			post.video_url_3
 		end
 	end
 
@@ -590,7 +590,7 @@ class VenueComment < ActiveRecord::Base
 		elsif post.is_a?(Hash)
 			nil
 		else
-			post.venue_id rescue nil
+			post.venue_id
 		end
 	end
 
@@ -598,7 +598,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["location"]["name"]
 		else
-			post.venue.name rescue nil
+			post.venue.name
 		end
 	end
 
@@ -606,15 +606,15 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["location"]["latitude"]
 		else
-			post.venue.latitude rescue nil
+			post.venue.latitude
 		end
 	end
 
 	def self.implicit_venue_longitude(post)
 		if post.is_a?(Hash)
 			post["location"]["longitude"]
-		else 
-			post.venue.longitude rescue nil
+		else
+			post.venue.longitude
 		end
 	end
 
@@ -622,7 +622,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			DateTime.strptime(post["created_time"],'%s')
 		else
-			post.time_wrapper rescue nil
+			post.time_wrapper
 		end
 	end
 
@@ -630,7 +630,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			"instagram"
 		else
-			post.content_origin rescue nil
+			post.content_origin
 		end
 	end
 
@@ -638,7 +638,7 @@ class VenueComment < ActiveRecord::Base
 		if post.is_a?(Hash)
 			post["user"]["username"]
 		else
-			post.thirdparty_username rescue nil
+			post.thirdparty_username
 		end
 	end
 
