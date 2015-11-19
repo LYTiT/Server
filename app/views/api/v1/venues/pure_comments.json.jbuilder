@@ -2,7 +2,6 @@ json.cache! @comments, expires_in: 3.minutes, key: @view_cache_key  do |json|
   json.comments(@comments) do |comment|
     json.id comment.id
     json.instagram_id comment.instagram_id
-    json.instagram_location_id comment.instagram_location_id
     json.media_type comment.media_type
     json.media_url comment.image_url_2
     json.image_url_1 comment.image_url_1
