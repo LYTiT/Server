@@ -615,7 +615,7 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    return venue_instagrams.try(:compact)
+    return venue_instagrams
   end
 
 
@@ -646,7 +646,7 @@ class Venue < ActiveRecord::Base
       VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
-    return instagrams.try(:compact)
+    return instagrams
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull)
