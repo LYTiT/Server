@@ -692,7 +692,7 @@ class Venue < ActiveRecord::Base
         venue.update_columns(last_instagram_pull_time: Time.now)
       end
 
-      new_instagrams.compact!.sort_by{|instagram| instagram["created_time"].to_i.reverse}
+      new_instagrams.sort_by{|instagram| instagram["created_time"].reverse}
       if new_instagrams.count > 0
         lytit_vcs = venue.venue_comments.order("time_wrapper DESC")
         if lytit_vcs.first != nil
