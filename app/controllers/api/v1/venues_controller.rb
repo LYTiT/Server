@@ -62,7 +62,7 @@ class Api::V1::VenuesController < ApiBaseController
 					Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
 				end
 
-				if venue_ids.count > 1
+				if venue_ids.count > 1 or @comments.first.is_a?(Hash) == true
 					render 'pure_comments.json.jbuilder'
 				else
 					render 'get_comments.json.jbuilder'
