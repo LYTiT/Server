@@ -115,6 +115,30 @@ CREATE FUNCTION fill_metaphone_name_vector_for_venue() RETURNS trigger
 
 
 --
+-- Name: fill_search_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+      	feed_venue_data record;
+        
+      begin
+
+      	select string_agg(description, ' ') as added_note into feed_venue_data from feed_venues where feed_id = new.id;
+
+        new.search_vector :=
+          setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
+          setweight(to_tsvector('pg_catalog.english', coalesce(new.description, '')), 'B') ||
+          setweight(to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, '')), 'C');
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: pg_search_dmetaphone(text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -706,7 +730,8 @@ CREATE TABLE feeds (
     code character varying(255),
     num_moments integer DEFAULT 0,
     central_mass_latitude double precision,
-    central_mass_longitude double precision
+    central_mass_longitude double precision,
+    search_vector tsvector
 );
 
 
@@ -2692,6 +2717,13 @@ CREATE INDEX index_feeds_on_name ON feeds USING btree (name);
 
 
 --
+-- Name: index_feeds_on_search_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_search_vector ON feeds USING gin (search_vector);
+
+
+--
 -- Name: index_instagram_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3074,6 +3106,13 @@ CREATE INDEX index_vortex_paths_on_instagram_vortex_id ON vortex_paths USING btr
 --
 
 CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (version);
+
+
+--
+-- Name: feed_search_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feed_search_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_search_vector_for_feed();
 
 
 --
@@ -3709,4 +3748,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151116070817');
 INSERT INTO schema_migrations (version) VALUES ('20151116105241');
 
 INSERT INTO schema_migrations (version) VALUES ('20151117123159');
+
+INSERT INTO schema_migrations (version) VALUES ('20151120074938');
 

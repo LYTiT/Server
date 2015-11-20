@@ -1,6 +1,7 @@
 class Feed < ActiveRecord::Base
 	include PgSearch
 
+=begin
   	pg_search_scope :search,
   		:using => {
     		:tsearch => {
@@ -13,6 +14,20 @@ class Feed < ActiveRecord::Base
     		:name => 'A',
     		:description => 'B'
     	}
+=end
+  pg_search_scope :search, #name and/or associated meta data
+    against: :search_vector,
+    using: {
+      tsearch: {
+        dictionary: 'english',
+        any_word: true,
+        prefix: true,
+        tsvector_column: 'search_vector'
+      }
+    }    
+
+
+
 
 	acts_as_mappable :default_units => :kms,
 	                 :default_formula => :sphere,
