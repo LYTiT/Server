@@ -614,7 +614,10 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
+    if not venue_instagrams.nil?
+      venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
+    end
+
     return venue_instagrams
   end
 
