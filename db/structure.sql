@@ -2661,6 +2661,13 @@ CREATE INDEX index_feed_invitations_on_inviter_id ON feed_invitations USING btre
 
 
 --
+-- Name: index_feed_recommendations_on_category; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feed_recommendations_on_category ON feed_recommendations USING btree (category);
+
+
+--
 -- Name: index_feed_recommendations_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3750,4 +3757,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151116105241');
 INSERT INTO schema_migrations (version) VALUES ('20151117123159');
 
 INSERT INTO schema_migrations (version) VALUES ('20151120074938');
+
+INSERT INTO schema_migrations (version) VALUES ('20151120093500');
 
