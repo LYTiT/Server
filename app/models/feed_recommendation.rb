@@ -8,8 +8,8 @@ class FeedRecommendation < ActiveRecord::Base
 
 	def FeedRecommendation.for_user(user, user_lat, user_long)
 		user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
-		recommended_feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE AND feed_id NOT IN (#{user_feed_ids})"
-		recommendations = Feed.where("id IN (#{recommended_feed_ids}) AND num_venues > 0").sort_by{|list| list.relevance_to_user_score(user_lat, user_long)}
+		#recommended_feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE AND feed_id NOT IN (#{user_feed_ids})"
+		recommendations = Feed.where("id NOT IN (#{user_feed_ids}) AND num_venues > 0").sort_by{|list| list.relevance_to_user_score(user_lat, user_long)}
 	end
 
 	def FeedRecommendation.for_categories(categories, uesr_lat, user_long)

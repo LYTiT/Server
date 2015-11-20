@@ -116,7 +116,7 @@ class Feed < ActiveRecord::Base
 		country_bound = 1000
 		continent_bound =  10000
 		
-		v_weight = 1
+		v_weight = 1.0
 		m_weight = 0.3
 
 		proximity = Geocoder::Calculations.distance_between([central_mass_latitude, central_mass_longitude], [user_lat, user_long], :units => :km)
