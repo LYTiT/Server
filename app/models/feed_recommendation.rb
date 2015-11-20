@@ -17,7 +17,7 @@ class FeedRecommendation < ActiveRecord::Base
 	def FeedRecommendation.for_categories(categories, uesr_lat, user_long)
 		#categories are a string and have to be of format: " 'parks', 'dogs' " (Note the single quotation marks around each individual category)
 		feed_recommendation_ids = "SELECT feed_id FROM feed_recommendations WHERE category IN (#{categories})"
-		recommendations = Feed.where("id IN (#{feed_recommendation_ids}) AND num_venues > 0").sort_by{|list| list.relevance_to_user_score(user_lat, user_long)}
+		recommendations = Feed.where("id IN (#{feed_recommendation_ids})").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC")
 	end
 
 	def create_feed_acitivity
