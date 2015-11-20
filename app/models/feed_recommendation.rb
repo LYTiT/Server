@@ -11,7 +11,7 @@ class FeedRecommendation < ActiveRecord::Base
 
 		v_weight = 0.5
 		m_weight = 0.1
-		recommendations = Feed.where("id NOT IN (#{user_feed_ids}) AND num_venues > 0").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC").limit(50).order(.order("RANDOM()")
+		recommendations = Feed.where("id NOT IN (#{user_feed_ids}) AND num_venues > 0").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC").limit(50).order("RANDOM()")
 	end
 
 	def FeedRecommendation.for_categories(categories, user_lat, user_long)
@@ -19,7 +19,7 @@ class FeedRecommendation < ActiveRecord::Base
 		feed_recommendation_ids = "SELECT feed_id FROM feed_recommendations WHERE category IN (#{categories})"
 		v_weight = 0.5
 		m_weight = 0.1
-		recommendations = Feed.where("id IN (#{feed_recommendation_ids})").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC").limit(50).order(.order("RANDOM()")
+		recommendations = Feed.where("id IN (#{feed_recommendation_ids})").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC").limit(50).order("RANDOM()")
 	end
 
 	def create_feed_acitivity
