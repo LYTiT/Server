@@ -121,16 +121,16 @@ class Feed < ActiveRecord::Base
 
 		proximity = Geocoder::Calculations.distance_between([central_mass_latitude, central_mass_longitude], [user_lat, user_long], :units => :km)
 		if proximity <= city_bound
-			proximity_score = 10
+			proximity_score = 100
 		elsif proximity <= state_bound
-			proximity_score = 3
+			proximity_score = 5
 		elsif proximity <= country_bound
 			proximity_score = 2
 		elsif proximity > country_bound
 			proximity_score = 1
 		end
 		
-		relevance_score = ((v_weight * num_venues) + (m_weight * num_users)) * proximity_score
+		relevance_score = ((v_weight * num_venues) + (m_weight * num_users)) * 1/proximity
 	end
 
 	def new_content_for_user?(target_user)
