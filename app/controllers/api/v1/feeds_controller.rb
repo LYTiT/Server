@@ -260,7 +260,7 @@ class Api::V1::FeedsController < ApiBaseController
 	
 	def get_recommendations
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@recommendations = FeedRecommendation.for_user(@user)
+		@recommendations = FeedRecommendation.for_user(@user, params[:latitude], params[:longitude])
 	end
 
 	def invite_user

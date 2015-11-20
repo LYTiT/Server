@@ -108,7 +108,29 @@ class Feed < ActiveRecord::Base
 
 	def relevance_to_user_score(user_lat, user_long)
 		#calculate a feed's relevance to user based on the proximity of its central mass point, and popularity (as determined by number of members and underlying venues)
-		proximity = Geocoder::Calculations.distance_between([feed.latitude, feed.longitude], [user_lat, user_long], :units => :km)
+		#Formula: (v_weight*num_venues)+(m_weight*num_members)+(proximity_score)
+
+		#if List center is (0 kms, 10 kms] to user proximity score is 10 , (10 kms, 100 kms] => 5, (100 kms, 1000 kms] => 2, >10000 km => 1
+		city_bound = 20
+		state_bound = 100
+		country_bound = 1000
+		continent_bound =  10000
+		
+		v_weight = 1
+		m_weight = 0.3
+
+		proximity = Geocoder::Calculations.distance_between([central_mass_latitude, central_mass_longitude], [user_lat, user_long], :units => :km)
+		if proximity <= city_bound
+			proximity_score = 10
+		elsif proximity <= state_bound
+			proximity_score = 5
+		elsif proximity <= country_bound
+			proximity_score = 2
+		elsif proximity > country_bound
+			proximity_score = 1
+		end
+		
+		relevance_score = (v_weight * num_venues) + (m_weight * num_users) + proximity_score
 	end
 
 	def new_content_for_user?(target_user)
