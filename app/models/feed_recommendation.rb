@@ -8,8 +8,10 @@ class FeedRecommendation < ActiveRecord::Base
 
 	def FeedRecommendation.for_user(user, user_lat, user_long)
 		user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
-		#recommended_feed_ids = "SELECT feed_id from feed_recommendations WHERE active IS TRUE AND spotlyt IS FALSE AND feed_id NOT IN (#{user_feed_ids})"
-		recommendations = Feed.where("id NOT IN (#{user_feed_ids}) AND num_venues > 0").sort_by{|list| -(list.relevance_to_user_score(user_lat, user_long))}
+
+		v_weight = 0.5
+		m_weight = 0.1
+		recommendations = Feed.where("id NOT IN (#{user_feed_ids}) AND num_venues > 0").order("(num_venues*#{v_weight}+num_users*#{m_weight})/(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*COS(RADIANS(feeds.central_mass_longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(feeds.central_mass_latitude))*SIN(RADIANS(feeds.central_mass_longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(feeds.central_mass_latitude))))*6376.77271) DESC")
 	end
 
 	def FeedRecommendation.for_categories(categories, uesr_lat, user_long)
