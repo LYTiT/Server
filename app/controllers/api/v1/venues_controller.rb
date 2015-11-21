@@ -35,6 +35,15 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	def venue_primer
+		render json: { success: true }
+	end
+
+	def cluster_primer
+		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
+		render json: { success: true }
+	end
+
 	def get_comments
 		#register feed open
 		@user = User.find_by_authentication_token(params[:auth_token])
@@ -260,65 +269,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
 		render 'get_suggested_venues.json.jbuilder'
-	end
-
-	def meta_search
-		lat = params[:latitude]
-		long = params[:longitude]
-		sw_lat = params[:sw_latitude]
-		sw_long = params[:sw_longitude]
-		ne_lat = params[:ne_latitude]
-		ne_long = params[:ne_longitude]
-		
-		#Cleaning the search term
-		query = params[:q].downcase.gsub(" ","").gsub(/[^0-9A-Za-z]/, '')
-		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our"]
-		junk_words.each{|word| query.gsub!(word, "")}
-
-		#Plurals singularized for searching purposes (ie "dogs" returns the same things as "dog")
-		if query.length > 3
-			if (query.last(3) != "ies" && query.last(1) == "s") 
-				query = query[0...-1]
-			end
-			if (query.last(3) == "ies")
-				query = query[0...-3]
-			end
-		end
-
-		if query.length > 2
-			num_page_entries = 12
-			page = params[:page].to_i
-
-			crude_results = VenueComment.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-			page_results = crude_results[ (page-1)*num_page_entries .. (page-1)*num_page_entries+(num_page_entries-1) ]
-
-			previous_results = [params[:previous_id_1], params[:previous_id_2], params[:previous_id_3], params[:previous_id_4], params[:previous_id_5], params[:previous_id_6], params[:previous_id_7], params[:previous_id_8], params[:previous_id_9], params[:previous_id_10], params[:previous_id_11], params[:previous_id_12], params[:previous_id_13], params[:previous_id_14], params[:previous_id_15], params[:previous_id_16], params[:previous_id_17], params[:previous_id_18], params[:previous_id_19], params[:previous_id_20], params[:previous_id_21], params[:previous_id_22], params[:previous_id_23], params[:previous_id_24], params[:previous_id_25], params[:previous_id_26], params[:previous_id_27], params[:previous_id_28], params[:previous_id_29], params[:previous_id_30], params[:previous_id_31], params[:previous_id_32], params[:previous_id_33], params[:previous_id_34], params[:previous_id_35], params[:previous_id_36]]
-
-			if page_results != nil
-				for result in page_results
-					if result != nil and (result.meta_search_sanity_check(query) == false || previous_results.include?(result.id.to_s) == true)
-						page_results.delete(result)
-					end
-				end
-
-				if page_results.count != num_page_entries
-					pos = page * num_page_entries
-					while (page_results.count < num_page_entries && pos < crude_results.count) do
-						filler = crude_results[pos]
-						if filler != nil and (filler.meta_search_sanity_check(query) == true && previous_results.include?(filler.id.to_s) == false)
-							page_results << filler
-						end
-						pos = pos + 1
-					end
-				end
-			end
-
-			crude_results_paginated = Kaminari.paginate_array(crude_results)
-			@page_tracker = crude_results_paginated.page(page).per(num_page_entries)
-			@comments = page_results
-		else
-			@comments = nil
-		end
 	end
 
 	def get_trending_venues 

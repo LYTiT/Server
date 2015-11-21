@@ -180,7 +180,7 @@ class User < ActiveRecord::Base
     if user_id_s.kind_of?(Array)
       user_id_s.each{|user_id| Notification.where(user_id: user_id, read: false, deleted: false).delete_all}
     else
-      Notification.where(user_id: user_id_s, read: false, deleted: false).delete
+      Notification.where(user_id: user_id_s, read: false, deleted: false).delete_all
     end
   end
 
