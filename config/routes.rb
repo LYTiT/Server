@@ -174,7 +174,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_trending_venues_details'
         end
-        post venue 'venue_primer'
+        post 'venue_primer'
         collection do 
           post 'cluster_primer'
         end
