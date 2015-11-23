@@ -36,6 +36,10 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def venue_primer
+		cache_key = "venue/#{params[:venue_id]}/comments/page#1"
+		@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+			Venue.get_comments(venue_ids).limit(10)
+		end
 		render json: { success: true }
 	end
 

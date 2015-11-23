@@ -29,7 +29,7 @@ class Api::V1::UsersController < ApiBaseController
 				else
 					previous_email = existing_temp_user.email
 					#duplicates cannot exist in database thus must modifiy email which vendor id based which is unique per phone
-					existing_temp_user.update_columns(email: previous_email+"#{Time.now.min}"+".og")
+					existing_temp_user.update_columns(email: previous_email+"#{Time.now.min}#{Time.now.sec}"+".og")
 				end
 			end
 		rescue
@@ -79,7 +79,7 @@ class Api::V1::UsersController < ApiBaseController
 			@user.name = params[:name]
 		end
 
-		if params[:phone_number] != nil && params[:phone_number].to_s != @user.phone_number
+		if params[:phone_number] != nil and params[:phone_number].to_s != @user.phone_number
 			@user.phone_number = params[:phone_number].to_s
 			@user.country_code = params[:country_code].to_s
 		end
