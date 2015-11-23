@@ -37,15 +37,23 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def venue_primer
 		venue_id = params[:venue_id]
-		#prime comments
-		if venue_id.nil? 
-			#Venue Lookup
+		
+		#venue lookup if needed
+		if venue_id.nil?
+			if params[:instagram_location_id] != nil
+				@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])
+			else
+				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			end
+			venue_id = @venue.id
 		end
+		#prime comments
 		comments_cache_key = "venue/#{venue_id}/comments/page#1"
 		@comments = Rails.cache.fetch(comments_cache_key, :expires_in => 10.minutes) do
 			Venue.get_comments([venue_id]).limit(10)
 		end
 		@venue = Venue.find_by_id(venue_id)
+
 		#prime tweets
 		tweets_cache_key = "venue/#{venue_id}/tweets/page#1"
 		@tweets = Rails.cache.fetch(tweets_cache_key, :expires_in => 10.minutes) do
