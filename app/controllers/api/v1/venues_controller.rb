@@ -45,7 +45,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@comments = Rails.cache.fetch(comments_cache_key, :expires_in => 10.minutes) do
 			Venue.get_comments([venue_id]).limit(10)
 		end
-		@venue.find_by_id(venue_id)
+		@venue = Venue.find_by_id(venue_id)
 		#prime tweets
 		tweets_cache_key = "venue/#{venue_id}/tweets/page#1"
 		@tweets = Rails.cache.fetch(tweets_cache_key, :expires_in => 10.minutes) do
