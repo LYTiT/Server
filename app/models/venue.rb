@@ -634,6 +634,7 @@ class Venue < ActiveRecord::Base
     end
     client = Instagram.client(:access_token => instagram_access_token)
 
+    instagrams = []
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
       self.update_columns(last_instagram_pull_time: Time.now)
