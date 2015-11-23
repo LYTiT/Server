@@ -614,6 +614,9 @@ class Venue < ActiveRecord::Base
       end
     end
 
+    puts "======================================================>"
+    venue_instagrams.inspect
+    puts "======================================================>"
     if not venue_instagrams.first.nil?
       venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
     end
