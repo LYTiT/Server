@@ -697,7 +697,7 @@ class Venue < ActiveRecord::Base
       end
 
       #new_instagrams.sort_by{|instagram| instagram["created_time"].reverse}
-      if new_instagrams.first.is_a?(Hash) == true
+      if new_instagrams != nil and new_instagrams.first.is_a?(Hash) == true
         lytit_vcs = venue.venue_comments.order("time_wrapper DESC")
         if lytit_vcs.first != nil
           new_instagrams.concat(lytit_vcs)
