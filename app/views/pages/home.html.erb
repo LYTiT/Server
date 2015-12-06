@@ -3,36 +3,39 @@
 <% end %>
 
 <div class="home-container">
-    <header class="cd-header-home">
-      <a href="/" ><img src="/assets/lytit-logotype.svg" width="150" height="auto" alt="Logo"></a>
-      <a href="#0" class="cd-3d-nav-trigger-home">
-        Menu
-        <span></span>
-      </a>
-    </header> <!-- .cd-header -->
+      <header class="cd-header-home">
+        <a href="/" ><img id="logo" src="/assets/lytit-logotype.svg" width="130" height="auto" alt="Logo"></a>
+        <a href="#0" class="cd-3d-nav-trigger-home">
+          Menu
+          <span></span>
+        </a>
+      </header> <!-- .cd-header -->
     
-    <div class="home-content">
-      <h1>ENLYTEN YOURSELF</h1>
-      <h2>Receive a live connection to your favorite places while discovering new ones in an exciting and social way.</h2>
-      <!-- all your content here -->
-    </div>
-    <div class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></div>
-    <div class="app-badge" ><a href="/"><img style="height: 58px;" src="/assets/app-store-badge.png" /></a></div>
+      <div class="home-content">
+        <h1>ENLYTEN YOURSELF</h1>
+        <h2>Receive a live connection to your favorite places while discovering new ones in an exciting and social way.</h2>
+        <!-- all your content here -->
+      </div>
 
-    <footer class="footer-basic-centered">
-      <p class="footer-links">
-        <a href="#">Privacy</a>
-        ·
-        <a href="#">Terms</a>
-        ·
-        <a href="#">Support</a>
-        ·
-        <a href="#">Contact</a>
-      </p>
+      <table>
+        <tr>
+          <td class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></td>
+          <td class="app-badge" ><a href="/"><img style="width: 170px;" src="/assets/app-store-badge.png" alt="App Store"/></a></td>
+        </tr>
+      </table>  
 
-      <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
-
-    </footer>
+      <footer class="footer-basic-centered">
+        <p class="footer-links">
+          <a href="#">Privacy</a>
+          ·
+          <a href="#">Terms</a>
+          ·
+          <a href="#">Support</a>
+          ·
+          <a href="#">Contact</a>
+        </p>
+        <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+      </footer>
 
 </div>    
     

@@ -38,13 +38,13 @@ body {
 #features {
 	background: $body-bg;
 	background-size: cover;
+	overflow: auto;
 
 	@include MQ(L) {
 		overflow: hidden;
 	}	
 
 }
-
 
 #home {
 	overflow: hidden;
@@ -95,18 +95,14 @@ html, body {
 	height: 80px;
 	width: 90%;
 	margin: 0 auto;
-
 }
 
-.cd-logo {
-	float: left;
-	margin-top: 28px;
-	a {
-		 img {
-			max-width: 1%;
-		}
-	}
+#logo {
+	@include MQ(M) {
+		width: 150px;
+	}	
 }
+
 
 .cd-3d-nav-trigger {
 	position: relative;
@@ -184,7 +180,11 @@ html, body {
 	float: right;
 	height: 45px;
 	width: 45px;
-	margin-top: 18px;
+	margin-top: 10px;
+
+	@include MQ(M) {
+		margin-top: 18px;
+	}
 
 	/* replace text with background image */
 	overflow: hidden;
@@ -528,7 +528,7 @@ html, body {
 		h1 {
 			font-size: 3.6rem;
 			//margin: 4em auto;
-			margin: 2.5em auto;
+			margin: 6em auto;
 			margin-bottom: 15px;
 		}
 
@@ -546,8 +546,43 @@ html, body {
 		}
 	}
 
+	@include MQ(M_2) {
+		h1 {
+			margin: 2.5em auto;
+		}
+	}
+
 }
 
+table {
+	margin-top: 15px;
+	margin-right: auto;
+	margin-left: auto;
+	direction: rtl;
+}
+
+.explore-features img {
+	width: 60px;
+	margin-left: 40px;
+	@include MQ(M) {
+		position: absolute;
+		margin-top: 15px;	
+		left: 50%;
+		margin-left: -40px;
+	}
+}
+
+.app-badge img {
+	margin-bottom: 2px;
+	@include MQ(M) {
+		position: absolute;
+		margin-top: 135px;
+		left: 50%;
+		margin-left: -90px;
+	}
+}
+
+/*
 .explore-features {
 	position: absolute;
 	margin-top: 15px;	
@@ -561,7 +596,7 @@ html, body {
 	left: 50%;
 	margin-left: -85px;
 	//margin: 135px auto;
-}
+}*/
 
 .home-container {
 	@include transition(transform $animation-duration);
@@ -1220,7 +1255,7 @@ html, body {
 	list-style: none;
 	font-weight: bold;
 	color:  #ffffff;
-	padding: 35px 0 23px;
+	padding: 35px 0 15px;
 	margin: 0;
 }
 
