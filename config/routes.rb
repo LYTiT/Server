@@ -262,9 +262,9 @@ LytitServer::Application.routes.draw do
 
   get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
+  get 'features' => 'pages#features'
 
   #get "/download" => redirect("http://www.google.com"), :as => :app_store
-
 
   root :to => 'pages#home'
 

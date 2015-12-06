@@ -1,19 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head lang="en" data-placeholder-focus="false">
-  <meta charset="utf-8" />
+<head>
+  <title>LYTiT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-itunes-app" content="app-id=990171203">
-  <%= favicon_link_tag "favicon.ico"%>
-  <title>LYTiT<%=yield(:title) %> </title>
-  <%= stylesheet_link_tag :application, :media => 'all' %>
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu:300,400,700' rel='stylesheet' type='text/css'>
 </head>
-<body>
-  <div class ="lytit <=% controller.controller_name %>">
-    <%= yield %>
-  </div>
-  <%= render 'layouts/contact_us' %>
-  <%= render 'javascript' %>
+<%= yield :body || "<body>" %>
+
+	<%= yield %>
+
 </body>
 </html>

@@ -1,0 +1,126 @@
+<% content_for :body do %>
+  <body id='features'>
+<% end %>
+
+<div class="features-container">
+  <header class="cd-header-home">
+    <a href="/" ><img src="/assets/lytit-logotype.svg" width="150" height="auto" alt="Logo"></a>
+    <a href="#0" class="cd-3d-nav-trigger-home">
+      Menu
+      <span></span>
+    </a>
+  </header> <!-- .cd-header -->
+
+  <div class="cd-main-content">
+    <div class="cd-product-intro">
+      <h1>It's All About Places</h1>
+      <p>Click on the Start button to see the animated slideshow.<br>Videos will play on large devices only, on mobile you just see images.</p>
+      <div class="cd-triggers">
+        <a href="http://codyhouse.co/?p=384" class="btn">Get It Now</a>
+        <a href="#cd-product-tour" class="btn salmon" data-type="cd-tour">Show Me</a>
+      </div>
+    </div> <!-- cd-product-intro -->
+
+    <div id="cd-product-tour">
+      <ul>
+        <li class="cd-single-item cd-active right-floater">
+          <div class="cd-caption">
+            <h2>Map</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus praesentium, quis ab iusto possimus quaerat perspiciatis voluptas obcaecati ipsam autem.  
+            </p>
+          </div>
+          <div class="cd-image-container">
+            <div>
+              <div class="cd-phone-frame"></div>
+              <div class="cd-image-wrapper">
+                <img src="/assets/screen-1.png" data-video="/assets/video-1" alt="Screen Preview 1">
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="cd-single-item cd-not-visible cd-move-right left-floater">
+          <div class="cd-caption">
+            <h2>Pages</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus praesentium, quis ab iusto possimus quaerat perspiciatis voluptas obcaecati ipsam autem.  
+            </p>
+          </div>
+          <div class="cd-image-container">
+            <div>
+              <div class="cd-phone-frame"></div>
+              <div class="cd-image-wrapper">
+                <img src="/assets/screen-2.png" data-video="video/video-1" alt="Screen Preview 1">
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="cd-single-item cd-not-visible cd-move-right right-floater">
+          <div class="cd-caption">
+            <h2>Shake</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus praesentium, quis ab iusto possimus quaerat perspiciatis voluptas obcaecati ipsam autem.  
+            </p>
+          </div>
+          <div class="cd-image-container">
+            <div>
+              <div class="cd-phone-frame"></div>
+              <div class="cd-image-wrapper">
+                <img src="/assets/screen-3.png" data-video="video/video-1" alt="Screen Preview 1">
+              </div>
+            </div>
+          </div>
+        </li>
+        <li class="cd-single-item cd-not-visible cd-move-right left-floater">
+          <div class="cd-caption">
+            <h2>Lists</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatibus praesentium, quis ab iusto possimus quaerat perspiciatis voluptas obcaecati ipsam autem.  
+            </p>
+          </div>
+          <div class="cd-image-container">
+            <div>
+              <div class="cd-phone-frame"></div>
+              <div class="cd-image-wrapper">
+                <img src="/assets/screen-2.png" data-video="video/video-1" alt="Screen Preview 1">
+              </div>
+            </div>
+          </div>
+        </li>
+
+      </ul>
+    </div> <!-- cd-product-tour -->
+
+    <div class="cd-slider-nav">
+      <a class="cd-prev" href="#0">Previous</a>
+      <a class="cd-next" href="#0">Next</a>
+    </div> <!-- cd-slider-nav -->
+
+    <div class="cd-loader"></div> <!-- top loading bar -->
+  </div>
+</div>      
+
+  <nav class="cd-3d-nav-container">
+    <ul class="cd-3d-nav">
+      <li><%= link_to "Home", root_path %></li>
+
+      <!--<li>
+        <a href="#0">Features</a>
+      </li>-->
+      <li class="cd-selected"><%= link_to "Features", features_path %></li>
+
+      <li>
+        <a href="#0">Blog</a>
+      </li>
+
+      <li>
+        <a href="#0">Contact Us</a>
+      </li>
+
+      <li>
+        <a href="http://www.facebook.com">Facebook</a>
+      </li>
+
+      <li>
+        <a href="#0">Twitter</a>
+      </li>
+    </ul> <!-- .cd-3d-nav -->
+
+    <span class="cd-marker color-1"></span> 
+  </nav> <!-- .cd-3d-nav-container --> 
