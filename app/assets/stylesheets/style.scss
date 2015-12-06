@@ -27,7 +27,7 @@ body {
 	}
 	color: $color-1;
 	background-color: $body-bg;
-
+	overflow: hidden;
 
 	@include MQ(L) {
 		/* hide horizontal scroll bar in IE */
@@ -528,7 +528,7 @@ html, body {
 		h1 {
 			font-size: 3.6rem;
 			//margin: 4em auto;
-			margin: 6em auto;
+			margin: 2.5em auto;
 			margin-bottom: 15px;
 		}
 
