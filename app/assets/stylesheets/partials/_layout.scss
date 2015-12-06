@@ -1,7 +1,7 @@
 // breakpoints
    
 $XS:    100px;
-$S:     480px;   
+$S:     480px;
 $M:     768px;
 $M_2:   1024px; //iPad on its side     
 $L:     1048px;    
@@ -18,6 +18,9 @@ $XL:    1200px;
   }  
   @else if $canvas == M {
    @media only screen and (min-width: $M) { @content; } 
+  }
+  @else if $canvas == M_2 {
+   @media only screen and (min-width: $M_2) { @content; } 
   }
   @else if $canvas == L {
    @media only screen and (min-width: $L) { @content; } 

@@ -93,8 +93,13 @@ html, body {
 
 .cd-header-home {
 	height: 80px;
-	width: 90%;
+	width: 100%;
 	margin: 0 auto;
+
+	@include MQ(M) {
+		width: 90%;
+	}
+
 }
 
 #logo {
@@ -468,7 +473,8 @@ html, body {
 	/* Force Hardware Acceleration in WebKit */
 	@include transform(translateZ(0));
 	@include backface-visibility(hidden);
-
+	@include font-smoothing;
+	
 	h1 {
 		text-align: center;
 		font: {
@@ -478,7 +484,6 @@ html, body {
 		color: $text-color;
 		margin: 5em auto;
 		margin-bottom: 15px;
-		@include font-smoothing;
 	}
 
 	h2 {
@@ -491,7 +496,6 @@ html, body {
 		color: $text-color;
 		//margin: 4em auto;
 		margin: auto;
-		@include font-smoothing;
 		max-width: 400px;
 	}
 
@@ -500,8 +504,8 @@ html, body {
 	}
 
 	@include MQ(XS) {
-		padding-left: 15px;
-		padding-right: 15px;
+		padding-left: 30px;
+		padding-right: 30px;
 		h1 {
 			font: {
 				size: 2.8rem;
@@ -548,9 +552,34 @@ html, body {
 
 	@include MQ(M_2) {
 		h1 {
-			margin: 2.5em auto;
+			margin: 3.5em auto;
+			margin-bottom: 15px;
 		}
 	}
+
+	@include MQ(L) {
+		h1 {
+			margin: 6em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+
+	//HANDLING OF IPHONE 4,5,6 ON THE SIDE AND IPHONE 4 VERTICAL
+	@media (max-height: 480px) {
+		h1 {
+			margin: 1em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+	@media (max-height: 380px) {
+		h1 {
+			margin: 0em auto;
+			margin-bottom: 15px;
+		}
+	}
+
 
 }
 
@@ -561,25 +590,35 @@ table {
 	direction: rtl;
 }
 
-.explore-features img {
-	width: 60px;
-	margin-left: 40px;
-	@include MQ(M) {
-		position: absolute;
-		margin-top: 15px;	
-		left: 50%;
-		margin-left: -40px;
+.explore-features {
+	position: absolute;
+	margin-top: 15px;	
+	left: 50%;
+	margin-left: -40px;
+
+	@media (max-height: 480px) {
+		margin: auto;
+		width: 60px;
+		margin-left: 70px;
 	}
 }
 
-.app-badge img {
-	margin-bottom: 2px;
-	@include MQ(M) {
-		position: absolute;
-		margin-top: 135px;
-		left: 50%;
-		margin-left: -90px;
+.app-badge {	
+	position: absolute;
+	margin-top: 135px;
+	left: 50%;
+	margin-left: -90px;
+
+	@media (max-height: 480px) {
+		margin: auto;
+		margin-left: -130px;
+		margin-bottom: 2px;		
 	}
+}
+
+#app-store {
+	max-width: 80%;
+	height: auto;
 }
 
 /*
@@ -1267,10 +1306,10 @@ table {
 
 /* If you don't want the footer to be responsive, remove these media queries */
 
-@media (max-width: 600px) {
+@media (max-width: 667px) {
 
 	.footer-basic-centered{
-		padding: 35px;
+		padding: 15px;
 	}
 
 	.footer-basic-centered .footer-company-motto{
@@ -1283,7 +1322,7 @@ table {
 
 	.footer-basic-centered .footer-links{
 		font-size: 14px;
-		padding: 25px 0 20px;
+		padding: 25px 0 10px;
 	}
 
 	.footer-basic-centered .footer-links a{
