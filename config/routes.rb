@@ -56,6 +56,8 @@ LytitServer::Application.routes.draw do
         get 'refresh_user'
         post 'user_sign_out'
         get 'confirm_password'
+        post 'go_live'
+        post 'checkout'
       end
 
       resources :feeds, only: [:create] do
@@ -216,6 +218,11 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_cluster_feeds'
         end
+        get 'get_questions'
+        get 'get_question_comments'
+        post 'post_new_question'
+        post 'send_new_question_comment'
+        get 'get_linked_user_lists'
       end
 
       controller :lytit_bar do

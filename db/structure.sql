@@ -928,6 +928,38 @@ ALTER SEQUENCE likes_id_seq OWNED BY likes.id;
 
 
 --
+-- Name: live_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE live_users (
+    id integer NOT NULL,
+    venue_id integer,
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: live_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE live_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: live_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE live_users_id_seq OWNED BY live_users.id;
+
+
+--
 -- Name: lumen_constants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1676,6 +1708,73 @@ ALTER SEQUENCE venue_page_views_id_seq OWNED BY venue_page_views.id;
 
 
 --
+-- Name: venue_question_comments; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE venue_question_comments (
+    id integer NOT NULL,
+    venue_question_id_id integer,
+    comment text,
+    user_id_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: venue_question_comments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE venue_question_comments_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: venue_question_comments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE venue_question_comments_id_seq OWNED BY venue_question_comments.id;
+
+
+--
+-- Name: venue_questions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE venue_questions (
+    id integer NOT NULL,
+    venue_id integer,
+    question text,
+    user_id integer,
+    num_messages integer DEFAULT 0,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: venue_questions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE venue_questions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: venue_questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE venue_questions_id_seq OWNED BY venue_questions.id;
+
+
+--
 -- Name: venue_ratings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1753,7 +1852,8 @@ CREATE TABLE venues (
     last_twitter_pull_time timestamp without time zone,
     meta_data_vector tsvector,
     metaphone_name_vector tsvector,
-    event_id integer
+    event_id integer,
+    is_live boolean DEFAULT false
 );
 
 
@@ -1967,6 +2067,13 @@ ALTER TABLE ONLY likes ALTER COLUMN id SET DEFAULT nextval('likes_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY live_users ALTER COLUMN id SET DEFAULT nextval('live_users_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY lumen_constants ALTER COLUMN id SET DEFAULT nextval('lumen_constants_id_seq'::regclass);
 
 
@@ -2108,6 +2215,20 @@ ALTER TABLE ONLY venue_messages ALTER COLUMN id SET DEFAULT nextval('venue_messa
 --
 
 ALTER TABLE ONLY venue_page_views ALTER COLUMN id SET DEFAULT nextval('venue_page_views_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY venue_question_comments ALTER COLUMN id SET DEFAULT nextval('venue_question_comments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY venue_questions ALTER COLUMN id SET DEFAULT nextval('venue_questions_id_seq'::regclass);
 
 
 --
@@ -2300,6 +2421,14 @@ ALTER TABLE ONLY likes
 
 
 --
+-- Name: live_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY live_users
+    ADD CONSTRAINT live_users_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: lumen_constants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2473,6 +2602,22 @@ ALTER TABLE ONLY venue_messages
 
 ALTER TABLE ONLY venue_page_views
     ADD CONSTRAINT venue_page_views_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: venue_question_comments_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY venue_question_comments
+    ADD CONSTRAINT venue_question_comments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: venue_questions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY venue_questions
+    ADD CONSTRAINT venue_questions_pkey PRIMARY KEY (id);
 
 
 --
@@ -2766,6 +2911,20 @@ CREATE INDEX index_likes_on_liker_id ON likes USING btree (liker_id);
 
 
 --
+-- Name: index_live_users_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_live_users_on_user_id ON live_users USING btree (user_id);
+
+
+--
+-- Name: index_live_users_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_live_users_on_venue_id ON live_users USING btree (venue_id);
+
+
+--
 -- Name: index_lumen_values_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3015,6 +3174,34 @@ CREATE INDEX index_venue_page_views_on_venue_id ON venue_page_views USING btree 
 --
 
 CREATE INDEX index_venue_page_views_on_venue_lyt_sphere ON venue_page_views USING btree (venue_lyt_sphere);
+
+
+--
+-- Name: index_venue_question_comments_on_user_id_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venue_question_comments_on_user_id_id ON venue_question_comments USING btree (user_id_id);
+
+
+--
+-- Name: index_venue_question_comments_on_venue_question_id_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venue_question_comments_on_venue_question_id_id ON venue_question_comments USING btree (venue_question_id_id);
+
+
+--
+-- Name: index_venue_questions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venue_questions_on_user_id ON venue_questions USING btree (user_id);
+
+
+--
+-- Name: index_venue_questions_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venue_questions_on_venue_id ON venue_questions USING btree (venue_id);
 
 
 --
@@ -3759,4 +3946,12 @@ INSERT INTO schema_migrations (version) VALUES ('20151117123159');
 INSERT INTO schema_migrations (version) VALUES ('20151120074938');
 
 INSERT INTO schema_migrations (version) VALUES ('20151120093500');
+
+INSERT INTO schema_migrations (version) VALUES ('20151207033816');
+
+INSERT INTO schema_migrations (version) VALUES ('20151207034249');
+
+INSERT INTO schema_migrations (version) VALUES ('20151207040001');
+
+INSERT INTO schema_migrations (version) VALUES ('20151207041408');
 

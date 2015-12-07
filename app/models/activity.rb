@@ -121,6 +121,7 @@ class Activity < ActiveRecord::Base
 		    :num_activity_lists => num_lists,
 
 		    :media_type => venue_comment.try(:media_type),
+=begin
 		    :image_url_1 => venue_comment.try(:image_url_1),
 		    :image_url_2 => venue_comment.try(:image_url_2),
 		    :image_url_3 => venue_comment.try(:image_url_3),
@@ -136,7 +137,8 @@ class Activity < ActiveRecord::Base
 		  	:latitude => venue.try(:latitude),
   			:longitude => venue.try(:longitude),
   			:color_rating => venue.try(:color_rating),
-  			:instagram_location_id => venue.try(:instagram_location_id)		    
+  			:instagram_location_id => venue.try(:instagram_location_id)
+=end  			
 		}
 
 

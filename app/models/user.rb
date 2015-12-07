@@ -43,6 +43,10 @@ class User < ActiveRecord::Base
   has_many :event_organizers, :dependent => :destroy
   has_many :event_announcements, :dependent => :destroy
 
+  has_many :venue_questions
+
+  has_one :live_user
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -70,6 +74,12 @@ class User < ActiveRecord::Base
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
     activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
     Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:feed, :user, :venue, :venue_comment).order("adjusted_sort_position DESC")
+  end
+
+  def live_list_venues
+    user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
+    user_venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
+    Venue.where("id IN (#{user_venue_ids}) AND is_live IS TRUE").order("name ASC")
   end
 
   #------------------------------------------------------------->
@@ -164,7 +174,15 @@ class User < ActiveRecord::Base
     not_supported_users = User.where("id NOT IN (#{users_with_support})").pluck(:id)
     not_supported_users.each{|user_id| SupportIssue.create!(user_id: user_id)}
   end
+  #--------------------------------------------------------------> 
 
+  def checkout_user_from_venue
+    user_live_venue = self.live_user.venue
+    self.live_user.delete  
+    if LiveUser.where("venue_id = ?", user_live_venue.id).count == 0
+      user_live_venue.update_columns(is_live: false)
+    end
+  end
 
   #-------------------------------------------------------------->
 

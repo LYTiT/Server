@@ -382,6 +382,37 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def get_questions
+		@questions = Venue.venue_questions.includes(:user).order("ID DESC")
+	end
+
+	def get_question_comments
+		venue_question = VenueQuestion.find_by_id(params[:question_id])
+		@question_comments = venue_question.venue_question_messages.order("ID DESC")
+	end
+
+	def post_new_question
+		if VenueQuestion.create!(:venue_id => params[:venue_id], :question => params[:question], :user_id => @user.id)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
+		end
+	end
+
+	def send_new_question_comment
+		new_venue_question_message = VenueQuestionMessage.new_message(params[:venue_question_id], params[:comment], params[:venue_id], params[:user_id], params[:user_on_location])
+		if new_venue_question_message
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
+		end
+	end
+
+	def get_linked_user_lists
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@lists = Venue.linked_user_lists(params[:venue_id], @user.id)
+	end
+
 
 	private
 

@@ -66,6 +66,9 @@ class Venue < ActiveRecord::Base
   has_many :activities, :dependent => :destroy
   has_many :events, :dependent => :destroy
 
+  has_many :venue_questions, :dependent => :destroy
+  has_many :live_users
+
   belongs_to :user
 
   accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }
@@ -1370,6 +1373,12 @@ class Venue < ActiveRecord::Base
     end
 
     old_votes_sum
+  end
+
+  def Venue.linked_user_lists(v_id, u_id)
+    user_list_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{u_id}"
+    linked_feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{v_id} AND feed_id IN (#{user_list_ids})"
+    Feed.where("id IN (#{linked_feed_ids})") 
   end
 
 end

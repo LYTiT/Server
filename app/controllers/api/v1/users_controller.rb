@@ -308,6 +308,30 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 	end
+
+	def get_live_list_venues
+		@venues = @user.live_list_venues
+	end
+
+	def go_live
+		venue_id = params[:venue_id]
+		if venue_id != nil
+			venue = Venue.find_by_id(venue_id)
+		else
+			venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
+		end
+		if LiveVenue.create!(:venue_id => venue.id, :user_id => @user.id)
+			venue.update_column(is_live: true)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
+		end
+	end
+
+	def checkout
+		@user.checkout_user_from_venue
+		render json: { success: true }
+	end
 	#-------------------------------------------------->
 
 	private
