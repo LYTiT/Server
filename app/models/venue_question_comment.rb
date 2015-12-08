@@ -37,7 +37,11 @@ class VenueQuestionComment < ActiveRecord::Base
 		    :user_on_location => self.from_location,
 		    :question => venue_question.question,
 		    :venue_id => venue_question.venue_id,
-		    :venue_name => venue_question.venue.name
+		    :venue_name => venue_question.venue.name,
+		    :latitude => venue_question.venue.latitude,
+		    :longitude => venue_question.venue.longitude,
+		    :city => venue_question.venue.city,
+		    :color_rating => venue_question.venue.color_rating
 		}
 		
 		if self.from_location == true && venue_question.num_comments == 1
