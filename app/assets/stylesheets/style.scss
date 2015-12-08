@@ -923,7 +923,7 @@ table {
 	margin-top: -150px;
 	
 	@include MQ(M) {
-		margin-top: -105px;
+		margin-top: -125px;
 	}
 
 	@include MQ(L) {
@@ -949,7 +949,7 @@ table {
 	}
 
 	@media (max-height: 380px) {
-		margin-top: -60px;
+		margin-top: -70px;
 	}
 
 	@media (max-height: 320px) {
