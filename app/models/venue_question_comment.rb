@@ -3,7 +3,7 @@ class VenueQuestionComment < ActiveRecord::Base
 	belongs_to :venue_question
 
 
-	def new_message(v_q_id, comment, v_id, u_id, comment_user_on_location)
+	def self.new_comment(v_q_id, comment, v_id, u_id, comment_user_on_location)
 		new_venue_question_message = VenueQuestionMessage.create!(:venue_question_id => v_q_id, :venue_id => v_id, :user_id => u_id, :comment => comment)
 		venue_question.increment(:num_comments, 1)
 		new_venue_question_message.new_question_message_notification(user_on_location)

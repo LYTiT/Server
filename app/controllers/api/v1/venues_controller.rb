@@ -420,7 +420,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def send_new_question_comment
-		new_venue_question_comment = VenueQuestionComment.new_message(params[:venue_question_id], params[:comment], params[:venue_id], params[:user_id], params[:user_on_location])
+		new_venue_question_comment = VenueQuestionComment.new_comment(params[:venue_question_id], params[:comment], params[:venue_id], params[:user_id], params[:user_on_location])
 		if new_venue_question_comment
 			render json: { success: true }
 		else
