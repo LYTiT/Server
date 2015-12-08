@@ -314,6 +314,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def go_live
+		@user = User.find_by_authentication_token(params[:auth_token])
 		venue_id = params[:venue_id]
 		if venue_id != nil
 			venue = Venue.find_by_id(venue_id)

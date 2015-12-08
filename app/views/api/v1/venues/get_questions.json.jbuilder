@@ -1,4 +1,4 @@
-json.comments(@questions) do |question|
+json.array! @questions do |question|
   json.question question.question
   json.user_id  question.user_id
   json.user_name question.user.name
