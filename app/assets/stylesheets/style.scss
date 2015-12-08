@@ -480,55 +480,32 @@ html, body {
 	@include transform(translateZ(0));
 	@include backface-visibility(hidden);
 	@include font-smoothing;
-	
+
+	padding-left: 30px;
+	padding-right: 30px;
 	h1 {
 		text-align: center;
 		font: {
-			size: 3.0rem;
+			size: 2.8rem;
 			weight: 300;
 		}
-		color: $text-color;
-		margin: 5em auto;
-		margin-bottom: 15px;
+		margin: 2em auto;
+		margin-bottom: 12px;
 	}
 
 	h2 {
-
 		text-align: center;
 		font: {
-			size: 2.0rem;
+			size: 1.8rem;
 			weight: 300;
+			margin: auto;
+			max-width: 400px;
 		}
-		color: $text-color;
-		//margin: 4em auto;
-		margin: auto;
-		max-width: 400px;
 	}
 
 	&.nav-is-visible {
 		@include transform(translateY($nav-height-S));
 	}
-
-	@include MQ(XS) {
-		padding-left: 30px;
-		padding-right: 30px;
-		h1 {
-			font: {
-				size: 2.8rem;
-				weight: 300;
-			}
-			margin: 2em auto;
-			margin-bottom: 12px;
-		}
-
-		h2 {
-			font: {
-				size: 1.8rem;
-				weight: 300;
-			}
-		}
-	}
-
 
 	@include MQ(M) {
 		&.nav-is-visible {
@@ -660,7 +637,7 @@ table {
 	}
 
 	height: 100%;
-	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('city-people-street-sun.jpg') center;
+	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('city-people-street-sun-4.png') center;
 	background-size: cover;
 }
 
@@ -843,7 +820,7 @@ table {
 			size: 2.8rem;
 			weight: 300;
 		}
-		//margin: 1em auto;
+		margin: 0.2em auto;
 		margin-bottom: 12px;
 	}
 
@@ -875,6 +852,10 @@ table {
 
 	@include MQ(M) {
 		padding: 50px 15%;
+		h1 {	
+			margin: 6em auto;
+			margin-bottom: 15px;
+		}
 	}
 
 	@include MQ(L) {
@@ -903,6 +884,8 @@ table {
 		}
 
 		h1 {
+			margin: auto;
+			margin-bottom: 15px;
 			font: {
 				size: 3.5rem;
 				weight: 100;
