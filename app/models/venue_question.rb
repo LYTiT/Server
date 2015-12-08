@@ -16,6 +16,7 @@ class VenueQuestion < ActiveRecord::Base
 	def send_new_question_notification(live_user)
 		payload = {
 		    :object_id => self.id,
+		    :activity_id => self.id,
 		    :type => 'question_notification', 
 		    :question => question,
 		    :venue_id => venue_id,
