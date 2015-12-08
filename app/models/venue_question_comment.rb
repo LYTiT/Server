@@ -36,7 +36,6 @@ class VenueQuestionComment < ActiveRecord::Base
 		    :chat_message => self.comment,
 		    :user_on_location => comment_user_on_location,
 		    :question => venue_question.question,
-		    :activity_created_at => venue_question.created_at
 		}
 		
 		if comment_user_on_location == true && venue_question.num_comments == 1
