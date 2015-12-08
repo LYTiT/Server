@@ -19,7 +19,7 @@ class VenueQuestion < ActiveRecord::Base
 		    :type => 'question_notification', 
 		    :question => question,
 		    :venue_id => venue_id,
-		    :venue_id => venue.name,
+		    :venue_name => venue.name,
 		    :user_id => user_id,
 		    :user_name => user.try(:name),
 		    :user_phone => user.try(:phone_number)
