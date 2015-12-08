@@ -411,9 +411,9 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 			v_id = @venue.id
 		end
-
-		if VenueQuestion.create!(:venue_id => v_id, :question => params[:question], :user_id => @user.id)
-			render json: { success: true }
+		vq = VenueQuestion.create!(:venue_id => v_id, :question => params[:question], :user_id => @user.id)
+		if vq
+			render json: { id: vq.id }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
 		end
