@@ -13,7 +13,7 @@ class VenueQuestion < ActiveRecord::Base
 		end 
 	end
 
-	def self.send_new_question_notification(live_user)
+	def send_new_question_notification(live_user)
 		payload = {
 		    :object_id => self.id,
 		    :type => 'question_notification', 
