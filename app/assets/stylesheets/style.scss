@@ -909,11 +909,22 @@ table {
 			line-height: 60px;
 		}
 	}
+
+	@media (max-height: 320px) {
+		h1 {
+			margin: -20px auto;
+			margin-bottom: 15px;
+		}
+	}	
 }
 
 #cd-product-tour {
 	position: absolute;
-	margin-top: -105px;
+	margin-top: -150px;
+	
+	@include MQ(M) {
+		margin-top: -105px;
+	}
 
 	@include MQ(L) {
 		position: relative;
@@ -936,6 +947,14 @@ table {
 			width: 100%;
 		}
 	}
+
+	@media (max-height: 380px) {
+		margin-top: -60px;
+	}
+
+	@media (max-height: 320px) {
+		margin-top: -80px;
+	}	
 }
 
 .cd-single-item {
