@@ -36,7 +36,8 @@ class VenueQuestionComment < ActiveRecord::Base
 		    :chat_message => self.comment,
 		    :user_on_location => self.from_location,
 		    :question => venue_question.question,
-		    :venue_id => venue_question.venue_id
+		    :venue_id => venue_question.venue_id,
+		    :venue_name => venue_question.venue.name
 		}
 		
 		if self.from_location == true && venue_question.num_comments == 1
