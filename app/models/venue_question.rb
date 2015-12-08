@@ -33,7 +33,7 @@ class VenueQuestion < ActiveRecord::Base
 
 		preview = "Someone posted a question to your location."
 
-		if live_user.push_token && live_usr.active == true
+		if live_user.push_token && live_user.active == true
 		  count = Notification.where(user_id: live_user.id, read: false, deleted: false).count
 		  APNS.send_notification(live_user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
 		end
