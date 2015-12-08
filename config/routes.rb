@@ -219,7 +219,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_cluster_feeds'
         end
-        get 'get_questions'
+        collection do
+          get 'get_questions'
+        end
         get 'get_question_comments'
         post 'post_new_question'
         post 'send_new_question_comment'

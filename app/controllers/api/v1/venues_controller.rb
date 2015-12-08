@@ -383,7 +383,12 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_questions
-		@questions = Venue.venue_questions.includes(:user).order("ID DESC")
+		if params[:venue_id] != nil
+			@venue = Venue.find_by_id(params[:venue_id])
+		else
+			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+		end
+		@questions = @venue.venue_questions.includes(:user).order("ID DESC")
 	end
 
 	def get_question_comments
