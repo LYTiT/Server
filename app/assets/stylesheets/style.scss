@@ -1,3 +1,9 @@
+@font-face {
+    font-family: "Roboto";
+    src: url(/assets/roboto-regular.eot);
+    src: url(/assets/roboto-regular.ttf) format("truetype"), url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-regular.woff) format("woff"), url(/assets/webfont.svg#svgroboto-regular) format("svg");
+}
+
 /* -------------------------------- 
 
 Primary style
@@ -694,7 +700,7 @@ table {
 	box-shadow: 0 1px 6px rgba(#000, .1), inset 0 1px 0 rgba(#FFF, .2);
 	@include transition(background-color .2s);
 	@include font-smoothing;
-	margin-bottom: 150px;
+	//margin-bottom: -10px;
 
 	.no-touch &:hover {
 		background-color: darken($color-1, 15%);
@@ -829,7 +835,7 @@ table {
 	padding: 50px 5%;
 	text-align: center;
 	@include font-smoothing;
-
+	height: 100vh;
 
 	h1 {
 		//text-transform: uppercase;
@@ -876,6 +882,7 @@ table {
 		@include transform(translateZ(0));
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
+		height: auto;
 
 		position: absolute;
 		top: 50%;
@@ -922,9 +929,11 @@ table {
 }
 
 #cd-product-tour {
-	position: relative;
+	position: absolute;
+	margin-top: -105px;
 
 	@include MQ(L) {
+		position: relative;
 		width: 100%;
 		max-width: $M;
 		margin: 0 auto;
