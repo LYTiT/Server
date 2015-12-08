@@ -40,7 +40,7 @@ class VenueQuestionComment < ActiveRecord::Base
 		}
 		
 		if self.from_location == true && venue_question.num_comments == 1
-			preview = "Someone responded to your question at #{question.venue.name}!"
+			preview = "Someone responded to your question at #{venue_question.venue.name}!"
 		else
 			preview = "#{user.name} at #{venue_question.venue.name}: #{comment}"
 		end
