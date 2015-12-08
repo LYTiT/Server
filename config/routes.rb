@@ -112,6 +112,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_activity_lists'
         end
+        get 'get_live_list_venues'
       end
 
       resources :support_issues do
