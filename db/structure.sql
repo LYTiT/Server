@@ -1713,9 +1713,9 @@ ALTER SEQUENCE venue_page_views_id_seq OWNED BY venue_page_views.id;
 
 CREATE TABLE venue_question_comments (
     id integer NOT NULL,
-    venue_question_id_id integer,
+    venue_question_id integer,
     comment text,
-    user_id_id integer,
+    user_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone
 );
@@ -3177,17 +3177,17 @@ CREATE INDEX index_venue_page_views_on_venue_lyt_sphere ON venue_page_views USIN
 
 
 --
--- Name: index_venue_question_comments_on_user_id_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_venue_question_comments_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_venue_question_comments_on_user_id_id ON venue_question_comments USING btree (user_id_id);
+CREATE INDEX index_venue_question_comments_on_user_id ON venue_question_comments USING btree (user_id);
 
 
 --
--- Name: index_venue_question_comments_on_venue_question_id_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_venue_question_comments_on_venue_question_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE INDEX index_venue_question_comments_on_venue_question_id_id ON venue_question_comments USING btree (venue_question_id_id);
+CREATE INDEX index_venue_question_comments_on_venue_question_id ON venue_question_comments USING btree (venue_question_id);
 
 
 --
