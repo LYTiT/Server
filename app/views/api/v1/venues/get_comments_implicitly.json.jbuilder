@@ -19,3 +19,5 @@ json.comments(@comments) do |comment|
   json.thirdparty_username VenueComment.thirdparty_username(comment)
   json.total_pages @comments.total_pages
 end
+
+json.venue_id @venue.id
