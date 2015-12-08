@@ -1717,7 +1717,8 @@ CREATE TABLE venue_question_comments (
     comment text,
     user_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    from_location boolean
 );
 
 
@@ -3954,4 +3955,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151207034249');
 INSERT INTO schema_migrations (version) VALUES ('20151207040001');
 
 INSERT INTO schema_migrations (version) VALUES ('20151207041408');
+
+INSERT INTO schema_migrations (version) VALUES ('20151208061502');
 
