@@ -318,7 +318,11 @@ class Api::V1::UsersController < ApiBaseController
 		if venue_id != nil
 			venue = Venue.find_by_id(venue_id)
 		else
-			venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
+			if params[:instagram_location_id] != nil
+				venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
+			else
+				venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			end
 		end
 		if LiveVenue.create!(:venue_id => venue.id, :user_id => @user.id)
 			venue.update_column(is_live: true)
