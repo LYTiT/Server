@@ -5,6 +5,6 @@ class LiveUser < ActiveRecord::Base
 	after_create :make_venue_live
 
 	def make_venue_live
-		self.venue.update_column(is_live: true)
+		self.venue.update_columns(is_live: true)
 	end
 end

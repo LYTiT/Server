@@ -326,7 +326,7 @@ class Api::V1::UsersController < ApiBaseController
 			end
 		end
 		if LiveUser.create!(:venue_id => venue.id, :user_id => @user.id)
-			venue.update_column(is_live: true)
+			venue.update_columns(is_live: true)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
