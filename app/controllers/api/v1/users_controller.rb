@@ -325,7 +325,7 @@ class Api::V1::UsersController < ApiBaseController
 				venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			end
 		end
-		if LiveVenue.create!(:venue_id => venue.id, :user_id => @user.id)
+		if LiveUser.create!(:venue_id => venue.id, :user_id => @user.id)
 			venue.update_column(is_live: true)
 			render json: { success: true }
 		else
