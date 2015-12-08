@@ -58,6 +58,7 @@ LytitServer::Application.routes.draw do
         get 'confirm_password'
         post 'go_live'
         post 'checkout'
+        get 'get_live_list_venues'
       end
 
       resources :feeds, only: [:create] do
