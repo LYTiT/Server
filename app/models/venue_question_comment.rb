@@ -42,7 +42,7 @@ class VenueQuestionComment < ActiveRecord::Base
 		if comment_user_on_location == true && venue_question.num_comments == 1
 			preview = "Someone responded to your question at #{question.venue.name}!"
 		else
-			preview = "#{user.name} at #{question.venue.name}: #{comment}"
+			preview = "#{user.name} at #{venue_question.venue.name}: #{comment}"
 		end
 
 		notification_type = "question_comment/#{self.id}"
