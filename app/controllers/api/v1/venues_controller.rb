@@ -386,7 +386,11 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:venue_id] != nil
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
-			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			if params[:instagram_location_id]
+				@venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
+			else
+				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			end
 		end
 		@questions = @venue.venue_questions.includes(:user).order("ID DESC")
 	end
@@ -397,7 +401,18 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def post_new_question
-		if VenueQuestion.create!(:venue_id => params[:venue_id], :question => params[:question], :user_id => @user.id)
+		if params[:venue_id] != nil
+			v_id = params[:venue_id]
+		else
+			if params[:instagram_location_id]
+				@venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
+			else
+				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			end
+			v_id = @venue.id
+		end
+
+		if VenueQuestion.create!(:venue_id => v_id, :question => params[:question], :user_id => @user.id)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity

@@ -223,7 +223,9 @@ LytitServer::Application.routes.draw do
           get 'get_questions'
         end
         get 'get_question_comments'
-        post 'post_new_question'
+        collection do
+          post 'post_new_question'
+        end
         post 'send_new_question_comment'
         get 'get_linked_user_lists'
       end
