@@ -396,7 +396,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_question_comments
-		venue_question = VenueQuestion.find_by_id(params[:question_id])
+		venue_question = VenueQuestion.find_by_id(params[:venue_question_id])
 		@question_comments = venue_question.venue_question_comments.order("ID DESC")
 	end
 
