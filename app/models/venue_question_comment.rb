@@ -10,7 +10,7 @@ class VenueQuestionComment < ActiveRecord::Base
 	end
 	
 	def new_question_message_notification(comment_user_on_location)
-		question_participant_ids = "SELECT user_id FROM venue_question_comments WHERE question_id = #{self.question_id}"
+		question_participant_ids = "SELECT user_id FROM venue_question_comments WHERE venue_question_id = #{self.venue_question_id}"
 		question_participants = User.where("id IN (#{question_participant_ids})")
 
 		for question_participant in question_participants
@@ -24,7 +24,7 @@ class VenueQuestionComment < ActiveRecord::Base
 	def send_new_question_message_notification(question_participant, comment_user_on_location)
 		payload = {
 		    :object_id => self.id, 
-		    :activity_id => question_id,
+		    :activity_id => venue_question_id,
 		    :activity_type => "question_notification",
 		    :activity_user_name => venue_question.user.try(:name),
 		    :activity_user_id => venue_question.user_id,
