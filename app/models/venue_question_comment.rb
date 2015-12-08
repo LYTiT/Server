@@ -34,12 +34,12 @@ class VenueQuestionComment < ActiveRecord::Base
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
 		    :chat_message => self.comment,
-		    :user_on_location => from_location,
+		    :user_on_location => self.from_location,
 		    :question => venue_question.question,
 		    :venue_id => venue_question.venue_id
 		}
 		
-		if from_location == true && venue_question.num_comments == 1
+		if self.from_location == true && venue_question.num_comments == 1
 			preview = "Someone responded to your question at #{question.venue.name}!"
 		else
 			preview = "#{user.name} at #{venue_question.venue.name}: #{comment}"
