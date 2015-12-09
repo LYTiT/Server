@@ -417,7 +417,7 @@ html, body {
 			color: $text-color;
 			font: {
 				size: 1.3rem;
-				weight: 600;
+				weight: 400;
 			}
 			text-align: center;
 			@include font-smoothing;
@@ -431,6 +431,23 @@ html, body {
 				top: 4.4em;
 				@include center(x);
 			}
+		}
+	}
+}
+
+.standard-blue {
+	background-color: darken(#1d6ce6, 10%);
+	a {
+		.no-touch &:hover {
+			background-color: darken(#1d6ce6, 15%);
+		}
+	}
+
+	.cd-selected a {
+		background-color: darken(#1d6ce6, 20%);
+
+		.no-touch &:hover {
+			background-color: darken(#1d6ce6, 20%);
 		}
 	}
 }
@@ -1061,10 +1078,12 @@ table {
 	@include MQ(XS) {
 		&.left-floater {
 			background: #1d6ce6;
+			border-top: transparent;
 			}
 
 		&.right-floater {			
-			background: white;
+			background: #08224a;
+			border-top: transparent;
 		}
 
 	}
@@ -1430,3 +1449,58 @@ table {
 		color: lighten(#00ccff, 20%);
 	}
 }
+
+
+//LOGIN
+.login-block {
+	padding-top: 20vh;
+}
+
+  .login {
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: center;
+    font-size: 16px;
+    input[type=text], input[type=password], input[type=email]  {
+      font-size: 16px;
+      height: 40px;
+      padding-bottom: 16px;
+      background-color: transparent;
+      border: none;
+      border-radius: 0px;
+      border-bottom: 1px solid white;
+      color: #FFF;
+      text-align: center;
+      margin-top: 25px;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    &.before {
+      .sign_in_button {
+        margin-top: 60px;
+      }
+    }
+    &.after {
+      .sign_in_button {
+        margin-top: 30px;
+        input{
+          background-color: transparent;
+          border: none;  
+        }
+        input:hover {
+          color: #00CCFF;
+        }
+      }  
+    }
+    .alert-danger {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+      color: #A94442;
+    }
+  }
+
+  .login2{
+  	@include font-smoothing;
+  	background: #1d6ce6;
+  }
