@@ -48,12 +48,18 @@ body {
 
 	@include MQ(L) {
 		overflow: hidden;
-	}	
+	}
 
 }
-
 #home {
 	overflow: hidden;
+}
+
+#legal {
+	background: white;
+	color: black;
+	overflow: auto;
+	@include font-smoothing;
 }
 
 a {
@@ -114,6 +120,12 @@ html, body {
 	}	
 }
 
+#logo2 {	
+	@include MQ(M) {
+		margin-left: 5%;
+		width: 150px;
+	}	
+}
 
 .cd-3d-nav-trigger {
 	position: relative;
@@ -184,7 +196,6 @@ html, body {
 		}
 	}
 }
-
 
 .cd-3d-nav-trigger-home {
 	position: relative;
@@ -258,7 +269,11 @@ html, body {
 		}
 	}
 }
-
+#legal-page-trigger {
+	@include MQ(M) {
+		margin-right: 5%;
+	}
+}
 .cd-3d-nav-container {
 	/* this is the 3D navigation container */
 	position: fixed;
@@ -660,6 +675,67 @@ table {
 	height: 100%;
 	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('new-york.jpg') center;
 	background-size: cover;
+}
+
+.legal-container {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+	}
+
+	.legal{
+		background: #1d6ce6;
+		width: 100%;
+		height: 70px;
+		@include MQ(M) {
+			height: 80px;
+		}
+	}
+}
+
+.cd-legal-content {
+	b, strong {
+	  font-weight: bold;
+	}
+	p {
+	   margin: 15px 0;
+	}
+	br {
+		line-height: 40px;
+	}
+	ul {
+		margin-left: 50px;
+		list-style-type: circle;
+	}
+	ol {
+		margin-left: 50px;
+		list-style-type: lower-roman;
+	}
+	h1 {
+		text-align: center;
+		font: {
+			size: 3.5rem;
+			weight: 100;		
+		}
+		margin-top: 40px;
+	}
+	margin-left: 20px;
+	margin-right: 20px;
+	@include MQ(M) {
+		width: 50%;
+		margin: auto;
+	}
+
 }
 
 /* --------------------------------------------------------------------------------------------------------- */
@@ -1287,6 +1363,13 @@ table {
 
 	padding: 25px;
 	bottom: 0;
+
+	color: white;
+}
+
+.legal-footer {
+	margin-top: 200px;
+	color: #8f96a3;
 }
 
 .footer-basic-centered .footer-company-motto{
@@ -1296,7 +1379,7 @@ table {
 }
 
 .footer-basic-centered .footer-company-name{
-	color:  #ffffff;
+	//color:  #ffffff;
 	font-size: 14px;
 	margin: 0;
 }
@@ -1304,7 +1387,7 @@ table {
 .footer-basic-centered .footer-links{
 	list-style: none;
 	font-weight: bold;
-	color:  #ffffff;
+	//color:  #ffffff;
 	padding: 35px 0 15px;
 	margin: 0;
 }
@@ -1338,5 +1421,12 @@ table {
 
 	.footer-basic-centered .footer-links a{
 		line-height: 1.8;
+	}
+}
+
+#hyperlink {
+	color: #00ccff;	
+	.no-touch &:hover {
+		color: lighten(#00ccff, 20%);
 	}
 }

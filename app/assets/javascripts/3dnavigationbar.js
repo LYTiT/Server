@@ -8,7 +8,8 @@ jQuery(document).ready(function($){
 
 	$('.cd-3d-nav-trigger-home').on('click', function(){
 		toggle3dBlock(!$('.cd-header-home').hasClass('nav-is-visible'));
-		toggleOverflow($("#features").css("overflow"));
+		toggleOverflow("#features", $("#features").css("overflow"));
+		toggleOverflow( "#legal", $("#legal").css("overflow"));
 	});
 
 	//select a new item from the 3d navigation
@@ -39,18 +40,27 @@ jQuery(document).ready(function($){
 			//fix marker position when opening the menu (after a window resize)
 			addOrRemove && updateSelectedNav();
 		});
+		$('.legal-container').toggleClass('nav-is-visible', addOrRemove).one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+			//fix marker position when opening the menu (after a window resize)
+			addOrRemove && updateSelectedNav();
+		});
 	}
 
 	//When the the 3d navigation is toggled into view we disable scrolling. For large screens scrolling is never enabled (in features) thus have extra
 	//condition to prevent scrollbar from glimpsing.
 
-	function toggleOverflow(pageOverflow) {
+	function toggleOverflow(section, pageOverflow) {
 		if (pageOverflow != 'hidden') {
-			$("#features").css("overflow", "hidden")
+			$(section).css("overflow", "hidden")
 		}
 		else {
-			if($(window).width() < MqL) {
-				$("#features").css("overflow", "auto")
+			if(section == "#features"){
+				if($(window).width() < MqL) {
+					$(section).css("overflow", "auto")
+				}
+			}
+			else {
+				$(section).css("overflow", "auto")
 			}
 		}
 	}
