@@ -430,7 +430,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_linked_user_lists
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@lists = Venue.linked_user_lists(params[:venue_id], @user.id)
+		@feeds = Venue.linked_user_lists(params[:venue_id], @user.id)
 	end
 
 
