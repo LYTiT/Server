@@ -23,6 +23,9 @@ jQuery(document).ready(function($){
 		window.requestAnimationFrame(updateSelectedNav);
 	});
 
+
+
+
 	function toggle3dBlock(addOrRemove) {
 		if(typeof(addOrRemove)==='undefined') addOrRemove = true;	
 		$('.cd-header').toggleClass('nav-is-visible', addOrRemove);
