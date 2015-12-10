@@ -39,6 +39,8 @@ body {
 		/* hide horizontal scroll bar in IE */
 		overflow-x: hidden;
 	}
+
+	-webkit-overflow-scrolling: auto;
 }
 
 #features {
@@ -688,7 +690,7 @@ table {
 	@include transition(transform $animation-duration);
 	/* Force Hardware Acceleration in WebKit */
 	@include transform(translateZ(0));
-	@include backface-visibility(hidden);
+	@include backface-visibility(hidden);	
 
 	&.nav-is-visible {
 		@include transform(translateY($nav-height-S));
