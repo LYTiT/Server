@@ -50,6 +50,7 @@ body {
 	@include MQ(L) {
 		overflow: hidden;
 	}
+	height: auto;
 	-webkit-overflow-scrolling: touch;
 
 }
