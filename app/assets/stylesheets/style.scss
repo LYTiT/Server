@@ -25,6 +25,7 @@ html, body {
 html {
 	font-size: 62.5%;
 	overflow: hidden;
+	-webkit-overflow-scrolling: touch;
 }
 
 body {
@@ -49,8 +50,7 @@ body {
 
 	@include MQ(L) {
 		overflow: hidden;
-	}
-	-webkit-overflow-scrolling: touch;
+	}	
 
 }
 #home {
