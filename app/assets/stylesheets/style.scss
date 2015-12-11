@@ -783,9 +783,14 @@ table {
 	margin-left: 20px;
 	margin-right: 20px;
 	@include MQ(M) {
+		width: 75%;
+		margin: auto;
+	}
+	@include MQ(L) {
 		width: 50%;
 		margin: auto;
 	}
+
 
 }
 
