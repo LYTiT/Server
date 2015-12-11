@@ -26,6 +26,7 @@ html {
 	font-size: 62.5%;
 	overflow: hidden;
 	-webkit-overflow-scrolling: touch;
+	font-smooth: always;
 }
 
 body {
@@ -442,7 +443,7 @@ html, body {
 .cd-blue {
 	background-color: darken(#1d6ce6, 10%);
 	a {
-		color: #4183ea !important;
+		color: #528eec !important;
 		.no-touch &:hover {
 			background-color: darken(#1d6ce6, 15%);
 		}
