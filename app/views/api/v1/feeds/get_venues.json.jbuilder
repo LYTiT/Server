@@ -1,23 +1,23 @@
-json.array! @added_venue_activities do |added_venue_activity|
-  json.venue_id added_venue_activity.venue.id  
-  json.activity_id added_venue_activity.id
-  json.name added_venue_activity.venue.name
-  json.formatted_address added_venue_activity.venue.formatted_address
-  json.address added_venue_activity.venue.address
-  json.city added_venue_activity.venue.city
-  json.state added_venue_activity.venue.state
-  json.country added_venue_activity.venue.country
-  json.postal_code added_venue_activity.venue.postal_code
-  json.latitude added_venue_activity.venue.latitude
-  json.longitude added_venue_activity.venue.longitude
-  json.phone_number added_venue_activity.venue.phone_number
-  json.color_rating added_venue_activity.venue.color_rating
-  json.time_zone_offset added_venue_activity.venue.time_zone_offset
+json.array! @feed_venues do |feed_venue|
+  json.venue_id feed_venue.venue.id  
+  json.activity_id feed_venue.id
+  json.name feed_venue.venue.name
+  json.formatted_address feed_venue.venue.formatted_address
+  json.address feed_venue.venue.address
+  json.city feed_venue.venue.city
+  json.state feed_venue.venue.state
+  json.country feed_venue.venue.country
+  json.postal_code feed_venue.venue.postal_code
+  json.latitude feed_venue.venue.latitude
+  json.longitude feed_venue.venue.longitude
+  json.phone_number feed_venue.venue.phone_number
+  json.color_rating feed_venue.venue.color_rating
+  json.time_zone_offset feed_venue.venue.time_zone_offset
 
-  json.added_by_user added_venue_activity.user.try(:name)
-  json.num_likes added_venue_activity.num_likes
-  json.feed_venue_id added_venue_activity.feed_venue_id
-  json.added_note added_venue_activity.feed_venue.description
+  json.added_by_user feed_venue.user.try(:name)
+  json.num_likes feed_venue.activity.num_likes
+  json.feed_venue_id feed_venue.id
+  json.added_note feed_venue.description
 
-  json.did_like @user.likes.where("activity_id = ?", added_venue_activity.id).first.present?
+  json.did_like @user.likes.where("activity_id = ?", feed_venue.activity.id).first.present?
 end
