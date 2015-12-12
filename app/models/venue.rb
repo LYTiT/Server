@@ -99,28 +99,32 @@ class Venue < ActiveRecord::Base
   end
 
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
-    lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
+    lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first    
     
     if lat_long_lookup == nil
       center_point = [vlatitude, vlongitude]
-      if vaddress == nil
-        if vcity != nil #city search
-          search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
-          result = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname).first
-        end
+      search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+      result = Venue.in_bounds(search_box).search(vname)
+      if result == nil
+        if vaddress == nil
+          if vcity != nil #city search
+            search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
+            result = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname).first
+          end
 
-        if vstate != nil && vcity == nil #state search
-          search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
-          result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname).first
-        end
+          if vstate != nil && vcity == nil #state search
+            search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
+            result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname).first
+          end
 
-        if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-          search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
-          result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname).first
+          if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+            search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
+            result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname).first
+          end
+        else #venue search
+          search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+          result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
         end
-      else #venue search
-        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-        result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
       end
     else
       result = lat_long_lookup
