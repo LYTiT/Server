@@ -9,9 +9,8 @@ class LiveUser < ActiveRecord::Base
 	end
 
 	def LiveUser.cleanup
-		live_users = LiveUser.where("created_at < ?" Time.now-45.minutes).includes(:venues)
+		live_users = LiveUser.where("created_at < ?" Time.now-45.minutes).includes(:venue)
 		for live_user in live_users
-			venue = live_user.venue
 			venue.update_columns(is_live: false)
 			live_user.delete
 		end
