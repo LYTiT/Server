@@ -158,7 +158,7 @@ class Venue < ActiveRecord::Base
 
         name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
         if name_lookup == nil
-          name_lookup = Venue.in_bounds(search_box).search(vname)
+          name_lookup = Venue.in_bounds(search_box).search(vname).first
         end
 
         if name_lookup != nil
