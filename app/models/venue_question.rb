@@ -9,7 +9,9 @@ class VenueQuestion < ActiveRecord::Base
 	def new_question_notification
 		live_users_on_location = venue.live_users
 		for live_user_on_location in live_users_on_location
-			send_new_question_notification(live_user_on_location.user)
+			if live_user_on_location != nil and live_user_on_location.user.id != self.user_id
+				send_new_question_notification(live_user_on_location.user)
+			end		
 		end 
 	end
 
