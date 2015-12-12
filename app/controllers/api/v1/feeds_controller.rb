@@ -89,7 +89,7 @@ class Api::V1::FeedsController < ApiBaseController
 		@user = User.where("id = ?", params[:user_id]).includes(:likes).first
 		@feed = Feed.find_by_id(params[:id])
 		#@added_venue_activities = Activity.where("feed_id = ? AND activity_type = ?", params[:id], "added venue").includes(:user, :venue, :feed_venue).page(params[:page]).per(15)
-		@added_venue_activities = FeedVenue.where("feed_id = ?", params[:id]).includes(:activity, :venue, :user).order("name ASC").page(params[:page]).per(15)
+		@feed_venues = FeedVenue.where("feed_id = ?", params[:id]).includes(:activity, :venue, :user).order("name ASC").page(params[:page]).per(15)
 	end
 
 	def add_venue
