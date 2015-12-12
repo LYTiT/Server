@@ -13,6 +13,8 @@ namespace :lytit do
     end
 
     $scheduler.every '3h' do
+      puts "Live User Cleanup"
+      LiveUser.cleanup
       puts "Venue Comment Cleanup"
       VenueComment.cleanup_and_recalibration
     end

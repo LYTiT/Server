@@ -19,6 +19,7 @@ namespace :lytit do
 
     #delete Instagrams, Meta Data, Feed Activity and Notifications older than a day old
     #VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
+    VenueComment.cleanup_and_recalibration
     Tweet.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #Activity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
