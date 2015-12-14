@@ -237,7 +237,7 @@ class Api::V1::VenuesController < ApiBaseController
 		cache_key = "lyt_map"
 		@view_cache_key = cache_key+"/view"
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			Venue.where("color_rating > -1.0 OR event_id IS NOT NULL")
+			Venue.where("color_rating > -1.0 OR event_id IS NOT NULL OR is_live IS TRUE")
 		end
 		render 'display.json.jbuilder'
 	end
@@ -254,7 +254,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		cache_key = "lyt_map_by_parts"
 		venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			Venue.where("color_rating > -1.0 OR event_id IS NOT NULL")
+			Venue.where("color_rating > -1.0 OR event_id IS NOT NULL OR is_live IS TRUE")
 		end
 
 		ordered_venues = venues.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
