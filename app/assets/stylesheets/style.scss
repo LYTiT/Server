@@ -110,6 +110,7 @@ html, body {
 	height: 80px;
 	width: 100%;
 	margin: 0 auto;
+	position: realtive;
 
 	@include MQ(M) {
 		width: 90%;
@@ -450,7 +451,9 @@ html, body {
 .cd-blue {
 	background-color: darken(#1d6ce6, 10%);
 	a {
-		color: #528eec !important;
+		@include MQ(M) {
+			color: #528eec !important;
+		}	
 		.no-touch &:hover {
 			background-color: darken(#1d6ce6, 15%);
 		}
@@ -617,7 +620,7 @@ html, body {
 		}
 	}
 
-	@include MQ(L) {
+	@include MQ(XL) {
 		h1 {
 			margin: 6em auto;
 			margin-bottom: 15px;
@@ -944,7 +947,7 @@ table {
 
 	@include MQ(L) {
 		margin-top: -80px;
-		position: relative;
+		//position: relative;
 		height: 100%;
 		min-height: 500px;
 		padding: 0 10%;
