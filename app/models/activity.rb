@@ -108,7 +108,7 @@ class Activity < ActiveRecord::Base
   			:has_liked => self.liked_by?(member),
 
   			:num_chat_participants => num_participants,
-  			:latest_chat_time => latest_comment_time,
+  			:latest_chat_time => latest_comment_time.to_i,
 
 		    :user_id => user_id,
 		    :user_name => user.name,
