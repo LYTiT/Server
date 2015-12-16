@@ -9,7 +9,7 @@ jQuery(document).ready(function($){
 		if($(window).width() < MqL) {
 			$('body,html').animate({'scrollTop': $('#cd-product-tour').offset().top - 30 }, 200); 
 		} else {
-			$('.cd-main-content').addClass('is-product-tour');
+			$('.cd-main-content').addClass('is-product-tour');			
 			uploadVideo(jQuery('.cd-active'));
 		}
 	});
@@ -28,7 +28,7 @@ jQuery(document).ready(function($){
 	$('.cd-next').on('click', function(event){
 		event.preventDefault();
 		var activeSlide = $('.cd-active');
-		updateSlider(activeSlide, 'next'); 
+		updateSlider(activeSlide, 'next'); 		
 	});
 
 	$(document).keyup(function(event){
@@ -67,6 +67,16 @@ jQuery(document).ready(function($){
 			}
 		});
 	});
+
+	function shakePhone() {
+	   var l = 20;  
+	   for( var i = 0; i < 4; i++ )   
+	     $( "#shake-feature" ).animate( { 
+	         'margin-left': "+=" + ( l = -l ) + 'px',
+	         'margin-right': "-=" + l + 'px'
+	      }, 50);  
+
+     }
 
 	function showProductIntro() {
 		$('header').removeClass('slide-down');
@@ -118,10 +128,11 @@ jQuery(document).ready(function($){
 			$(this).get(0).pause();
 		})
 		if(selected.find('video').length > 0) {
-			//video has been already loaded - play it
+			//video has been already loaded - play it			
 			selected.find('video').eq(0).show().get(0).play();
 		} else {
 			//load video - the name of the video is the data-video of the image
+			setTimeout(function() { shakePhone(); }, 2000);
 			var videoUrl = selected.find('.cd-image-container img').data('video'),
 				video = $('<video loop><source src="'+videoUrl+'.mp4" type="video/mp4" /><source src="'+videoUrl+'.webm" type="video/webm" />Sorry, your browser does not support HTML5 video.</video>');
 			video.appendTo(selected.find('.cd-image-wrapper')).hide();
