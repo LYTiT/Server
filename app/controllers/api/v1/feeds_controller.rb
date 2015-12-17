@@ -60,7 +60,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def add_feed
 		feed = Feed.find_by_id(params[:feed_id])
-		feed.calibrate_num_members
+		#feed.calibrate_num_members
 		
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
 		if feed_user.save
