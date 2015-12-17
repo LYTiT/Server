@@ -15,8 +15,8 @@ class VenueComment < ActiveRecord::Base
 	before_destroy :deincrement_feed_moment_counts
 
 	def VenueComment.cleanup_and_recalibration
-		expired_venue_comment_ids = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').pluck(:id)
-		associated_venue_ids = VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').pluck(:venue_id)
+		expired_venue_comment_ids = VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').pluck(:id)
+		associated_venue_ids = VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').pluck(:venue_id)
 
 		expired_activity_ids = Activity.where("id IN (?)", expired_venue_comment_ids).pluck(:id)
 		Like.where("activity_id IN (?)", expired_activity_ids).delete_all
@@ -25,7 +25,7 @@ class VenueComment < ActiveRecord::Base
 
 		Activity.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
 		MetaData.where("venue_comment_id IN (?)", expired_venue_comment_ids).delete_all
-		VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').delete_all
+		VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').delete_all
 
 		Feed.joins(:feed_venues).where("venue_id IN (?)", associated_venue_ids).each{|feed| feed.update_columns(num_moments: feed.venue_comments.count)}
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
