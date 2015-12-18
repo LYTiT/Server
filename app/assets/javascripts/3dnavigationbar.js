@@ -70,20 +70,26 @@ jQuery(document).ready(function($){
 
 	//this function update the .cd-marker position
 	function updateSelectedNav(type) {
-		var selectedItem = $('.cd-selected'),
-			selectedItemPosition = selectedItem.index() + 1, 
-			leftPosition = selectedItem.offset().left,
-			backgroundColor = selectedItem.data('color'),
-			marker = $('.cd-marker');
+		try {
+			var selectedItem = $('.cd-selected'),
+				selectedItemPosition = selectedItem.index() + 1, 
+				leftPosition = selectedItem.offset().left,
+				backgroundColor = selectedItem.data('color'),
+				marker = $('.cd-marker');
 
-		marker.removeClassPrefix('color').addClass('color-'+ selectedItemPosition).css({
-			'left': leftPosition,
-		});
-		if( type == 'close') {
-			marker.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
-				toggle3dBlock(false);
+			marker.removeClassPrefix('color').addClass('color-'+ selectedItemPosition).css({
+				'left': leftPosition,
 			});
+			if( type == 'close') {
+				marker.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+					toggle3dBlock(false);
+				});
+			}
 		}
+		catch(err) {
+			null
+		}
+
 	}
 
 	$.fn.removeClassPrefix = function(prefix) {

@@ -132,7 +132,7 @@ jQuery(document).ready(function($){
 			selected.find('video').eq(0).show().get(0).play();
 		} else {
 			//load video - the name of the video is the data-video of the image
-			setTimeout(function() { shakePhone(); }, 2000);
+			setTimeout(function() { shakePhone(); }, 4000);
 			var videoUrl = selected.find('.cd-image-container img').data('video'),
 				video = $('<video loop><source src="'+videoUrl+'.mp4" type="video/mp4" /><source src="'+videoUrl+'.webm" type="video/webm" />Sorry, your browser does not support HTML5 video.</video>');
 			video.appendTo(selected.find('.cd-image-wrapper')).hide();
