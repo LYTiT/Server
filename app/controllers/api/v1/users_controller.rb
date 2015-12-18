@@ -212,16 +212,19 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def add_instagram_auth_token
+		pass = false
 		existence_check = InstagramAuthToken.where("instagram_user_id = ?", params[:instagram_user_id]).first
 		if existence_check != nil
 			existence_check.update_columns(token: params[:instagram_user_token])
 			existence_check.update_columns(is_valid: true)
 			existence_check.update_columns(user_id: params[:user_id])
 			existence_check.update_columns(num_used: 0)
+			pass = true
 		else
 			instagram_auth_token = InstagramAuthToken.create!(token: params[:instagram_user_token], instagram_user_id: params[:instagram_user_id], instagram_username: params[:instagram_user_name], user_id: params[:user_id])
+			pass = true
 		end
-		render json: { success: true }
+		render json: { success: pass }
 	end
 
 	def remove_instagram_authentication
