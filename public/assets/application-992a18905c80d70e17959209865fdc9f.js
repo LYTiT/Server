@@ -14538,20 +14538,26 @@ jQuery(document).ready(function($){
 
 	//this function update the .cd-marker position
 	function updateSelectedNav(type) {
-		var selectedItem = $('.cd-selected'),
-			selectedItemPosition = selectedItem.index() + 1, 
-			leftPosition = selectedItem.offset().left,
-			backgroundColor = selectedItem.data('color'),
-			marker = $('.cd-marker');
+		try {
+			var selectedItem = $('.cd-selected'),
+				selectedItemPosition = selectedItem.index() + 1, 
+				leftPosition = selectedItem.offset().left,
+				backgroundColor = selectedItem.data('color'),
+				marker = $('.cd-marker');
 
-		marker.removeClassPrefix('color').addClass('color-'+ selectedItemPosition).css({
-			'left': leftPosition,
-		});
-		if( type == 'close') {
-			marker.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
-				toggle3dBlock(false);
+			marker.removeClassPrefix('color').addClass('color-'+ selectedItemPosition).css({
+				'left': leftPosition,
 			});
+			if( type == 'close') {
+				marker.one('webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend', function(){
+					toggle3dBlock(false);
+				});
+			}
 		}
+		catch(err) {
+			null
+		}
+
 	}
 
 	$.fn.removeClassPrefix = function(prefix) {
@@ -14592,9 +14598,10 @@ jQuery(document).ready(function($){
 		}
 	});
 	$('.cd-next').on('click', function(event){
+		$('.cd-image-wrapper').css("background", "none");
 		event.preventDefault();
 		var activeSlide = $('.cd-active');
-		updateSlider(activeSlide, 'next'); 		
+		updateSlider(activeSlide, 'next');		 		
 	});
 
 	$(document).keyup(function(event){
@@ -14679,7 +14686,7 @@ jQuery(document).ready(function($){
 		//update slider navigation (in case we reached the last slider)
         updateSliderNav(selected);
         //load the video for the new slider
-		uploadVideo(selected);
+		uploadVideo(selected);		
 
 	}
 
@@ -14695,10 +14702,9 @@ jQuery(document).ready(function($){
 		})
 		if(selected.find('video').length > 0) {
 			//video has been already loaded - play it			
-			selected.find('video').eq(0).show().get(0).play();
+			selected.find('video').eq(0).show().get(0).play();			
 		} else {
-			//load video - the name of the video is the data-video of the image
-			setTimeout(function() { shakePhone(); }, 2000);
+			//load video - the name of the video is the data-video of the image			
 			var videoUrl = selected.find('.cd-image-container img').data('video'),
 				video = $('<video loop><source src="'+videoUrl+'.mp4" type="video/mp4" /><source src="'+videoUrl+'.webm" type="video/webm" />Sorry, your browser does not support HTML5 video.</video>');
 			video.appendTo(selected.find('.cd-image-wrapper')).hide();
@@ -14706,19 +14712,23 @@ jQuery(document).ready(function($){
 			var loaded = 'false';
 			//check if the canplaythrough event occurs - video is ready to be played
 			selected.on('canplaythrough', 'video', function() {
-				loaded = 'true';
-			});
+				loaded = 'true';								
+			});			
 
 			//animate the loading bar
 			$('.cd-loader').show().animate({width: '50%'}, 1500, function(){
 				var timeout = setInterval(function(){
-					if( loaded ){
+					if( loaded ){						
 						//this means the video is ready - complete .cd-loader and play the video
 						$('.cd-loader').animate({width: '100%'}, 100, function(){
 							$('.cd-loader').css('width', 0);
 							selected.find('video').show().get(0).play();
 							selected.find('img').css('opacity', 0);
 							clearInterval(timeout);
+							//shake the phone for the Shake preview.
+							if(selected.index() == 2) {
+								setTimeout(function() { shakePhone(); }, 2100);
+							}
 						});
 					} else {
 						//video is not ready yet
@@ -14732,6 +14742,19 @@ jQuery(document).ready(function($){
 			});			
 		}
 	}
+});
+jQuery(document).ready(function($){
+	
+	$(function() {
+	  if($(window).width() <= 1024) {
+	    $("img").each(function() {
+	      $(this).attr("src", $(this).attr("src").replace("/assets/lists@2x.png", "/assets/lists_m@2x.png"));
+	      $(this).attr("src", $(this).attr("src").replace("/assets/pages@2x.png", "/assets/pages_m@2x.png"));
+	      $(this).attr("src", $(this).attr("src").replace("/assets/shake@2x.png", "/assets/shake_m@2x.png"));
+	    });
+	  }
+	});
+
 });
 /*! jQuery v2.1.1 | (c) 2005, 2014 jQuery Foundation, Inc. | jquery.org/license */
 

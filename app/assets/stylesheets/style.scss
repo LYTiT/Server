@@ -121,7 +121,7 @@ html, body {
 #logo {
 	@include MQ(M) {
 		width: 150px;
-	}	
+	}		
 }
 
 #logo-legal{ 
@@ -922,6 +922,8 @@ table {
 	/* Force Hardware Acceleration in WebKit */
 	//@include transform(translateZ(0));
 	@include backface-visibility(hidden);
+	//position: relative;
+	
 
 	overflow: hidden;
 	max-width: $XL;
