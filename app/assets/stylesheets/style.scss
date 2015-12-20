@@ -111,6 +111,11 @@ html, body {
 	width: 100%;
 	margin: 0 auto;
 	position: realtive;
+	@include transition(transform $animation-duration);
+	@include clearfix;
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
 
 	@include MQ(M) {
 		width: 90%;
