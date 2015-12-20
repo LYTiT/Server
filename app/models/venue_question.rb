@@ -22,6 +22,8 @@ class VenueQuestion < ActiveRecord::Base
 		    :type => 'question_notification', 
 		    :question => question,
 		    :venue_id => venue_id,
+		    :latitude => venue.latitude,
+		    :longitude => venue.longitude,
 		    :venue_name => venue.name,
 		    :user_id => user_id,
 		    :user_name => user.try(:name),
