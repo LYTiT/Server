@@ -6,12 +6,12 @@ class VenueQuestionComment < ActiveRecord::Base
 	def self.new_comment(v_q_id, comment, v_id, u_id, comment_user_on_location)
 		new_venue_question_message = VenueQuestionComment.create!(:venue_question_id => v_q_id, :user_id => u_id, :comment => comment, :from_location => comment_user_on_location)
 		new_venue_question_message.venue_question.increment(:num_comments, 1)
-		new_venue_question_message.new_question_message_notification
+		new_venue_question_message.new_question_comment_notification
 	end
 	
-	def new_question_message_notification
+	def new_question_comment_notification
 		question_participant_ids = "SELECT user_id FROM venue_question_comments WHERE venue_question_id = #{self.venue_question_id}"
-		question_participants = User.where("id IN (#{question_participant_ids})")
+		question_participants = User.where("id IN (#{question_participant_ids}) OR id = ?", self.venue_question.user_id)
 
 		for question_participant in question_participants
 			if question_participant.id != self.user_id
@@ -21,7 +21,7 @@ class VenueQuestionComment < ActiveRecord::Base
 
 	end
 
-	def send_new_question_message_notification(question_participant)
+	def send_new_question_comment_notification(question_participant)
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => venue_question_id,
