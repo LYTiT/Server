@@ -84,28 +84,6 @@ html, body {
 	height: 100%;
 }
 
-.cd-header {
-	height: 80px;
-	width: 90%;
-	margin: 0 auto;
-	@include transition(transform $animation-duration);
-	@include clearfix;
-	/* Force Hardware Acceleration in WebKit */
-	@include transform(translateZ(0));
-	@include backface-visibility(hidden);
-
-	&.nav-is-visible {
-		@include transform(translateY($nav-height-S));
-	}
-
-	@include MQ(M) {
-
-		&.nav-is-visible {
-			@include transform(translateY($nav-height-M));
-		}
-	}
-}
-
 .cd-header-home {
 	height: 80px;
 	width: 100%;
@@ -278,11 +256,13 @@ html, body {
 		}
 	}
 }
+
 #legal-page-trigger {
 	@include MQ(M) {
 		margin-right: 5%;
 	}
 }
+
 .cd-3d-nav-container {
 	/* this is the 3D navigation container */
 	position: fixed;
@@ -669,6 +649,11 @@ table {
 		width: 60px;
 		margin-left: 70px;
 	}
+
+	&:hover {
+		opacity: 0.8;
+		filter: alpha(opacity=80); /* For IE8 and earlier */
+	}
 }
 
 .app-badge {	
@@ -768,7 +753,7 @@ table {
 		width: 100%;
 		height: 70px;
 		@include MQ(M) {
-			height: 80px;
+			height: 70px;
 		}
 	}
 }
@@ -813,9 +798,11 @@ table {
 
 }
 
-/* --------------------------------------------------------------------------------------------------------- */
-//STYLES FOR FEATURES 
+/* -------------------------------- 
 
+Features style
+
+-------------------------------- */
 
 .btn {
 	display: inline-block;
@@ -847,78 +834,6 @@ table {
 		margin-bottom: 0;
 		@include font-size(20px);
 		letter-spacing: 2px;
-	}
-}
-
-.cd-header-features {
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 3;
-	width: 100%;
-	height: $header-height-S;
-	@include clearfix;
-	background-color: darken($color-1, 10%);
-	overflow: hidden;
-
-	/* Force Hardware Acceleration in WebKit */
-	@include transform(translateZ(0));
-	-webkit-backface-visibility: hidden;
-	backface-visibility: hidden;
-
-	@include transform(translateY(-100%));
-	@include transition(transform .3s);
-
-	#cd-logo {
-		float: left;
-		margin: 18px 0 0 5%;
-
-		img {
-			display: block;
-			width: 60px;
-			height: 18px;
-		}
-	}
-
-	#cd-action {
-		display: inline-block;
-		float: right;
-		margin: 10px 5% 0 0;
-	}
-
-	.btn {
-		height: 30px;
-		line-height: 30px;
-		padding: 0 2em;
-	}
-
-	&.slide-down {
-		@include transform(translateY(0));
-	}
-
-	@include MQ(L) {
-		height: $header-height-L;
-		background-color: transparent;
-
-		#cd-logo {
-			margin-top: 32px;
-			@include font-size(28px);
-
-			img {
-				width: 80px;
-				height: 25px;
-			}
-		}
-
-		#cd-action {
-			margin: 20px 5% 0 0;
-		}
-
-
-		.btn {
-			height: 50px;
-			line-height: 50px;
-		}
 	}
 }
 
@@ -1432,7 +1347,12 @@ table {
 	display: none;
 }
 
-//FOOTER
+/* -------------------------------- 
+
+
+Footer style
+
+-------------------------------- */
 .footer-basic-centered{
 
 	box-sizing: border-box;
@@ -1477,9 +1397,13 @@ table {
 	display:inline-block;
 	text-decoration: none;
 	color: inherit;
+
+	&:hover {
+		opacity: 0.8;
+		filter: alpha(opacity=80); /* For IE8 and earlier */
+	}
 }
 
-/* If you don't want the footer to be responsive, remove these media queries */
 
 @media (max-width: 667px) {
 
@@ -1512,8 +1436,16 @@ table {
 	}
 }
 
+br {
+	line-height: 60px;
+}
 
-//LOGIN
+/* -------------------------------- 
+
+Login style
+
+-------------------------------- */
+
 .login-block {
 	padding-top: 20vh;
 }
