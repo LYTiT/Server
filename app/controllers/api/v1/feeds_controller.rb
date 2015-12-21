@@ -65,7 +65,7 @@ class Api::V1::FeedsController < ApiBaseController
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
 		if feed_user.save
 			feed.increment!(:num_users, 1)
-			user.increment!(:num_lists, 1)	
+			feed_user.user.increment!(:num_lists, 1)	
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not join List'] } }, status: :unprocessable_entity
