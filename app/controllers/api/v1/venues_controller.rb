@@ -398,12 +398,12 @@ class Api::V1::VenuesController < ApiBaseController
 				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			end
 		end
-		@questions = @venue.venue_questions.includes(:user).order("ID DESC")
+		@questions = @venue.venue_questions.where("created_at > ?", Time.now-1.day).includes(:user).order("ID DESC").page(params[:page]).per(15)
 	end
 
 	def get_question_comments
 		venue_question = VenueQuestion.find_by_id(params[:venue_question_id])
-		@question_comments = venue_question.venue_question_comments.order("ID DESC")
+		@question_comments = venue_question.venue_question_comments.order("ID DESC").page(params[:page]).per(15)
 	end
 
 	def post_new_question
