@@ -164,7 +164,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def register_push_token
-		#User.where(push_token: params[:push_token]).update_all(push_token: nil)
+		User.where(push_token: params[:push_token]).update_all(push_token: nil)
 		@user.update_columns(push_token: params[:push_token])
 		render 'created.json.jbuilder'
 	end
