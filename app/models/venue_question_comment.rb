@@ -15,7 +15,7 @@ class VenueQuestionComment < ActiveRecord::Base
 
 		for question_participant in question_participants
 			if question_participant.id != self.user_id
-				self.send_new_question_message_notification(question_participant)
+				self.send_new_question_comment_notification(question_participant)
 			end
 		end
 
