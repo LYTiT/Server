@@ -1541,7 +1541,8 @@ CREATE TABLE users (
     country_code character varying(255),
     phone_number character varying(255),
     num_likes integer DEFAULT 0,
-    active boolean DEFAULT true
+    active boolean DEFAULT true,
+    num_lists integer DEFAULT 0
 );
 
 
@@ -3955,4 +3956,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151207034249');
 INSERT INTO schema_migrations (version) VALUES ('20151207040001');
 
 INSERT INTO schema_migrations (version) VALUES ('20151207041408');
+
+INSERT INTO schema_migrations (version) VALUES ('20151221004602');
 
