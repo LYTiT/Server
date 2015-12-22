@@ -3,68 +3,54 @@
 <% end %>
 
 <div class="home-container">
-      <header class="cd-header-home">
-        <a href="/"><img id="logo" src="/assets/lytit-logotype.svg" style="width: 130px;" alt="Logo"></a>
-        <a href="#0" class="cd-3d-nav-trigger-home">
-          Menu
-          <span></span>
-        </a>
-      </header> <!-- .cd-header -->
-    
-      <div class="home-content">
-        <h1>ENLYTEN YOURSELF</h1>
-        <h2>LYTiT <span style="font-style: italic">(light·it)</span> is a live connection to your favorite places and a social way to discover new ones.</h2>
-        <!-- all your content here -->
-      </div>
-
-      <table>
-        <tr>
-          <td class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></td>
-          <td class="app-badge"><%=  image_tag("/assets/app-store-badge-coming-soon.svg", :width => 178) %></td>
-        </tr>
-      </table>  
-
-      <footer class="footer-basic-centered">
-        <p class="footer-links">
-          <a><%= link_to "Privacy", privacy_path %></a>
-          ·
-          <a><%= link_to "Terms", tnc_path %></a>
-          ·
-          <a href="mailto:support@lytit.com">Support</a>
-          ·
-          <a href="mailto:lux@lytit.com">Contact</a>
-        </p>
-        <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
-      </footer>
-
-</div>    
-    
-    <nav class="cd-3d-nav-container">
-      <ul class="cd-3d-nav">
-        <li class="cd-selected"><%= link_to "Home", root_path %></li>
-
-        <!--<li>
-          <a href="#0">Features</a>
-        </li>-->
-        <li class="<%= yield(:features) %>"><%= link_to "Features", features_path %></li>
-
-        <li>
-          <a href="mailto:lux@lytit.com">Contact</a>
-        </li>
-
-        <li>
-          <a href="http://blog.lytit.com">Blog</a>
-        </li>
-
-        <li>
-          <a href="https://www.facebook.com/lytitapp">Facebook</a>
-        </li>
-
-        <li>
-          <a href="https://twitter.com/lytitapp">Twitter</a>
-        </li>
-      </ul> <!-- .cd-3d-nav -->
-
-      <span class="cd-marker color-1"></span> 
-    </nav> <!-- .cd-3d-nav-container -->  
-
+  <header class="cd-header-home">
+    <a href="/"><img id="logo" src="/assets/lytit-logotype.svg" style="width: 130px;" alt="Logo"></a>
+    <a href="#0" class="cd-3d-nav-trigger-home">
+    Menu
+    <span></span>
+    </a>
+  </header>
+  <div class="home-content">
+    <h1>ENLYTEN YOURSELF</h1>
+    <h2>LYTiT <span style="font-style: italic">(light·it)</span> is a live connection to your favorite places and a social way to discover new ones.</h2>
+  </div>
+  <table>
+    <tr>
+      <td class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></td>
+      <td class="app-badge"><%=  image_tag("/assets/app-store-badge-coming-soon.svg", :width => 178) %></td>
+    </tr>
+  </table>
+  <footer class="footer-basic-centered">
+    <p class="footer-links">
+      <a><%= link_to "Privacy", privacy_path %></a>
+      ·
+      <a><%= link_to "Terms", tnc_path %></a>
+      ·
+      <a href="mailto:support@lytit.com">Support</a>
+      ·
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </p>
+    <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+  </footer>
+</div>
+<nav class="cd-3d-nav-container">
+  <ul class="cd-3d-nav">
+    <li class="cd-selected"><%= link_to "Home", root_path %></li>
+    <li class="<%= yield(:features) %>"><%= link_to "Features", features_path %></li>
+    <li>
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </li>
+    <li>
+      <a href="http://blog.lytit.com">Blog</a>
+    </li>
+    <li>
+      <a href="https://www.facebook.com/lytitapp">Facebook</a>
+    </li>
+    <li>
+      <a href="https://twitter.com/lytitapp">Twitter</a>
+    </li>
+  </ul>
+  <!-- .cd-3d-nav -->
+  <span class="cd-marker color-1"></span> 
+</nav>
+<!-- .cd-3d-nav-container -->

@@ -1062,6 +1062,12 @@ Features style
 		&.right-floater {			
 			background: #08224a;
 			border-top: transparent;
+			h2 {
+				color: #d6eaff;
+			}
+			p {
+				color: #abc8f6;
+			}
 		}
 
 	}
@@ -1098,6 +1104,12 @@ Features style
 
 		&.right-floater {			
 			background: transparent;
+			h2{ 
+				color: white;
+			}
+			p {
+				color: white;
+			}
 		}
 		
 		&.left-floater {
