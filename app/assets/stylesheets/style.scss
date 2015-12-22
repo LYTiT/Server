@@ -1357,7 +1357,7 @@ Footer style
 .footer-basic-centered{
 
 	box-sizing: border-box;
-	position: fixed;
+	position: absolute;
 	width: 100%;
 	text-align: center;
 	font-family: $primary-font;
@@ -1430,17 +1430,17 @@ Footer style
 	}
 }
 
-.features-footer {
-	position: relative;
-	@include MQ(L) {
-		display: none;
-	}
-}
-
 #hyperlink {
 	color: #00ccff;	
 	.no-touch &:hover {
 		color: lighten(#00ccff, 20%);
+	}
+}
+
+.features-footer {
+	position: relative;
+	@include MQ(L) {
+		display: none;
 	}
 }
 
