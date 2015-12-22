@@ -1048,7 +1048,7 @@ html, body {
 
 /* line 436, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-blue {
-  background-color: #1556bb;
+  background-color: #16559a;
 }
 @media only screen and (min-width: 768px) {
   /* line 438, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
@@ -1058,15 +1058,15 @@ html, body {
 }
 /* line 442, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .cd-blue a:hover {
-  background-color: #124ca4;
+  background-color: #134983;
 }
 /* line 447, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-blue .cd-selected a {
-  background-color: #10418d;
+  background-color: #103d6d;
 }
 /* line 450, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .cd-blue .cd-selected a:hover {
-  background-color: #10418d;
+  background-color: #103d6d;
 }
 /* line 457, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-blue li:first-of-type a::before {
@@ -1543,7 +1543,7 @@ Features style
 }
 /* line 829, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .btn.salmon:hover {
-  background-color: #6299ee;
+  background-color: #4b95e5;
 }
 @media only screen and (min-width: 1048px) {
   /* line 807, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
@@ -1802,21 +1802,23 @@ Features style
   margin-bottom: 15px;
   font-size: 2.7rem;
   font-weight: 100;
+  color: #dfeafc;
 }
-/* line 1044, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1045, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-single-item p {
   padding: 10px 0 50px;
   font-size: 1.8rem;
   font-weight: 100;
   line-height: 1.2;
+  color: #b1cdf6;
 }
 @media only screen and (min-width: 100px) {
-  /* line 1054, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1057, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: #1d6ec6;
     border-top: transparent;
   }
-  /* line 1059, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1062, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: #08224a;
     border-top: transparent;
@@ -1839,13 +1841,13 @@ Features style
     content: "";
     display: table;
   }
-  /* line 1075, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1078, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 50%;
     float: left;
     margin-top: 180px;
   }
-  /* line 1080, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1083, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-caption {
     float: right;
   }
@@ -1866,34 +1868,36 @@ Features style
     padding: 0;
     visibility: visible;
   }
-  /* line 1095, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1099, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: transparent;
   }
-  /* line 1099, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1103, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: transparent;
   }
-  /* line 1103, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1107, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-not-visible {
     /*need to create a specific class to change visibility value due to a Firefox bug*/
     /*CSS transition/animation fails when parent element changes visibility attribute*/
     visibility: hidden;
   }
-  /* line 1109, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1113, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item h2 {
     font-size: 3.7rem;
     font-weight: 100;
+    color: white;
   }
-  /* line 1116, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1121, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item p {
     font-size: 2.0rem;
     font-weight: 100;
+    color: white;
     line-height: 25px;
     padding: 10px 0 44px;
     margin: 0;
   }
-  /* line 1126, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1132, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 60%;
     float: right;
@@ -1908,11 +1912,11 @@ Features style
     -moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
     transition: transform 0.3s, opacity 0.3s;
   }
-  /* line 1138, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1144, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-single-item.cd-active .cd-caption {
     opacity: 1;
   }
-  /* line 1142, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1148, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-move-right .cd-caption {
     -webkit-transform: translateX(100px);
     -moz-transform: translateX(100px);
@@ -1922,37 +1926,37 @@ Features style
   }
 }
 
-/* line 1148, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-image-container {
   /*wrapper for image (and video - desktop only)*/
   max-width: 226px;
   margin: 0 auto;
   padding-top: 50px;
 }
-/* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1160, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-image-container > div {
   position: relative;
 }
-/* line 1158, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1164, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-image-container img {
   display: block;
 }
-/* line 1162, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1168, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-image-container video {
   display: none;
 }
 @media only screen and (min-width: 768px) {
-  /* line 1148, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-image-container {
     float: right;
   }
-  /* line 1169, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1175, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-image-container {
     float: left;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1148, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-image-container {
     height: 402px;
     width: 35%;
@@ -1960,13 +1964,13 @@ Features style
     max-width: none;
     padding-top: 0;
   }
-  /* line 1180, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1186, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-image-container > div {
     display: inline-block;
     max-width: 100%;
     max-height: 100%;
   }
-  /* line 1186, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1192, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-image-container img {
     height: 402px;
     -webkit-transition: -webkit-transform 0.3s;
@@ -1978,7 +1982,7 @@ Features style
     -o-transform: translateZ(0);
     transform: translateZ(0);
   }
-  /* line 1192, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1198, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-image-container video {
     /*not inserted in html - will be loaded through jQuery*/
     display: block;
@@ -2003,7 +2007,7 @@ Features style
     -o-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
     transform: translateX(-50%) translateY(-50%) rotate(-90deg);
   }
-  /* line 1207, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1213, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container img {
     -webkit-transform: translateX(100%);
     -moz-transform: translateX(100%);
@@ -2011,7 +2015,7 @@ Features style
     -o-transform: translateX(100%);
     transform: translateX(100%);
   }
-  /* line 1211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container video {
     -webkit-transform: translateX(50%) translateY(-50%) rotate(-90deg);
     -moz-transform: translateX(50%) translateY(-50%) rotate(-90deg);
@@ -2021,7 +2025,7 @@ Features style
   }
 }
 
-/* line 1218, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1224, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-phone-frame {
   /* Phone in CSS */
   -webkit-box-sizing: content-box;
@@ -2031,6 +2035,7 @@ Features style
   top: -45px;
   left: -10px;
   width: 100%;
+  min-width: 226px;
   height: 100%;
   border-color: #ebebeb;
   border-style: solid;
@@ -2039,7 +2044,7 @@ Features style
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 1232, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1239, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after, .cd-phone-frame::before {
   /*these are the iPhone circle elements*/
   position: absolute;
@@ -2055,20 +2060,20 @@ Features style
   background-color: #d9d9d9;
   border-radius: 50%;
 }
-/* line 1242, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1249, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-phone-frame::before {
   height: 11px;
   width: 11px;
   top: -28px;
 }
-/* line 1248, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1255, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after {
   height: 31px;
   width: 31px;
   bottom: -38px;
 }
 
-/* line 1255, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1262, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-image-wrapper {
   position: relative;
   overflow: hidden;
@@ -2077,7 +2082,7 @@ Features style
   max-width: 226px;
 }
 
-/* line 1263, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1270, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-slider-nav {
   /* product discover slider navigation */
   display: none;
@@ -2094,7 +2099,7 @@ Features style
   content: "";
   display: table;
 }
-/* line 1274, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1281, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-slider-nav a {
   position: relative;
   display: block;
@@ -2109,11 +2114,11 @@ Features style
   border-top: 1px solid white;
   border-right: 1px solid white;
 }
-/* line 1287, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1294, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover {
   background: rgba(255, 255, 255, 0.55);
 }
-/* line 1291, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1298, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-slider-nav a::before {
   /*this is the background arrow - we have been used a before element to change the opacity on hover*/
   position: absolute;
@@ -2135,11 +2140,11 @@ Features style
   -moz-transition: opacity 0.2s;
   transition: opacity 0.2s;
 }
-/* line 1303, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1310, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover::before {
   opacity: 1;
 }
-/* line 1312, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1319, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-slider-nav .cd-next::before {
   -webkit-transform: translateX(-50%) translateY(-50%) rotate(180deg);
   -moz-transform: translateX(-50%) translateY(-50%) rotate(180deg);
@@ -2148,11 +2153,11 @@ Features style
   transform: translateX(-50%) translateY(-50%) rotate(180deg);
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1263, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1270, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-slider-nav {
     display: block;
   }
-  /* line 1319, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1326, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-slider-nav a {
     visibility: hidden;
     opacity: 0;
@@ -2160,7 +2165,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
   }
-  /* line 1325, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1332, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a {
     visibility: visible;
     opacity: 1;
@@ -2168,7 +2173,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
   }
-  /* line 1330, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1337, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a.cd-inactive {
     visibility: hidden;
     opacity: 0;
@@ -2178,7 +2183,7 @@ Features style
   }
 }
 
-/* line 1339, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1346, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .cd-loader {
   /*top loading bar*/
   position: fixed;
@@ -2196,7 +2201,7 @@ Features style
 Footer style
 
 -------------------------------- */
-/* line 1356, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1363, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered {
   box-sizing: border-box;
   position: absolute;
@@ -2210,26 +2215,26 @@ Footer style
   color: white;
 }
 
-/* line 1371, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1378, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .legal-footer {
   margin-top: 200px;
   color: #8f96a3;
 }
 
-/* line 1376, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1383, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-motto {
   color: #8d9093;
   font-size: 24px;
   margin: 0;
 }
 
-/* line 1382, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1389, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-name {
   font-size: 14px;
   margin: 0;
 }
 
-/* line 1388, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1395, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links {
   list-style: none;
   font-weight: bold;
@@ -2237,13 +2242,13 @@ Footer style
   margin: 0;
 }
 
-/* line 1396, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1403, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a {
   display: inline-block;
   text-decoration: none;
   color: inherit;
 }
-/* line 1401, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1408, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
@@ -2251,44 +2256,52 @@ Footer style
 }
 
 @media (max-width: 667px) {
-  /* line 1410, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1417, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .footer-basic-centered {
     padding: 15px;
   }
 
-  /* line 1414, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1421, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-motto {
     font-size: 18px;
   }
 
-  /* line 1418, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1425, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-name {
     font-size: 12px;
   }
 
-  /* line 1422, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1429, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links {
     font-size: 14px;
     padding: 25px 0 10px;
   }
 
-  /* line 1427, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  /* line 1434, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links a {
     line-height: 1.8;
   }
 }
-/* line 1432, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1439, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+.features-footer {
+  position: relative;
+  padding-top: 0px;
+  background: #1d6ec6;
+}
+@media only screen and (min-width: 1048px) {
+  /* line 1439, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+  .features-footer {
+    display: none;
+  }
+}
+
+/* line 1448, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 #hyperlink {
   color: #00ccff;
 }
-/* line 1434, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1450, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch #hyperlink:hover {
   color: #66e0ff;
-}
-
-/* line 1439, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
-br {
-  line-height: 60px;
 }
 
 /* -------------------------------- 
@@ -2296,19 +2309,19 @@ br {
 Login style
 
 -------------------------------- */
-/* line 1449, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1462, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login-block {
   padding-top: 20vh;
 }
 
-/* line 1453, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1466, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login {
   padding-left: 20%;
   padding-right: 20%;
   text-align: center;
   font-size: 16px;
 }
-/* line 1458, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1471, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login input[type=text], .login input[type=password], .login input[type=email] {
   font-size: 16px;
   height: 40px;
@@ -2321,35 +2334,35 @@ Login style
   text-align: center;
   margin-top: 25px;
 }
-/* line 1469, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1482, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login input[type=text]:focus, .login input[type=password]:focus, .login input[type=email]:focus {
   box-shadow: none;
 }
-/* line 1474, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1487, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login.before .sign_in_button {
   margin-top: 60px;
 }
-/* line 1479, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1492, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button {
   margin-top: 30px;
 }
-/* line 1481, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1494, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input {
   background-color: transparent;
   border: none;
 }
-/* line 1485, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1498, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input:hover {
   color: #00CCFF;
 }
-/* line 1490, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1503, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login .alert-danger {
   background-color: transparent;
   border: none;
   color: #A94442;
 }
 
-/* line 1497, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
+/* line 1510, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .login2 {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

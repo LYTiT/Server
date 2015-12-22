@@ -1039,6 +1039,7 @@ Features style
 			size: 2.7rem;
 			weight: 100;
 		}
+		color: #dfeafc;
 	} 
 
 	p {
@@ -1048,7 +1049,9 @@ Features style
 			weight: 100;
 		}
 		line-height: 1.2;
+		color: #b1cdf6;
 	}
+
 
 	@include MQ(XS) {
 		&.left-floater {
@@ -1082,6 +1085,7 @@ Features style
 		}
 	}
 
+
 	@include MQ(L) {
 		position: absolute;
 		top: 50%;
@@ -1111,6 +1115,7 @@ Features style
 				size: 3.7rem;
 				weight: 100;
 			}
+			color: white;
 		}
 
 		p {
@@ -1118,6 +1123,7 @@ Features style
 				size: 2.0rem;
 				weight: 100;
 			}
+			color: white;
 			line-height: 25px;
 			padding: 10px 0 44px;
 			margin: 0;
@@ -1430,20 +1436,21 @@ Footer style
 	}
 }
 
+.features-footer {
+	position: relative;
+	padding-top: 0px;
+	@include MQ(L) {
+		display: none;
+	}
+	background: #1d6ec6;
+}
+
 #hyperlink {
 	color: #00ccff;	
 	.no-touch &:hover {
 		color: lighten(#00ccff, 20%);
 	}
 }
-
-.features-footer {
-	position: relative;
-	@include MQ(L) {
-		display: none;
-	}
-}
-
 
 
 /* -------------------------------- 
