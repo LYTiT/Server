@@ -5,23 +5,23 @@
 	 viewBox="0 0 32 64" enable-background="new 0 0 32 64" width="32px" height="64px" xml:space="preserve">
 <g>
 	<g>
-		<path fill="none" stroke="#1D6CE6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M48.7,129.1
+		<path fill="none" stroke="#1d6ec6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" d="M48.7,129.1
 			c0,0.3-0.2,0.5-0.5,0.5h-29c-0.3,0-0.5-0.2-0.5-0.5v-19c0-0.3,0.2-0.5,0.5-0.5h29c0.3,0,0.5,0.2,0.5,0.5V129.1z"/>
 	</g>
 	<g>
 		
-			<line fill="none" stroke="#1D6CE6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="18.7" y1="109.7" x2="33.7" y2="122.9"/>
+			<line fill="none" stroke="#1d6ec6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="18.7" y1="109.7" x2="33.7" y2="122.9"/>
 		
-			<line fill="none" stroke="#1D6CE6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="33.7" y1="122.9" x2="48.7" y2="109.7"/>
+			<line fill="none" stroke="#1d6ec6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="33.7" y1="122.9" x2="48.7" y2="109.7"/>
 	</g>
 	
-		<line fill="none" stroke="#1D6CE6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="18.7" y1="129.6" x2="28.7" y2="118.6"/>
+		<line fill="none" stroke="#1d6ec6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="18.7" y1="129.6" x2="28.7" y2="118.6"/>
 	
-		<line fill="none" stroke="#1D6CE6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="38.7" y1="118.6" x2="48.7" y2="129.6"/>
+		<line fill="none" stroke="#1d6ec6" stroke-width="2" stroke-linecap="round" stroke-miterlimit="10" x1="38.7" y1="118.6" x2="48.7" y2="129.6"/>
 </g>
 <g>
 	<g>
-		<path fill="#1D6CE6" d="M98.6,130.2c0,0.3-0.2,0.5-0.5,0.5h-26c-0.3,0-0.5-0.2-0.5-0.5v-26c0-0.3,0.2-0.5,0.5-0.5h26
+		<path fill="#1d6ec6" d="M98.6,130.2c0,0.3-0.2,0.5-0.5,0.5h-26c-0.3,0-0.5-0.2-0.5-0.5v-26c0-0.3,0.2-0.5,0.5-0.5h26
 			c0.3,0,0.5,0.2,0.5,0.5V130.2z"/>
 	</g>
 	<path fill="#5D5D5D" d="M94.9,112.2c0,0.2,0,0.4,0,0.7c0,6.7-5.1,14.3-14.3,14.3c-2.8,0-5.5-0.8-7.7-2.3c0.4,0,0.8,0.1,1.2,0.1
@@ -32,7 +32,7 @@
 </g>
 <g>
 	<g>
-		<path fill="#1D6CE6" d="M138.3,130.2c0,0.3-0.2,0.5-0.5,0.5h-26c-0.3,0-0.5-0.2-0.5-0.5v-26c0-0.3,0.2-0.5,0.5-0.5h26
+		<path fill="#1d6ec6" d="M138.3,130.2c0,0.3-0.2,0.5-0.5,0.5h-26c-0.3,0-0.5-0.2-0.5-0.5v-26c0-0.3,0.2-0.5,0.5-0.5h26
 			c0.3,0,0.5,0.2,0.5,0.5V130.2z"/>
 	</g>
 	<path fill="#5D5D5D" d="M130.1,117.2h-3.4c0,5.5,0,12.3,0,12.3h-5.1c0,0,0-6.7,0-12.3h-2.4v-4.3h2.4v-2.8c0-2,1-5.2,5.1-5.2h3.8

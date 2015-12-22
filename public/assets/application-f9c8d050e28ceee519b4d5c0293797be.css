@@ -590,7 +590,7 @@ body {
 
 /* line 68, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 a {
-  color: #1d6ce6;
+  color: #1d6ec6;
   text-decoration: none;
 }
 
@@ -1176,8 +1176,8 @@ html, body {
 
 /* line 536, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .color-2 {
-  color: #1d6ce6;
-  background-color: #1d6ce6;
+  color: #1d6ec6;
+  background-color: #1d6ec6;
 }
 
 /* line 540, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
@@ -1469,7 +1469,7 @@ table {
 }
 /* line 761, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .legal-container .legal {
-  background: #1d6ce6;
+  background: #1d6ec6;
   width: 100%;
   height: 70px;
 }
@@ -1554,7 +1554,7 @@ table {
 /* line 832, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .btn.salmon {
   color: white;
-  background-color: #1d6ce6;
+  background-color: #1d6ec6;
 }
 /* line 837, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
 .no-touch .btn.salmon:hover {
@@ -1920,7 +1920,7 @@ table {
 @media only screen and (min-width: 100px) {
   /* line 1134, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
-    background: #1d6ce6;
+    background: #1d6ec6;
     border-top: transparent;
   }
   /* line 1139, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Website3D/app/assets/stylesheets/style.scss */
@@ -2293,7 +2293,7 @@ table {
   left: 0;
   height: 3px;
   width: 0;
-  background-color: #1d6ce6;
+  background-color: #1d6ec6;
   display: none;
 }
 
@@ -2439,5 +2439,5 @@ table {
 .login2 {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #1d6ce6;
+  background: #1d6ec6;
 }
