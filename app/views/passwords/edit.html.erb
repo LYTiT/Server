@@ -1,9 +1,16 @@
-<div class="container-fluid splash_login">
-  <div class="row">
-    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
-    <div class="col-xs-10 col-sm-6 col-lg-6">
-      <%= image_tag "lytit_icon.png", class: "center-block"  %>
-      <div class="center-block">
+<% content_for :body do %>
+  <body id='home'>
+<% end %>
+
+<div class="home-container login2">
+      <header class="cd-header-home">
+        <a id="logo" href="/"><img id="logo" src="/assets/lytit-logotype.svg" width="130" height="auto" alt="Logo"></a>
+        <a href="#0" class="cd-3d-nav-trigger-home">
+          Menu
+          <span></span>
+        </a>
+      </header> <!-- .cd-header -->
+
         <div class="tnc">
           <p><b><%= t '.title' %></b></p>
           <p>Please enter your new password below</p>
@@ -17,8 +24,45 @@
             <%= form.submit value: "Save this password" %>
           </div>
         <% end %>
-      </div>
-    </div>
-    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
-  </div>
+
+     <footer class="footer-basic-centered">
+        <p class="footer-links">
+          <a><%= link_to "Privacy", privacy_path %></a>
+          ·
+          <a><%= link_to "Terms", tnc_path %></a>
+          ·
+          <a href="mailto:support@lytit.com">Support</a>
+          ·
+          <a href="mailto:lux@lytit.com">Contact</a>
+        </p>
+        <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+      </footer>
+
 </div>
+
+<nav class="cd-3d-nav-container">
+  <ul class="cd-3d-nav cd-blue">
+    <li><%= link_to "Home", root_path %></li>
+
+    <!--<li>
+      <a href="#0">Features</a>
+    </li>-->
+    <li class="<%= yield(:features) %>"><%= link_to "Features", features_path %></li>
+
+    <li>
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </li>
+
+    <li>
+      <a href="http://blog.lytit.com">Blog</a>
+    </li>
+
+    <li>
+      <a href="http://www.facebook.com/lytitapp">Facebook</a>
+    </li>
+
+    <li>
+      <a href="https://twitter.com/lytitapp">Twitter</a>
+    </li>
+  </ul> <!-- .cd-3d-nav -->
+</nav> <!-- .cd-3d-nav-container -->  

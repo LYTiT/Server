@@ -1,19 +1,26 @@
 <!DOCTYPE html>
 <html>
-<head lang="en" data-placeholder-focus="false">
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="apple-itunes-app" content="app-id=990171203">
+<head>
+  <title>LYTiT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
+  <!--<%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>-->
   <%= favicon_link_tag "favicon.ico"%>
   <title>LYTiT<%=yield(:title) %> </title>
-  <%= stylesheet_link_tag :application, :media => 'all' %>
   <%= csrf_meta_tags %>
+  <script>
+  //Analytics
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-71266473-1', 'auto');
+    ga('send', 'pageview');
+  </script>
 </head>
-<body>
-  <div class ="lytit <=% controller.controller_name %>">
-    <%= yield %>
-  </div>
-  <%= render 'layouts/contact_us' %>
-  <%= render 'javascript' %>
+<%= yield :body || "<body>" %>
+	<%= yield %>
+	<%= render 'javascript' %>
 </body>
 </html>

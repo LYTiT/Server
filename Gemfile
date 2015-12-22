@@ -2,7 +2,6 @@ source 'https://rubygems.org'
 
 ruby '2.2.2'
 
-gem 'bourbon'
 gem 'clearance'
 gem 'coffee-rails'
 gem 'delayed_job_active_record', '>= 4.0.0'
@@ -11,13 +10,11 @@ gem 'flutie'
 gem 'high_voltage'
 gem 'jbuilder'
 gem 'jquery-rails'
-gem 'neat'
 gem 'pg'
 gem 'rack-timeout'
 gem 'rails', '>= 4.0.0'
 gem 'rails_admin'
 gem 'recipient_interceptor'
-gem 'sass-rails', "~> 4.0.0"
 gem 'simple_form'
 gem 'title'
 gem 'uglifier'
@@ -30,7 +27,6 @@ gem 'higcm'
 gem 'rufus-scheduler'
 gem 'rubypython', "0.6.3"
 gem 'honeybadger'
-gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
 gem 'jquery-ui-rails', github: 'joliss/jquery-ui-rails', branch: 'rails-4.0.2'
 gem 'acts_as_singleton'
 gem "paperclip", "~> 4.1"
@@ -43,10 +39,10 @@ gem 'descriptive_statistics'
 gem 'geocoder'
 gem 'pr_geohash'
 gem 'timezone'
+gem 'typhoeus'
 gem 'tzinfo'
 gem 'skylight'
 gem 'heroku-deflater', :group => :production
-gem 'typhoeus'
 gem 'instagram'
 gem 'httparty'
 gem 'fuzzy-string-match'
@@ -59,6 +55,16 @@ gem 'twitter'
 gem 'kdtree'
 gem 'postgresql_cursor'
 gem 'pg_search', '= 1.0.3'
+
+# design
+gem 'sass-rails'
+gem 'bourbon'
+gem 'neat', '~> 1.7.2'
+gem 'font-awesome-rails'
+gem 'normalize-rails'
+gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
+gem 'topojson-rails'
+gem "d3-rails"
 
 group :development do
   gem 'better_errors'

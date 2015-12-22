@@ -1,26 +1,69 @@
-<div class="container-fluid splash_login">
-  <div class="row">
-    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
-    <div class="col-xs-10 col-sm-6 col-lg-6">
-      <%= image_tag "lytit_icon.png", class: "center-block"  %>
-      <div class="center-block">
+<% content_for :body do %>
+  <body id='home'>
+<% end %>
+
+<div class="home-container login2">
+      <header class="cd-header-home">
+        <a href="/"><img id="logo-legal" src="/assets/lytit-logotype.svg" style="width: 130px;" alt="Logo"></a>
+        <a href="#0" class="cd-3d-nav-trigger-home">
+          Menu
+          <span></span>
+        </a>
+      </header> <!-- .cd-header -->
+
+      <div class="login-block">
         <%= form_for :session, :url => session_path, :html => { :class => "#{flash[:notice].present? ? "" : "hide"} login after" } do |form| %>
           <% if flash[:notice].present? %>
             <div class="alert alert-danger"><%= flash[:notice] %></div>
           <% end %>
-          <%= form.text_field :email, type: "email", class: "form-control", placeholder: "Username"  %>
-          <%= form.password_field :password, class: "form-control", placeholder: "Password"  %>
+          <ul>
+            <li><%= form.text_field :email, type: "email", class: "form-control", placeholder: "Email Address"  %></li>
+            <li><%= form.password_field :password, class: "form-control", placeholder: "Password"  %></li>
+          </ul>
           <div class="sign_in_button">
             <%= form.submit %>
           </div>
         <% end %>
-        <div class="login before <%= flash[:notice].present? ? "hide" : "" %>">
-          <div class="sign_in_button">
-            <a href="#"><%= I18n.t('helpers.submit.session.submit')%></a>
-          </div>
-        </div>
+
       </div>
-    </div>
-    <div class="col-xs-1 col-sm-3 col-lg-3">&nbsp;</div>
-  </div>
+      <footer class="footer-basic-centered">
+        <p class="footer-links">
+          <a><%= link_to "Privacy", privacy_path %></a>
+          ·
+          <a><%= link_to "Terms", tnc_path %></a>
+          ·
+          <a href="mailto:support@lytit.com">Support</a>
+          ·
+          <a href="mailto:lux@lytit.com">Contact</a>
+        </p>
+        <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+      </footer>
+
 </div>
+
+<nav class="cd-3d-nav-container">
+  <ul class="cd-3d-nav cd-blue">
+    <li><%= link_to "Home", root_path %></li>
+
+    <!--<li>
+      <a href="#0">Features</a>
+    </li>-->
+    <li class="<%= yield(:features) %>"><%= link_to "Features", features_path %></li>
+
+    <li>
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </li>
+
+    <li>
+      <a href="http://blog.lytit.com">Blog</a>
+    </li>
+
+    <li>
+      <a href="http://www.facebook.com/lytitapp">Facebook</a>
+    </li>
+
+    <li>
+      <a href="https://twitter.com/lytitapp">Twitter</a>
+    </li>
+  </ul> <!-- .cd-3d-nav -->
+</nav> <!-- .cd-3d-nav-container -->  

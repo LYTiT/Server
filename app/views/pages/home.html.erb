@@ -1,135 +1,56 @@
-<%= favicon_link_tag "favicon.ico"%>
+<% content_for :body do %>
+  <body id='home'>
+<% end %>
 
-<div class="page-container">
-   <div class="header">
-         <div class = "header-top">
-            <div class="container">
-               <div class = "col-sm-7 col-sm-offset-5"> 
-                    <ul class="nav navbar-nav navbar-right">
-                     <li class="contact-us"><a href="#" data-toggle="modal" data-target="#contact_us_modal">CONTACT US</a></li>
-                     <li class="facebook" href="/"><%= link_to "f", "https://facebook.com/LYTiTApp" %></li>
-                     <li class="twitter" href="/"><%= link_to "l", "https://twitter.com/lytitapp" %></li>                     
-                  </ul>
-               </div><!--col-sm-7-->         
-         </div><!--header-top-->
-      </div><!--header-->
-      <div class="header-bottom">
-         <div class="container">
-               <div class="col-sm-10 col-sm-offset-1 text-center">
-                  <div id="logo"><img src="/assets/lytit-logotype.svg" width="350" height="auto" alt="Logo">
-                  </div>
-                  <p class="appStoreBtnBox"><%= image_tag "AppStoreDownloadClear.png"%></p>
-                  <!--<p class="appStoreBtnBox"><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8"><%= image_tag "AppStoreDownloadClear.png"%></a></p>-->
-                  <p id="comingSoon"> COMING SOON!</p>
-               </div><!--col-sm-10-->
-         </div><!--container-->
-      </div><!--header-bottom-->
-   </div>
-   
-   <!--OVERVIEW-->
-   <div id="content">
-      <div class="home-top text-center">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2">
-                  <h2>It's all about places</h2>
-                  <p>LYTiT gives you a live connection to the places you love while also helping you discover new ones in an exciting and social manner.</p>
-               </div><!--col-sm-10-->
-            </div><!--row-->
-         </div><!--container-->
-      </div><!--home-top-->
-
-      <!--FEATURES-->
-<!--      
-      <div class="feature-box invert-mobile">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <a name="lyt-map"><div class="feature-icon-2"><%= image_tag "LYTFlat.png"%></div></a>
-                  <h3>LYT MAP</h3>
-                  <p>A quick overview of a specific place or a wider area is provided by its lyt. The brighter it glows the greater the amount of recent activity at that location.</p>
-               </div>
-               <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="iphone-img"><%= image_tag "iPhone_LYTMap.png"%></p>
-               </div>
-            </div><!--row-->
-         </div><!--container-->
-      </div><!--feature-box-->
-<!--      
-      <div class="feature-box gray-bg">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="iphone-img"><%= image_tag "iPhone_VenuePage.png"%></p>
-               </div>
-               <div class="col-sm-6 col-md-4 leftPadding">
-                  <a name="venue-pages"><p class="feature-icon-3"><%= image_tag "VenuePage.png"%></p></a>
-                  <h3>VENUE PAGES</h3>
-                  <p>Searching for locations or tapping on lyts pulls up Venue Pages that house live  Moments. Upon zooming-out lyts group into clusters that can be selected to show content from multiples places in one feed.</p>
-                  <br>
-                  <p>All Moments on LYTiT clear after a day guaranteeing everything you come across is fresh.</p>
-               </div><!--col-sm-6-->
-            </div><!--row-->
-         </div><!--container-->
-      </div><!--feature-box-->
-<!--      
-      <div class="feature-box invert-mobile">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <a name="feeds"><p class="feature-icon-4"><%= image_tag "Feeds.png"%></p></a>
-                  <h3>FEEDS</h3>
-                  <p>Build a Feed of Moments from places that interest you. Add other people's Feeds to discover new and exciting locations.</p>
-               </div>
-               <div class="col-sm-6 col-md-4 leftPadding">
-                  <p class="iphone-img"><%= image_tag "iPhone_Feeds.png"%></p>
-               </div>
-            </div><!--row-->
-         </div><!--container-->
-      </div><!--feature-box-->
-<!--      
-      <div class="feature-box gray-bg">
-         <div class="container">
-            <div class="row">
-               <div class="col-sm-6 col-md-4 col-md-offset-2 rightPadding">
-                  <p class="iphone-img"><%= image_tag "iPhone_Moment.png"%></p>
-               </div>
-               <div class="col-sm-6 col-md-4 leftPadding">
-                  <a name="moment-mapping"><p class="feature-icon-3"><%= image_tag "MomentMapping.png"%></p></a>
-                  <h3>MOMENT MAPPING</h3>
-                  <p>Whenever you publicly geo-tag your social media activity you automatically contribute to the real-time picture on LYTiT. You can however capture Moments directly within the application.</p>
-                  <br>
-                  <p>There are no accounts or registrations so LYTiT Moments are completely anonymous.</p>
-               </div>
-            </div><!--row-->
-         </div><!--container-->
-      </div><!--feature-box-->
-
-      <!--MAP THE MOMENT CLOSING-->
-  <!--    
-      <div class="closing">
-            <div class="col-sm-10 col-sm-offset-1 text-center">
-               <!--<h1>Map the Moment</a></h1>-->
-               <!--<h1><a href="https://itunes.apple.com/us/app/lytit/id990171203?mt=8">Map the Moment</a></h1>
-            </div>
-      </div>
-   </div>-->
-
-   <!--FOOTER-->
-   <div class="footer-area">
-      <div class="container">
-         <div class="row">
-            <div class="col-sm-4">
-               <p class="copy-right">© 2015 LYTiT, INC.</p>
-            </div>
-            <div class="col-sm-8 footer-right">
-               <ul>
-                  <li><%= link_to "Terms & Conditions", tnc_path %></li>
-                  <li><%= link_to "Privacy", privacy_path %></li>
-                  <li><a href="mailto:support@lytit.com">Support</a></li>
-               </ul>
-            </div>
-         </div><!--row-->
-      </div><!--container-->
-   </div><!--footer-area-->
-</div><!--page-container-->
+<div class="home-container">
+  <header class="cd-header-home">
+    <a href="/"><img id="logo" src="/assets/lytit-logotype.svg" style="width: 130px;" alt="Logo"></a>
+    <a href="#0" class="cd-3d-nav-trigger-home">
+    Menu
+    <span></span>
+    </a>
+  </header>
+  <div class="home-content">
+    <h1>ENLYTEN YOURSELF</h1>
+    <h2>LYTiT <span style="font-style: italic">(light·it)</span> is a live connection to your favorite places and a social way to discover new ones.</h2>
+  </div>
+  <table>
+    <tr>
+      <td class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></td>
+      <td class="app-badge"><%=  image_tag("/assets/app-store-badge-coming-soon.svg", :width => 178) %></td>
+    </tr>
+  </table>
+  <footer class="footer-basic-centered">
+    <p class="footer-links">
+      <a><%= link_to "Privacy", privacy_path %></a>
+      ·
+      <a><%= link_to "Terms", tnc_path %></a>
+      ·
+      <a href="mailto:support@lytit.com">Support</a>
+      ·
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </p>
+    <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+  </footer>
+</div>
+<nav class="cd-3d-nav-container">
+  <ul class="cd-3d-nav">
+    <li class="cd-selected"><%= link_to "Home", root_path %></li>
+    <li class="<%= yield(:features) %>"><%= link_to "Features", features_path %></li>
+    <li>
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </li>
+    <li>
+      <a href="http://blog.lytit.com">Blog</a>
+    </li>
+    <li>
+      <a href="https://www.facebook.com/lytitapp">Facebook</a>
+    </li>
+    <li>
+      <a href="https://twitter.com/lytitapp">Twitter</a>
+    </li>
+  </ul>
+  <!-- .cd-3d-nav -->
+  <span class="cd-marker color-1"></span> 
+</nav>
+<!-- .cd-3d-nav-container -->

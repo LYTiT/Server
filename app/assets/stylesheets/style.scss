@@ -1,0 +1,1526 @@
+@font-face {
+    font-family: "Roboto";
+    src: url(/assets/roboto-regular.eot);
+    src: url(/assets/roboto-regular.ttf) format("truetype"), url(/assets/roboto-regular.eot?#iefix) format("embedded-opentype"), url(/assets/roboto-regular.woff) format("woff"), url(/assets/webfont.svg#svgroboto-regular) format("svg");
+}
+
+/* -------------------------------- 
+
+Primary style
+
+-------------------------------- */
+
+*, *::after, *::before {
+	@include box-sizing(border-box);
+}
+
+*::after, *::before {
+	content: '';
+}
+
+html, body {
+	height: 100%;
+}
+
+html {
+	font-size: 62.5%;
+	overflow: hidden;
+	-webkit-overflow-scrolling: touch;
+	font-smooth: always;
+}
+
+body {
+	font: {
+		size: 1.6rem;
+		family: $primary-font; // variables inside partials > _variables.scss
+	}
+	color: $color-1;
+	background-color: $body-bg;
+	overflow: hidden;
+
+	@include MQ(L) {
+		/* hide horizontal scroll bar in IE */
+		overflow-x: hidden;
+	}
+}
+
+#features {
+	background: $body-bg;
+	background-size: cover;
+	overflow: auto;
+
+	@include MQ(L) {
+		overflow: hidden;
+	}	
+
+}
+#home {
+	overflow: hidden;
+}
+
+#legal {
+	background: white;
+	color: black;
+	overflow: auto;
+	@include font-smoothing;
+}
+
+a {
+	color: $color-2;
+	text-decoration: none;
+}
+
+img {
+	max-width: 100%;
+}
+/* -------------------------------- 
+
+Main Components 
+
+-------------------------------- */
+
+html, body {
+	/* important for .cd-main-content 100% height to work */
+	height: 100%;
+}
+
+.cd-header-home {
+	height: 80px;
+	width: 100%;
+	margin: 0 auto;
+	position: realtive;
+	@include transition(transform $animation-duration);
+	@include clearfix;
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	@include MQ(M) {
+		width: 90%;
+	}
+
+}
+
+#logo {
+	@include MQ(M) {
+		width: 150px;
+	}		
+}
+
+#logo-legal{ 
+	@include MQ(M) {
+		margin-left: 5%;
+		width: 150px;
+	}
+}
+
+.cd-3d-nav-trigger {
+	position: relative;
+	float: right;
+	height: 45px;
+	width: 45px;
+	margin-top: 18px;
+
+	/* replace text with background image */
+	overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
+	color: transparent;
+
+	span, 
+	span::before, 
+	span::after {
+		/* hamburger icon in CSS */
+		position: absolute;
+		width: 28px;
+		height: 3px;
+		background-color: #FFF;
+		@include backface-visibility(hidden);
+	}
+
+	span {
+		/* this is the central line */
+		top: 21px;
+		left: 8px;
+		@include transition(background 0.2s $animation-duration);
+
+		&::before, 
+		&:after {
+			/* these are the upper and lower lines */
+			content: '';
+			left: 0;
+			@include transition(transform 0.2s $animation-duration);
+		}
+		
+		&::before {
+			bottom: 8px;
+		}
+
+		&::after {
+			top: 8px;
+		}
+	}
+	
+	.nav-is-visible & {
+
+		span {
+			/* hide line in the center */
+			background-color: rgba(#FFF, 0);
+
+			&::before, 
+			&::after {
+				/* keep visible other 2 lines */
+				background-color: rgba(#FFF, 1);
+			}
+
+			&::before {
+				@include transform(translateY(8px) rotate(-45deg));
+			}
+
+			&::after {
+				@include transform(translateY(-8px) rotate(45deg));
+			}
+		}
+	}
+}
+
+.cd-3d-nav-trigger-home {
+	position: relative;
+	float: right;
+	height: 45px;
+	width: 45px;
+	margin-top: 10px;
+
+	@include MQ(M) {
+		margin-top: 18px;
+	}
+
+	/* replace text with background image */
+	overflow: hidden;
+	text-indent: 100%;
+	white-space: nowrap;
+	color: transparent;
+
+	span, 
+	span::before, 
+	span::after {
+		/* hamburger icon in CSS */
+		position: absolute;
+		width: 28px;
+		height: 3px;
+		background-color: #FFF;
+		@include backface-visibility(hidden);
+	}
+
+	span {
+		/* this is the central line */
+		top: 21px;
+		left: 8px;
+		@include transition(background 0.2s $animation-duration);
+
+		&::before, 
+		&:after {
+			/* these are the upper and lower lines */
+			content: '';
+			left: 0;
+			@include transition(transform 0.2s $animation-duration);
+		}
+		
+		&::before {
+			bottom: 8px;
+		}
+
+		&::after {
+			top: 8px;
+		}
+	}
+	
+	.nav-is-visible & {
+		span {
+			/* hide line in the center */
+			background-color: rgba(#FFF, 0);
+
+			&::before, 
+			&::after {
+				/* keep visible other 2 lines */
+				background-color: rgba(#FFF, 1);
+			}
+
+			&::before {
+				@include transform(translateY(8px) rotate(-45deg));
+			}
+
+			&::after {
+				@include transform(translateY(-8px) rotate(45deg));
+			}
+		}
+	}
+}
+
+#legal-page-trigger {
+	@include MQ(M) {
+		margin-right: 5%;
+	}
+}
+
+.cd-3d-nav-container {
+	/* this is the 3D navigation container */
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: $nav-height-S;
+	width: 100%;
+	background-color: $nav-container-bg;
+
+	visibility: hidden;
+	/* enable a 3D-space for children elements */
+	@include perspective(1000px);
+
+	@include transform(translateY(-100%));
+
+	-webkit-transition: -webkit-transform $animation-duration 0s, visibility 0s $animation-duration;
+  	-moz-transition: -moz-transform $animation-duration 0s, visibility 0s $animation-duration;
+  	transition: transform $animation-duration 0s, visibility 0s $animation-duration;
+
+	&.nav-is-visible {
+		visibility: visible;
+		@include transform(translateY(0));
+
+		-webkit-transition: -webkit-transform $animation-duration 0s, visibility $animation-duration 0s;
+	  	-moz-transition: -moz-transform $animation-duration 0s, visibility $animation-duration 0s;
+	  	transition: transform $animation-duration 0s, visibility $animation-duration 0s;
+	}
+
+	@include MQ(M) {
+		height: $nav-height-M; 
+	}
+}
+
+.cd-3d-nav {
+	/* this is the 3D rotating navigation */
+	position: relative;
+	height: 100%;
+	background-color: $nav-bg;
+
+	/* Force Hardware Acceleration */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	@include transform-origin(center bottom);
+	@include transform(rotateX(90deg));
+	@include transition(transform $animation-duration);
+
+	&::after {
+		/* menu dark cover layer - to enhance perspective effect */
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 100%;
+		background-color: $nav-container-bg;
+		opacity: 1;
+		visibility: visible;
+		@include transition(opacity $animation-duration 0s, visibility $animation-duration 0s);
+	}
+
+	li {
+		height: 100%;
+		@include column(1/$nav-items); // see partials > _layout.scss
+
+		&:first-of-type a::before {
+			background-image: url('home.svg');
+			background-size: 32px 64px;
+		}
+
+		&:nth-of-type(2) a::before {
+			background-image: url('features.svg');
+		}
+
+		&:nth-of-type(3) a::before {
+			background-image: url('contact.svg');
+			background-size: 32px 64px;
+		}
+
+		&:nth-of-type(4) a::before {
+			background-image: url('blog.svg');
+		}
+
+		&:nth-of-type(5) a::before {
+			background-image: url('facebook.svg');
+		}
+
+		&:nth-of-type(6) a::before {
+			background-image: url('twitter.svg');
+		}
+	}
+
+	a {
+		position: relative;
+		display: block;
+		height: 100%;
+		color: transparent;
+		@include MQ(M) {
+			color: #565c5c !important;
+		}
+		@include transition(background-color 0.2s);
+
+		&::before {
+			/* navigation icons */
+			content: '';
+			height: 32px;
+			width: 32px;
+			position: absolute;
+			@include center;
+			background-size: 32px 64px;
+			background-repeat: no-repeat;
+			background-position: 0 0;
+		}
+
+		.no-touch &:hover {
+			background-color: darken($body-bg, 15%);
+		}
+	}
+
+	.cd-selected a {
+		background-color: darken($body-bg, 20%);
+		@include MQ(M) {	
+			color: white !important;
+		}
+
+		.no-touch &:hover {
+			background-color: darken($body-bg, 20%);
+		}
+
+		&::before {
+			background-position: 0 -32px;
+		} 
+	}
+
+	.nav-is-visible & {
+		@include transform(translateZ(0));
+
+		&::after {
+			/* menu cover layer - hide it when navigation is visible */
+			opacity: 0;
+			visibility: hidden;
+			@include transition(opacity $animation-duration 0s, visibility 0s $animation-duration);
+		}
+	}
+
+	@include MQ(M) {
+		
+		a {
+			padding: 7.6em 1em 0;
+			color: $text-color;
+			font: {
+				size: 1.3rem;
+				weight: 400;
+			}
+			text-align: center;
+			@include font-smoothing;
+			
+			/* truncate text with ellipsis if too long */
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			&::before {
+				top: 4.4em;
+				@include center(x);
+			}
+		}
+	}
+}
+
+.cd-blue {
+	background-color: darken(#1d6ec6, 10%);
+	a {
+		@include MQ(M) {
+			color: #528eec !important;
+		}	
+		.no-touch &:hover {
+			background-color: darken(#1d6ec6, 15%);
+		}
+	}
+
+	.cd-selected a {
+		background-color: darken(#1d6ec6, 20%);
+
+		.no-touch &:hover {
+			background-color: darken(#1d6ec6, 20%);
+		}
+	}
+
+	li {
+
+		&:first-of-type a::before {
+			background-image: url('home-blue.svg');
+		}
+
+		&:nth-of-type(2) a::before {
+			background-image: url('features-blue.svg');
+		}
+
+		&:nth-of-type(3) a::before {
+			background-image: url('contact-blue.svg');
+		}
+
+		&:nth-of-type(4) a::before {
+			background-image: url('blog-blue.svg');
+		}
+
+		&:nth-of-type(5) a::before {
+			background-image: url('facebook-blue.svg');
+		}
+
+		&:nth-of-type(6) a::before {
+			background-image: url('twitter-blue.svg');
+		}
+	}
+
+}
+
+.cd-marker {
+	/* line at the bottom of nav selected item */
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	height: 3px;
+	width: 100%/$nav-items;
+	@include transform-origin(center bottom);
+	@include transform(translateZ(0) rotateX(90deg));
+	
+	-webkit-transition: -webkit-transform $animation-duration, left 0.5s, color 0.5s, background-color 0.5s;
+	-moz-transition: -moz-transform $animation-duration, left 0.5s, color 0.5s, background-color 0.5s;
+	transition: transform $animation-duration, left 0.5s, color 0.5s, background-color 0.5s;
+
+	&::before {
+		/* triangle at the bottom of nav selected item */
+		content: '';
+		position: absolute;
+		bottom: 3px;
+		@include center(x);
+		height: 0;
+		width: 0;
+		border: 10px solid transparent;
+    	border-bottom-color: inherit;
+	}
+
+	.nav-is-visible & {
+		@include transform(translateZ(0));
+	}
+}
+
+/* these are the colors of the markers - line + arrow */
+
+.color-1 {
+	color: $color-1;
+	background-color: $color-1;
+}
+.color-2 {
+	color: $color-2;
+	background-color: $color-2;
+}
+.color-3 {
+	color: $color-3;
+	background-color: $color-3;
+}
+.color-4 {
+	color: $color-4;
+	background-color: $color-4;
+}
+.color-5 {
+	color: $color-5;
+	background-color: $color-5;
+}
+.color-6 {
+	color: $color-6;
+	background-color: $color-6;
+}
+
+.home-content {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+	@include font-smoothing;
+
+	padding-left: 30px;
+	padding-right: 30px;
+	h1 {
+		text-align: center;
+		font: {
+			size: 2.8rem;
+			weight: 300;
+		}
+		margin: 2em auto;
+		margin-bottom: 12px;
+	}
+
+	h2 {
+		text-align: center;
+		font: {
+			size: 1.8rem;
+			weight: 300;
+			margin: auto;
+			max-width: 400px;
+		}
+		line-height: 1.15;
+	}
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+
+		h1 {
+			font-size: 3.6rem;
+			//margin: 4em auto;
+			margin: 6em auto;
+			margin-bottom: 15px;
+		}
+
+		h2 {
+			text-align: center;
+			font: {
+				size: 2.0rem;
+				weight: 300;
+			}
+			color: $text-color;
+			//margin: 4em auto;
+			margin: auto;
+			@include font-smoothing;
+			max-width: 400px;
+		}
+	}
+
+	@include MQ(M_2) {
+		h1 {
+			margin: 3.5em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+	@include MQ(XL) {
+		h1 {
+			margin: 6em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+
+	//HANDLING OF IPHONE 4,5,6 ON THE SIDE AND IPHONE 4 VERTICAL
+	@media (max-height: 480px) {
+		h1 {
+			margin: 1em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+	@media (max-height: 380px) {
+		h1 {
+			margin: 0em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+
+}
+
+table {
+	margin-top: 15px;
+	margin-right: auto;
+	margin-left: auto;
+	direction: rtl;
+}
+
+.explore-features {
+	position: absolute;
+	margin-top: 15px;	
+	left: 50%;
+	margin-left: -40px;
+
+	@media (max-height: 480px) {
+		margin: auto;
+		width: 60px;
+		margin-left: 70px;
+	}
+
+	&:hover {
+		opacity: 0.8;
+		filter: alpha(opacity=80); /* For IE8 and earlier */
+	}
+}
+
+.app-badge {	
+	position: absolute;
+	margin-top: 135px;
+	left: 50%;
+	margin-left: -90px;
+
+	@media (max-height: 480px) {
+		margin: auto;
+		margin-left: -130px;
+		margin-bottom: 2px;		
+	}
+}
+
+#app-store {
+	max-width: 80%;
+	height: auto;
+}
+
+/*
+.explore-features {
+	position: absolute;
+	margin-top: 15px;	
+	left: 50%;
+	margin-left: -40px;
+}
+
+.app-badge img{
+	position: absolute;
+	margin-top: 135px;
+	left: 50%;
+	margin-left: -85px;
+	//margin: 135px auto;
+}*/
+
+.home-container {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);	
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+	}
+
+	height: 100%;
+	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('city-people-street-sun.png') center;
+	background-size: cover;
+}
+
+.features-container {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+	}
+
+	height: 100%;
+	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('new-york.jpg') center;
+	background-size: cover;
+}
+
+.legal-container {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+	}
+
+	.legal{
+		background: #1d6ec6;
+		width: 100%;
+		height: 70px;
+		@include MQ(M) {
+			height: 70px;
+		}
+	}
+}
+
+.cd-legal-content {
+	b, strong {
+	  font-weight: bold;
+	}
+	p {
+	   margin: 15px 0;
+	}
+	br {
+		line-height: 40px;
+	}
+	ul {
+		margin-left: 50px;
+		list-style-type: circle;
+	}
+	ol {
+		margin-left: 50px;
+		list-style-type: lower-roman;
+	}
+	h1 {
+		text-align: center;
+		font: {
+			size: 3.5rem;
+			weight: 100;		
+		}
+		margin-top: 40px;
+	}
+	margin-left: 20px;
+	margin-right: 20px;
+	@include MQ(M) {
+		width: 75%;
+		margin: auto;
+	}
+	@include MQ(L) {
+		width: 50%;
+		margin: auto;
+	}
+
+
+}
+
+/* -------------------------------- 
+
+Features style
+
+-------------------------------- */
+
+.btn {
+	display: inline-block;
+	text-align: center;
+	text-transform: uppercase;
+	font-weight: normal;
+	@include font-size(16px);
+	color: $color-3;
+	background-color: lighten($color-1, 20%);
+	box-shadow: 0 1px 6px rgba(#000, .1), inset 0 1px 0 rgba(#FFF, .2);
+	@include transition(background-color .2s);
+	@include font-smoothing;
+	//margin-bottom: -10px;
+
+	.no-touch &:hover {
+		background-color: darken($color-1, 15%);
+	}
+
+	&.salmon {
+		color: white;
+		background-color: #1d6ec6;//$color-2;
+	}
+
+	.no-touch &.salmon:hover {
+		background-color: lighten(#1d6ec6, 15%);
+	}
+
+	@include MQ(L) {
+		margin-bottom: 0;
+		@include font-size(20px);
+		letter-spacing: 2px;
+	}
+}
+
+.cd-main-content {
+	@include transition(transform $animation-duration);
+	/* Force Hardware Acceleration in WebKit */
+	//@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+	//position: relative;
+	
+
+	overflow: hidden;
+	max-width: $XL;
+	margin: 0 auto;
+	margin-top: -80px;
+
+
+	&.nav-is-visible {		
+		@include transform(translateY($nav-height-S));		
+	}
+
+	@include MQ(XS) {
+		margin-top: auto;
+	}
+
+	@include MQ(M) {
+		margin-top: auto;
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+
+	}
+
+	@include MQ(L) {
+		margin-top: -80px;
+		//position: relative;
+		height: 100%;
+		min-height: 500px;
+		padding: 0 10%;
+	}
+}
+
+.cd-product-intro {
+	padding: 50px 5%;
+	text-align: center;
+	@include font-smoothing;
+	height: 100vh;
+
+	h1 {
+		//text-transform: uppercase;
+		font: {
+			size: 2.8rem;
+			weight: 300;
+		}
+		margin: 0.2em auto;
+		margin-bottom: 12px;
+	}
+
+	p {
+		padding: 0 0 20px;
+		font: {
+			size: 1.9rem;
+			weight: 200;
+		}
+		line-height: 1.15;
+		max-width: 560px;
+		margin: 0 auto;
+	}
+
+	.cd-triggers {
+		@include clearfix;
+	}
+
+	.btn {
+		width: 120px;
+		height: 40px;
+		line-height: 40px;
+		margin-right: 8px;
+	}
+
+	@include MQ(S) {
+		padding: 50px 10%;
+	}
+
+	@include MQ(M) {
+		padding: 50px 15%;
+		h1 {	
+			margin: 6em auto;
+			margin-bottom: 15px;
+		}
+	}
+
+	@include MQ(L) {
+		/* Force Hardware Acceleration in WebKit */
+		@include transform(translateZ(0));
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		height: auto;
+
+		position: absolute;
+		top: 50%;
+		@include transform(translateY(-50%));
+		left: 10%;
+		width: 50%;
+
+		padding: 0;
+		text-align: left;
+
+		-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+		-moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
+		transition: transform 0.3s, opacity 0.3s;
+
+		.is-product-tour & {
+			opacity: 0;
+			@include transform(translateY(-50%) translateX(-50%));
+		}
+
+		h1 {
+			margin: auto;
+			margin-bottom: 15px;
+			font: {
+				size: 3.5rem;
+				weight: 100;
+			}
+		}
+
+		p {
+			font: {
+				size: 2.0rem;
+				weight: 300;
+			}
+			//line-height: 25px;
+			padding: 10px 0 44px;
+			margin: 0;
+		}
+
+		.btn {
+			margin-right: 15px;
+			width: 190px;
+			height: 60px;
+			line-height: 60px;
+		}
+	}
+
+	@media (max-height: 320px) {
+		h1 {
+			margin: -20px auto;
+			margin-bottom: 15px;
+		}
+	}	
+}
+
+#cd-product-tour {
+	position: absolute;
+	margin-top: -150px;
+	
+	@include MQ(M) {
+		margin-top: -135px;
+	}
+
+	@include MQ(L) {
+		position: relative;
+		width: 100%;
+		max-width: $M;
+		margin: 0 auto;
+		height: 500px;
+		top: 50%;
+		left: 0;
+		@include transform(translateZ(0));
+		@include transform(translateY(-50%) translateX(75%));
+		@include transition(transform .3s);
+
+		.is-product-tour & {
+			@include transform(translateY(-50%) translateX(0));
+		}
+
+		> ul {
+			height: 100%;
+			width: 100%;
+		}
+	}
+
+	@media (max-height: 380px) {
+		margin-top: -80px;
+	}
+
+	@media (max-height: 320px) {
+		margin-top: -80px;
+	}	
+}
+
+.cd-single-item {
+	/* product tour - single list item */
+	padding: 50px 5% 120px;
+	width: 100%;
+	text-align: center;
+	@include font-smoothing;
+	border-top: 1px solid lighten($color-1, 5%);
+
+	h2 {
+		margin-bottom: 15px;
+		font: {
+			size: 2.7rem;
+			weight: 100;
+		}
+		color: #dfeafc;
+	} 
+
+	p {
+		padding: 10px 0 50px;
+		font: {
+			size: 1.8rem;
+			weight: 100;
+		}
+		line-height: 1.2;
+		color: #b1cdf6;
+	}
+
+
+	@include MQ(XS) {
+		&.left-floater {
+			background: #1d6ec6;
+			border-top: transparent;
+			}
+
+		&.right-floater {			
+			background: #08224a;
+			border-top: transparent;
+			h2 {
+				color: #d6eaff;
+			}
+			p {
+				color: #abc8f6;
+			}
+		}
+
+	}
+
+	@include MQ(S) {
+		padding: 50px 10% 120px;
+	}
+
+	@include MQ(M) {
+		padding: 50px 15% 120px;
+
+		@include clearfix;
+
+		.cd-caption {
+			@include column(.5);
+			margin-top: 180px;
+		}
+
+		&:nth-child(2n) .cd-caption {
+			float: right;
+		}
+	}
+
+
+	@include MQ(L) {
+		position: absolute;
+		top: 50%;
+		@include transform(translateY(-50%));
+		left: 0;
+		text-align: left;
+		border-top: none;
+		padding: 0;
+		visibility: visible;
+
+		&.right-floater {			
+			background: transparent;
+			h2{ 
+				color: white;
+			}
+			p {
+				color: white;
+			}
+		}
+		
+		&.left-floater {
+			background: transparent;
+		}	
+		
+		&.cd-not-visible {
+			/*need to create a specific class to change visibility value due to a Firefox bug*/
+			/*CSS transition/animation fails when parent element changes visibility attribute*/
+			visibility: hidden;
+		}
+
+		h2 {
+			font: {
+				size: 3.7rem;
+				weight: 100;
+			}
+			color: white;
+		}
+
+		p {
+			font: {
+				size: 2.0rem;
+				weight: 100;
+			}
+			color: white;
+			line-height: 25px;
+			padding: 10px 0 44px;
+			margin: 0;
+		}
+
+		.cd-caption {
+			@include column(.6, right);
+			margin: 80px 0 0 5%;
+			opacity: 0;
+			@include transform(translateZ(0));
+			-webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+			-moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
+			transition: transform 0.3s, opacity 0.3s;
+
+
+		}
+
+		.is-product-tour &.cd-active .cd-caption {
+			opacity: 1;
+		}
+
+		&.cd-move-right .cd-caption { 
+			@include transform(translateX(100px));
+		}
+	}
+}
+
+.cd-image-container {
+	/*wrapper for image (and video - desktop only)*/ 
+	max-width: 226px;
+	margin: 0 auto;
+	padding-top: 50px;
+
+	> div {
+		position: relative;
+	}
+
+	img {
+		display: block;
+	}
+
+	video {
+		display: none;
+	}
+
+	@include MQ(M) {
+		float: right;
+
+		.cd-single-item:nth-child(2n) & {
+			float: left;
+		}
+	}
+
+	@include MQ(L) {
+		height: 402px;
+		@include column(.35);
+		max-width: none;
+		padding-top: 0;
+
+		> div {
+			display: inline-block;
+			max-width: 100%;
+			max-height: 100%;
+		}
+
+		img { 
+			height: 402px;
+			@include transition(transform .3s);
+			@include transform(translateZ(0));
+		}
+
+		video {
+			/*not inserted in html - will be loaded through jQuery*/
+			display: block;
+			position: absolute;
+			width: 402px;
+			left: 50%;
+		    top: 50%;
+		    bottom: auto;
+		    right: auto;
+		    z-index: 1;
+			@include transition(transform .3s);
+			@include transform(translateZ(0));
+			@include transform(translateX(-50%) translateY(-50%) rotate(-90deg));
+		}
+
+		.cd-move-right & img {
+			@include transform(translateX(100%));
+		}
+
+		.cd-move-right & video {
+			@include transform(translateX(50%) translateY(-50%) rotate(-90deg));
+		}
+	}
+}
+
+
+.cd-phone-frame {
+	/* Phone in CSS */
+	@include box-sizing(content-box);
+	position: absolute;
+	top: -45px;
+	left: -10px;
+	width: 100%;
+	min-width: 226px;
+	height: 100%;
+	border-color: darken($color-1, 8%);
+	border-style: solid;
+	border-width: 45px 10px;
+	border-radius: 2.5em;
+	@include backface-visibility(hidden);
+	
+	&::after, &::before {
+		/*these are the iPhone circle elements*/
+		position: absolute;
+		@include center(x); // see mixin inside partials > _mixins.scss
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		background-color: darken($color-1, 15%);
+		border-radius: 50%;
+	}
+
+	&::before {
+		height: 11px;
+		width: 11px;
+		top: -28px;
+	}
+
+	&::after {
+		height: 31px;
+		width: 31px;
+		bottom: -38px;
+	}
+}
+
+.cd-image-wrapper {
+	position: relative;
+	overflow: hidden;
+	z-index: 2;
+	background: #EBEBEB;
+	max-width: 226px;
+}
+
+.cd-slider-nav {
+	/* product discover slider navigation */
+	display: none;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	width: 100%;
+	height: 80px;
+	@include clearfix;
+
+	a {
+		position: relative;
+		display: block;
+		height: 100%;
+		@include column(.5); // see mixin inside partials > _layout.scss
+		overflow: hidden;
+		text-indent: 100%;
+		white-space: nowrap;
+		color: transparent;
+		background: rgba(255, 255, 255, .3);//darken($color-1, 5%);
+		border-top: 1px solid $color-1;
+		border-right: 1px solid $color-1;
+
+		.no-touch &:hover {
+			background: rgba(255, 255, 255, .55);
+		}
+
+		&::before {
+			/*this is the background arrow - we have been used a before element to change the opacity on hover*/
+			position: absolute;
+			@include center;
+			width: 24px;
+			height: 16px;
+			//opacity: .2;
+			background: url('cd-arrow.svg') no-repeat center center;
+			@include backface-visibility(hidden);
+			@include transition(opacity .2s);
+		}
+
+		.no-touch &:hover::before {
+			opacity: 1;
+		}
+	}
+
+	.cd-next {
+		//border-left: 1px solid $color-1;		
+	}
+
+	.cd-next::before {
+		@include transform(translateX(-50%) translateY(-50%) rotate(180deg));
+	}
+
+	@include MQ(L) {
+		display: block;
+		
+		a {
+			visibility: hidden;
+			opacity: 0;
+			@include transition(opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s);
+		}
+
+		.is-product-tour & a {
+			visibility: visible;
+			opacity: 1;
+			@include transition(opacity 0.3s 0s, visibility 0s 0s, background 0.2s);
+
+			&.cd-inactive {
+				visibility: hidden;
+				opacity: 0;
+				@include transition(opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s);
+			}
+		}
+	}
+}
+
+.cd-loader {
+	/*top loading bar*/
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: 3px;
+	width: 0;
+	background-color: $color-2;
+	display: none;
+}
+
+/* -------------------------------- 
+
+
+Footer style
+
+-------------------------------- */
+.footer-basic-centered{
+
+	box-sizing: border-box;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	font-family: $primary-font;
+	@include font-smoothing;
+
+	padding: 25px;
+	bottom: 0;
+
+	color: white;
+}
+
+.legal-footer {
+	margin-top: 200px;
+	color: #8f96a3;
+}
+
+.footer-basic-centered .footer-company-motto{
+	color:  #8d9093;
+	font-size: 24px;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-company-name{
+	//color:  #ffffff;
+	font-size: 14px;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-links{
+	list-style: none;
+	font-weight: bold;
+	//color:  #ffffff;
+	padding: 35px 0 15px;
+	margin: 0;
+}
+
+.footer-basic-centered .footer-links a{
+	display:inline-block;
+	text-decoration: none;
+	color: inherit;
+
+	&:hover {
+		opacity: 0.8;
+		filter: alpha(opacity=80); /* For IE8 and earlier */
+	}
+}
+
+
+@media (max-width: 667px) {
+
+	.footer-basic-centered{
+		padding: 15px;
+	}
+
+	.footer-basic-centered .footer-company-motto{
+		font-size: 18px;
+	}
+
+	.footer-basic-centered .footer-company-name{
+		font-size: 12px;
+	}
+
+	.footer-basic-centered .footer-links{
+		font-size: 14px;
+		padding: 25px 0 10px;
+	}
+
+	.footer-basic-centered .footer-links a{
+		line-height: 1.8;
+	}
+}
+
+.features-footer {
+	position: relative;
+	padding-top: 0px;
+	@include MQ(L) {
+		display: none;
+	}
+	background: #1d6ec6;
+}
+
+#hyperlink {
+	color: #00ccff;	
+	.no-touch &:hover {
+		color: lighten(#00ccff, 20%);
+	}
+}
+
+
+/* -------------------------------- 
+
+Login style
+
+-------------------------------- */
+
+.login-block {
+	padding-top: 20vh;
+}
+
+  .login {
+    padding-left: 20%;
+    padding-right: 20%;
+    text-align: center;
+    font-size: 16px;
+    input[type=text], input[type=password], input[type=email]  {
+      font-size: 16px;
+      height: 40px;
+      padding-bottom: 16px;
+      background-color: transparent;
+      border: none;
+      border-radius: 0px;
+      border-bottom: 1px solid white;
+      color: #FFF;
+      text-align: center;
+      margin-top: 25px;
+      &:focus {
+        box-shadow: none;
+      }
+    }
+    &.before {
+      .sign_in_button {
+        margin-top: 60px;
+      }
+    }
+    &.after {
+      .sign_in_button {
+        margin-top: 30px;
+        input{
+          background-color: transparent;
+          border: none;  
+        }
+        input:hover {
+          color: #00CCFF;
+        }
+      }  
+    }
+    .alert-danger {
+      background-color: rgba(0, 0, 0, 0);
+      border: none;
+      color: #A94442;
+    }
+  }
+
+  .login2{
+  	@include font-smoothing;
+  	background: #1d6ec6;
+  }

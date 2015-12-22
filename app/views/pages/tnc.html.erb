@@ -1,17 +1,17 @@
-<%= favicon_link_tag %>
-<nav class="navbar navbar-default navbar-flat">
-   <div class="container">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-         <a class="navbar-brand" href="/"><img src="/assets/lytit-logotype.svg" width="300" height="auto" alt="Logo"> </a>
-      </div>
-   </div>
-   <!-- /.container-fluid -->
-</nav>
-<div class="container">
-   <div class="static_pages">
+<% content_for :body do %>
+  <body id='legal'>
+<% end %>
+<div class="legal-container">
+   <header class="cd-header-home legal">
+     <a href="/"><img id="logo-legal" src="/assets/lytit-logotype.svg" style="width: 130px;" alt="Logo"></a>
+     <a href="#0" id="legal-page-trigger" class="cd-3d-nav-trigger-home">
+       Menu
+       <span></span>
+     </a>
+   </header> <!-- .cd-header -->
+   <div class="cd-legal-content">
       <h1>Terms and Conditions</h1>
-      <p>Last updated: May 01, 2015</p>
+      <p>Effective: December 01, 2015</p>
       <p><b>LYTiT, INC. TERMS AND CONDITIONS (“TERMS”)</b></p>
       <p>Please read these Terms and Conditions ("Terms", "Terms and Conditions") carefully before using the LYTiT mobile application (the "Service" or “Services”) operated by LYTIT, Inc. ("us", "we", or "our").</p>
       <p>Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms are personal to you, and are not transferable, assignable or sublicensable by you.</p>
@@ -31,7 +31,7 @@
       <p><b>LYTiT Submissions</b></p>
       <p>The Service allows you to post, link, display, store, share and otherwise make available certain information, text, photos, videos, or other material (collectively, "Content"). You are responsible for the Content that you post to LYTiT whether publicly or anonymously, including its legality, reliability, and appropriateness. You expressly agree that any Content you post will not violate any laws or regulations nor will such Content be in violation of the “Rules of Conduct” paragraph below.</p>
       <p>We do not endorse, support, represent or guarantee the completeness, truthfulness, accuracy, or reliability of any Content or communications posted via the Service or endorse any opinions expressed via the Service. You understand that by using the Service, you may be exposed to Content that might be offensive, harmful, inaccurate or otherwise inappropriate, or in some cases, postings that have been mislabeled or are otherwise deceptive. Under no circumstances will LYTiT be liable in any way for any Content, including, but not limited to, any errors or omissions in any Content, or any loss or damage of any kind incurred as a result of the use of any Content posted, emailed, transmitted or otherwise made available via the Service or transmitted elsewhere.</p>
-      <p>By submitting Content to the Service, you hereby grant us a non-exclusive, perpetual, irrevocable, royalty-free, fully-paid up, worldwide license (including the right to sublicense through multiple tiers), subject to LYTiT’s <a style="color: #00ccff;" href="http://www.lytit.com/privacy">Privacy Policy</a>, to use, analyze, process, adapt, modify, publicly perform, publicly display, incorporate into our marketing materials, reproduce,  prepare derivative works, publish, transmit and distribute each of your Content, or any portion thereof, in any form, medium or distribution method now known or hereafter existing, known or discovered, on and through the Service, and authorize others to use the Content. You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. You agree that this license includes the right for us to make your Content available to other users of the Service, who may also use your Content subject to these Terms.</p>
+      <p>By submitting Content to the Service, you hereby grant us a non-exclusive, perpetual, irrevocable, royalty-free, fully-paid up, worldwide license (including the right to sublicense through multiple tiers), subject to LYTiT’s <a id="hyperlink" href="/privacy">Privacy Policy</a>, to use, analyze, process, adapt, modify, publicly perform, publicly display, incorporate into our marketing materials, reproduce,  prepare derivative works, publish, transmit and distribute each of your Content, or any portion thereof, in any form, medium or distribution method now known or hereafter existing, known or discovered, on and through the Service, and authorize others to use the Content. You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. You agree that this license includes the right for us to make your Content available to other users of the Service, who may also use your Content subject to these Terms.</p>
       <p>You represent and warrant that: (i) the Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person. You shall be solely liable for any damage resulting from any infringement of copyrights, trademarks, proprietary rights, violation of contract, privacy or publicity rights or any other harm resulting from any Content that you post.</p>
       <p>LYTiT has no obligation to monitor the Service but reserves the right to remove, suspend, edit or modify any Content in its sole discretion without notice to you and for any reason or for no reason at all. LYTiT also reserves the right to access, read, preserve, and disclose any information as LYTiT reasonably believes is necessary to: (i) satisfy any applicable law, regulation, legal process or governmental request, (ii) enforce these Terms, including investigation of potential violations hereof, (iii) detect, prevent, or otherwise address fraud, security or technical issues, (iv) respond to user support requests, or (v) protect the rights, property or safety of LYTiT, its users and the public. LYTiT, at its discretion, will cooperate with law enforcement agencies in any investigation of alleged illegal activity on the Service.</p>
       <p>You understand that when Content is deleted it may still persist in backup copies for a reasonable period of time (but following removal will not be shared with others) or may remain with users who have previously accessed or downloaded your Content. You understand and agree that LYTiT reserves the right to store deleted Content; however, you agree that we have no obligation to retain any Content for any period of time, nor shall we be responsible or liable to you or any third party for any lost content or losses related to the expiration or deletion of any Content.</p>
@@ -51,7 +51,7 @@
          <li>Your electronic or physical signature.</li>
       </ul>
       <p>LYTiT’s agent for notice of claims of copyright or trademark infringement on the Services can be reached as follows:</p>
-      <ul style="font-family: Roboto;" class="tnc-list-2">
+      <ul style="list-style-type:none">
          <li>E-mail: support@lytit.com</li>
          <li>LYTiT Copyright Agent: LYTiT, Inc.</li>
          <li>Attn: Copyright Agent</li>
@@ -72,7 +72,7 @@
       <p>LYTiT reserves the right, in its sole discretion, to terminate the account or access of any user of our web site and/or service who is the subject or repeated DMCA or other infringement notifications.</p>
       <p><b>Rules of Conduct</b></p>
       <p>By using the Service you agree that it will not be used for any purpose that is prohibited by these Terms. You are responsible for all your activity in connection with the Service and shall abide by all applicable local, state, national and international laws and regulations.  This paragraph Rules of Conduct provides examples and is not complete or exhaustive.  You may not do any of the following while accessing or using the Service:</p>
-      <ol style="font-family: Roboto;" type="i">
+      <ol type="i">
          <li>Bypass any measures LYTiT may put in place to prevent or restrict access to the Service.</li>
          <li>Interfere or attempt to interfere with the proper working of the Service or activities conducted on the Service (iv) unreasonably (as determined by LYTiT in its sole discretion) strain the LYTiT infrastructure.</li>
          <li>Decipher, decompile, disassemble, reverse engineer or otherwise attempt to derive any source code or underlying ideas or algorithms of any part of the Service except to the limited extent applicable laws specifically prohibit such restriction;</li>
@@ -123,28 +123,46 @@
       <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time or change, suspend, or discontinue the Service (including without limitation, the availability of any feature, database, or content). If a revision is material we will try to provide at least 30 days notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</p>
       <p>By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, please stop using the Service.</p>
       <p><b>Contact Us</b></p>
-      <p>If you have any questions about these Terms, please contact us at <a style="color: #00ccff;" href="mailto:support@lytit.com">support@lytit.com</a></p>
-      <br /><br /><br /><br />
+      <p>If you have any questions about these Terms, please contact us at <a id="hyperlink" href="mailto:support@lytit.com">support@lytit.com</a></p>
+      <br /><br /><br />
    </div>
+   <footer class="footer-basic-centered legal-footer">
+     <p class="footer-links">
+       <a><%= link_to "Privacy", privacy_path %></a>
+       ·
+       <a><%= link_to "Terms", tnc_path %></a>
+       ·
+       <a href="mailto:support@lytit.com">Support</a>
+       ·
+       <a href="mailto:lux@lytit.com">Contact</a>
+     </p>
+     <p class="footer-company-name">LYTiT, inc. &copy; 2015</p>
+   </footer>
 </div>
-<div class="footer-area">
-   <div class="container">
-      <div class="row">
-         <div class="col-sm-4">
-            <p class="copy-right">© 2015 LYTiT, INC.</p>
-         </div>
-         <!--/col-sm-5 -->
-         <div class="col-sm-8 footer-right">
-            <ul>
-               <li><%= link_to "Terms & Conditions", tnc_path %></li>
-               <li><%= link_to "Privacy", privacy_path %></li>
-               <li><a href="mailto:support@lytit.com">Support</a></li>
-            </ul>
-         </div>
-         <!--/col-sm-7 -->
-      </div>
-      <!--/row -->
-   </div>
-   <!--/container -->
-</div>
+<nav class="cd-3d-nav-container">
+  <ul class="cd-3d-nav cd-blue">
+    <li><%= link_to "Home", root_path %></li>
+
+    <!--<li>
+      <a href="#0">Features</a>
+    </li>-->
+    <li><%= link_to "Features", features_path %></li>
+
+    <li>
+      <a href="mailto:lux@lytit.com">Contact</a>
+    </li>
+
+    <li>
+      <a href="http://blog.lytit.com">Blog</a>
+    </li>
+
+    <li>
+      <a href="https://www.facebook.com/lytitapp">Facebook</a>
+    </li>
+
+    <li>
+      <a href="https://twitter.com/lytitapp">Twitter</a>
+    </li>
+  </ul> <!-- .cd-3d-nav -->
+</nav> <!-- .cd-3d-nav-container --> 
 <!--/footer-area -->
