@@ -1357,7 +1357,7 @@ Footer style
 .footer-basic-centered{
 
 	box-sizing: border-box;
-	position: relative;
+	position: fixed;
 	width: 100%;
 	text-align: center;
 	font-family: $primary-font;
@@ -1431,6 +1431,7 @@ Footer style
 }
 
 .features-footer {
+	position: relative;
 	@include MQ(L) {
 		display: none;
 	}
