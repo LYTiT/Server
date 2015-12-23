@@ -784,6 +784,8 @@ Features style
 	@include transition(transform $animation-duration);
 	@include transform(translateZ(0));
 	@include backface-visibility(hidden);
+	height: 100%;
+	//overflow: auto;
 
 	&.nav-is-visible {
 		@include transform(translateY($nav-height-S));
@@ -795,7 +797,6 @@ Features style
 		}
 	}
 
-	height: 100%;
 	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('new-york.jpg') center;
 	background-size: cover;
 }
@@ -985,9 +986,20 @@ Features style
 #cd-product-tour {
 	position: absolute;
 	margin-top: -150px;
+
+	@include MQ(S) {
+		//iPhone 5 on its side browser view height size
+		@media (max-height: 320px) {
+			margin-top: -80px;
+		}
+		//iPhone 6 on its side browser view height size
+		@media (min-height: 375px) {
+			margin-top: -62px;
+		}
+	}
 	
 	@include MQ(M) {
-		margin-top: -135px;
+		margin-top: -105px;
 	}
 
 	@include MQ(L) {
@@ -1012,13 +1024,6 @@ Features style
 		}
 	}
 
-	@media (max-height: 380px) {
-		margin-top: -80px;
-	}
-
-	@media (max-height: 320px) {
-		margin-top: -80px;
-	}	
 }
 
 .cd-single-item {
