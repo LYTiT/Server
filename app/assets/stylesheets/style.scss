@@ -27,6 +27,8 @@ html {
 	overflow: hidden;
 	-webkit-overflow-scrolling: touch;
 	font-smooth: always;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -1040,7 +1042,7 @@ Features style
 			size: 2.7rem;
 			weight: 100;
 		}
-		color: #dfeafc;
+		color: #c3d8f8;
 	} 
 
 	p {
