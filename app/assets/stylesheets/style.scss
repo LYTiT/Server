@@ -994,12 +994,12 @@ Features style
 		}
 		//iPhone 6 on its side browser view height size
 		@media (min-height: 375px) {
-			margin-top: -70px;
+			margin-top: -80px;
 		}
 	}
 	
 	@include MQ(M) {
-		margin-top: -125px;
+		margin-top: -140px;
 	}
 
 	@include MQ(L) {
