@@ -1734,14 +1734,14 @@ Features style
 @media only screen and (min-width: 480px) and (min-height: 375px) {
   /* line 986, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
-    margin-top: -70px;
+    margin-top: -80px;
   }
 }
 
 @media only screen and (min-width: 768px) {
   /* line 986, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
-    margin-top: -125px;
+    margin-top: -135px;
   }
 }
 @media only screen and (min-width: 1048px) {
@@ -1821,7 +1821,7 @@ Features style
   }
   /* line 1066, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater h2 {
-    color: #d6eaff;
+    color: #cedffa;
   }
   /* line 1069, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater p {
