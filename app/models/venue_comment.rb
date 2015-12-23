@@ -220,8 +220,8 @@ class VenueComment < ActiveRecord::Base
 					origin_venue.update_columns(last_instagram_post: instagram_id)
 				end
 
-				if origin_venue.last_instagram_pull_time != nil and origin_venue.last_instagram_pull_time < created_time
-					origin_venue.update_columns(last_instagram_pull_time: created_time)
+				if (origin_venue.last_instagram_pull_time != nil and origin_venue.last_instagram_pull_time < created_time) || vortex != nil
+					origin_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)
 				end
 
 				#Further instagram related methods
@@ -241,7 +241,9 @@ class VenueComment < ActiveRecord::Base
 				origin_venue.delay.update_rating()
 				origin_venue.update_columns(latest_rating_update_time: Time.now)											
 
-				sphere = LytSphere.create_new_sphere(origin_venue) 
+				sphere = LytSphere.create_new_sphere(origin_venue)
+				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
+				#to prevent a redundent set_instagram_location_id opperation we assign a last instagram pull time.
 			else
 				nil
 			end
