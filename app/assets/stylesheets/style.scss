@@ -24,7 +24,6 @@ html, body {
 
 html {
 	font-size: 62.5%;
-	overflow: hidden;
 	-webkit-overflow-scrolling: touch;
 	font-smooth: always;
 	-webkit-font-smoothing: antialiased;
@@ -38,7 +37,7 @@ body {
 	}
 	color: $color-1;
 	background-color: $body-bg;
-	overflow: hidden;
+	//overflow: hidden;
 
 	@include MQ(L) {
 		/* hide horizontal scroll bar in IE */
@@ -77,14 +76,9 @@ img {
 }
 /* -------------------------------- 
 
-Main Components 
+Home Page 
 
 -------------------------------- */
-
-html, body {
-	/* important for .cd-main-content 100% height to work */
-	height: 100%;
-}
 
 .cd-header-home {
 	height: 80px;
@@ -714,26 +708,6 @@ table {
 	background-size: cover;
 }
 
-.features-container {
-	@include transition(transform $animation-duration);
-	/* Force Hardware Acceleration in WebKit */
-	@include transform(translateZ(0));
-	@include backface-visibility(hidden);
-
-	&.nav-is-visible {
-		@include transform(translateY($nav-height-S));
-	}
-
-	@include MQ(M) {
-		&.nav-is-visible {
-			@include transform(translateY($nav-height-M));
-		}
-	}
-
-	height: 100%;
-	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('new-york.jpg') center;
-	background-size: cover;
-}
 
 .legal-container {
 	@include transition(transform $animation-duration);
@@ -806,6 +780,25 @@ table {
 Features style
 
 -------------------------------- */
+.features-container {
+	@include transition(transform $animation-duration);
+	@include transform(translateZ(0));
+	@include backface-visibility(hidden);
+
+	&.nav-is-visible {
+		@include transform(translateY($nav-height-S));
+	}
+
+	@include MQ(M) {
+		&.nav-is-visible {
+			@include transform(translateY($nav-height-M));
+		}
+	}
+
+	height: 100%;
+	background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('new-york.jpg') center;
+	background-size: cover;
+}
 
 .btn {
 	display: inline-block;
