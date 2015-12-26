@@ -21,5 +21,5 @@
     json.total_pages @comments.total_pages
   end
 
-  json.venue_id @venue.id
+
 end
