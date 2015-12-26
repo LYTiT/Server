@@ -41,7 +41,7 @@ class Api::V1::VenuesController < ApiBaseController
 		#venue lookup if needed
 		if venue_id.nil?
 			if params[:instagram_location_id] != nil
-				@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])
+				@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil)
 				venue_id = @venue.id
 			else
 				venue_id = nil
@@ -115,7 +115,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
 		else
-			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id])
+			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
 		end
 
 		if @venue.instagram_location_id == nil
@@ -273,7 +273,7 @@ class Api::V1::VenuesController < ApiBaseController
 			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			@venues = [venue]
 		else
-			@venues =[Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])]
+			@venues =[Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil)]
 		end
 
 		render 'search.json.jbuilder'

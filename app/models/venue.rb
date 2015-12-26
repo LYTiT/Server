@@ -132,7 +132,7 @@ class Venue < ActiveRecord::Base
 
     if result == nil
       if vlatitude != nil && vlongitude != nil 
-        result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil)
+        result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil)
       else
         return nil
       end
@@ -143,7 +143,7 @@ class Venue < ActiveRecord::Base
     return result 
   end
 
-  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id)
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
@@ -164,7 +164,7 @@ class Venue < ActiveRecord::Base
         if name_lookup != nil
           result = name_lookup
         else
-          result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id)
+          result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id, vortex)
           InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
         end
       end
@@ -184,7 +184,7 @@ class Venue < ActiveRecord::Base
     return clean_name 
   end
 
-  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id)
+  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id, origin_vortex)
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
     if city == nil
@@ -251,18 +251,30 @@ class Venue < ActiveRecord::Base
     end
 
     venue.save
-    venue.delay.set_time_zone_and_offset
+    venue.delay.set_time_zone_and_offset(origin_vortex)
     return venue    
   end
 
-  def set_time_zone_and_offset
-    Timezone::Configure.begin do |c|
-    c.username = 'LYTiT'
-    end
-    timezone = Timezone::Zone.new :latlon => [self.latitude, self.longitude] rescue nil
+  def set_time_zone_and_offset(origin_vortex)
+    if origin_vortex == nil
+      Timezone::Configure.begin do |c|
+      c.username = 'LYTiT'
+      end
+      timezone = Timezone::Zone.new :latlon => [self.latitude, self.longitude] rescue nil
 
-    self.time_zone = timezone.active_support_time_zone rescue nil
-    self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+      self.time_zone = timezone.active_support_time_zone rescue nil
+      self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+    else
+      self.update_columns(time_zone_offset: origin_vortex.time_zone_offset)
+    end
+  end
+
+  def Venue.fill_in_time_zone_offsets
+    radius  = 10000
+    for venue in Venue.all.where("time_zone_offset IS NULL")
+      closest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [venue.latitude, venue.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
+      venue.update_columns(time_zone_offset: closest_vortex.time_zone_offset)
+    end
   end
 
   def calibrate_attributes(auth_name, auth_address, auth_city, auth_state, auth_country, auth_postal_code, auth_phone, auth_latitude, auth_longitude)

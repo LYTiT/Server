@@ -323,7 +323,7 @@ class Api::V1::UsersController < ApiBaseController
 			venue = Venue.find_by_id(venue_id)
 		else
 			if params[:instagram_location_id] != nil
-				venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id])
+				venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil)
 			else
 				venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			end

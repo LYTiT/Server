@@ -237,4 +237,13 @@ class InstagramVortex < ActiveRecord::Base
 
 	end
 
+	def InstagramVortex.set_timezone_offsets
+		radius = 5
+
+		for vortex in InstagramVortex.all
+			closest_venue_with_timzone = Venue.within(radius.to_i, :units => :kms, :origin => [vortex.latitude, vortex.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
+			vortex.update_columns(time_zone_offset: closest_venue_with_timzone.time_zone_offset) rescue p "Nil values encountered"
+		end
+	end
+
 end
