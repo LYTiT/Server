@@ -20,6 +20,6 @@
     json.thirdparty_username VenueComment.thirdparty_username(comment)
     json.total_pages @comments.total_pages
   end
-
-
 end
+
+json.venue_id @venue.id
