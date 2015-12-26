@@ -129,7 +129,8 @@ class Api::V1::VenuesController < ApiBaseController
 			puts "Making a Get Coments Call because no initial instagrams present!"
 			live_comments = Venue.get_comments([@venue.id])	
 		end
-
+		cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}"
+		@view_cache_key = cache_key+"view"
 		@comments = live_comments.page(params[:page]).per(10)
 	end
 
