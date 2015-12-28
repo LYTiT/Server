@@ -841,7 +841,7 @@ Features style
 	width: 100%;
 	height: $header-height-S;
 	@include clearfix;
-	background-color: rgba(0,0,0,0.3);
+	background-color: rgba(0,0,0,0.45);
 	//border-bottom: 1px solid rgba(225,225,225,0.2);
 	border-bottom: 1px solid rgba(0,0,0,0.2);
 	overflow: hidden;	
@@ -911,9 +911,12 @@ Features style
 }
 
 #blur {
+	display: none;
 	z-index: 2;
-	margin-top: -3px;
-	background: black;//#1d6ec6;
+	top: 0;
+	left: -8px;
+	right: -8px;
+	background: #1d6ec6;
 	opacity: 0.4;
     -webkit-filter: blur(8px);
     -moz-filter: blur(8px);
