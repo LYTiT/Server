@@ -99,6 +99,7 @@ class Api::V1::FeedsController < ApiBaseController
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:added_note])
 			if new_feed_venue.save
 				new_feed_venue.feed.delay.increment!(:num_venues, 1)
+				new_feed_venue.delay.calibrate_feed_after_addition
 				render json: { success: true }
 			end
 		else
@@ -116,9 +117,10 @@ class Api::V1::FeedsController < ApiBaseController
 
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id], :description => params[:added_note])
-			if new_feed_venue.save
+			if new_feed_venue.save				
 				feed = Feed.find_by_id(params[:feed_id])
 				feed.increment!(:num_venues, 1)
+				new_feed_venue.delay.calibrate_feed_after_addition
 				render json: { id: venue.id }
 			end
 		else
@@ -138,6 +140,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
+		feed_venue.calibrate_feed_after_deletion
 		feed_venue.destroy		
 		render json: { success: true }
 	end

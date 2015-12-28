@@ -34,7 +34,7 @@ class FeedUser < ActiveRecord::Base
 
 		}
 
-		alert = "#{user.name} added your #{feed.name} List"
+		alert = "#{user.name} joined your #{feed.name} List"
 
 		notification = self.store_new_user_notification(payload, feed.user, "new list member")
 		payload[:notification_id] = notification.id
