@@ -30,6 +30,10 @@ jQuery(document).ready(function($){
 		var activeSlide = $('.cd-active');
 		updateSlider(activeSlide, 'next'); 
 	});
+	
+	$('#cd-logo').on('click', function(event){
+		$('html, body').animate({ scrollTop: 0 }, 'fast');
+	});
 
 	$(document).keyup(function(event){
 		if(event.which=='37' && $('.cd-main-content').hasClass('is-product-tour') ) {
