@@ -841,9 +841,9 @@ Features style
 	width: 100%;
 	height: $header-height-S;
 	@include clearfix;
-	background-color: rgba(255,255,255,0.3);
-	border-bottom: 1px solid rgba(225,225,225,0.2);
-	//border-bottom: 1px solid lighten(black, 10%);
+	background-color: rgba(0,0,0,0.3);
+	//border-bottom: 1px solid rgba(225,225,225,0.2);
+	border-bottom: 1px solid rgba(0,0,0,0.2);
 	overflow: hidden;	
 
 	/* Force Hardware Acceleration in WebKit */
@@ -913,7 +913,7 @@ Features style
 #blur {
 	z-index: 2;
 	margin-top: -3px;
-	background: grey;//#1d6ec6;
+	background: black;//#1d6ec6;
 	opacity: 0.4;
     -webkit-filter: blur(8px);
     -moz-filter: blur(8px);
