@@ -785,7 +785,7 @@ Features style
 	@include transform(translateZ(0));
 	@include backface-visibility(hidden);
 	height: 100%;
-	//overflow: auto;
+	overflow: auto;
 
 	&.nav-is-visible {
 		@include transform(translateY($nav-height-S));
