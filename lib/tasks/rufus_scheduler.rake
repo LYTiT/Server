@@ -56,16 +56,17 @@ namespace :lytit do
         for venue in sphericles
           if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
             venue.update_rating()
-            venue.update_popularity_rank
           end
           
           if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0 
+            venue.update_popularity_rank
             if venue.rating != nil
               rat = venue.rating.round(2)
               diff_ratings.add(rat)
             end
           else
             #venues.delete(venue)
+            venue.update_columns(popularity_rank: 0.0)
             sphericles.delete(venue)
             LytSphere.where("venue_id = ?", venue.id).delete_all
           end

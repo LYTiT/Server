@@ -21,6 +21,7 @@ namespace :lytit do
     #VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
     VenueComment.cleanup_and_recalibration
     Tweet.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
+    Venue.cleanup_and_calibration
     #MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #Activity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
