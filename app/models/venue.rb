@@ -1278,7 +1278,9 @@ class Venue < ActiveRecord::Base
     active_venue_ids = "SELECT venue_id FROM lyt_spheres"
     stale_venue_ids = "SELECT id FROM venues WHERE id NOT IN (#{active_venue_ids}) AND popularity_rank > 0.0"
     Venue.where("id IN (#{stale_venue_ids})").update_all(rating: nil)
+    Venue.where("id IN (#{stale_venue_ids})").update_all(color_rating: -1.0)
     Venue.where("id IN (#{stale_venue_ids})").update_all(popularity_rank: 0.0)
+
   end
   #----------------------------------------------------------------------------->
   #VII.
