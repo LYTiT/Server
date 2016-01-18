@@ -1,7 +1,6 @@
 class Api::V1::UsersController < ApiBaseController
 	skip_before_filter :set_user, only: [:create, :get_comments, :get_groups, :forgot_password]
 
-
 	#Administrative/Creation Methods------------------>
 
 	def username_availability

@@ -266,6 +266,16 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display_by_parts.json.jbuilder'
 	end
 
+	def refresh_map_view_by_parts_v2
+		lat = params[:latitude] || 40.741140
+		long = params[:longitude] || -73.981917
+		center_point = [lat, long]
+		proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
+		Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
+		Venue.where("latitude longitude")
+
+	end
+
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
 
