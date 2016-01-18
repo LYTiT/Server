@@ -147,14 +147,14 @@ class Api::V1::FeedsController < ApiBaseController
 		feed = Feed.find_by_id(params[:feed_id])			
 		feed.update_columns(latest_viewed_time: Time.now)
 		feed.update_columns(new_media_present: false)
+		feed.delay.update_comments
 		#feed.update_media	
 		render json: { success: true }
 	end
 
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feed = Feed.find_by_id(params[:feed_id])
-		@feed.delay.update_comments
+		@feed = Feed.find_by_id(params[:feed_id])		
 	end
 
 	def get_activity
