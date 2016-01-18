@@ -2872,6 +2872,13 @@ CREATE INDEX index_feeds_on_name ON feeds USING btree (name);
 
 
 --
+-- Name: index_feeds_on_name_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE UNIQUE INDEX index_feeds_on_name_and_user_id ON feeds USING btree (name, user_id);
+
+
+--
 -- Name: index_feeds_on_search_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3961,4 +3968,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151207041408');
 INSERT INTO schema_migrations (version) VALUES ('20151221004602');
 
 INSERT INTO schema_migrations (version) VALUES ('20151226021810');
+
+INSERT INTO schema_migrations (version) VALUES ('20160118164620');
 
