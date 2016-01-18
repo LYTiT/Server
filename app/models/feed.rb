@@ -64,6 +64,14 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def update_comments
+		instagram_refresh_rate = 15 #minutes
+		stale_venues = self.venues.where("last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes)
+		for stale_venue in stale_venues			
+			Venue.get_comments([stale_venue.id])
+		end
+	end
+
 	def comments
 		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
 		comments = VenueComment.where("venue_id IN (#{venue_ids})").includes(:venue).order("time_wrapper DESC")
