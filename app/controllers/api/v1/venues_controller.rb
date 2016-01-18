@@ -2,7 +2,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 	skip_before_filter :set_user, only: [:search, :index]
 
-
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venue = Venue.find(params[:id])		
@@ -117,21 +116,26 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
 		end
-
-		if @venue.instagram_location_id == nil
-			initial_instagrams = @venue.set_instagram_location_id(100)
-			@venue.delay.account_page_view
-		end
-
-		if initial_instagrams != nil
-			live_comments = Kaminari.paginate_array(initial_instagrams)
-		else
-			puts "Making a Get Coments Call because no initial instagrams present!"
-			live_comments = Venue.get_comments([@venue.id])	
-		end
 		cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}"
+
+		@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do		
+			if @venue.instagram_location_id == nil
+				initial_instagrams = @venue.set_instagram_location_id(100)
+				@venue.delay.account_page_view
+			end
+
+			if initial_instagrams != nil
+				live_comments = Kaminari.paginate_array(initial_instagrams)
+			else
+				puts "Making a Get Comments Call because no initial instagrams present!"
+				live_comments = Venue.get_comments([@venue.id])	
+			end
+
+			live_comments.page(params[:page]).per(10)
+		end
+
 		@view_cache_key = cache_key+"view"
-		@comments = live_comments.page(params[:page]).per(10)
+		#@comments = live_comments.page(params[:page]).per(10)
 	end
 
 	def get_venue_feeds
