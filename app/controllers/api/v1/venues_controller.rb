@@ -250,7 +250,7 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display.json.jbuilder'
 	end
 
-	def refresh_map_view_by_parts
+	def refresh_map_view_by_parts_v_old
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
 
@@ -273,14 +273,20 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display_by_parts.json.jbuilder'
 	end
 
-	def refresh_map_view_by_parts_v2
+	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
 		center_point = [lat, long]
 		proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
-		Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
-		Venue.where("latitude longitude")
-
+		cache_key = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]"
+		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+			nearby_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
+			nearby_venue_ids = nearby_venues.pluck(:id)
+			faraway_venues = Venue.where("color_rating > -1.0 OR is_live IS TRUE AND id NOT IN (nearby_venue_ids)")
+			Kaminari.paginate_array(nearby_venues.concat(faraway_venues)).page(params[:page]).per(num_page_entries)
+		end
+		@view_cache_key = cache_key+"/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]/part_"+params[:page]
+		render 'display_by_parts.json.jbuilder'
 	end
 
 	def search
