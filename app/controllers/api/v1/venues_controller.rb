@@ -126,12 +126,14 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if initial_instagrams != nil
 			@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do					
-				Kaminari.paginate_array(initial_instagrams).page(params[:page]).per(10)
+				venue_comments = Kaminari.paginate_array(initial_instagrams).page(params[:page]).per(10)
+				Kaminari::PaginatableArray.new(venue_comments.to_a, limit: venue_comments.limit_value, offset: venue_comments.offset_value, total_count: venue_comments.total_count)
 			end
 		else
 			puts "Making a Get Comments Call because no initial instagrams present!"
 			@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				Venue.get_comments([@venue.id]).page(params[:page]).per(10)
+				venue_comments = Venue.get_comments([@venue.id]).page(params[:page]).per(10)
+				Kaminari::PaginatableArray.new(venue_comments.to_a, limit: venue_comments.limit_value, offset: venue_comments.offset_value, total_count: venue_comments.total_count)
 			end
 		end
 
