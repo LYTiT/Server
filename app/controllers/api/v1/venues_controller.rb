@@ -287,7 +287,7 @@ class Api::V1::VenuesController < ApiBaseController
 		lit_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 			nearby_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
 			nearby_venue_ids = nearby_venues.pluck(:id)
-			faraway_venues = Venue.where("color_rating > -1.0 OR is_live IS TRUE AND id NOT IN (?)", nearby_venue_ids)
+			faraway_venues = Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND id NOT IN (?)", nearby_venue_ids)
 			Kaminari.paginate_array(nearby_venues.concat(faraway_venues))
 			#Kaminari.paginate_array(nearby_venues.concat(faraway_venues)).page(params[:page]).per(num_page_entries)
 		end
