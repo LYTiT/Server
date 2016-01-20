@@ -301,17 +301,16 @@ class Api::V1::VenuesController < ApiBaseController
 			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
 			end
-			lit_venues = nearby_venues
+			@venues = nearby_venues.page(params[:page]).per(num_page_entries)
 		else
 			cache_key = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]_far"
 			faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude < #{proximity_box.sw.lat} OR latitude > #{proximity_box.ne.lat}) AND (longitude < #{proximity_box.sw.lng} OR longitude > #{proximity_box.ne.lng}))")
 			end
-			lit_venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)
+			@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)
 		end
 
 		@view_cache_key = cache_key+"/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]/part_"+params[:page]
-		@venues = lit_venues
 		#@venues = lit_venues.page(params[:page]).per(num_page_entries)
 		render 'display_by_parts.json.jbuilder'
 	end
