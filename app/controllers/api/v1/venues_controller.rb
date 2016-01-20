@@ -297,13 +297,13 @@ class Api::V1::VenuesController < ApiBaseController
 =end		
 
 
-		if params[:page] == 1
-			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+		if params[:page].to_i == 1
+			nearby_venues = Rails.cache.fetch(cache_key_near, :expires_in => 5.minutes) do
 				Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
 			end
 			@venues = nearby_venues
 		else
-			faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+			faraway_venues = Rails.cache.fetch(cache_key_far, :expires_in => 5.minutes) do
 				Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND (latitude < #{proximity_box.sw.lat} AND latitude > #{proximity_box.ne.lat} AND longitude < #{proximity_box.sw.lng} AND longitude > #{proximity_box.ne.lng})")
 			end
 			@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)
