@@ -278,8 +278,7 @@ class Api::V1::VenuesController < ApiBaseController
 		long = params[:longitude] || -73.981917
 		center_point = [lat, long]
 		proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 2, :units => :kms)
-		cache_key_near = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]_near"
-		cache_key_far = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]_far"
+				
 		if params[:page].to_i == 1
 			num_page_entries = 500
 		else
@@ -298,12 +297,14 @@ class Api::V1::VenuesController < ApiBaseController
 
 
 		if params[:page].to_i == 1
-			nearby_venues = Rails.cache.fetch(cache_key_near, :expires_in => 5.minutes) do
+			cache_key = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]_near"
+			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
 			end
 			@venues = nearby_venues
 		else
-			faraway_venues = Rails.cache.fetch(cache_key_far, :expires_in => 5.minutes) do
+			cache_key = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]_far"
+			faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND (latitude < #{proximity_box.sw.lat} AND latitude > #{proximity_box.ne.lat} AND longitude < #{proximity_box.sw.lng} AND longitude > #{proximity_box.ne.lng})")
 			end
 			@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)
