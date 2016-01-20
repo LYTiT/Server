@@ -250,7 +250,7 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display.json.jbuilder'
 	end
 
-	def refresh_map_view_by_parts_v_old
+	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
 
@@ -273,7 +273,7 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display_by_parts.json.jbuilder'
 	end
 
-	def refresh_map_view_by_parts
+	def refresh_map_view_by_parts_v
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
 		center_point = [lat, long]
