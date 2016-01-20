@@ -295,6 +295,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 =end		
 
+
 		if params[:page] == 1
 			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
 				Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
