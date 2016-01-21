@@ -1,4 +1,3 @@
-
 <% content_for :body do %>
 <body id='home'>
    <% end %>
@@ -10,12 +9,12 @@
          <span></span>
          </a>
       </header>
-
       <!-- .cd-header -->
       <div class="edit-password-title">
          <p id="change-password"><b><%= t '.title' %></b></p>
          <p><%= t '.description' %></p>
       </div>
+      <br />
       <%= form_for :password, :url => passwords_path, :html => { :class => "login after" } do |form| %>
         <% if flash[:notice].present? %>
           <div class="alert alert-danger"><%= flash[:notice] %></div>
@@ -25,7 +24,6 @@
           <%= form.submit value: "Reset Password" %>
         </div>
       <% end %>
-
       <footer class="footer-basic-centered">
          <p class="footer-links">
             <a><%= link_to "Privacy", privacy_path %></a>
