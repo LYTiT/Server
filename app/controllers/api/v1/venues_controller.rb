@@ -284,7 +284,8 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			num_page_entries = 750
 		end
-
+		puts "------------> version: #{params[:version]}"
+=begin
 		if params[:version] == nil #means user is on version 1.1.0. Version 1.1.0 has a bug where client stops pulling lyts if less than 400 are returned on a page thus we cannot always leverage proximity_box loading, particularly in areas
 		#with a small lyt density.
 			if Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE").count > 400				
@@ -312,6 +313,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venues = ordered_venues.page(params[:page]).per(num_page_entries)
 			end
 		else
+=end			
 			if params[:page].to_i == 1
 				cache_key = "lyt_map_by_parts/[#{lat.to_f.round(2)},#{long.to_f.round(2)}]/near"
 				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
@@ -326,7 +328,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 			end
 			@view_cache_key = cache_key+"/view/page_"+params[:page]
-		end
+		#end
 		
 		render 'display_by_parts.json.jbuilder'
 	end
