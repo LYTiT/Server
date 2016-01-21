@@ -302,7 +302,6 @@ class Api::V1::VenuesController < ApiBaseController
 					@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 				end
 				@view_cache_key = cache_key+"/view/page_"+params[:page]
-				render 'display_by_parts.json.jbuilder'
 			else
 				cache_key = "total_lyt_map"
 				venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
