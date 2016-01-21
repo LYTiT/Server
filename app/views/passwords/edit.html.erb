@@ -2,17 +2,17 @@
   <body id='home'>
 <% end %>
 
-<div class="home-container set-password">
+<div class="home-container edit-password">
       <header class="cd-header-home">
-        <a id="logo" href="/"><img id="logo" src="/assets/lytit-logotype.svg" width="130" height="auto" alt="Logo"></a>
+        <a id="logo" href="/"><img id="logo" src="/assets/lytit-logotype.svg" width="130px" alt="LYTiT"></a>
         <a href="#0" class="cd-3d-nav-trigger-home">
           Menu
           <span></span>
         </a>
       </header> <!-- .cd-header -->
 
-        <div class="set-password-title">
-          <p><b><%= t '.title' %></b></p>
+        <div class="edit-password-title">
+          <p id="change-password"><b><%= t '.title' %></b></p>
           <p>Please enter your new password below</p>
         </div>
         <%= form_for :password_reset, :url => user_password_path(@user, :token => @user.confirmation_token), :html => { :method => :put, :class => "login after" } do |form| %>
