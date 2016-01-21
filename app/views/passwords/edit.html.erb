@@ -14,6 +14,7 @@
          <p id="change-password"><b><%= t '.title' %></b></p>
          <p>Please enter your new password below</p>
       </div>
+      <br />
       <%= form_for :password_reset, :url => user_password_path(@user, :token => @user.confirmation_token), :html => { :method => :put, :class => "login after" } do |form| %>
       <% if flash[:notice].present? %>
       <div class="alert alert-danger"><%= flash[:notice] %></div>
