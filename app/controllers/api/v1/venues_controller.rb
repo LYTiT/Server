@@ -285,18 +285,8 @@ class Api::V1::VenuesController < ApiBaseController
 			num_page_entries = 750
 		end
 
-		if params[:version] == nil
-			if Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE").count > 400
-				puts "Version is NULL and MORE THAN 400"
-			else
-				puts "Version is NULL and LESS!! THAN 400"
-			end
-		else
-			puts "Version not being determined!!!!"
-		end
-=begin
-		if params[:version] == nil #means user is on version 1.1.0. Version 1.1.0 has a bug where client stops pulling lyts if less than 400 are returned on a page thus we cannot always leverage proximity_box loading, particularly in areas
-		#with a small lyt density.
+
+		if params[:version] == nil #means user is on version 1.1.0. Version 1.1.0 has a bug where client stops pulling lyts if less than 400 are returned on a page thus we cannot always leverage proximity_box loading, particularly in areas with a small lyt density.
 			if Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE").count > 400				
 				if params[:page].to_i == 1
 					cache_key = "lyt_map_by_parts/[#{lat},#{long}]/near"
@@ -312,6 +302,7 @@ class Api::V1::VenuesController < ApiBaseController
 					@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 				end
 				@view_cache_key = cache_key+"/view/page_"+params[:page]
+				render 'display_by_parts.json.jbuilder'
 			else
 				cache_key = "total_lyt_map"
 				venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
@@ -322,8 +313,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@view_cache_key = cache_key+"/#{user_city}/part_"+params[:page]
 				@venues = ordered_venues.page(params[:page]).per(num_page_entries)
 			end
-		else
-=end			
+		else		
 			if params[:page].to_i == 1
 				cache_key = "lyt_map_by_parts/[#{lat},#{long}]/near"
 				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
@@ -338,7 +328,7 @@ class Api::V1::VenuesController < ApiBaseController
 				@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 			end
 			@view_cache_key = cache_key+"/view/page_"+params[:page]
-		#end
+		end
 		
 		render 'display_by_parts.json.jbuilder'
 	end
