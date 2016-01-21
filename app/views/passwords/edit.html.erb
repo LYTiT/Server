@@ -2,7 +2,7 @@
   <body id='home'>
 <% end %>
 
-<div class="home-container login2">
+<div class="home-container set-password">
       <header class="cd-header-home">
         <a id="logo" href="/"><img id="logo" src="/assets/lytit-logotype.svg" width="130" height="auto" alt="Logo"></a>
         <a href="#0" class="cd-3d-nav-trigger-home">
@@ -19,9 +19,9 @@
           <% if flash[:notice].present? %>
             <div class="alert alert-danger"><%= flash[:notice] %></div>
           <% end %>
-          <%= form.password_field :password, class: "form-control", placeholder: "Set Password", autocomplete: "off" %>
+          <%= form.password_field :password, class: "form-control", placeholder: "Password", autocomplete: "off" %>
           <div class="sign_in_button">
-            <%= form.submit value: "Save this password" %>
+            <%= form.submit value: "Save" %>
           </div>
         <% end %>
 
