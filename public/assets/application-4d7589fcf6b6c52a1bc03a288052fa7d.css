@@ -2488,9 +2488,19 @@ Login style
 }
 
 /* line 1614, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
-.set-password {
+.edit-password {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #1d6ec6;
+}
+
+/* line 1619, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+.edit-password-title {
   text-align: center;
+}
+
+/* line 1623, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+#change-password {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
 }
