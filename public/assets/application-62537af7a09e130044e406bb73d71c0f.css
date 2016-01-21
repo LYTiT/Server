@@ -1557,8 +1557,8 @@ Features style
   z-index: 3;
   width: 100%;
   height: 50px;
-  background-color: rgba(255, 255, 255, 0.3);
-  border-bottom: 1px solid rgba(225, 225, 225, 0.2);
+  background-color: rgba(0, 0, 0, 0.45);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   overflow: hidden;
   /* Force Hardware Acceleration in WebKit */
   -webkit-transform: translateZ(0);
@@ -1649,9 +1649,12 @@ Features style
 
 /* line 913, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 #blur {
+  display: none;
   z-index: 2;
-  margin-top: -3px;
-  background: grey;
+  top: 0;
+  left: -8px;
+  right: -8px;
+  background: #1d6ec6;
   opacity: 0.4;
   -webkit-filter: blur(8px);
   -moz-filter: blur(8px);
@@ -1660,7 +1663,7 @@ Features style
   filter: blur(8px);
 }
 
-/* line 925, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-main-content {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1673,7 +1676,7 @@ Features style
   margin: 0 auto;
   margin-top: -80px;
 }
-/* line 939, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 942, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-main-content.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1682,17 +1685,17 @@ Features style
   transform: translateY(80px);
 }
 @media only screen and (min-width: 100px) {
-  /* line 925, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: auto;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 925, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: auto;
   }
-  /* line 949, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 952, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-main-content.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1702,7 +1705,7 @@ Features style
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 925, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: -80px;
     height: 100%;
@@ -1711,7 +1714,7 @@ Features style
   }
 }
 
-/* line 964, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-product-intro {
   padding: 50px 5%;
   text-align: center;
@@ -1719,14 +1722,14 @@ Features style
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
 }
-/* line 970, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 973, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-product-intro h1 {
   font-size: 2.8rem;
   font-weight: 300;
   margin: 0.2em auto;
   margin-bottom: 12px;
 }
-/* line 980, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 983, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-product-intro p {
   padding: 0 0 20px;
   font-size: 1.9rem;
@@ -1741,7 +1744,7 @@ Features style
   content: "";
   display: table;
 }
-/* line 995, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 998, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-product-intro .btn {
   width: 120px;
   height: 40px;
@@ -1749,24 +1752,24 @@ Features style
   margin-right: 8px;
 }
 @media only screen and (min-width: 480px) {
-  /* line 964, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     padding: 50px 10%;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 964, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     padding: 50px 15%;
   }
-  /* line 1008, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1011, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: 6em auto;
     margin-bottom: 15px;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 964, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     /* Force Hardware Acceleration in WebKit */
     -webkit-transform: translateZ(0);
@@ -1792,7 +1795,7 @@ Features style
     -moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
     transition: transform 0.3s, opacity 0.3s;
   }
-  /* line 1034, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1037, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-product-intro {
     opacity: 0;
     -webkit-transform: translateY(-50%) translateX(-50%);
@@ -1801,21 +1804,21 @@ Features style
     -o-transform: translateY(-50%) translateX(-50%);
     transform: translateY(-50%) translateX(-50%);
   }
-  /* line 1039, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1042, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: auto;
     margin-bottom: 15px;
     font-size: 3.5rem;
     font-weight: 100;
   }
-  /* line 1048, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1051, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro p {
     font-size: 2.0rem;
     font-weight: 300;
     padding: 10px 0 44px;
     margin: 0;
   }
-  /* line 1058, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1061, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro .btn {
     margin-right: 15px;
     width: 190px;
@@ -1824,39 +1827,39 @@ Features style
   }
 }
 @media (max-height: 320px) {
-  /* line 1067, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1070, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: -20px auto;
     margin-bottom: 15px;
   }
 }
 
-/* line 1074, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 #cd-product-tour {
   position: absolute;
   margin-top: -150px;
 }
 @media only screen and (min-width: 480px) and (max-height: 320px) {
-  /* line 1074, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -80px;
   }
 }
 @media only screen and (min-width: 480px) and (min-height: 375px) {
-  /* line 1074, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -80px;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  /* line 1074, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -135px;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1074, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     position: relative;
     width: 100%;
@@ -1879,7 +1882,7 @@ Features style
     -moz-transition: -moz-transform 0.3s;
     transition: transform 0.3s;
   }
-  /* line 1105, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1108, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .is-product-tour #cd-product-tour {
     -webkit-transform: translateY(-50%) translateX(0);
     -moz-transform: translateY(-50%) translateX(0);
@@ -1887,14 +1890,14 @@ Features style
     -o-transform: translateY(-50%) translateX(0);
     transform: translateY(-50%) translateX(0);
   }
-  /* line 1109, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1112, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   #cd-product-tour > ul {
     height: 100%;
     width: 100%;
   }
 }
 
-/* line 1117, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-single-item {
   /* product tour - single list item */
   padding: 50px 5% 120px;
@@ -1904,14 +1907,14 @@ Features style
   -moz-osx-font-smoothing: grayscale;
   border-top: 1px solid white;
 }
-/* line 1125, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1128, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-single-item h2 {
   margin-bottom: 15px;
   font-size: 2.7rem;
   font-weight: 100;
   color: #c3d8f8;
 }
-/* line 1134, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1137, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-single-item p {
   padding: 10px 0 50px;
   font-size: 1.8rem;
@@ -1920,33 +1923,33 @@ Features style
   color: #b1cdf6;
 }
 @media only screen and (min-width: 100px) {
-  /* line 1146, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1149, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: #1d6ec6;
     border-top: transparent;
   }
-  /* line 1151, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: #08224a;
     border-top: transparent;
   }
-  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1157, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater h2 {
     color: #cedffa;
   }
-  /* line 1157, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1160, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater p {
     color: #abc8f6;
   }
 }
 @media only screen and (min-width: 480px) {
-  /* line 1117, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item {
     padding: 50px 10% 120px;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 1117, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item {
     padding: 50px 15% 120px;
   }
@@ -1956,19 +1959,19 @@ Features style
     content: "";
     display: table;
   }
-  /* line 1173, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1176, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 50%;
     float: left;
     margin-top: 180px;
   }
-  /* line 1178, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1181, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-caption {
     float: right;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1117, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item {
     position: absolute;
     top: 50%;
@@ -1983,35 +1986,35 @@ Features style
     padding: 0;
     visibility: visible;
   }
-  /* line 1194, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1197, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: transparent;
   }
-  /* line 1196, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1199, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater h2 {
     color: white;
   }
-  /* line 1199, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1202, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater p {
     color: white;
   }
-  /* line 1204, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1207, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: transparent;
   }
-  /* line 1208, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-not-visible {
     /*need to create a specific class to change visibility value due to a Firefox bug*/
     /*CSS transition/animation fails when parent element changes visibility attribute*/
     visibility: hidden;
   }
-  /* line 1214, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item h2 {
     font-size: 3.7rem;
     font-weight: 100;
     color: white;
   }
-  /* line 1222, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1225, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item p {
     font-size: 2.0rem;
     font-weight: 100;
@@ -2020,7 +2023,7 @@ Features style
     padding: 10px 0 44px;
     margin: 0;
   }
-  /* line 1233, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1236, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 60%;
     float: right;
@@ -2035,11 +2038,11 @@ Features style
     -moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
     transition: transform 0.3s, opacity 0.3s;
   }
-  /* line 1245, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1248, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-single-item.cd-active .cd-caption {
     opacity: 1;
   }
-  /* line 1249, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1252, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-move-right .cd-caption {
     -webkit-transform: translateX(100px);
     -moz-transform: translateX(100px);
@@ -2049,37 +2052,37 @@ Features style
   }
 }
 
-/* line 1255, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-image-container {
   /*wrapper for image (and video - desktop only)*/
   max-width: 226px;
   margin: 0 auto;
   padding-top: 50px;
 }
-/* line 1261, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1264, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-image-container > div {
   position: relative;
 }
-/* line 1265, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1268, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-image-container img {
   display: block;
 }
-/* line 1269, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1272, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-image-container video {
   display: none;
 }
 @media only screen and (min-width: 768px) {
-  /* line 1255, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-image-container {
     float: right;
   }
-  /* line 1276, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1279, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-image-container {
     float: left;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1255, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-image-container {
     height: 402px;
     width: 35%;
@@ -2087,13 +2090,13 @@ Features style
     max-width: none;
     padding-top: 0;
   }
-  /* line 1287, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1290, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-image-container > div {
     display: inline-block;
     max-width: 100%;
     max-height: 100%;
   }
-  /* line 1293, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1296, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-image-container img {
     height: 402px;
     -webkit-transition: -webkit-transform 0.3s;
@@ -2105,7 +2108,7 @@ Features style
     -o-transform: translateZ(0);
     transform: translateZ(0);
   }
-  /* line 1299, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1302, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-image-container video {
     /*not inserted in html - will be loaded through jQuery*/
     display: block;
@@ -2130,7 +2133,7 @@ Features style
     -o-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
     transform: translateX(-50%) translateY(-50%) rotate(-90deg);
   }
-  /* line 1314, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1317, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container img {
     -webkit-transform: translateX(100%);
     -moz-transform: translateX(100%);
@@ -2138,7 +2141,7 @@ Features style
     -o-transform: translateX(100%);
     transform: translateX(100%);
   }
-  /* line 1318, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1321, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container video {
     -webkit-transform: translateX(50%) translateY(-50%) rotate(-90deg);
     -moz-transform: translateX(50%) translateY(-50%) rotate(-90deg);
@@ -2148,7 +2151,7 @@ Features style
   }
 }
 
-/* line 1325, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1328, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-phone-frame {
   /* Phone in CSS */
   -webkit-box-sizing: content-box;
@@ -2167,7 +2170,7 @@ Features style
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 1340, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1343, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after, .cd-phone-frame::before {
   /*these are the iPhone circle elements*/
   position: absolute;
@@ -2183,20 +2186,20 @@ Features style
   background-color: #d9d9d9;
   border-radius: 50%;
 }
-/* line 1350, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1353, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-phone-frame::before {
   height: 11px;
   width: 11px;
   top: -28px;
 }
-/* line 1356, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1359, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after {
   height: 31px;
   width: 31px;
   bottom: -38px;
 }
 
-/* line 1363, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1366, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-image-wrapper {
   position: relative;
   overflow: hidden;
@@ -2204,7 +2207,7 @@ Features style
   max-width: 226px;
 }
 
-/* line 1371, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-slider-nav {
   /* product discover slider navigation */
   display: none;
@@ -2221,7 +2224,7 @@ Features style
   content: "";
   display: table;
 }
-/* line 1382, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1385, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-slider-nav a {
   position: relative;
   display: block;
@@ -2236,11 +2239,11 @@ Features style
   border-top: 1px solid white;
   border-right: 1px solid white;
 }
-/* line 1395, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1398, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover {
   background: rgba(255, 255, 255, 0.55);
 }
-/* line 1399, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1402, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-slider-nav a::before {
   /*this is the background arrow - we have been used a before element to change the opacity on hover*/
   position: absolute;
@@ -2262,11 +2265,11 @@ Features style
   -moz-transition: opacity 0.2s;
   transition: opacity 0.2s;
 }
-/* line 1411, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1414, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover::before {
   opacity: 1;
 }
-/* line 1420, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1423, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-slider-nav .cd-next::before {
   -webkit-transform: translateX(-50%) translateY(-50%) rotate(180deg);
   -moz-transform: translateX(-50%) translateY(-50%) rotate(180deg);
@@ -2275,11 +2278,11 @@ Features style
   transform: translateX(-50%) translateY(-50%) rotate(180deg);
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1371, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-slider-nav {
     display: block;
   }
-  /* line 1427, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1430, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .cd-slider-nav a {
     visibility: hidden;
     opacity: 0;
@@ -2287,7 +2290,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
   }
-  /* line 1433, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1436, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a {
     visibility: visible;
     opacity: 1;
@@ -2295,7 +2298,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
   }
-  /* line 1438, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1441, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a.cd-inactive {
     visibility: hidden;
     opacity: 0;
@@ -2305,7 +2308,7 @@ Features style
   }
 }
 
-/* line 1447, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1450, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .cd-loader {
   /*top loading bar*/
   position: fixed;
@@ -2323,7 +2326,7 @@ Features style
 Footer style
 
 -------------------------------- */
-/* line 1464, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1467, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered {
   box-sizing: border-box;
   position: absolute;
@@ -2337,26 +2340,26 @@ Footer style
   color: white;
 }
 
-/* line 1479, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1482, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .legal-footer {
   margin-top: 200px;
   color: #8f96a3;
 }
 
-/* line 1484, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1487, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-motto {
   color: #8d9093;
   font-size: 24px;
   margin: 0;
 }
 
-/* line 1490, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1493, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-name {
   font-size: 14px;
   margin: 0;
 }
 
-/* line 1496, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1499, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links {
   list-style: none;
   font-weight: bold;
@@ -2364,13 +2367,13 @@ Footer style
   margin: 0;
 }
 
-/* line 1504, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1507, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a {
   display: inline-block;
   text-decoration: none;
   color: inherit;
 }
-/* line 1509, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1512, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
@@ -2378,50 +2381,50 @@ Footer style
 }
 
 @media (max-width: 667px) {
-  /* line 1518, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .footer-basic-centered {
     padding: 15px;
   }
 
-  /* line 1522, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1525, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-motto {
     font-size: 18px;
   }
 
-  /* line 1526, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1529, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-name {
     font-size: 12px;
   }
 
-  /* line 1530, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1533, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links {
     font-size: 14px;
     padding: 25px 0 10px;
   }
 
-  /* line 1535, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links a {
     line-height: 1.8;
   }
 }
-/* line 1540, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .features-footer {
   position: relative;
   padding-top: 0px;
   background: #1d6ec6;
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1540, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+  /* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
   .features-footer {
     display: none;
   }
 }
 
-/* line 1549, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1552, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 #hyperlink {
   color: #00ccff;
 }
-/* line 1551, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1554, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .no-touch #hyperlink:hover {
   color: #66e0ff;
 }
@@ -2431,19 +2434,19 @@ Footer style
 Login style
 
 -------------------------------- */
-/* line 1563, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1566, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login-block {
   padding-top: 20vh;
 }
 
-/* line 1567, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1570, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login {
   padding-left: 20%;
   padding-right: 20%;
   text-align: center;
   font-size: 16px;
 }
-/* line 1572, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1575, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login input[type=text], .login input[type=password], .login input[type=email] {
   font-size: 16px;
   height: 40px;
@@ -2456,37 +2459,42 @@ Login style
   text-align: center;
   margin-top: 25px;
 }
-/* line 1583, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1586, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login input[type=text]:focus, .login input[type=password]:focus, .login input[type=email]:focus {
   box-shadow: none;
 }
-/* line 1588, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1591, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login.before .sign_in_button {
   margin-top: 60px;
 }
-/* line 1593, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1596, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button {
   margin-top: 30px;
 }
-/* line 1595, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1598, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input {
   background-color: transparent;
   border: none;
 }
-/* line 1599, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1602, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input:hover {
   color: #00CCFF;
 }
-/* line 1604, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+/* line 1607, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
 .login .alert-danger {
   background-color: transparent;
   border: none;
   color: #A94442;
 }
 
-/* line 1611, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
-.login2 {
+/* line 1614, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+.set-password {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #1d6ec6;
+}
+/* line 1617, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+.set-password .p {
+  text-align: center;
+  magin-bottom: 5px;
 }

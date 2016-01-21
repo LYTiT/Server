@@ -1614,5 +1614,8 @@ Login style
   .set-password{
   	@include font-smoothing;
   	background: #1d6ec6;
-  	text-align: center;
+  	.p{
+  		text-align: center;
+  		magin-bottom: 5px;
+  	}
   }
