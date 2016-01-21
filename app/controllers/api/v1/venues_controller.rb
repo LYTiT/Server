@@ -276,7 +276,7 @@ class Api::V1::VenuesController < ApiBaseController
 	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
-		nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :units => :kms, :origin => [lat, long]).order("id ASC").first
+		nearby_vortex = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first
 		if nearby_vortex != nil
 			center_point = [nearby_vortex.latitude, nearby_vortex.longitude]
 		else
