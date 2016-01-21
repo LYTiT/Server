@@ -2488,13 +2488,20 @@ Login style
 }
 
 /* line 1614, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
-.set-password {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.edit-password {
   background: #1d6ec6;
 }
-/* line 1617, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
-.set-password .p {
+
+/* line 1618, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+.edit-password-title {
   text-align: center;
-  magin-bottom: 5px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: 300;
+}
+
+/* line 1624, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/WebsiteTweaks/app/assets/stylesheets/style.scss */
+#change-password {
+  font-size: 1.8rem;
+  margin-bottom: 5px;
 }

@@ -1612,12 +1612,13 @@ Login style
   }
 
   .edit-password{
-  	@include font-smoothing;
   	background: #1d6ec6;
   }
 
   .edit-password-title {
   	text-align: center;
+  	@include font-smoothing;
+  	font-weight: 300;
   }
 
   #change-password {
