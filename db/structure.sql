@@ -652,7 +652,8 @@ CREATE TABLE feed_users (
     last_visit timestamp without time zone,
     is_subscribed boolean DEFAULT true,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    interest_score double precision DEFAULT 0.0
 );
 
 
@@ -3970,4 +3971,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151221004602');
 INSERT INTO schema_migrations (version) VALUES ('20151226021810');
 
 INSERT INTO schema_migrations (version) VALUES ('20160118164620');
+
+INSERT INTO schema_migrations (version) VALUES ('20160125214512');
 

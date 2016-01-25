@@ -413,6 +413,11 @@ class Venue < ActiveRecord::Base
     self.update_columns(latest_page_view_time: Time.now)
   end
 
+  def update_linked_list_interest_scores
+    linked_list_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{self.id}"
+    feed_users = FeedUser.where("feed_id IN (?)", )
+  end
+
   def update_popularity_rank
     view_half_life = 120.0 #minutes
     latest_page_view_time_wrapper = latest_page_view_time || Time.now
