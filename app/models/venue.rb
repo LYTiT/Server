@@ -415,7 +415,7 @@ class Venue < ActiveRecord::Base
 
   def update_linked_list_interest_scores
     linked_list_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = #{self.id}"
-    feed_users = FeedUser.where("feed_id IN (?)", )
+    feed_users = FeedUser.where("feed_id IN (?)", linked_list_ids).update_all(interest_score: ) #update using 
   end
 
   def update_popularity_rank

@@ -89,7 +89,7 @@ class User < ActiveRecord::Base
     venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{feed_ids})"
 
     #sql = "SELECT active_venue, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_user WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score WHERE id IN #{venue_ids} GROUP BY active_venue ORDER BY relevance_score DESC LIMIT 5"
-    sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
+    sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
     #sql = "SELECT id, SUM(#{rating_weight}*rating+#{interest_weight}*0.5) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
     results = ActiveRecord::Base.connection.execute(sql)
 
