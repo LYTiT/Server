@@ -88,7 +88,7 @@ class User < ActiveRecord::Base
     rating = rating_weight = (1 - interest_weight)
     feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}" 
     venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{feed_ids})"
-    "SELECT feed_id FROM feed_venues WHERE venue_id = id"
+
 
     #sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
     sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
