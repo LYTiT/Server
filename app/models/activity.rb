@@ -255,4 +255,8 @@ class Activity < ActiveRecord::Base
 		Notification.create(notification)
 	end
 
+#Featured List Venue
+	def self.create_featured_list_venue_activities(user)
+	end
+
 end

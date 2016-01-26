@@ -82,20 +82,19 @@ class User < ActiveRecord::Base
     Venue.where("id IN (#{user_venue_ids}) AND is_live IS TRUE").order("name ASC")
   end
 
-  def create_active_venue_activities
-    interest_weight = 0.5
+  #determine which venues the user should be updated about as determined by the list they are in and the amount of activity they are experiencing
+  def featured_list_venues
+    interest_weight = 0.6
     rating = rating_weight = (1 - interest_weight)
     feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}" 
     venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{feed_ids})"
+    "SELECT feed_id FROM feed_venues WHERE venue_id = id"
 
-    #sql = "SELECT active_venue, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_user WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score WHERE id IN #{venue_ids} GROUP BY active_venue ORDER BY relevance_score DESC LIMIT 5"
-    sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
-    #sql = "SELECT id, SUM(#{rating_weight}*rating+#{interest_weight}*0.5) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
+    #sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (#{feed_ids}) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
+    sql = "SELECT id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE id IN (#{venue_ids}) AND rating IS NOT NULL GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
     results = ActiveRecord::Base.connection.execute(sql)
-
-    #sql = "SELECT meta, SUM(relevance_score)*(COUNT(distinct (case when venue_id IN (#{venue_ids}) then venue_id end))) AS weighted_avg FROM meta_data WHERE venue_id IN (#{venue_ids}) AND (NOW() - created_at) <= INTERVAL '1 DAY' GROUP BY meta ORDER BY weighted_avg DESC LIMIT 5"
-    #results = ActiveRecord::Base.connection.execute(sql)
   end
+
 
   #------------------------------------------------------------->
 
