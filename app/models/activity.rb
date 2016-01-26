@@ -257,6 +257,7 @@ class Activity < ActiveRecord::Base
 
 #Featured List Venue
 	def self.create_featured_list_venue_activities(user)
+		
 	end
 
 end
