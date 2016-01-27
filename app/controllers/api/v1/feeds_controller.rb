@@ -153,7 +153,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])		
-		@feed.delay.update_comments
+		@feed.delay.update_underlying_venues
 	end
 
 	def get_activity
