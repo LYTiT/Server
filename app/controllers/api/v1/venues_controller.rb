@@ -371,18 +371,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'get_suggested_venues.json.jbuilder'
 	end
 
-	def get_trending_venues 
-		@venues = Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
-			Venue.where("trend_position IS NOT NULL").order("trend_position ASC limit 10").includes(:venue_comments)
-		end
-	end
-
-	def get_trending_venues_details
-		@venues = Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
-			Venue.where("trend_position IS NOT NULL").order("trend_position ASC limit 10").includes(:venue_comments)
-		end		
-	end
-
 	def get_contexts
 		#Hanlding both for individual venue and clusters.
 		if params[:cluster_venue_ids] != nil
@@ -410,6 +398,10 @@ class Api::V1::VenuesController < ApiBaseController
 			previous_venue_ids = previous_venue_ids.split(',').map(&:to_i)
 		end
 		@venue = Venue.discover(params[:proximity], previous_venue_ids, params[:latitude], params[:longitude])
+	end
+
+	def get_trending_venues_for_user_list_feed
+		@venues = Venue.trending_venues_for_user(params[:latitude], params[:longitude])
 	end
 
 	def get_quick_venue_overview

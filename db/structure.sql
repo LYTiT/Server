@@ -720,8 +720,6 @@ CREATE TABLE feeds (
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     num_venues integer DEFAULT 0,
-    latest_viewed_time timestamp without time zone,
-    new_media_present boolean DEFAULT false,
     feed_color character varying(255),
     user_id integer,
     open boolean DEFAULT true,
@@ -732,7 +730,8 @@ CREATE TABLE feeds (
     num_moments integer DEFAULT 0,
     central_mass_latitude double precision,
     central_mass_longitude double precision,
-    search_vector tsvector
+    search_vector tsvector,
+    latest_update_time timestamp without time zone
 );
 
 
@@ -3973,4 +3972,6 @@ INSERT INTO schema_migrations (version) VALUES ('20151226021810');
 INSERT INTO schema_migrations (version) VALUES ('20160118164620');
 
 INSERT INTO schema_migrations (version) VALUES ('20160125214512');
+
+INSERT INTO schema_migrations (version) VALUES ('20160127032337');
 

@@ -465,11 +465,16 @@ class Venue < ActiveRecord::Base
     end    
   end
 
-  def self.trending_venues
-    key = "trending_venues"
-    Rails.cache.fetch key, expires_in: 3.minutes do
-      Venue.all.joins(:venue_comments).where("venue_comments.time_wrapper > ?", Time.now-1.day).order("popularity_rank desc limit 10")
-    end
+  def self.trending_venues(user_lat, user_long)
+    total_trends = 10
+    nearby_ratio = 0.7
+    nearby_count = total_trends*nearby_ratio
+    global_count = (total_trends-nearby_count)
+    nearby_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        <= #{nearby_radius}").order("popularity_rank DESC").limit(nearby_count)
+    global_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+        > #{nearby_radius}").order("popularity_rank DESC").limit(global_count)
+    return nearby_trends+global_trends
   end
   #----------------------------------------------------------------------->
 
