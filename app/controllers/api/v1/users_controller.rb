@@ -315,13 +315,13 @@ class Api::V1::UsersController < ApiBaseController
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 				@user.featured_list_venues
 			end
-			render 'featured_list_venues'
+			render 'featured_list_venues.json.jbuilder'
 		else
 			cache_key = "user/#{@user.id}/list_feed"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 				@user.aggregate_list_feed.page(page).per(10)
 			end
-			render 'get_aggregate_list_activity'
+			render 'lists_feed.json.jbuilder'
 		end
 	end
 

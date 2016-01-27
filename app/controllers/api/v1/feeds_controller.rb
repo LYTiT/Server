@@ -145,7 +145,6 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def register_open
 		feed = Feed.find_by_id(params[:feed_id])			
-		feed.update_columns(new_media_present: false)
 		feed.delay.underlying_venues
 		#feed.update_media	
 		render json: { success: true }
