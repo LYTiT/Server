@@ -63,7 +63,7 @@ class User < ActiveRecord::Base
     user_feeds = Feed.where("id IN (#{top_user_feed_ids})")
 
     for feed in user_feeds
-      if feed.latest_update_time < (Time.now - update_interval.minutes)
+      if feed.latest_update_time == nil or (feed.latest_update_time < (Time.now - update_interval.minutes))
         feed.update_underlying_venues
       end
     end
