@@ -323,6 +323,7 @@ class Api::V1::UsersController < ApiBaseController
 			end
 			render 'lists_feed.json.jbuilder'
 		end
+		@user.delay.@user.update_user_feeds
 	end
 
 	def get_list_recommendations
@@ -355,6 +356,7 @@ class Api::V1::UsersController < ApiBaseController
 	def get_aggregate_activity
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
+		@user.delay.update_user_feeds
 	end
 
 	def get_live_list_venues
