@@ -968,12 +968,8 @@ class Venue < ActiveRecord::Base
   def venue_twitter_tweets
     time_out_minutes = 5
     if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > time_out_minutes.minutes)
+      
       new_venue_tweets = self.update_tweets(true)
-
-      if new_venue_tweets.length > 0
-        Tweet.delay.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
-        #new_venue_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
-      end
 
       total_venue_tweets = []
       total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
@@ -1062,7 +1058,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_twitter_pull_time: Time.now)
 
       if new_venue_tweets.length > 0
-        if delaly_conversion == true
+        if delay_conversion == true
           Tweet.delay.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
         else
           Tweet.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
