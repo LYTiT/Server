@@ -707,28 +707,8 @@ class Venue < ActiveRecord::Base
     #dealing with an individual venue which could require an instagram pull
       venue = Venue.find_by_id(venue_ids.first)
       new_instagrams = []
-      instagram_refresh_rate = 10 #minutes
-      instagram_venue_id_ping_rate = 1 #days      
 
-      if venue.instagram_location_id != nil && venue.last_instagram_pull_time != nil
-        #try to establish instagram location id if previous attempts failed every 1 day
-        if venue.instagram_location_id == 0 
-          if venue.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= venue.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= venue.last_instagram_pull_time))
-            new_instagrams = venue.set_instagram_location_id(100)
-            venue.update_columns(last_instagram_pull_time: Time.now)
-          end
-        elsif venue.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= venue.last_instagram_pull_time)
-            new_instagrams = venue.set_instagram_location_id(100)
-            venue.update_columns(last_instagram_pull_time: Time.now)
-        else
-          if ((Time.now - instagram_refresh_rate.minutes) >= venue.last_instagram_pull_time)
-            new_instagrams = venue.get_instagrams(false)
-          end
-        end
-      else
-        new_instagrams = venue.set_instagram_location_id(100)
-        venue.update_columns(last_instagram_pull_time: Time.now)
-      end
+      new_instagrams = venue.update_comments
 
       #new_instagrams.sort_by{|instagram| instagram["created_time"].reverse}
       if new_instagrams != nil and new_instagrams.first.is_a?(Hash) == true
@@ -742,6 +722,32 @@ class Venue < ActiveRecord::Base
         return venue.venue_comments.order("time_wrapper DESC")
       end
     end
+  end
+
+  def update_comments
+      instagram_refresh_rate = 10 #minutes
+      instagram_venue_id_ping_rate = 1 #days      
+
+      if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
+        #try to establish instagram location id if previous attempts failed every 1 day
+        if self.instagram_location_id == 0 
+          if self.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= self.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= self.last_instagram_pull_time))
+            new_instagrams = self.set_instagram_location_id(100)
+            self.update_columns(last_instagram_pull_time: Time.now)
+          end
+        elsif self.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= self.last_instagram_pull_time)
+            new_instagrams = self.set_instagram_location_id(100)
+            self.update_columns(last_instagram_pull_time: Time.now)
+        else
+          if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
+            new_instagrams = self.get_instagrams(false)
+          end
+        end
+      else
+        new_instagrams = self.set_instagram_location_id(100)
+        self.update_columns(last_instagram_pull_time: Time.now)
+      end
+      new_instagrams
   end
 
 
@@ -962,27 +968,7 @@ class Venue < ActiveRecord::Base
   def venue_twitter_tweets
     time_out_minutes = 5
     if self.last_twitter_pull_time == nil or (Time.now - self.last_twitter_pull_time > time_out_minutes.minutes)
-      client = Twitter::REST::Client.new do |config|
-        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
-        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
-        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
-        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
-      end
-
-      radius = 100.0 * 1/1000 #Venue.meters_to_miles(100)
-      #query = ""
-      #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
-      #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
-      #query+=(" OR "+self.name)
-      query = self.name
-
-      last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
-      if last_tweet_id != nil
-        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
-      else
-        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a
-      end
-      self.update_columns(last_twitter_pull_time: Time.now)
+      new_venue_tweets = self.update_tweets(true)
 
       if new_venue_tweets.length > 0
         Tweet.delay.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
@@ -1050,6 +1036,40 @@ class Venue < ActiveRecord::Base
       Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
           <= #{radius} AND associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
     end
+  end
+
+  def update_tweets(delay_conversion)
+      client = Twitter::REST::Client.new do |config|
+        config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
+        config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
+        config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
+        config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
+      end
+
+      radius = 100.0 * 1/1000 #Venue.meters_to_miles(100)
+      #query = ""
+      #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
+      #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
+      #query+=(" OR "+self.name)
+      query = self.name
+
+      last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
+      if last_tweet_id != nil
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
+      else
+        new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a
+      end
+      self.update_columns(last_twitter_pull_time: Time.now)
+
+      if new_venue_tweets.length > 0
+        if delaly_conversion == true
+          Tweet.delay.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
+        else
+          Tweet.bulk_conversion(new_venue_tweets, self.id, nil, nil, nil, nil)
+        end
+        #new_venue_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
+      end
+      new_venue_tweets   
   end
 
   def self.surrounding_twitter_tweets(user_lat, user_long, venue_ids)

@@ -57,13 +57,14 @@ class User < ActiveRecord::Base
 
   #I.
   def update_user_feeds
-    non_checked_feeds = feeds.where("new_media_present IS FALSE")
-    for feed in non_checked_feeds
-      for feed_venue in feed.venues
-        if feed_venue.get_instagrams(false).first.try(:created_at) == nil && feed.new_media_present == false
-          feed.update_columns(latest_content_time: Time.now)
-          feed.update_columns(new_media_present: true)
-        end
+    update_interval = 15 #minutes
+
+    top_user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id} ORDER BY interest_score DESC LIMIT 5"
+    user_feeds = Feed.where("id IN (#{top_user_feed_ids})")
+
+    for feed in user_feeds
+      if feed.latest_update_time < (Time.now - update_interval.minutes)
+        feed.update_underlying_venues
       end
     end
   end 

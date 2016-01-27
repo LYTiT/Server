@@ -301,7 +301,7 @@ class Api::V1::VenuesController < ApiBaseController
 				else
 					cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far"
 					faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-						Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude < #{proximity_box.sw.lat} OR latitude > #{proximity_box.ne.lat}) AND (longitude < #{proximity_box.sw.lng} OR longitude > #{proximity_box.ne.lng}))").order("city ASC")
+						Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}))").order("city ASC")
 					end
 					@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 				end
@@ -326,7 +326,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far"
 				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-					Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude < #{proximity_box.sw.lat} OR latitude > #{proximity_box.ne.lat}) AND (longitude < #{proximity_box.sw.lng} OR longitude > #{proximity_box.ne.lng}))").order("city ASC")
+					Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}))").order("city ASC")
 				end
 				@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 			end

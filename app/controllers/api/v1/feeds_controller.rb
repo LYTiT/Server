@@ -147,7 +147,7 @@ class Api::V1::FeedsController < ApiBaseController
 		feed = Feed.find_by_id(params[:feed_id])			
 		feed.update_columns(latest_viewed_time: Time.now)
 		feed.update_columns(new_media_present: false)
-		feed.delay.update_comments
+		feed.delay.underlying_venues
 		#feed.update_media	
 		render json: { success: true }
 	end
