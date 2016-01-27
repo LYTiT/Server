@@ -323,7 +323,7 @@ class Api::V1::UsersController < ApiBaseController
 			end
 			render 'lists_feed.json.jbuilder'
 		end
-		@user.delay.@user.update_user_feeds
+		@user.delay.update_user_feeds
 	end
 
 	def get_list_recommendations
