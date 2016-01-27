@@ -2,7 +2,7 @@ class Api::V1::FeedsController < ApiBaseController
 	skip_before_filter :set_user, only: [:create]
 
 	def create
-		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :latest_viewed_time => Time.now, :feed_color => params[:feed_color], :open => params[:open], :description => params[:list_description])
+		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => params[:open], :description => params[:list_description])
 
 		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true)
 
@@ -145,7 +145,6 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def register_open
 		feed = Feed.find_by_id(params[:feed_id])			
-		feed.update_columns(latest_viewed_time: Time.now)
 		feed.update_columns(new_media_present: false)
 		feed.delay.underlying_venues
 		#feed.update_media	

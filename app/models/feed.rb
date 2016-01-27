@@ -93,11 +93,6 @@ class Feed < ActiveRecord::Base
 		FeedVenue.where("feed_id = ? AND venue_id = ?", self.id, v_id).any?
 	end
 
-	def new_content_present?
-		latest_viewed_time_wrapper = latest_viewed_time || (Time.now + 1.minute)
-		self.venue_comments.where("venue_comments.created_at > ?", latest_viewed_time_wrapper).count
-	end
-
 	def self.feeds_in_venue(venue_id)
 		feed_ids = "SELECT feed_id FROM feed_venues WHERE venue_id = (#{venue_id})"
 		Feed.where("id IN (#{feed_ids})").order("name ASC")

@@ -69,6 +69,25 @@ class User < ActiveRecord::Base
     end
   end 
 
+  def surrounding_venues(lat, long)
+    center_point = [lat, long]
+    surrounding_lit_venues = Venue.where("color_rating")
+    proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 0.15, :units => :kms)
+    surrounding_lit_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0")
+
+    if surrounding_lit_venues.first != nil
+      results = surrounding_lit_venues.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
+    else    
+      meter_radius = 100
+      surrounding_instagrams = (Instagram.media_search(lat, long, :distance => meter_radius, :count => 20, :min_timestamp => (Time.now-24.hours).to_time.to_i)).sort_by{|inst| Venue.spherecial_distance_between_points(lat, long, inst.location.latitude, inst.location.longitude)}
+      surrounding_instagrams.map!(&:to_hash)
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(surrounding_instagrams, nil)
+      results = surrounding_instagrams.uniq! {|instagram| instagram["location"]["name"] }
+    end
+
+    return results
+  end
+
   #IV. Lists
 
   def aggregate_list_feed
@@ -105,6 +124,8 @@ class User < ActiveRecord::Base
       (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
     results = ActiveRecord::Base.connection.execute(sql)
+    Activity.delay.create_featured_list_venue_activities(featured_venue_entries)
+    return results
   end
 
 

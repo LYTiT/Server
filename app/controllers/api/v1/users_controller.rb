@@ -306,6 +306,52 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+
+	def get_list_feed
+		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		page = params[:page].to_i
+		if page == 1
+			cache_key = "user/#{@user.id}/featured_venues"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@user.featured_list_venues
+			end
+			render 'featured_list_venues'
+		else
+			cache_key = "user/#{@user.id}/list_feed"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@user.aggregate_list_feed.page(page).per(10)
+			end
+			render 'get_aggregate_list_activity'
+		end
+	end
+
+	def get_list_recommendations
+		cache_key = "user/#{@user.id}/list_recommendations"
+		@recommendations = Rails.cache.fetch(cache_key, :expires_in => 24.hours) do
+			FeedRecommendation.for_user(@user, params[:latitude], params[:longitude])
+		end
+	end
+
+	def get_nearby_venue
+		@user.surrounding_venues(params[:latitude], params[:longitude])
+	end
+
+	def get_trending_venues
+		lat = params[:latitude]
+		long = param[:longitude]
+		nearby_vortex = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first
+		if nearby_vortex != nil
+			cache_key = "trending_venues/[#{nearby_vortex.latitude},#{nearby_vortex.longitude}]"
+		else
+			cache_key = "trending_venues/[#{lat},#{long}]"
+		end
+		
+		@venues = Rails.cache.fetch(cache_key, :expires_in => 1.hour) do
+			Venue.trending_venues(lat, long)
+		end
+	end
+
+
 	def get_aggregate_activity
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)

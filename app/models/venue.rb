@@ -465,7 +465,7 @@ class Venue < ActiveRecord::Base
     end    
   end
 
-  def self.trending_venues(user_lat, user_long)
+  def Venue.trending_venues(user_lat, user_long)
     total_trends = 10
     nearby_ratio = 0.7
     nearby_count = total_trends*nearby_ratio
