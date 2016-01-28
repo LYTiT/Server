@@ -355,6 +355,7 @@ class Api::V1::UsersController < ApiBaseController
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 1.hour) do
 			Venue.trending_venues(lat, long)
 		end
+		@view_cache_key = cache_key+"/view"
 	end
 
 	def get_aggregate_activity

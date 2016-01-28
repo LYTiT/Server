@@ -60,6 +60,7 @@ LytitServer::Application.routes.draw do
         post 'checkout'
         get 'get_live_list_venues'
         get 'get_nearby_venues'
+        get 'get_trending_venues'
       end
 
       resources :feeds, only: [:create] do
