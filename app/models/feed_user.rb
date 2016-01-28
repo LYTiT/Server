@@ -10,7 +10,9 @@ class FeedUser < ActiveRecord::Base
 
 
 	def new_user_notification_and_activity
-		a = Activity.create!(:feed_id => feed_id, :activity_type => "new member", :feed_user_id => self.id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.color, :activity_type => "new member", :feed_user_id => self.id, 
+			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :adjusted_sort_position => (self.created_at).to_i)
+		
 		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 		begin
 			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id

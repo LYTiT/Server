@@ -381,7 +381,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.find_by_id(params[:venue_id])
 			@key = "contexts/venue/#{params[:venue_id]}"
 
-			@contexts = Rails.cache.fetch(@key, :expires_in => 3.minutes) do
+			@contexts = Rails.cache.fetch(@key, :expires_in => 10.minutes) do
 				MetaData.where("(NOW() - created_at) <= INTERVAL '1 DAY' AND venue_id = ?", params[:venue_id]).order("relevance_score DESC LIMIT 5")
 			end
 

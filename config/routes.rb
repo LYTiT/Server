@@ -61,6 +61,7 @@ LytitServer::Application.routes.draw do
         get 'get_live_list_venues'
         get 'get_nearby_venues'
         get 'get_trending_venues'
+        get 'get_list_recommendations'
       end
 
       resources :feeds, only: [:create] do

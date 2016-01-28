@@ -18,9 +18,11 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def edit_feed
 		feed = Feed.find_by_id(params[:id])
-		if feed 
+		if feed
+			update_activities = false
 			if params[:name] != nil
 				feed.update_columns(name: params[:name])
+				update_activities = true
 			end
 
 			if params[:open] != nil
@@ -33,6 +35,11 @@ class Api::V1::FeedsController < ApiBaseController
 
 			if params[:feed_color] != nil
 				feed.update_columns(feed_color: params[:feed_color])
+				update_activities = true
+			end
+
+			if update_activities == true
+				feed.delay.update_activity_feed_related_details
 			end
 
 			render json: feed.as_json

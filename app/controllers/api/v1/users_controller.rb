@@ -85,6 +85,7 @@ class Api::V1::UsersController < ApiBaseController
 
 
 		if @user.save		
+			@user.delay.update_list_activity_user_details
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "User cannot be updated with given parameters"} }, status: :unprocessable_entity
@@ -305,7 +306,6 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
 		end
 	end
-
 
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first

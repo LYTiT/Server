@@ -175,7 +175,42 @@ CREATE TABLE activities (
     num_participants integer DEFAULT 0,
     venue_comment_id integer,
     message text,
-    num_lists integer DEFAULT 1
+    num_lists integer DEFAULT 1,
+    feed_name character varying(255),
+    feed_color character varying(255),
+    user_name character varying(255),
+    user_phone character varying(255),
+    venue_instagram_location_id integer,
+    venue_latitude double precision,
+    venue_longitude double precision,
+    venue_name character varying(255),
+    venue_address character varying(255),
+    venue_city character varying(255),
+    venue_state character varying(255),
+    venue_country character varying(255),
+    venue_added_note text,
+    venue_comment_created_at timestamp without time zone,
+    venue_comment_media_type character varying(255),
+    venue_comment_content_origin character varying(255),
+    venue_comment_thirdparty_username character varying(255),
+    image_url_1 character varying(255),
+    image_url_2 character varying(255),
+    image_url_3 character varying(255),
+    video_url_1 character varying(255),
+    video_url_2 character varying(255),
+    video_url_3 character varying(255),
+    top_tag_1 character varying(255),
+    top_tag_2 character varying(255),
+    top_tag_3 character varying(255),
+    top_tag_4 character varying(255),
+    top_tag_5 character varying(255),
+    twitter_id bigint,
+    tweet_text text,
+    tweet_created_at timestamp without time zone,
+    tweet_author_name character varying(255),
+    tweet_author_id character varying(255),
+    tweet_author_avatar_url character varying(255),
+    tweet_handle character varying(255)
 );
 
 
@@ -3974,4 +4009,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160118164620');
 INSERT INTO schema_migrations (version) VALUES ('20160125214512');
 
 INSERT INTO schema_migrations (version) VALUES ('20160127032337');
+
+INSERT INTO schema_migrations (version) VALUES ('20160128160636');
 

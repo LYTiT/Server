@@ -64,6 +64,11 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def update_activity_feed_related_details
+		self.activities.update_all(feed_name: self.name)
+		self.activities.update_all(feed_color: self.feed_color)
+	end
+
 	def update_underlying_venues
 		instagram_refresh_rate = 15 #minutes
 		stale_venues = self.venues.where("last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes)

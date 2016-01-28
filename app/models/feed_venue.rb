@@ -25,7 +25,14 @@ class FeedVenue < ActiveRecord::Base
 	end
 
 	def new_venue_notification_and_activity
-		a = Activity.create!(:feed_id => feed_id, :activity_type => "added venue", :feed_venue_id => self.id, :venue_id => self.venue_id, :user_id => self.user_id, :adjusted_sort_position => (self.created_at).to_i)
+		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.color, :activity_type => "added venue", :feed_venue_id => self.id, 
+			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :venue_id => self.venue_id, :venue_name => self.venue.name, 
+			:venue_instagram_location_id => self.venue.instagram_location_id, :venue_latitude => self.venue.latitude,
+			:venue_longitude => self.venue.longitude, :venue_address => self.venue.address, :venue_city => self.venue.city,
+			:venue_state => self.venue.state, :venue_country => self.venue.country, :venue_note => self.description,
+			:adjusted_sort_position => (self.created_at).to_i)
+
+
 		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 		feed_members = feed.feed_users
 
