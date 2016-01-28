@@ -333,8 +333,13 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
-	def get_nearby_venue
-		@user.surrounding_venues(params[:latitude], params[:longitude])
+	def get_nearby_venues
+		@venues = @user.surrounding_venues(params[:latitude], params[:longitude])
+		if @venues.first.is_a?(Hash) 
+			render 'nearby_venues_diry.json.jbuilder'
+		else
+			render 'nearby_venues_pure.json.jbuilder'
+		end
 	end
 
 	def get_trending_venues
@@ -351,7 +356,6 @@ class Api::V1::UsersController < ApiBaseController
 			Venue.trending_venues(lat, long)
 		end
 	end
-
 
 	def get_aggregate_activity
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
