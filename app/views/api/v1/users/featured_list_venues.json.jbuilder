@@ -9,7 +9,7 @@ json.activity(@activities) do |activity|
   json.user_id nil
   json.user_name nil
   json.user_phone nil
-  json.created_at activ
+  json.created_at nil
   json.num_chat_participants nil
   json.latest_chat_time nil
 
@@ -19,8 +19,8 @@ json.activity(@activities) do |activity|
   json.tag_4 activity["tag_4"]
   json.tag_5 activity["tag_5"]
   
-  json.venue_id activity["venue_id"]
-  json.venue_name activity["venue_name"]
+  json.venue_id activity["id"]
+  json.venue_name activity["name"]
   json.address activity["address"]
   json.city activity["city"]
   json.country activity["country"]
@@ -51,9 +51,9 @@ json.activity(@activities) do |activity|
   json.twitter_user_id activity["tweet_author_id"]
   json.twitter_user_avatar_url activity["tweet_author_avatar"]
   json.twitter_handle activity["tweet_handle"]
-  json.tweet_image_url_1 activity["tweet_image_url_1"]
-  json.tweet_image_url_2 activity["tweet_image_url_2"]
-  json.tweet_image_url_3 activity["tweet_image_url_3"]
+  json.tweet_image_url_1 activity["image_url_1"]
+  json.tweet_image_url_2 activity["image_url_2"]
+  json.tweet_image_url_3 activity["image_url_3"]
 
   json.num_likes nil
   json.has_liked nil
