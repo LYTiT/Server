@@ -52,8 +52,8 @@ json.activity(@activities) do |activity|
   json.twitter_user_avatar_url activity["tweet_author_avatar"]
   json.twitter_handle activity["tweet_handle"]
   json.tweet_image_url_1 activity["tweet_image_url_1"]
-  json.tweet_image_url_2 activity["tweet_image_url_2"]
-  json.tweet_image_url_3 activity["tweet_image_url_3"]
+  json.tweet_image_url_2 activity["tweet_image_url_1"]
+  json.tweet_image_url_3 activity["tweet_image_url_1"]
 
   json.num_likes nil
   json.has_liked nil

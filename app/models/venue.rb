@@ -451,22 +451,32 @@ class Venue < ActiveRecord::Base
 
     previous_venue_ids = previous_venue_ids || []
 
-    rand_position = Random.rand(num_diverse_venues)
-      if previous_venue_ids.include?(rand_position)
-        while previous_venue_ids.include?(rand_position) do
-          rand_position = Random.rand(num_diverse_venues)
-        end
-      end
-
     if proximity == "nearby"
       #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #  <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
-      venue = Venue.in_bounds(proximity_box).order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+      i = 0
+      nearby_trending_venues = Venue.in_bounds(proximity_box).order("popularity_rank DESC").limit(num_diverse_venues).shuffle
+      venue = nearby_trending_venues[i]
+      if previous_venue_ids.include?(venue.id) 
+        while previous_venue_ids.include?(venue.id)
+          i += 1
+          venue = nearby_trending_venues[i]
+        end
+      end
     else
       #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #  > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
-      venue = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
-    end    
+      i = 0
+      faraway_trending_venues = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
+      venue = faraway_trending_venues[i]
+      if previous_venue_ids.include?(venue.id) 
+        while previous_venue_ids.include?(venue.id)
+          i += 1
+          venue = faraway_trending_venues[i]
+        end
+      end
+    end
+    return venue
   end
 
   def Venue.trending_venues(user_lat, user_long)

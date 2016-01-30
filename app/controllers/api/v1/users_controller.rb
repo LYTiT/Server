@@ -307,6 +307,12 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+	def get_aggregate_activity
+		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
+		@user.delay.update_user_feeds
+	end
+
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		page = params[:page].to_i
@@ -356,12 +362,6 @@ class Api::V1::UsersController < ApiBaseController
 			Venue.trending_venues(lat, long)
 		end
 		@view_cache_key = cache_key+"/view"
-	end
-
-	def get_aggregate_activity
-		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
-		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
-		@user.delay.update_user_feeds
 	end
 
 	def get_live_list_venues

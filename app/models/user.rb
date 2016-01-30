@@ -93,7 +93,7 @@ class User < ActiveRecord::Base
   def aggregate_list_feed
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
     activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
-    Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:feed, :user, :venue, :venue_comment).order("adjusted_sort_position DESC")
+    Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:venue).order("adjusted_sort_position DESC")
   end
 
   def live_list_venues
@@ -183,7 +183,7 @@ class User < ActiveRecord::Base
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 2 OFFSET 4"
 
     results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-    #Activity.delay.create_featured_list_venue_activities(featured_venue_entries)
+    #Activity.delay.create_featured_list_venue_activities(featured_venue_entries, nil, nil, nil)
     return results.shuffle
   end
 

@@ -166,7 +166,22 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_activity
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feed = Feed.find_by_id(params[:feed_id])
+		page = params[:page]
 		@activities = @feed.activity_of_the_day.page(params[:page]).per(10)
+
+		if page == 1
+			cache_key = "feed/#{@feed.id}/featured_venues"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@feed.featured_venues
+			end
+			render 'featured_venues.json.jbuilder'
+		else
+			cache_key = "feed/#{@feed.id}/activity"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@feed.activity_of_the_day.page(page).per(10)
+			end
+			render 'feed_activity.json.jbuilder'
+		end
 	end
 
 	def get_activity_object
