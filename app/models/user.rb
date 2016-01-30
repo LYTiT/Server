@@ -128,10 +128,10 @@ class User < ActiveRecord::Base
       color_rating,
       instagram_location_id, 
       (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1) AS toptag_1,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS toptag_2,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS toptag_3,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS toptag_4,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS toptag_5,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS tag_2,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS tag_3,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS tag_4,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS tag_5,
       (SELECT id FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_id,
       (SELECT time_wrapper FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_created_at,
       (SELECT media_type FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_media_type,
@@ -161,10 +161,10 @@ class User < ActiveRecord::Base
       color_rating,
       instagram_location_id, 
       (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1) AS toptag_1,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS toptag_2,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS toptag_3,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS toptag_4,
-      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS toptag_5,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS tag_2,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS tag_3,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS tag_4,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS tag_5,
       (SELECT id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_id,
       (SELECT twitter_id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS twitter_id,
       (SELECT tweet_text FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_text,
@@ -182,10 +182,9 @@ class User < ActiveRecord::Base
       (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 2 OFFSET 4"
 
-
     results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
     #Activity.delay.create_featured_list_venue_activities(featured_venue_entries)
-    return results
+    return results.shuffle
   end
 
 

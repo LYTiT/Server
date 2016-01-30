@@ -446,6 +446,8 @@ class Venue < ActiveRecord::Base
   def Venue.discover(proximity, previous_venue_ids, user_lat, user_long)
     num_diverse_venues = 50
     nearby_radius = 5000.0 * 1/1000 #* 0.000621371 #meters to miles
+    center_point = [user_lat, user_long]
+    proximity_box = Geokit::Bounds.from_point_and_radius(center_point, nearby_radius, :units => :kms)
 
     previous_venue_ids = previous_venue_ids || []
 
@@ -457,11 +459,13 @@ class Venue < ActiveRecord::Base
       end
 
     if proximity == "nearby"
-      venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+      #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+      #  <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+      venue = Venue.in_bounds(proximity_box).order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
     else
-      venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+      #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+      #  > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
+      venue = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
     end    
   end
 
@@ -470,11 +474,16 @@ class Venue < ActiveRecord::Base
     nearby_ratio = 0.7
     nearby_count = total_trends*nearby_ratio
     global_count = (total_trends-nearby_count)
-    nearby_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        <= #{nearby_radius}").order("popularity_rank DESC").limit(nearby_count)
-    global_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-        > #{nearby_radius}").order("popularity_rank DESC").limit(global_count)
-    return nearby_trends+global_trends
+    center_point = [user_lat, user_long]
+    proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
+
+    #nearby_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+    #    <= #{nearby_radius}").order("popularity_rank DESC").limit(nearby_count)
+    nearby_trends = Venue.in_bounds(proximity_box).order("popularity_rank DESC").limit(nearby_count)
+    global_trends = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})").order("popularity_rank DESC").limit(global_count)
+   # global_trends = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
+   #     > #{nearby_radius}").order("popularity_rank DESC").limit(global_count)
+    return (nearby_trends+global_trends).shuffle
   end
   #----------------------------------------------------------------------->
 

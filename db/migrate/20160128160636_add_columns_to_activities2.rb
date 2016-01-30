@@ -2,6 +2,7 @@ class AddColumnsToActivities2 < ActiveRecord::Migration
   def change
   	add_column :activities, :feed_name, :string
   	add_column :activities, :feed_color, :string
+    add_column :activities, :feed_creator_id, :integer
   	add_column :activities, :user_name, :string
   	add_column :activities, :user_phone, :string
   	add_column :activities, :venue_instagram_location_id, :integer
@@ -23,11 +24,11 @@ class AddColumnsToActivities2 < ActiveRecord::Migration
   	add_column :activities, :video_url_1, :string
   	add_column :activities, :video_url_2, :string
   	add_column :activities, :video_url_3, :string
-    add_column :activities, :top_tag_1, :string
-    add_column :activities, :top_tag_2, :string
-    add_column :activities, :top_tag_3, :string
-    add_column :activities, :top_tag_4, :string
-    add_column :activities, :top_tag_5, :string
+    add_column :activities, :tag_1, :string
+    add_column :activities, :tag_2, :string
+    add_column :activities, :tag_3, :string
+    add_column :activities, :tag_4, :string
+    add_column :activities, :tag_5, :string
   	add_column :activities, :twitter_id, :integer, :limit => 8
   	add_column :activities, :tweet_text, :text
   	add_column :activities, :tweet_created_at, :datetime

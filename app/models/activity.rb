@@ -266,6 +266,15 @@ class Activity < ActiveRecord::Base
 
 #Featured List Venue
 	def self.create_featured_list_venue_activities(featured_venue_entries)
+			new_activity = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :venue_comment_id => vc.id, :venue_comment_created_at => vc.time_wrapper, 
+				:venue_comment_media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, :venue_comment_thirdparty_username => vc.thirdparty_username, 
+				:image_url_1 => vc.image_url_1, :image_url_2 => vc.image_url_2, :image_url_3 => vc.image_url_3, 
+				:video_url_1 => vc.video_url_1, :video_url_2 => vc.video_url_2, :video_url_3 => vc.video_url_3, :venue_id => vc.venue_id,
+				:venue_name => vc.venue.name, :venue_instagram_location_id => vc.venue.instagram_location_id, :venue_latitude => vc.venue.latitude,
+				:venue_longitude => vc.venue.longitude, :venue_address => vc.venue.address, :venue_city => vc.venue.city,
+				:venue_state => vc.venue.state, :venue_country => vc.venue.country,
+				:adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :num_lists => f_ids.count)
+			
 		
 	end
 

@@ -34,8 +34,8 @@ json.activity(@activities) do |activity|
   json.video_url_1 activity.venue_comment.try(:video_url_1)
   json.video_url_2 activity.venue_comment.try(:video_url_2)
   json.video_url_3 activity.venue_comment.try(:video_url_3)
-  json.content_origin activity.venue_comment.try(:content_origin)
-  json.thirdparty_username activity.venue_comment.try(:thirdparty_username)
+  json.content_origin activity.venue_comment_content_origin
+  json.thirdparty_username activity.venue_comment_thirdparty_username
 
   json.num_likes activity.num_likes
   json.has_liked @user.likes.where("activity_id = ?", activity.id).first.present?
