@@ -116,7 +116,7 @@ class User < ActiveRecord::Base
     
     #l = sql = "SELECT name, id, (SELECT name FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) as list_name, (SELECT id FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) as list_id, (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
 
-    sql = "SELECT 
+    first_4_featured_results = "SELECT 
       id,
       name, 
       latitude,
@@ -143,6 +143,28 @@ class User < ActiveRecord::Base
       (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_video_1_url,
       (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_video_2_url,
       (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_video_3_url,
+      (SELECT name FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS list_name, 
+      (SELECT id FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS list_id,
+      (SELECT feed_color FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS list_color, 
+      (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
+      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
+
+    last_2_featured_results = "SELECT 
+      id,
+      name, 
+      latitude,
+      longitude,
+      address,
+      city,
+      state,
+      country,
+      color_rating,
+      instagram_location_id, 
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1) AS toptag_1,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS toptag_2,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS toptag_3,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS toptag_4,
+      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS toptag_5,
       (SELECT id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_id,
       (SELECT twitter_id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS twitter_id,
       (SELECT tweet_text FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_text,
@@ -159,7 +181,9 @@ class User < ActiveRecord::Base
       (SELECT feed_color FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS list_color, 
       (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 5"
-    results = ActiveRecord::Base.connection.execute(sql)
+
+
+    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results)
     #Activity.delay.create_featured_list_venue_activities(featured_venue_entries)
     return results
   end
