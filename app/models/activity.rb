@@ -277,9 +277,9 @@ class Activity < ActiveRecord::Base
 						:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
 						:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["instagram_location_id"],
 						:venue_comment_id => featured_venue_entry["venue_comment_id"], :venue_comment_created_at => featured_venue_entry["venue_comment_created_at"],
-						:media_type => featured_venue_entry["media_type"], :image_url_1 => featured_venue_entry["venue_comment_image_url_1"], :image_url_2 => featured_venue_entry["venue_comment_image_url_2"],
-						:image_url_3 => featured_venue_entry["venue_comment_image_url_3"], :video_url_1 => featured_venue_entry["venue_comment_video_url_1"], :video_url_2 => featured_venue_entry["venue_comment_video_url_2"],
-						:video_url_3 => featured_venue_entry["venue_comment_video_url_3"], :venue_comment_content_origin => featured_venue_entry["venue_comment_content_origin"],
+						:media_type => featured_venue_entry["media_type"], :image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
+						:image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], :video_url_2 => featured_venue_entry["video_url_2"],
+						:video_url_3 => featured_venue_entry["video_url_3"], :venue_comment_content_origin => featured_venue_entry["venue_comment_content_origin"],
 						:venue_comment_thirdparty_username => featured_venue_entry["venue_comment_thirdparty_username"])
 				else
 					new_activity = Activity.create!(:feed_id => featured_venue_entry["feed_id"], :feed_name => featured_venue_entry["feed_name"],
@@ -289,8 +289,8 @@ class Activity < ActiveRecord::Base
 						:venue_name => featured_venue_entry["name"], :venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
 						:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
 						:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["venue_instagram_location_id"],						
-						:image_url_1 => featured_venue_entry["tweet_image_url_1"], :image_url_2 => featured_venue_entry["tweet_image_url_2"],
-						:image_url_3 => featured_venue_entry["tweet_image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
+						:image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
+						:image_url_3 => featured_venue_entry["image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
 						:tweet_text => featured_venue_entry["tweet_text"], :tweet_created_at => featured_venue_entry["tweet_created_at"],
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"])
@@ -307,9 +307,9 @@ class Activity < ActiveRecord::Base
 						:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
 						:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["instagram_location_id"],
 						:venue_comment_id => featured_venue_entry["venue_comment_id"], :venue_comment_created_at => featured_venue_entry["venue_comment_created_at"],
-						:media_type => featured_venue_entry["media_type"], :image_url_1 => featured_venue_entry["venue_comment_image_url_1"], :image_url_2 => featured_venue_entry["venue_comment_image_url_2"],
-						:image_url_3 => featured_venue_entry["venue_comment_image_url_3"], :video_url_1 => featured_venue_entry["venue_comment_video_url_1"], :video_url_2 => featured_venue_entry["venue_comment_video_url_2"],
-						:video_url_3 => featured_venue_entry["venue_comment_video_url_3"], :venue_comment_content_origin => featured_venue_entry["venue_comment_content_origin"],
+						:media_type => featured_venue_entry["media_type"], :image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
+						:image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], :video_url_2 => featured_venue_entry["video_url_2"],
+						:video_url_3 => featured_venue_entry["video_url_3"], :venue_comment_content_origin => featured_venue_entry["venue_comment_content_origin"],
 						:venue_comment_thirdparty_username => featured_venue_entry["venue_comment_thirdparty_username"])
 				else
 					new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
@@ -319,8 +319,8 @@ class Activity < ActiveRecord::Base
 						:venue_name => featured_venue_entry["venue_name"], :venue_address => featured_venue_entry["venue_address"], :venue_city => featured_venue_entry[:venue_city],
 						:venue_country => featured_venue_entry["venue_country"], :venue_latitude => featured_venue_entry["venue_latitude"], 
 						:venue_longitude => featured_venue_entry["venue_longitude"], :venue_instagram_location_id => featured_venue_entry["venue_instagram_location_id"],						
-						:image_url_1 => featured_venue_entry["tweet_image_url_1"], :image_url_2 => featured_venue_entry["tweet_image_url_2"],
-						:image_url_3 => featured_venue_entry["tweet_image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
+						:image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
+						:image_url_3 => featured_venue_entry["image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
 						:tweet_text => featured_venue_entry["tweet_text"], :tweet_created_at => featured_venue_entry["tweet_created_at"],
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"])
