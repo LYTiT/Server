@@ -211,7 +211,8 @@ CREATE TABLE activities (
     tweet_author_name character varying(255),
     tweet_author_id character varying(255),
     tweet_author_avatar_url character varying(255),
-    tweet_handle character varying(255)
+    tweet_handle character varying(255),
+    media_type character varying(255)
 );
 
 
@@ -4012,4 +4013,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160125214512');
 INSERT INTO schema_migrations (version) VALUES ('20160127032337');
 
 INSERT INTO schema_migrations (version) VALUES ('20160128160636');
+
+INSERT INTO schema_migrations (version) VALUES ('20160130173452');
 

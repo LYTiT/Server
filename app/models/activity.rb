@@ -265,7 +265,7 @@ class Activity < ActiveRecord::Base
 	end
 
 #Featured List Venue
-	def self.create_featured_list_venue_activities(featured_venue_entries, feed_id, feed_name, feed_color)
+	def Activity.create_featured_list_venue_activities(featured_venue_entries, feed_id, feed_name, feed_color)
 		if feed_id == nil
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
