@@ -69,6 +69,53 @@ class User < ActiveRecord::Base
     end
   end 
 
+  def notify_friends_of_joining(fb_friend_ids, fb_name, fb_id)
+    friends = User.where("id IN (#{fb_friend_ids}")
+    for friend in friends
+      send_friend_joined_lytit_notification(friend, self, fb_name, fb_id)
+    end
+  end
+
+  def send_friend_joined_lytit_notification(existing_user, new_user, new_user_fb_name, new_user_fb_id)
+    payload = {
+      :user_id => new_user.id,
+      :user_name => new_user.name,
+      :user_fb_id => new_user_fb_id,
+      :user_fb_name => new_user_fb_name
+    }
+
+    type = "#{existing_user.id}/friend_joined/#{new_user.id}"
+
+    notification = self.store_new_friend_joined_lytit_notification(payload, existing_user, type)
+    payload[:notification_id] = notification.id
+
+    preview = "#{new_user_fb_name} has joined LYTiT! Check out their Lists!"
+    
+    if existing_user.push_token && existing_user.active == true
+      count = Notification.where(user_id: existing_user.id, read: false, deleted: false).count
+      APNS.send_notification(existing_user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
+    end
+    
+  end
+
+  def store_new_friend_joined_lytit_notification(payload, existing_user, type)
+    notification = {
+      :payload => payload,
+      :gcm => existing_user.gcm_token.present?,
+      :apns => existing_user.push_token.present?,
+      :response => nil,
+      :user_id => existing_user.id,
+      :read => false,
+      :message => type,
+      :deleted => false
+    }
+    Notification.create(notification)
+  end
+
+  def get_lytit_facebook_friends(fb_friend_ids)
+    friends = User.where("id IN (#{fb_friend_ids}")
+  end
+
   def surrounding_venues(lat, long)
     center_point = [lat, long]
     surrounding_lit_venues = Venue.where("color_rating")
@@ -137,12 +184,12 @@ class User < ActiveRecord::Base
       (SELECT media_type FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS media_type,
       (SELECT thirdparty_username FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_thirdparty_username,
       (SELECT content_origin FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_content_origin,
-      (SELECT image_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_1_url,
-      (SELECT image_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_2_url,
-      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_3_url,
-      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_1_url,
-      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_2_url,
-      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_3_url,
+      (SELECT image_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_1,
+      (SELECT image_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_2,
+      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3,
+      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_1,
+      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_2,
+      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_3,
       (SELECT name FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS feed_name, 
       (SELECT id FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS feed_id,
       (SELECT feed_color FROM feeds WHERE id = (SELECT feed_id FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS feed_color, 
@@ -183,7 +230,7 @@ class User < ActiveRecord::Base
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY relevance_score DESC LIMIT 2 OFFSET 4"
 
     results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-    #Activity.delay.create_featured_list_venue_activities(featured_venue_entries, nil, nil, nil)
+    #Activity.delay.create_featured_list_venue_activities(results, nil, nil, nil)
     return results.shuffle
   end
 

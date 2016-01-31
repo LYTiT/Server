@@ -63,6 +63,7 @@ LytitServer::Application.routes.draw do
         get 'get_trending_venues'
         get 'get_list_recommendations'
         get 'get_list_feed'
+        get 'get_lytit_facebook_friends'
       end
 
       resources :feeds, only: [:create] do

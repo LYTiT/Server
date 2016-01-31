@@ -135,6 +135,17 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end
 
+	def set_facebook_id
+		@user.update_columns(facebook_id: params[:fb_id])
+		@user.update_columns(facebook_name: params[:fb_name])
+		@user.delay.notify_friends_of_joining(params[:fb_friend_ids], params[:fb_name], params[:fb_id])
+		render json: { success: true }
+	end
+
+	def get_lytit_facebook_friends
+		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).params[:page].per(10)
+	end
+
 	def set_version
 		@user = User.find_by_authentication_token(params[:auth_token])
 		v = params[:version]
@@ -325,7 +336,7 @@ class Api::V1::UsersController < ApiBaseController
 		else
 			cache_key = "user/#{@user.id}/list_feed"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				@user.aggregate_list_feed.page(page).per(10)
+				@user.aggregate_list_feed.limit(10).offset((page-2)*10)
 			end
 			render 'lists_feed.json.jbuilder'
 		end

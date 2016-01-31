@@ -52,6 +52,34 @@ class Feed < ActiveRecord::Base
 		self.code != nil
 	end
 
+	def Feed.new_member_calibration(feed_id)
+		feed = Feed.find_by_id(feed_id)
+		feed.calibrate_num_members
+		feed.increment!(:num_users, 1)
+		feed_user.user.increment!(:num_lists, 1)	
+	end
+
+	def Feed.lost_member_calibration(feed_id, user_id)
+		Feed.find_by_id(feed_id).decrement!(:num_users, 1)
+		User.find_by_id(user_id).decrement!(:num_lists, 1)		
+	end
+
+	def Feed.added_venue_calibration(feed_id, venue_id)
+		feed = Feed.find_by_id(feed_id)
+		feed.increment!(:num_venues, 1)
+		venue = Venue.find_by_id(venue_id)
+		added_moment_count = venue.venue_comments.count || 0
+		feed.increment!(:num_moments, added_moment_count)	
+		feed.update_geo_mass_center
+	end
+
+	def Feed.removed_venue_calibration(feed_id)
+		feed = Feed.find_by_id(feed_id)
+		feed.update_columns(num_moments: feed.venue_comments.count)
+		feed.decrement!(:num_venues, 1)
+		feed.update_geo_mass_center
+	end
+
 	def Feed.calibrate_feed_venue_activity
 		feeds = Feed.all
 		for feed in feeds
@@ -263,15 +291,15 @@ class Feed < ActiveRecord::Base
 	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS tag_5,
 	      (SELECT id FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_id,
 	      (SELECT time_wrapper FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_created_at,
-	      (SELECT media_type FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_media_type,
+	      (SELECT media_type FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS media_type,
 	      (SELECT thirdparty_username FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_thirdparty_username,
 	      (SELECT content_origin FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_content_origin,
-	      (SELECT image_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_1_url,
-	      (SELECT image_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_2_url,
-	      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_3_url,
-	      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_1_url,
-	      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_2_url,
-	      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_3_url,	      
+	      (SELECT image_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_1,
+	      (SELECT image_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_2,
+	      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3,
+	      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_1,
+	      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_2,
+	      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_3,    
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 4"
 
 	    last_2_featured_results = "SELECT 
@@ -304,7 +332,7 @@ class Feed < ActiveRecord::Base
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 2 OFFSET 4"
 
 	    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-	    #Activity.delay.create_featured_list_venue_activities(featured_venue_entries)
+	    #Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
 	    return results.shuffle		
 
 	end

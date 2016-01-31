@@ -9,21 +9,6 @@ class FeedVenue < ActiveRecord::Base
 	after_create :new_venue_notification_and_activity
 
 
-	def calibrate_feed_after_addition
-		#adjust moment count
-		added_moment_count = venue.venue_comments.count || 0
-		feed.increment!(:num_moments, added_moment_count)		
-
-		#adjust geo mass center
-		feed.update_geo_mass_center
-	end
-
-	def calibrate_feed_after_deletion
-		feed.delay.update_columns(num_moments: feed.venue_comments.count)
-		feed.decrement!(:num_venues, 1)
-		feed.update_geo_mass_center
-	end
-
 	def new_venue_notification_and_activity
 		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.color, :activity_type => "added venue", :feed_venue_id => self.id, 
 			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :venue_id => self.venue_id, :venue_name => self.venue.name, 

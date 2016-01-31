@@ -212,7 +212,9 @@ CREATE TABLE activities (
     tweet_author_id character varying(255),
     tweet_author_avatar_url character varying(255),
     tweet_handle character varying(255),
-    media_type character varying(255)
+    media_type character varying(255),
+    user_facebook_id bigint,
+    user_facebook_name character varying(255)
 );
 
 
@@ -1580,7 +1582,9 @@ CREATE TABLE users (
     phone_number character varying(255),
     num_likes integer DEFAULT 0,
     active boolean DEFAULT true,
-    num_lists integer DEFAULT 0
+    num_lists integer DEFAULT 0,
+    facebook_id bigint,
+    facebook_name character varying(255)
 );
 
 
@@ -4015,4 +4019,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160127032337');
 INSERT INTO schema_migrations (version) VALUES ('20160128160636');
 
 INSERT INTO schema_migrations (version) VALUES ('20160130173452');
+
+INSERT INTO schema_migrations (version) VALUES ('20160130204920');
 

@@ -64,13 +64,9 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_feed
-		feed = Feed.find_by_id(params[:feed_id])
-		feed.calibrate_num_members
-		
 		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
 		if feed_user.save
-			feed.increment!(:num_users, 1)
-			feed_user.user.increment!(:num_lists, 1)	
+			Feed.delay.new_member_calibration(params[:feed_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not join List'] } }, status: :unprocessable_entity
@@ -78,13 +74,13 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def leave_feed
-		feed = Feed.find_by_id(params[:feed_id])
-		feed.decrement!(:num_users, 1)		
-
 		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
-		feed_user.user.decrement!(:num_lists, 1)
-		feed_user.destroy
-		render json: { success: true }
+		Feed.delay.lost_member_calibration(params[:feed_id], params[:user_id])
+		if feed_user.destroy
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User did not leave List'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def get_members
@@ -103,8 +99,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:added_note])
 			if new_feed_venue.save
-				new_feed_venue.feed.delay.increment!(:num_venues, 1)
-				new_feed_venue.delay.calibrate_feed_after_addition
+				Feed.delay.added_venue_calibration(params[:id], params[:venue_id])
 				render json: { success: true }
 			end
 		else
@@ -122,10 +117,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id], :description => params[:added_note])
-			if new_feed_venue.save				
-				feed = Feed.find_by_id(params[:feed_id])
-				feed.increment!(:num_venues, 1)
-				new_feed_venue.delay.calibrate_feed_after_addition
+			if new_feed_venue.save
+				Feed.delay.added_venue_calibration(params[:feed_id], venue.id)
 				render json: { id: venue.id }
 			end
 		else
@@ -145,13 +138,13 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
-		feed_venue.calibrate_feed_after_deletion
+		Feed.delay.removed_venue_calibration(params[:id])
 		feed_venue.destroy		
 		render json: { success: true }
 	end
 
 	def register_open
-		feed = Feed.find_by_id(params[:feed_id])			
+		#feed = Feed.find_by_id(params[:feed_id])			
 		#feed.delay.underlying_venues
 		#feed.update_media	
 		render json: { success: true }
@@ -178,7 +171,7 @@ class Api::V1::FeedsController < ApiBaseController
 		else
 			cache_key = "feed/#{@feed.id}/activity"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				@feed.activity_of_the_day.page(page).per(10)
+				@feed.activity_of_the_day.limit(10).offset((page-2)*10)
 			end
 			render 'feed_activity.json.jbuilder'
 		end
