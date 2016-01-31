@@ -9,7 +9,7 @@ json.activity(@activities) do |activity|
   json.user_id nil
   json.user_name nil
   json.user_phone nil
-  json.created_at activ
+  json.created_at nil
   json.num_chat_participants nil
   json.latest_chat_time nil
 
