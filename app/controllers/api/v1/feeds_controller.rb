@@ -66,7 +66,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_feed
 		feed_user = FeedUser.new(:feed_id => params[:feed_id], :user_id => params[:user_id], :creator => false)
 		if feed_user.save
-			Feed.delay.new_member_calibration(params[:feed_id])
+			Feed.delay.new_member_calibration(params[:feed_id], params[:user_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not join List'] } }, status: :unprocessable_entity
