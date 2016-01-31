@@ -1,7 +1,7 @@
 json.activity(@activities) do |activity|
-  json.feed_id activity["list_id"]
-  json.feed_name activity["list_name"]
-  json.feed_color activity["list_color"]
+  json.feed_id activity["feed__id"]
+  json.feed_name activity["feed_name"]
+  json.feed_color activity["feed_color"]
   json.list_creator_id  nil
 
   json.id nil
