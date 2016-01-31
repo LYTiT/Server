@@ -82,7 +82,7 @@ class Activity < ActiveRecord::Base
 				:venue_name => vc.venue.name, :venue_instagram_location_id => vc.venue.instagram_location_id, :venue_latitude => vc.venue.latitude,
 				:venue_longitude => vc.venue.longitude, :venue_address => vc.venue.address, :venue_city => vc.venue.city,
 				:venue_state => vc.venue.state, :venue_country => vc.venue.country,
-				:adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.color, :num_lists => f_ids.count)
+				:adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
 			
 			if comment != nil && comment != ""
 				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :comment => comment)
