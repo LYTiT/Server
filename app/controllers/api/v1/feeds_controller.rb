@@ -64,7 +64,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_feed
-		feed_user = FeedUser.new(:feed_id => feed.id, :user_id => params[:user_id], :creator => false)
+		feed_user = FeedUser.new(:feed_id => params[:feed_id], :user_id => params[:user_id], :creator => false)
 		if feed_user.save
 			Feed.delay.new_member_calibration(params[:feed_id])
 			render json: { success: true }
