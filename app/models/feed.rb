@@ -299,7 +299,7 @@ class Feed < ActiveRecord::Base
 	      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3,
 	      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_1,
 	      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_2,
-	      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_3,    
+	      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_3    
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 4"
 
 	    last_2_featured_results = "SELECT 
@@ -328,7 +328,7 @@ class Feed < ActiveRecord::Base
 	      (SELECT handle FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_handle,
 	      (SELECT image_url_1 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_1,
 	      (SELECT image_url_2 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_2,
-	      (SELECT image_url_3 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3,
+	      (SELECT image_url_3 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 2 OFFSET 4"
 
 	    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
