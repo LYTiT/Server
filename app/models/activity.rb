@@ -296,7 +296,7 @@ class Activity < ActiveRecord::Base
 						:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
 						:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["venue_instagram_location_id"],						
 						:image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
-						:image_url_3 => featured_venue_entry["image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
+						:image_url_3 => featured_venue_entry["image_url_3"], :lytit_tweet_id => featured_venue_entry ["tweet_id"], :twitter_id => featured_venue_entry["twitter_id"], 
 						:tweet_text => featured_venue_entry["tweet_text"], :tweet_created_at => featured_venue_entry["tweet_created_at"],
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"], :adjusted_sort_position => featured_venue_entry["tweet_created_at"].to_i)
@@ -326,7 +326,7 @@ class Activity < ActiveRecord::Base
 						:venue_country => featured_venue_entry["venue_country"], :venue_latitude => featured_venue_entry["venue_latitude"], 
 						:venue_longitude => featured_venue_entry["venue_longitude"], :venue_instagram_location_id => featured_venue_entry["venue_instagram_location_id"],						
 						:image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
-						:image_url_3 => featured_venue_entry["image_url_3"], :twitter_id => featured_venue_entry["tweet_id"], 
+						:image_url_3 => featured_venue_entry["image_url_3"], :lytit_tweet_id => featured_venue_entry ["tweet_id"], :twitter_id => featured_venue_entry["twitter_id"], 
 						:tweet_text => featured_venue_entry["tweet_text"], :tweet_created_at => featured_venue_entry["tweet_created_at"],
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"], :adjusted_sort_position => featured_venue_entry["tweet_created_at"].to_i)

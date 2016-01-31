@@ -214,7 +214,8 @@ CREATE TABLE activities (
     tweet_handle character varying(255),
     media_type character varying(255),
     user_facebook_id bigint,
-    user_facebook_name character varying(255)
+    user_facebook_name character varying(255),
+    lytit_tweet_id integer
 );
 
 
@@ -4021,4 +4022,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160128160636');
 INSERT INTO schema_migrations (version) VALUES ('20160130173452');
 
 INSERT INTO schema_migrations (version) VALUES ('20160130204920');
+
+INSERT INTO schema_migrations (version) VALUES ('20160131021144');
 
