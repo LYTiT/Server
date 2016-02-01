@@ -346,7 +346,7 @@ class Api::V1::UsersController < ApiBaseController
 	def get_list_recommendations
 		cache_key = "user/#{@user.id}/list_recommendations"
 		@recommendations = Rails.cache.fetch(cache_key, :expires_in => 24.hours) do
-			FeedRecommendation.for_user(@user, params[:latitude], params[:longitude])
+			FeedRecommendation.for_user(@user, params[:latitude], params[:longitude]).limit(10)
 		end
 	end
 
