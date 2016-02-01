@@ -361,7 +361,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_trending_venues
 		lat = params[:latitude]
-		long = param[:longitude]
+		long = params[:longitude]
 		nearby_vortex = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first
 		if nearby_vortex != nil
 			cache_key = "trending_venues/[#{nearby_vortex.latitude},#{nearby_vortex.longitude}]"
