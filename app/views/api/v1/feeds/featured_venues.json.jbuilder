@@ -19,8 +19,8 @@ json.activity(@activities) do |activity|
   json.tag_4 activity["tag_4"]
   json.tag_5 activity["tag_5"]
   
-  json.venue_id activity["venue_id"]
-  json.venue_name activity["venue_name"]
+  json.venue_id activity["id"]
+  json.venue_name activity["name"]
   json.address activity["address"]
   json.city activity["city"]
   json.country activity["country"]
