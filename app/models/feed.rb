@@ -333,7 +333,7 @@ class Feed < ActiveRecord::Base
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 2 OFFSET 4"
 
 	    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-	    #Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
+	    Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
 	    return results.shuffle		
 
 	end
