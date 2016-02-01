@@ -112,7 +112,7 @@ class User < ActiveRecord::Base
     Notification.create(notification)
   end
 
-  def get_lytit_facebook_friends(fb_friend_ids)
+  def lytit_facebook_friends(fb_friend_ids)
     friends = User.where("id IN (#{fb_friend_ids}")
   end
 
