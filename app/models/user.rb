@@ -113,7 +113,7 @@ class User < ActiveRecord::Base
   end
 
   def lytit_facebook_friends(fb_friend_ids)
-    friends = User.where("facebook_id IN (#{fb_friend_ids}").order("facebook_name ASC")
+    friends = User.where("facebook_id IN (#{fb_friend_ids})").order("facebook_name ASC")
   end
 
   def surrounding_venues(lat, long)
