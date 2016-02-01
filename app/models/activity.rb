@@ -301,7 +301,8 @@ class Activity < ActiveRecord::Base
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"], :adjusted_sort_position => featured_venue_entry["tweet_created_at"].to_i)
 				end
-			end
+				ActivityFeed.create!(:feed_id => featured_venue_entry["feed_id"].to_i, :activity_id => new_activity.id)
+			end			
 		else
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
@@ -331,8 +332,11 @@ class Activity < ActiveRecord::Base
 						:tweet_author_name => featured_venue_entry["tweet_author_name"], :tweet_author_id => featured_venue_entry["tweet_author_id"],
 						:tweet_author_avatar_url => featured_venue_entry["tweet_author_avatar_url"], :tweet_handle => featured_venue_entry["tweet_handle"], :adjusted_sort_position => featured_venue_entry["tweet_created_at"].to_i)
 				end
-			end				
+				ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
+			end					
 		end
+
+
 	end
 
 end
