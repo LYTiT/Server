@@ -64,7 +64,7 @@ LytitServer::Application.routes.draw do
         get 'get_list_recommendations'
         get 'get_list_feed'
         get 'get_lytit_facebook_friends'
-        get 'set_facebook_id'
+        post 'set_facebook_id'
         get 'get_lytit_facebook_friends'
       end
 
