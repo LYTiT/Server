@@ -76,7 +76,7 @@ class Activity < ActiveRecord::Base
 			feed = Feed.find_by_id(f_ids.first)
 			new_activity = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
 				:user_facebook_name => user.facebook_name, :user_phone => user.phone_number,:venue_comment_id => vc.id, :venue_comment_created_at => vc.time_wrapper, 
-				:venue_comment_media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, :venue_comment_thirdparty_username => vc.thirdparty_username, 
+				:media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, :venue_comment_thirdparty_username => vc.thirdparty_username, 
 				:image_url_1 => vc.image_url_1, :image_url_2 => vc.image_url_2, :image_url_3 => vc.image_url_3, 
 				:video_url_1 => vc.video_url_1, :video_url_2 => vc.video_url_2, :video_url_3 => vc.video_url_3, :venue_id => vc.venue_id,
 				:venue_name => vc.venue.name, :venue_instagram_location_id => vc.venue.instagram_location_id, :venue_latitude => vc.venue.latitude,
