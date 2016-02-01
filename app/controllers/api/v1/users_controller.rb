@@ -340,7 +340,7 @@ class Api::V1::UsersController < ApiBaseController
 			total_activity = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 				@user.aggregate_list_feed#.limit(10).offset((page-2)*10)
 			end
-			@activities = total_activity.limit(10).offset((page-2)*10)
+			@activities = total_activity.page(page).per(10)
 			render 'lists_feed.json.jbuilder'
 		end
 		@user.delay.update_user_feeds
