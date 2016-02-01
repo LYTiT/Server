@@ -275,7 +275,7 @@ class Activity < ActiveRecord::Base
 		if feed_id == nil
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
-					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", featured_venue_entry["feed_id"], featured_venue_entry["activity_type"], featured_venue_entry["venue_comment_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", featured_venue_entry["feed_id"], "featured list venue", featured_venue_entry["venue_comment_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => featured_venue_entry["feed_id"], :feed_name => featured_venue_entry["feed_name"],
 							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured list venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
@@ -292,7 +292,7 @@ class Activity < ActiveRecord::Base
 						ActivityFeed.create!(:feed_id => featured_venue_entry["feed_id"].to_i, :activity_id => new_activity.id)
 					end
 				else
-					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", featured_venue_entry["feed_id"], featured_venue_entry["activity_type"], featured_venue_entry["tweet_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", featured_venue_entry["feed_id"], "featured list venue", featured_venue_entry["tweet_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => featured_venue_entry["feed_id"], :feed_name => featured_venue_entry["feed_name"],
 							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured list venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
@@ -313,7 +313,7 @@ class Activity < ActiveRecord::Base
 		else
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
-					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, featured_venue_entry["activity_type"], featured_venue_entry["venue_comment_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured list venue", featured_venue_entry["venue_comment_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 							:feed_color => feed_color, :activity_type => "featured list venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
@@ -330,7 +330,7 @@ class Activity < ActiveRecord::Base
 						ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
 					end
 				else
-					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", feed_id, featured_venue_entry["activity_type"], featured_venue_entry["tweet_id"]).any? == false				
+					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", feed_id, "featured list venue", featured_venue_entry["tweet_id"]).any? == false				
 						new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 							:feed_color => feed_color, :activity_type => "featured list venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
