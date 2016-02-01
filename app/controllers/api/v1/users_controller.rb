@@ -143,7 +143,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_lytit_facebook_friends
-		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).params[:page].per(10)
+		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).page(params[:page]).per(10)
 	end
 
 	def set_version
