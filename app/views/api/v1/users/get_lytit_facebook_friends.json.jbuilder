@@ -3,6 +3,7 @@ json.array! @users do |user|
 	json.name user.name
 	json.phone_number user.phone_number
 	json.fb_id user.facebook_id
+	json.fb_name user.facebook_name
 	json.num_lists	user.num_lists
 	json.num_stars user.num_likes
 end
