@@ -291,7 +291,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if params[:version] == nil #means user is on version 1.1.0. Version 1.1.0 has a bug where client stops pulling lyts if less than 400 are returned on a page thus we cannot always leverage proximity_box loading, particularly in areas with a small lyt density.
-			if Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE").count > 400				
+			if Venue.in_bounds(proximity_box).where("color_rating > -1.0").count > 400				
 				if params[:page].to_i == 1
 					cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
 					nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
@@ -301,7 +301,7 @@ class Api::V1::VenuesController < ApiBaseController
 				else
 					cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far"
 					faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-						Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}))").order("city ASC")
+						Venue.where("(color_rating > -1.0) AND ((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}))").order("city ASC")
 					end
 					@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
 				end
@@ -320,15 +320,15 @@ class Api::V1::VenuesController < ApiBaseController
 			if params[:page].to_i == 1
 				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
 				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-					Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
+					Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 				end
 				@venues = nearby_venues
 			else
-				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far"
+				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
 				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-					Venue.where("(color_rating > -1.0 OR is_live IS TRUE) AND ((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}))").order("city ASC")
+					Venue.where("((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})) AND (color_rating > -1.0)").order("city ASC").limit(num_page_entries).offset((page-2)*10)
 				end
-				@venues = faraway_venues.page(params[:page].to_i-1).per(num_page_entries)			
+				@venues = faraway_venues			
 			end
 			@view_cache_key = cache_key+"/view/page_"+params[:page]
 		end
