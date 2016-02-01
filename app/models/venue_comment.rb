@@ -18,7 +18,7 @@ class VenueComment < ActiveRecord::Base
 		expired_venue_comment_ids = VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').pluck(:id)
 		associated_venue_ids = VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').pluck(:venue_id)
 
-		expired_activity_ids = Activity.where("id IN (?)", expired_venue_comment_ids).pluck(:id)
+		expired_activity_ids = Activity.where("venue_comment_id IN (?)", expired_venue_comment_ids).pluck(:id)
 		Like.where("activity_id IN (?)", expired_activity_ids).delete_all
 		ActivityComment.where("activity_id IN (?)", expired_activity_ids).delete_all
 		ActivityFeed.where("activity_id IN (?)", expired_activity_ids).delete_all
