@@ -327,7 +327,7 @@ class Api::V1::UsersController < ApiBaseController
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		page = params[:page].to_i
-		max_id = params[:max_id]
+		max_id = params[:max_id].to_i
 
 		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
