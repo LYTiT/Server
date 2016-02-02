@@ -3,3 +3,6 @@ json.night_map_id 'lytit.hwgs5fti'
 json.special_map_id nil
 json.special_map_needed false
 json.sinch_key 'aecb9b12-fa06-4f13-bebe-4b5fa90bf7bf'
+json.suggested_list_frequency nil
+json.trending_venue_frequency nil
+json.find_friends_frequency nil

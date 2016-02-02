@@ -352,7 +352,7 @@ class Activity < ActiveRecord::Base
 	end
 
 	def Activity.feature_venue_cleanup
-		expired_featured_venue_activity_ids = "SELECT id FROM activities WHERE activity_type = 'featured_list_venue' AND (NOW() - created_at) > INTERVAL '1 HOUR'"
+		expired_featured_venue_activity_ids = "SELECT id FROM activities WHERE (activity_type = 'featured_list_venue' AND (NOW() - created_at) > INTERVAL '1 HOUR')"
     	ActivityFeed.where("activity_id IN (#{expired_featured_venue_activity_ids})").delete_all
     	Activity.where("id IN (#{expired_featured_venue_activity_ids})").delete_all
 	end
