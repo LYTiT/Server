@@ -44,11 +44,11 @@ class ActivityComment < ActiveRecord::Base
 		underlying_feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{self.activity_id}"
 		member_activity_feed_memberships = FeedUser.where("user_id = ? AND feed_id IN (#{underlying_feed_ids})", member.id)
 
-		if activity.activity_type == "added venue"
-			formatted_activity_type = "Added Venue"
-		elsif activity.activity_type == "new member"
-			formatted_activity_type = "New Member"
-		elsif activity.activity_type == "shared moment"
+		if activity.activity_type == "added_venue"
+			formatted_activity_type = "added_venue"
+		elsif activity.activity_type == "new_member"
+			formatted_activity_type = "new_member"
+		elsif activity.activity_type == "shared_moment"
 			formatted_activity_type = "Moment"
 		else
 			formatted_activity_type = "Topic"

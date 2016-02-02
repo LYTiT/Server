@@ -5,7 +5,7 @@ json.activity(@activities) do |activity|
   json.list_creator_id  nil
 
   json.id nil
-  json.activity_type "featured list venue"
+  json.activity_type "featured_list_venue"
   json.user_id nil
   json.user_name nil
   json.user_phone nil

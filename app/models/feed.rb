@@ -86,7 +86,7 @@ class Feed < ActiveRecord::Base
 		for feed in feeds
 			for feed_venue in feed.feed_venues
 				if Activity.where("feed_venue_id = ?", feed_venue.id).first.nil? == true	
-					Activity.create!(:feed_id => feed_venue.feed.id, :activity_type => "added venue", :feed_venue_id => feed_venue.id, :venue_id => feed_venue.venue_id, :user_id => feed_venue.user_id, :adjusted_sort_position => (feed_venue.created_at).to_i)
+					Activity.create!(:feed_id => feed_venue.feed.id, :activity_type => "added_venue", :feed_venue_id => feed_venue.id, :venue_id => feed_venue.venue_id, :user_id => feed_venue.user_id, :adjusted_sort_position => (feed_venue.created_at).to_i)
 				end
 			end
 			feed.update_columns(num_venues: feed.feed_venues.count)

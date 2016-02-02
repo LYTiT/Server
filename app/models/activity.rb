@@ -50,13 +50,13 @@ class Activity < ActiveRecord::Base
 	end
 
 	def underlying_user
-		if activity_type == "added venue"
+		if activity_type == "added_venue"
 			return feed_venue.user	
-		elsif activity_type == "new member" 
+		elsif activity_type == "new_member" 
 			return feed_user.user
-		elsif activity_type == "liked message" || activity_type == "liked added venue"
+		elsif activity_type == "liked message" || activity_type == "liked added_venue"
 			return like.liker
-		elsif activity_type == "new topic"
+		elsif activity_type == "new_topic"
 			return feed_topic.user
 		else
 			return	nil
@@ -74,7 +74,7 @@ class Activity < ActiveRecord::Base
 		if vc != nil
 			user = User.find_by_id(u_id)
 			feed = Feed.find_by_id(f_ids.first)
-			new_activity = Activity.create!(:activity_type => "shared moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
+			new_activity = Activity.create!(:activity_type => "shared_moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
 				:user_facebook_name => user.facebook_name, :user_phone => user.phone_number,:venue_comment_id => vc.id, :venue_comment_created_at => vc.time_wrapper, 
 				:media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, :venue_comment_thirdparty_username => vc.thirdparty_username, 
 				:image_url_1 => vc.image_url_1, :image_url_2 => vc.image_url_2, :image_url_3 => vc.image_url_3, 
@@ -195,7 +195,7 @@ class Activity < ActiveRecord::Base
 		feed = Feed.find_by_id(f_ids.first)
 		user = User.find_by_id(u_id)
 		new_activity = Activity.create!(:user_id => u_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, 
-			:user_facebook_name => user.facebook_name, :activity_type => "new topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, 
+			:user_facebook_name => user.facebook_name, :activity_type => "new_topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, 
 			:feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
 		ActivityFeed.bulk_creation(new_activity.id, f_ids)
 		new_activity.delay.new_topic_notification(f_ids)
@@ -244,9 +244,9 @@ class Activity < ActiveRecord::Base
 		#member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if num_lists == 1
-			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name}"
+			preview = "#{user.name} opened a new_topic in #{activity_feed_of_member.name}"
 		else
-			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name} & others"
+			preview = "#{user.name} opened a new_topic in #{activity_feed_of_member.name} & others"
 		end
 
 		if member.push_token && member.active == true
@@ -270,14 +270,14 @@ class Activity < ActiveRecord::Base
 		Notification.create(notification)
 	end
 
-#Featured List Venue
+#featured_list_venue
 	def Activity.create_featured_list_venue_activities(featured_venue_entries, feed_id, feed_name, feed_color)
 		if feed_id == nil
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
-					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", featured_venue_entry["feed_id"], "featured list venue", featured_venue_entry["venue_comment_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", featured_venue_entry["feed_id"], "featured_list_venue", featured_venue_entry["venue_comment_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => featured_venue_entry["feed_id"], :feed_name => featured_venue_entry["feed_name"],
-							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured list venue",
+							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured_list_venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
 							:tag_4 => featured_venue_entry["tag_4"], :tag_5 => featured_venue_entry["tag_5"], :venue_id => featured_venue_entry["id"],
 							:venue_name => featured_venue_entry["name"], :venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
@@ -292,9 +292,9 @@ class Activity < ActiveRecord::Base
 						ActivityFeed.create!(:feed_id => featured_venue_entry["feed_id"].to_i, :activity_id => new_activity.id)
 					end
 				else
-					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", featured_venue_entry["feed_id"], "featured list venue", featured_venue_entry["tweet_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", featured_venue_entry["feed_id"], "featured_list_venue", featured_venue_entry["tweet_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => featured_venue_entry["feed_id"], :feed_name => featured_venue_entry["feed_name"],
-							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured list venue",
+							:feed_color => featured_venue_entry["feed_color"], :activity_type => "featured_list_venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
 							:tag_4 => featured_venue_entry["tag_4"], :tag_5 => featured_venue_entry["tag_5"], :venue_id => featured_venue_entry["id"],
 							:venue_name => featured_venue_entry["name"], :venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
@@ -313,9 +313,9 @@ class Activity < ActiveRecord::Base
 		else
 			for featured_venue_entry in featured_venue_entries
 				if featured_venue_entry["venue_comment_id"] != nil
-					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured list venue", featured_venue_entry["venue_comment_id"]).any? == false
+					if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", featured_venue_entry["venue_comment_id"]).any? == false
 						new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
-							:feed_color => feed_color, :activity_type => "featured list venue",
+							:feed_color => feed_color, :activity_type => "featured_list_venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
 							:tag_4 => featured_venue_entry["tag_4"], :tag_5 => featured_venue_entry["tag_5"], :venue_id => featured_venue_entry["id"],
 							:venue_name => featured_venue_entry["name"], :venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
@@ -330,9 +330,9 @@ class Activity < ActiveRecord::Base
 						ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
 					end
 				else
-					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", feed_id, "featured list venue", featured_venue_entry["tweet_id"]).any? == false				
+					if Activity.where("feed_id = ? AND activity_type = ? AND tweet_id = ?", feed_id, "featured_list_venue", featured_venue_entry["tweet_id"]).any? == false				
 						new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
-							:feed_color => feed_color, :activity_type => "featured list venue",
+							:feed_color => feed_color, :activity_type => "featured_list_venue",
 							:tag_1 => featured_venue_entry["tag_1"], :tag_2 => featured_venue_entry["tag_2"], :tag_3 => featured_venue_entry["tag_3"],
 							:tag_4 => featured_venue_entry["tag_4"], :tag_5 => featured_venue_entry["tag_5"], :venue_id => featured_venue_entry["id"],
 							:venue_name => featured_venue_entry["name"], :venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
@@ -349,8 +349,12 @@ class Activity < ActiveRecord::Base
 				end				
 			end					
 		end
+	end
 
-
+	def Activity.feature_venue_cleanup
+		expired_featured_venue_activity_ids = "SELECT id FROM activities WHERE activity_type = 'featured_list_venue' AND (NOW() - created_at) > INTERVAL '1 HOUR'"
+    	ActivityFeed.where("activity_id IN (#{expired_featured_venue_activity_ids})").delete_all
+    	Activity.where("id IN (#{expired_featured_venue_activity_ids})").delete_all
 	end
 
 end

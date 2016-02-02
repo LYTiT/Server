@@ -10,7 +10,7 @@ class FeedUser < ActiveRecord::Base
 
 
 	def new_user_notification_and_activity
-		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "new member", :feed_user_id => self.id, 
+		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "new_member", :feed_user_id => self.id, 
 			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, :user_facebook_name => user.facebook_name, 
 			:adjusted_sort_position => (self.created_at).to_i)
 		

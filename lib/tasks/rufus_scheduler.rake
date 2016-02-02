@@ -12,11 +12,8 @@ namespace :lytit do
       #Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
     end
 
-    $scheduler.every '3h' do
-      puts "Live User Cleanup"
-      LiveUser.cleanup
-      puts "Venue Comment Cleanup"
-      VenueComment.cleanup_and_recalibration
+    $scheduler.every '1h' do
+      Activity.feature_venue_cleanup
     end
 
     #Instagram Pulling and LYT Updating ------------------------------>
@@ -100,43 +97,14 @@ namespace :lytit do
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
     
-    #Trending Updating ----------------------------------->
+    #Cluster clearing ----------------------------------->
     $scheduler.every '5m' do
       puts "Scheduler run at #{Time.now}"
       start_time = Time.now
-      
-      #bar = LytitBar.instance
-      #bar.recalculate_bar_position
-      #puts 'Bar updated'
 
       puts "Clearing clusters"
       ClusterTracker.delete_all
 
-=begin
-      puts "Recalculating trending indices"
-
-      #used for determing which way top venues are trending
-      Venue.where("popularity_rank IS NOT NULL").order("popularity_rank desc limit 10").each_with_index do |venue, index|
-        venue.update_columns(trend_position: index)
-      end
-
-      total_popular_venues = Venue.where("popularity_rank IS NOT NULL").count
-      if total_popular_venues > 10
-        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(trend_position: nil)
-        Venue.where("popularity_rank IS NOT NULL").order("popularity_rank asc limit #{total_popular_venues-10}").update_all(popularity_rank: 0.0)
-      end
-
-      Rails.cache.fetch(:get_trending_venues, :expires_in => 5.minutes) do
-        Venue.order("popularity_rank desc limit 10").includes(:venue_comments)
-      end
-=end
-
-      #set image previews for spotlyts
-      puts "Setting Spotlyt image thumbnail preview"
-      spotlyts = FeedRecommendation.where("spotlyt IS TRUE AND ACTIVE IS TRUE").includes(:feed)
-      spotlyts.each{|spotlyt| spotlyt.set_image_url}
-
-      end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
 
