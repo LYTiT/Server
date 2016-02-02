@@ -327,6 +327,8 @@ class Api::V1::UsersController < ApiBaseController
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		page = params[:page].to_i
+		max_id = params[:max_id]
+
 		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
@@ -334,13 +336,12 @@ class Api::V1::UsersController < ApiBaseController
 			end
 			render 'featured_list_venues.json.jbuilder'
 		else
-			#cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
-			#@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-			cache_key = "user/#{@user.id}/list_feed"
-			total_activity = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				@user.aggregate_list_feed.where("created_at < ?", Time.now-10.minutes)#.limit(10).offset((page-2)*10)
+			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
+			
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@user.aggregate_list_feed(max_id).limit(10).offset((page-2)*10)
 			end
-			@activities = total_activity.page(page-1).per(10)
+
 			render 'lists_feed.json.jbuilder'
 		end
 		@user.delay.update_user_feeds

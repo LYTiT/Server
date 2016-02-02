@@ -79,6 +79,7 @@ class User < ActiveRecord::Base
   def send_friend_joined_lytit_notification(existing_user, new_user, new_user_fb_name, new_user_fb_id)
     payload = {
       :user_id => new_user.id,
+      :type => "facebook_friend",
       :user_name => new_user.name,
       :user_fb_id => new_user_fb_id,
       :user_fb_name => new_user_fb_name
@@ -137,9 +138,13 @@ class User < ActiveRecord::Base
 
   #IV. Lists
 
-  def aggregate_list_feed
+  def aggregate_list_feed(max_id)
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
-    activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
+    if max_id != nil
+      activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids}) AND activity_id < #{max_id}"
+    else
+      activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
+    end
     Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:venue).order("adjusted_sort_position DESC")
   end
 
