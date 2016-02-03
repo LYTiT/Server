@@ -397,7 +397,7 @@ class Activity < ActiveRecord::Base
 					:venue_comment_thirdparty_username => content.thirdparty_username, :adjusted_sort_position => content.time_wrapper.to_i)
 			end
 		else
-			if Activity.where("feed_id = ? AND activity_type = ? AND twitter_id = ?", feed_id, "featured_list_venue", content.id).any? == false
+			if Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false
 				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 					:feed_color => feed_color, :activity_type => "featured_list_venue",
 					:tag_1 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(1).first.meta, 
