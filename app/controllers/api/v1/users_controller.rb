@@ -357,14 +357,17 @@ class Api::V1::UsersController < ApiBaseController
 		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				#add current and less page expirations
+				while Rails.cache.delete("user/#{@user.id}/list_feed/page_"+page.to_s) == true do
+					page += 1
+				end
 				@user.featured_list_venues
 			end
 
 			render 'featured_list_venues.json.jbuilder'			
 		else
-			cache_key = "user/#{@user.id}/list_feed/page_#{page-2}"
-			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				#add current and less page expirations
+			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do				
 				@user.aggregate_list_feed(nil).limit(10).offset((page-2)*10)
 			end
 

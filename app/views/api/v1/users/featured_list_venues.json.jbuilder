@@ -31,7 +31,7 @@ json.activity(@activities) do |activity|
 
   json.added_note nil
 
-  json.attachement Activity.select_content_for_featured_venue_activity(activity, @user.id, nil, nil, nil)
+  json.attachment Activity.select_content_for_featured_venue_activity(activity, @user.id, nil, nil, nil)
 
   json.num_likes nil
   json.has_liked nil

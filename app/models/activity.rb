@@ -269,7 +269,7 @@ class Activity < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
-
+=begin
 #featured_list_venue
 	def Activity.create_featured_list_venue_activities(featured_venue_entries, feed_id, feed_name, feed_color)
 		if feed_id == nil
@@ -350,6 +350,7 @@ class Activity < ActiveRecord::Base
 			end					
 		end
 	end
+=end	
 
 	def Activity.select_content_for_featured_venue_activity(featured_venue_entry, user_id, feed_id, feed_name, feed_color)
 		roll = 1+rand(9)
@@ -362,7 +363,7 @@ class Activity < ActiveRecord::Base
 				content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
 			end
 		end
-		Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 		return content
 	end
 
