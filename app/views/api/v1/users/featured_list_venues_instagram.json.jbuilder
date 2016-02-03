@@ -31,29 +31,19 @@ json.activity(@activities) do |activity|
 
   json.added_note nil
 
-  json.venue_comment_id activity["venue_comment_id"]
-  json.venue_comment_created_at activity["venue_comment_created_at"]
-  json.media_type activity["media_type"]
-  json.image_url_1 activity["image_url_1"]
-  json.image_url_2 activity["image_url_2"]
-  json.image_url_3 activity["image_url_3"]
-  json.video_url_1 activity["video_url_1"]
-  json.video_url_2 activity["video_url_2"]
-  json.video_url_3 activity["video_url_3"]
-  json.content_origin activity["venue_comment_content_origin"]
-  json.thirdparty_username activity["venue_comment_thirdparty_username"]
+  json.venue_comment_id VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.id
+  json.venue_comment_created_at VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.time_wrapper
+  json.media_type VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.media_type
+  json.image_url_1 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_1
+  json.image_url_2 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_2
+  json.image_url_3 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_3
+  json.video_url_1 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_1
+  json.video_url_2 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_2
+  json.video_url_3 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_3
+  json.content_origin VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.content_origin
+  json.thirdparty_username VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.thirdparty_username
 
-  json.lytit_tweet_id activity["tweet_id"]
-  json.tweet_id activity["twitter_id"]
-  json.tweet_created_at activity["tweet_created_at"]
-  json.comment activity["tweet_text"]
-  json.twitter_user_name activity["tweet_author_name"]
-  json.twitter_user_id activity["tweet_author_id"]
-  json.twitter_user_avatar_url activity["tweet_author_avatar"]
-  json.twitter_handle activity["tweet_handle"]
-  json.tweet_image_url_1 activity["image_url_1"]
-  json.tweet_image_url_2 activity["image_url_2"]
-  json.tweet_image_url_3 activity["image_url_3"]
+
 
   json.num_likes nil
   json.has_liked nil

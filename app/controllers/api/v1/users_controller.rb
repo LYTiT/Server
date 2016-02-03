@@ -323,7 +323,7 @@ class Api::V1::UsersController < ApiBaseController
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 		@user.delay.update_user_feeds
 	end
-
+=begin
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		page = params[:page].to_i
@@ -347,6 +347,36 @@ class Api::V1::UsersController < ApiBaseController
 			render 'lists_feed.json.jbuilder'
 		end
 		@user.delay.update_user_feeds
+	end
+=end
+
+	def get_list_feed
+		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		page = params[:page].to_i
+		max_id = params[:max_id].to_i
+		if page < 3
+			cache_key = "user/#{@user.id}/featured_venues"
+			featured_activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				@user.featured_list_venues
+			end
+			if page == 1
+				@activities = featured_activities.first(6)
+				render 'featured_list_venues_instagram.json.jbuilder'
+			else
+				@activities = featured_activities.last(4)
+				render 'featured_list_venues_tweet.json.jbuilder'
+			end
+		else
+			cache_key = "user/#{@user.id}/list_feed/page_#{page-2}"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				#add current and less page expirations
+				@user.aggregate_list_feed(max_id).limit(10).offset((page-2)*10)
+			end
+
+			render 'lists_feed.json.jbuilder'			
+		end
+		@user.delay.update_user_feeds
+
 	end
 
 	def get_list_recommendations
