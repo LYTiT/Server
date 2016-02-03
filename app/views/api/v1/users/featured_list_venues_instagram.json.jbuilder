@@ -31,17 +31,7 @@ json.activity(@activities) do |activity|
 
   json.added_note nil
 
-  json.venue_comment_id VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.id
-  json.venue_comment_created_at VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.time_wrapper
-  json.media_type VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.media_type
-  json.image_url_1 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_1
-  json.image_url_2 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_2
-  json.image_url_3 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_3
-  json.video_url_1 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_1
-  json.video_url_2 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_2
-  json.video_url_3 VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.video_url_3
-  json.content_origin VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.content_origin
-  json.thirdparty_username VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.thirdparty_username
+  json.attachement Activity.select_content_for_featured_venue_activity(activity, @user.id, nil, nil, nil)
 
   json.num_likes nil
   json.has_liked nil

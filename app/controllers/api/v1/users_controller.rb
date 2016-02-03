@@ -405,7 +405,7 @@ class Api::V1::UsersController < ApiBaseController
 			cache_key = "trending_venues/[#{lat},#{long}]"
 		end
 		
-		@venues = Rails.cache.fetch(cache_key, :expires_in => 1.hour) do
+		@venues = Rails.cache.fetch(cache_key, :expires_in => 30.minutes) do
 			Venue.trending_venues(lat, long)
 		end
 		@view_cache_key = cache_key+"/view"
