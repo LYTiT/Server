@@ -31,8 +31,6 @@ json.activity(@activities) do |activity|
 
   json.added_note nil
 
-
-
   json.lytit_tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:id)
   json.tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:twitter_id)
   json.tweet_created_at Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:timestamp)

@@ -43,8 +43,6 @@ json.activity(@activities) do |activity|
   json.content_origin VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.content_origin
   json.thirdparty_username VenueComment.where("venue_id = ?", activity["id"]).order("id DESC").first.thirdparty_username
 
-
-
   json.num_likes nil
   json.has_liked nil
   json.topic nil
