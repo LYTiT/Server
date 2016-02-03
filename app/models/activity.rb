@@ -355,9 +355,9 @@ class Activity < ActiveRecord::Base
 		roll = 1+rand(9)
 		#instagrams should be more prevelant than tweets in featured venue content
 		if roll < 7
-			content = VenueComment.where("venue_id = ?", featured_venue_id).order("id DESC").first
+			content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
 		else
-			content = Tweet.where("venue_id = ?", featured_venue_id).order("id DESC").first
+			content = Tweet.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
 		end
 		Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 	end
