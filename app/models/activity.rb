@@ -364,7 +364,7 @@ class Activity < ActiveRecord::Base
 
 	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 		if feed_id == nil
-			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", content.venue_id, user_id).order("feed_users.interest_score DESC").first
+			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", featured_venue_entry["id"], user_id).order("feed_users.interest_score DESC").first
 			feed_id = feed.id
 			feed_name = feed.name
 			feed_color = feed.feed_color
