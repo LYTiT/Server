@@ -346,7 +346,7 @@ class Activity < ActiveRecord::Base
 						
 						ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
 					end
-				end				
+				end			
 			end					
 		end
 	end
@@ -360,6 +360,7 @@ class Activity < ActiveRecord::Base
 			content = Tweet.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
 		end
 		Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		return content
 	end
 
 	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
