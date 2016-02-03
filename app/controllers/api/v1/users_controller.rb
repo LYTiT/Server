@@ -372,9 +372,7 @@ class Api::V1::UsersController < ApiBaseController
 			end
 
 			render 'lists_feed.json.jbuilder'			
-		end
-		@user.delay.update_user_feeds
-
+		end		
 	end
 
 	def get_list_recommendations
@@ -382,6 +380,7 @@ class Api::V1::UsersController < ApiBaseController
 		@recommendations = Rails.cache.fetch(cache_key, :expires_in => 24.hours) do
 			FeedRecommendation.for_user(@user, params[:latitude], params[:longitude]).limit(10)
 		end
+		@user.delay.update_user_feeds
 	end
 
 	def get_nearby_venues
