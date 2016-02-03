@@ -357,7 +357,7 @@ class Api::V1::UsersController < ApiBaseController
 		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				#add current and less page expirations
+				#clear list feed cache
 				page += 1
 				while Rails.cache.delete("user/#{@user.id}/list_feed/page_"+page.to_s) == true do
 					page += 1
