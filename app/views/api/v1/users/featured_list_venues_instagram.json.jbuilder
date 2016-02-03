@@ -1,8 +1,8 @@
 json.activity(@activities) do |activity|
   json.feed_id Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", activity["id"], @user.id).order("feed_users.interest_score DESC").first.id
-  json.feed_name nil
-  json.feed_color nil
-  json.list_creator_id  nil
+  json.feed_name Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", activity["id"], @user.id).order("feed_users.interest_score DESC").first.name
+  json.feed_color Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", activity["id"], @user.id).order("feed_users.interest_score DESC").first.feed_color
+  json.list_creator_id nil
 
   json.id nil
   json.activity_type "featured_list_venue"
