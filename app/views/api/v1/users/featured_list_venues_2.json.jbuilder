@@ -13,11 +13,11 @@ json.activity(@activities) do |activity|
   json.num_chat_participants nil
   json.latest_chat_time nil
 
-  json.tag_1 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC LIMIT 1").meta
-  json.tag_2 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC LIMIT 1 OFFSET 1").meta
-  json.tag_3 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC LIMIT 1 OFFSET 2").meta
-  json.tag_4 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC LIMIT 1 OFFSET 3").meta
-  json.tag_5 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC LIMIT 1 OFFSET 4").meta
+  json.tag_1 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC").limit(1).offset(1).first.meta
+  json.tag_2 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC").limit(1).offset(2).first.meta
+  json.tag_3 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC").limit(1).offset(3).first.meta
+  json.tag_4 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC").limit(1).offset(4).first.meta
+  json.tag_5 MetaData.where("venue_id = ?", activity["id"]).order("relevance_score DESC").limit(1).offset(5).first.meta
   
   json.venue_id activity["id"]
   json.venue_name activity["name"]
