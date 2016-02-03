@@ -351,6 +351,22 @@ class Activity < ActiveRecord::Base
 		end
 	end
 
+	def Activity.create_featured_list_venue_activity(content, user_id, feed_id, feed_name, feed_color)
+		if content.class.name == "VenueComment"
+			if feed_id != nil
+			
+			else
+			
+			end
+		else
+			if feed_id != nil
+			
+			else
+			
+			end
+		end
+	end
+
 	def Activity.feature_venue_cleanup
 		expired_featured_venue_activity_ids = "SELECT id FROM activities WHERE (activity_type = 'featured_list_venue' AND (NOW() - created_at) > INTERVAL '1 HOUR')"
     	ActivityFeed.where("activity_id IN (#{expired_featured_venue_activity_ids})").delete_all
