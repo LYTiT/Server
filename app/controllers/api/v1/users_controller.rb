@@ -368,7 +368,7 @@ class Api::V1::UsersController < ApiBaseController
 		else
 			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do				
-				@user.aggregate_list_feed(nil).limit(10).offset((page-2)*10)
+				@user.aggregate_list_feed(max_id).limit(10).offset((page-2)*10)
 			end
 
 			render 'lists_feed.json.jbuilder'			
