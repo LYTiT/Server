@@ -33,17 +33,17 @@ json.activity(@activities) do |activity|
 
 
 
-  json.lytit_tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.id
-  json.tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.twitter_id
-  json.tweet_created_at Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.timestamp
-  json.comment Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.tweet_text
-  json.twitter_user_name Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.author_name
-  json.twitter_user_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.author_id
-  json.twitter_user_avatar_url Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.author_avatar
-  json.twitter_handle Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.handle
-  json.tweet_image_url_1 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_1
-  json.tweet_image_url_2 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_2
-  json.tweet_image_url_3 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.image_url_3
+  json.lytit_tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:id)
+  json.tweet_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:twitter_id)
+  json.tweet_created_at Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:timestamp)
+  json.comment Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:tweet_text)
+  json.twitter_user_name Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:author_name)
+  json.twitter_user_id Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:author_id)
+  json.twitter_user_avatar_url Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:author_avatar)
+  json.twitter_handle Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:handle)
+  json.tweet_image_url_1 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:image_url_1)
+  json.tweet_image_url_2 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:image_url_2)
+  json.tweet_image_url_3 Tweet.where("venue_id = ?", activity["id"]).order("id DESC").first.try(:image_url_3)
 
   json.num_likes nil
   json.has_liked nil
