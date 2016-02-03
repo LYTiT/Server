@@ -358,6 +358,9 @@ class Activity < ActiveRecord::Base
 			content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
 		else
 			content = Tweet.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
+			if content == nil
+				content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
+			end
 		end
 		Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 		return content
