@@ -354,18 +354,13 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		page = params[:page].to_i
 		max_id = params[:max_id].to_i
-		if page < 3
+		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
-			featured_activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 				@user.featured_list_venues
 			end
-			if page == 1
-				@activities = featured_activities.first(6)
-				render 'featured_list_venues_instagram.json.jbuilder'
-			else
-				@activities = featured_activities.last(4)
-				render 'featured_list_venues_tweet.json.jbuilder'
-			end
+
+			render 'featured_list_venues_instagram.json.jbuilder'			
 		else
 			cache_key = "user/#{@user.id}/list_feed/page_#{page-2}"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
