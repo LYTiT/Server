@@ -11,11 +11,12 @@ class FeedVenue < ActiveRecord::Base
 
 	def new_venue_notification_and_activity
 		feed = Feed.find_by_id(feed_id)
+		venue = Venue.find_by_id(venue_id)
 		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
-			:user_id => self.user_id, :user_name => self.user.name, :user_phone => user.phone_number, :venue_id => self.venue_id, :venue_name => self.venue.name, 
-			:venue_instagram_location_id => self.venue.instagram_location_id, :venue_latitude => self.venue.latitude,
-			:venue_longitude => self.venue.longitude, :venue_address => self.venue.address, :venue_city => self.venue.city,
-			:venue_state => self.venue.state, :venue_country => self.venue.country, :venue_note => self.description,
+			:user_id => self.user_id, :user_name => self.user.name, :user_phone => user.phone_number, :venue_id => venue_id, :venue_name => venue.name, 
+			:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
+			:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
+			:venue_state => venue.state, :venue_country => venue.country, :venue_note => self.description,
 			:adjusted_sort_position => (self.created_at).to_i)
 
 
