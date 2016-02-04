@@ -175,6 +175,33 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 			render 'feed_activity.json.jbuilder'
 		end
+
+=begin
+		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		page = params[:page].to_i
+		max_id = params[:max_id].to_i
+		if page == 1
+			cache_key = "user/#{@user.id}/featured_venues"
+			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				#clear list feed cache
+				page += 1
+				while Rails.cache.delete("user/#{@user.id}/list_feed/page_"+page.to_s) == true do
+					page += 1
+				end
+				@user.featured_list_venues
+			end
+
+			render 'featured_list_venues.json.jbuilder'			
+		else
+			#cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
+			#@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do				
+			#	@user.aggregate_list_feed(max_id).limit(10).offset((page-2)*10)
+			#end
+			@activities = @user.aggregate_list_feed(max_id).page(page-1).per(10)#limit(10).offset((page-2)*10)
+
+			render 'lists_feed.json.jbuilder'			
+		end	
+=end				
 	end
 
 	def get_activity_object
@@ -273,7 +300,7 @@ class Api::V1::FeedsController < ApiBaseController
 		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 	end
 
-	def daily_spotlyt
+	def get_daily_spotlyts
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 	end
