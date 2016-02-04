@@ -121,6 +121,9 @@ LytitServer::Application.routes.draw do
           get 'get_activity_lists'
         end
         get 'get_live_list_venues'
+        collection do
+          get 'get_daily_spotlyts'
+        end
       end
 
       resources :support_issues do

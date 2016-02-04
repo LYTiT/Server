@@ -273,6 +273,11 @@ class Api::V1::FeedsController < ApiBaseController
 		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 	end
 
+	def daily_spotlyt
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
+	end
+
 	def get_initial_recommendations
 		@recommendations = FeedRecommendation.for_categories(params[:categories], params[:latitude], params[:longitude])
 	end
