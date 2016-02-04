@@ -115,7 +115,7 @@ class Feed < ActiveRecord::Base
 
 	def activity_of_the_day
 		activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id = #{self.id} AND adjusted_sort_position IS NOT NULL"
-		Activity.where("id IN(#{activity_ids}) AND created_at >= ? AND created_at < ?", Time.now-1.day, Time.now-10.minutes).order("adjusted_sort_position DESC")
+		Activity.where("id IN (#{activity_ids}) AND created_at >= ? AND created_at < ?", Time.now-1.day, Time.now-10.minutes).order("adjusted_sort_position DESC")
 	end
 
 	def latest_image_thumbnail_url

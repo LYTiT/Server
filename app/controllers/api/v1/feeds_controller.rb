@@ -76,7 +76,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def leave_feed
 		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
 		Feed.delay.lost_member_calibration(params[:feed_id], params[:user_id])
-		if feed_user.destroy
+		if feed_user.delete
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User did not leave List'] } }, status: :unprocessable_entity
