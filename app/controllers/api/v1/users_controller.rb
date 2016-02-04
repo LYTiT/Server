@@ -364,7 +364,7 @@ class Api::V1::UsersController < ApiBaseController
 				end
 				@user.featured_list_venues
 			end
-
+			@view_cache_key = cache_key+"/view"
 			render 'featured_list_venues.json.jbuilder'			
 		else
 			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"

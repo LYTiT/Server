@@ -354,13 +354,18 @@ class Activity < ActiveRecord::Base
 
 	def Activity.select_content_for_featured_venue_activity(featured_venue_entry, user_id, feed_id, feed_name, feed_color)
 		roll = 1+rand(9)
+		if featured_venue_entry.class.name == "Venue"
+			venue_id = featured_venue_entry.id
+		else
+			venue_id = featured_venue_entry["id"]
+		end
 		#instagrams should be more prevelant than tweets in featured venue content
 		if roll < 7
-			content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
+			content = VenueComment.where("venue_id = ?", venue_id).order("id DESC").first
 		else
-			content = Tweet.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
+			content = Tweet.where("venue_id = ?", venue_id).order("id DESC").first
 			if content == nil
-				content = VenueComment.where("venue_id = ?", featured_venue_entry["id"]).order("id DESC").first
+				content = VenueComment.where("venue_id = ?", venue_id).order("id DESC").first
 			end
 		end
 		Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
@@ -368,8 +373,28 @@ class Activity < ActiveRecord::Base
 	end
 
 	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		if featured_venue_entry.class.name == "Venue"
+			venue_id = featured_venue_entry.id
+			venue_name = featured_venue_entry.name
+			venue_address = featured_venue_entry.address
+			venue_city = featured_venue_entry.city
+			venue_country = featured_venue_entry.country
+			venue_latiude = featured_venue_entry.latitude
+			venue_longitude = featured_venue_entry.longitude
+			venue_instagram_location_id = featured_venue_entry.instagram_location_id
+		else
+			venue_id = featured_venue_entry["id"]
+			venue_name = featured_venue_entry["name"]
+			venue_address = featured_venue_entry["address"]
+			venue_city = featured_venue_entry["city"]
+			venue_country = featured_venue_entry["country"]
+			venue_latiude = featured_venue_entry["latitude"]
+			venue_longitude = featured_venue_entry["longitude"]
+			venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
+		end
+
 		if feed_id == nil
-			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", featured_venue_entry["id"], user_id).order("feed_users.interest_score DESC").first
+			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
 			feed_id = feed.id
 			feed_name = feed.name
 			feed_color = feed.feed_color
@@ -381,15 +406,15 @@ class Activity < ActiveRecord::Base
 			if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false
 				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 					:feed_color => feed_color, :activity_type => "featured_list_venue",
-					:tag_1 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(1).first.meta, 
-					:tag_2 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(2).first.meta, 
-					:tag_3 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(3).first.meta,
-					:tag_4 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(4).first.meta, 
-					:tag_5 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(5).first.meta, 
-					:venue_id => featured_venue_entry["id"], :venue_name => featured_venue_entry["name"],
-					:venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
-					:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
-					:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["instagram_location_id"],
+					:tag_1 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(1).first.meta, 
+					:tag_2 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(2).first.meta, 
+					:tag_3 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(3).first.meta,
+					:tag_4 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(4).first.meta, 
+					:tag_5 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(5).first.meta, 
+					:venue_id => venue_id, :venue_name => venue_name,
+					:venue_address => venue_address, :venue_city => venue_city,
+					:venue_country => venue_country, :venue_latitude => venue_latitude, 
+					:venue_longitude => venue_longitude, :venue_instagram_location_id => venue_instagram_location_id,
 					:venue_comment_id => content.id, :venue_comment_created_at => content.time_wrapper,
 					:media_type => content.media_type, :image_url_1 => content.image_url_1, :image_url_2 => content.image_url_2,
 					:image_url_3 => content.image_url_3, :video_url_1 => content.video_url_1, :video_url_2 => content.video_url_2,
@@ -400,15 +425,15 @@ class Activity < ActiveRecord::Base
 			if Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false
 				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 					:feed_color => feed_color, :activity_type => "featured_list_venue",
-					:tag_1 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(1).first.meta, 
-					:tag_2 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(2).first.meta, 
-					:tag_3 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(3).first.meta, 
-					:tag_4 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(4).first.meta, 
-					:tag_5 => MetaData.where("venue_id = ?", featured_venue_entry["id"]).order("relevance_score DESC").limit(1).offset(5).first.meta, 
-					:venue_id => featured_venue_entry["id"], :venue_name => featured_venue_entry["name"], 
-					:venue_address => featured_venue_entry["address"], :venue_city => featured_venue_entry["city"],
-					:venue_country => featured_venue_entry["country"], :venue_latitude => featured_venue_entry["latitude"], 
-					:venue_longitude => featured_venue_entry["longitude"], :venue_instagram_location_id => featured_venue_entry["instagram_location_id"],						
+					:tag_1 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(1).first.meta, 
+					:tag_2 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(2).first.meta, 
+					:tag_3 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(3).first.meta,
+					:tag_4 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(4).first.meta, 
+					:tag_5 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(5).first.meta, 
+					:venue_id => venue_id, :venue_name => venue_name,
+					:venue_address => venue_address, :venue_city => venue_city,
+					:venue_country => venue_country, :venue_latitude => venue_latitude, 
+					:venue_longitude => venue_longitude, :venue_instagram_location_id => venue_instagram_location_id,						
 					:image_url_1 => content.image_url_1, :image_url_2 => content.image_url_2,
 					:image_url_3 => content.image_url_3, :lytit_tweet_id => content.id, :twitter_id => content.twitter_id, 
 					:tweet_text => content.tweet_text, :tweet_created_at => content.timestamp,
