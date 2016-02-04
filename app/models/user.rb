@@ -247,7 +247,7 @@ class User < ActiveRecord::Base
       color_rating,
       instagram_location_id,
       (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
-      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL AND (NOW() - latest_posted_comment_time) >= INTERVAL '1 HOUR') GROUP BY id ORDER BY relevance_score DESC LIMIT 10"
+      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL AND (NOW() - latest_posted_comment_time) <= INTERVAL '1 HOUR') GROUP BY id ORDER BY relevance_score DESC LIMIT 10"
 
     results = ActiveRecord::Base.connection.execute(first_10_featured_results).to_a
     #results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
