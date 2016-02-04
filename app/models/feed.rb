@@ -341,7 +341,7 @@ class Feed < ActiveRecord::Base
 =end
 
 	def featured_venues
-		self.venues.order("rating DESC LIMIT 10").shuffle
+		self.venues.where("(NOW() - latest_posted_comment_time) >= INTERVAL '1 HOUR'").order("rating DESC LIMIT 10").shuffle
 	end
 
 
