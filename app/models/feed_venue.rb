@@ -10,6 +10,9 @@ class FeedVenue < ActiveRecord::Base
 
 
 	def new_venue_notification_and_activity
+		puts "feed_id================================>  #{feed_id}"
+		puts "venue_id================================>  #{venue_id}"
+		puts "user_id================================>  #{user_id}"
 		feed = Feed.find_by_id(feed_id)
 		venue = Venue.find_by_id(venue_id)
 		user = User.find_by_id(user_id)
