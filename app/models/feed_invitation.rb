@@ -30,7 +30,7 @@ class FeedInvitation < ActiveRecord::Base
 		notification = self.store_new_invitation_notification(payload, invitee, type)
 		payload[:notification_id] = notification.id
 		
-		alert = "#{inviter.name} invited you to add the #{feed.name} List"
+		alert = "#{inviter.name} invited you to join the #{feed.name} List"
 		
 		if invitee.push_token && invitee.active == true
 		  count = Notification.where(user_id: invitee_id, read: false, deleted: false).count

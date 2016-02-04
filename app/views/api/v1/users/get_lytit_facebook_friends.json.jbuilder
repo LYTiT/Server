@@ -5,5 +5,5 @@ json.array! @users do |user|
 	json.fb_id user.facebook_id
 	json.fb_name user.facebook_name
 	json.num_lists	user.num_lists
-	json.num_stars user.num_likes
+	json.num_likes user.num_likes
 end

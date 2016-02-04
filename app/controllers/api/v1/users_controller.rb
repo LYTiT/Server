@@ -142,10 +142,6 @@ class Api::V1::UsersController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def get_lytit_facebook_friends
-		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).page(params[:page]).per(10)
-	end
-
 	def set_version
 		@user = User.find_by_authentication_token(params[:auth_token])
 		v = params[:version]
@@ -161,6 +157,20 @@ class Api::V1::UsersController < ApiBaseController
 		user.update_columns(phone_number: params[:phone_number])
 		user.update_columns(country_code: params[:country_code])
 		render json: { success: true }
+	end
+
+	def get_lytit_facebook_friends
+		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).page(params[:page]).per(10)
+	end
+
+	def get_lytit_facebook_friends
+		@users = @user.lytit_facebook_friends(params[:fb_friend_ids]).page(params[:page]).per(10)
+		if params[:feed_id] != nil
+			@feed = Feed.find_by_id(params[:feed_id])
+			render "cross_reference_user_phonebook_for_invitation.json.jbuilder"
+		else
+			render "cross_reference_user_phonebook.json.jbuilder"
+		end		
 	end
 
 	def cross_reference_user_phonebook

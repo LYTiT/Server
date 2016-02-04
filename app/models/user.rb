@@ -67,10 +67,10 @@ class User < ActiveRecord::Base
         feed.update_underlying_venues
       end
     end
-  end 
+  end
 
   def notify_friends_of_joining(fb_friend_ids, fb_name, fb_id)
-    friends = User.where("id IN (#{fb_friend_ids}")
+    friends = User.where("facebook_id IN (#{fb_friend_ids}")
     for friend in friends
       send_friend_joined_lytit_notification(friend, self, fb_name, fb_id)
     end
