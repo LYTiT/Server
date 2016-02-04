@@ -14,7 +14,7 @@ class FeedVenue < ActiveRecord::Base
 			:user_id => user_id, :user_name => user.name, :user_phone => user.phone_number, :venue_id => venue_id, :venue_name => venue.name, 
 			:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
 			:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
-			:venue_state => venue.state, :venue_country => venue.country, :description => self.description,
+			:venue_state => venue.state, :venue_country => venue.country, :venue_added_note => self.description,
 			:adjusted_sort_position => (self.created_at).to_i)
 
 
