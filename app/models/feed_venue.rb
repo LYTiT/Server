@@ -16,7 +16,7 @@ class FeedVenue < ActiveRecord::Base
 		feed = Feed.find_by_id(feed_id)
 		venue = Venue.find_by_id(venue_id)
 		user = User.find_by_id(user_id)
-		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
+		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
 			:user_id => user_id, :user_name => user.name, :user_phone => user.phone_number, :venue_id => venue_id, :venue_name => venue.name, 
 			:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
 			:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
