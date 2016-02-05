@@ -6,8 +6,12 @@ class FeedVenue < ActiveRecord::Base
 
 	has_one :activity, :dependent => :destroy
 
-	after_create :new_venue_notification_and_activity
+	after_create :delayed_new_venue_notification_and_activity
 
+
+	def delayed_new_venue_notification_and_activity
+		self.delay.new_venue_notification_and_activity
+	end
 
 	def new_venue_notification_and_activity
 		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 

@@ -395,9 +395,13 @@ class Activity < ActiveRecord::Base
 
 		if feed_id == nil
 			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
-			feed_id = feed.id
-			feed_name = feed.name
-			feed_color = feed.feed_color
+			if feed != nil				
+				feed_id = feed.id
+				feed_name = feed.name
+				feed_color = feed.feed_color
+			else
+				return nil
+			end
 		end
 
 		new_activity = nil

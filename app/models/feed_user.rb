@@ -6,7 +6,11 @@ class FeedUser < ActiveRecord::Base
 
 	has_one :activity, :dependent => :destroy
 
-	after_create :new_user_notification_and_activity
+	after_create :delayed_new_user_notification_and_activity
+
+	def delayed_new_user_notification_and_activity
+		self.delay.new_user_notification_and_activity 
+	end
 
 
 	def new_user_notification_and_activity
