@@ -24,7 +24,7 @@ class User < ActiveRecord::Base
   has_many :likers, through: :likes_received, source: :liker
 
   has_many :sent_feed_invitations, foreign_key: "inviter_id", dependent: :destroy
-  has_many :invitee_users, through: :feed_invitations, source: :invitee
+  has_many :invitee_users, through: :sent_feed_invitations, source: :invitee
   has_many :received_feed_invitations, foreign_key: "invitee_id", class_name: "FeedInvitation", dependent: :destroy
   has_many :inviters, through: :received_feed_invitations, source: :inviter
 
