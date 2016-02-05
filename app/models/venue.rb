@@ -1087,7 +1087,7 @@ class Venue < ActiveRecord::Base
         end
         new_venue_tweets
       rescue
-        puts "TWEET ERROR OCCURRED: #{$l.message}"
+        puts "TWEET ERROR OCCURRED: #{$l.backtrace}"
       end
   end
 
