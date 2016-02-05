@@ -57,6 +57,8 @@ class Announcement < ActiveRecord::Base
 				:type => 'announcement_notification', 
 				:user_id => member.id,
 				:additional => for_lumen_games,
+				:announcement_news => self.news,
+				:announcement_title => self.title,
 				:surprise_image => for_background_update
 			}
 			message = "#{self.news}"
@@ -87,10 +89,7 @@ class Announcement < ActiveRecord::Base
 	end
 
 	def notification_payload
-		{
-			:announcement_news => self.news,
-			:announcement_title => self.title 
-		}
+		nil
 	end
 
 
