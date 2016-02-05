@@ -368,7 +368,9 @@ class Activity < ActiveRecord::Base
 				content = VenueComment.where("venue_id = ?", venue_id).order("time_wrapper DESC").first
 			end
 		end
-		Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		if content != nil
+			Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		end
 		return content
 	end
 
