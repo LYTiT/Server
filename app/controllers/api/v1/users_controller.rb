@@ -43,7 +43,6 @@ class Api::V1::UsersController < ApiBaseController
 				id = @user.id
 				@user.update_columns(vendor_id: name)
 				@user.update_columns(name: "lyt_"+(id*2+3).to_s(16))
-				@user.update_columns(temp_user: true)
 
 				#@user.vendor_id = @user.name
 				#@user.name = "lyt_"+(@user.id*2+3).to_s(16)
