@@ -41,7 +41,7 @@ class Api::V1::UsersController < ApiBaseController
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
 				name = @user.name
 				id = @user.id
-				@user.update_columns(venue_id: name)
+				@user.update_columns(vendor_id: name)
 				@user.update_columns(name: "lyt_"+(id*2+3).to_s(16))
 				@user.update_columns(temp_user: true)
 
