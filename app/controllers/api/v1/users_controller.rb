@@ -20,20 +20,20 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def create
-		begin
+		#begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
 				if existing_temp_user.registered != true
-					existing_temp_user.destroy
+					existing_temp_user.delete
 				else
 					previous_email = existing_temp_user.email
 					#duplicates cannot exist in database thus must modifiy email which vendor id based which is unique per phone
 					existing_temp_user.update_columns(email: previous_email+"#{Time.now.min}#{Time.now.sec}"+".og")
 				end
 			end
-		rescue
-			puts "Previous temp user issue"
-		end
+		#rescue
+		#	puts "Previous temp user issue"
+		#end
 
 		@user = User.new(user_params)
 
