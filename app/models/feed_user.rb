@@ -20,6 +20,8 @@ class FeedUser < ActiveRecord::Base
 		
 		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 		begin
+			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
+			feed_inviter = 
 			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id
 				self.send_new_user_notification
 			end

@@ -39,10 +39,16 @@ class Api::V1::UsersController < ApiBaseController
 
 		if @user.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
-				@user.vendor_id = @user.name
-				@user.name = "lyt_"+(@user.id*2+3).to_s(16)
-				temp_user = true
-				@user.save
+				name = @user.name
+				id = @user.id
+				@user.update_columns(venue_id: name)
+				@user.update_columns(name: "lyt_"+(id*2+3).to_s(16))
+				@user.update_columns(temp_user: true)
+
+				#@user.vendor_id = @user.name
+				#@user.name = "lyt_"+(@user.id*2+3).to_s(16)
+				#temp_user = true
+				#@user.save
 			end
 
 			#SupportIssue.delay.create!(user_id: @user.id)
