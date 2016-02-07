@@ -19,18 +19,19 @@ class FeedUser < ActiveRecord::Base
 			:adjusted_sort_position => (self.created_at).to_i)
 		
 		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
-		begin
-			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
-			feed_inviter = 
-			if FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first.is_subscribed == true && feed.user.id != self.user.id
-				self.send_new_user_notification
-			end
-		rescue
-			puts "List has no admin"
+
+		feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
+		feed_inviter = FeedInvitation.where("feed_id = ? AND invitee_id = ?", feed_id, user_id).inviter
+		if feed_creator != nil and feed_creator.is_subscribed == true
+			self.send_new_user_notification(feed_creator.user, true)
+		end
+
+		if feed_inviter != nil and feed_inviter != feed_creator
+			self.send_new_user_notification(feed_inviter.inviter, false)
 		end
 	end
 
-	def send_new_user_notification
+	def send_new_user_notification(receiver, is_creator)
 		payload = {
 		    :object_id => self.id, 
 		    :type => 'added_list_notification', 
@@ -43,25 +44,28 @@ class FeedUser < ActiveRecord::Base
 
 		}
 
-		alert = "#{user.name} joined your #{feed.name} List"
+		if is_creator == true
+			alert = "#{user.name} joined your #{feed.name} List"
+		else
+			alert = "#{user.name} joined #{feed.name}"
+		end
 
 		notification = self.store_new_user_notification(payload, feed.user, "new list member")
 		payload[:notification_id] = notification.id
 
-		if feed.user.push_token && feed.user.active == true
-		  count = Notification.where(user_id: feed.user.id, read: false, deleted: false).count
-		  APNS.send_notification(feed.user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
+		if receiver.push_token && receiver.user.active == true
+		  count = Notification.where(user_id: receiver.user.id, read: false, deleted: false).count
+		  APNS.send_notification(receiver.user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
 		end
-
 	end
 
 	def store_new_user_notification(payload, user, type)
 		notification = {
 		  :payload => payload,
-		  :gcm => feed.user.gcm_token.present?,
-		  :apns => feed.user.push_token.present?,
+		  :gcm => receiver.gcm_token.present?,
+		  :apns => receiver.push_token.present?,
 		  :response => notification_payload,
-		  :user_id => feed.user.id,
+		  :user_id => receiver.id,
 		  :read => false,
 		  :message => type,
 		  :deleted => false
