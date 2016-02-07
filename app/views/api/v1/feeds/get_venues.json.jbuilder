@@ -15,9 +15,9 @@ json.array! @feed_venues do |feed_venue|
   json.time_zone_offset feed_venue.venue.time_zone_offset
 
   json.added_by_user feed_venue.user.try(:name)
-  json.num_likes feed_venue.activity.num_likes
+  json.num_likes feed_venue.activity.try(:num_likes)
   json.feed_venue_id feed_venue.id
   json.added_note feed_venue.description
 
-  json.did_like @user.likes.where("activity_id = ?", feed_venue.activity.id).first.present?
+  json.did_like @user.likes.where("activity_id = ?", feed_venue.activity.try(:id)).first.present?
 end

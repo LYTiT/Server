@@ -3,7 +3,6 @@ class FeedUser < ActiveRecord::Base
 	belongs_to :feed
 	validates :user_id, presence: true
 
-
 	has_one :activity, :dependent => :destroy
 
 	after_create :delayed_new_user_notification_and_activity

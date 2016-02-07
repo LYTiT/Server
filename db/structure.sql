@@ -1661,7 +1661,8 @@ CREATE TABLE venue_comments (
     image_url_3 character varying(255),
     video_url_1 character varying(255),
     video_url_2 character varying(255),
-    video_url_3 character varying(255)
+    video_url_3 character varying(255),
+    instagram_user_id bigint
 );
 
 
@@ -4024,4 +4025,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160130173452');
 INSERT INTO schema_migrations (version) VALUES ('20160130204920');
 
 INSERT INTO schema_migrations (version) VALUES ('20160131021144');
+
+INSERT INTO schema_migrations (version) VALUES ('20160207222129');
 
