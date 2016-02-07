@@ -104,7 +104,7 @@ namespace :lytit do
 
       puts "Clearing clusters"
       ClusterTracker.delete_all
-
+      end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
 

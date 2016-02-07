@@ -195,7 +195,7 @@ class Api::V1::FeedsController < ApiBaseController
 			@view_cache_key = cache_key+"/view"
 			render 'featured_venues.json.jbuilder'			
 		else
-			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
+			cache_key = "feed/#{@feed.id}/list_feed/page_#{page-1}"
 			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do				
 				@feed.activity_of_the_day.limit(10).offset((page-2)*10)
 			end
