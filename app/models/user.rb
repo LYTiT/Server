@@ -82,8 +82,8 @@ class User < ActiveRecord::Base
       :user_id => new_user.id,
       :type => "facebook_friend",
       :user_name => new_user.name,
-      :user_fb_id => new_user_fb_id,
-      :user_fb_name => new_user_fb_name
+      :fb_id => new_user_fb_id,
+      :fb_name => new_user_fb_name
     }
 
     type = "#{existing_user.id}/friend_joined/#{new_user.id}"
