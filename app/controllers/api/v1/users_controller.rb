@@ -143,7 +143,7 @@ class Api::V1::UsersController < ApiBaseController
 	def set_facebook_id
 		@user.update_columns(facebook_id: params[:fb_id])
 		@user.update_columns(facebook_name: params[:fb_name])
-		@user.delay.notify_friends_of_joining(params[:fb_friend_ids], params[:fb_name], params[:fb_id])
+		@user.notify_friends_of_joining(params[:fb_friend_ids], params[:fb_name], params[:fb_id])
 		render json: { success: true }
 	end
 
