@@ -53,11 +53,13 @@ class Feed < ActiveRecord::Base
 	end
 
 	def Feed.new_member_calibration(feed_id, user_id)
-		feed = Feed.find_by_id(feed_id)
 		user = User.find_by_id(user_id)
-		feed.calibrate_num_members
-		feed.increment!(:num_users, 1)
-		user.increment!(:num_lists, 1)	
+		feed = Feed.find_by_id(feed_id)
+		if user != nil && feed != nil	
+			feed.calibrate_num_members
+			feed.increment!(:num_users, 1)
+			user.increment!(:num_lists, 1)	
+		end
 	end
 
 	def Feed.lost_member_calibration(feed_id, user_id)

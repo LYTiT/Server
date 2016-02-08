@@ -13,20 +13,22 @@ class FeedUser < ActiveRecord::Base
 
 
 	def new_user_notification_and_activity
-		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "new_member", :feed_user_id => self.id, 
-			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, :user_facebook_name => user.facebook_name, 
-			:adjusted_sort_position => (self.created_at).to_i)
-		
-		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
+		if user != nil
+			a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "new_member", :feed_user_id => self.id, 
+				:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, :user_facebook_name => user.facebook_name, 
+				:adjusted_sort_position => (self.created_at).to_i)
+			
+			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 
-		feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
-		feed_inviter = FeedInvitation.where("feed_id = ? AND invitee_id = ?", feed_id, user_id).inviter
-		if feed_creator != nil and feed_creator.is_subscribed == true
-			self.send_new_user_notification(feed_creator.user, true)
-		end
+			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
+			feed_inviter = FeedInvitation.where("feed_id = ? AND invitee_id = ?", feed_id, user_id).first
+			if feed_creator != nil and feed_creator.is_subscribed == true
+				self.send_new_user_notification(feed_creator.user, true)
+			end
 
-		if feed_inviter != nil and feed_inviter != feed_creator
-			self.send_new_user_notification(feed_inviter.inviter, false)
+			if feed_inviter != nil and feed_inviter.inviter_id != feed_creator.user_id
+				self.send_new_user_notification(feed_inviter.inviter, false)
+			end
 		end
 	end
 
