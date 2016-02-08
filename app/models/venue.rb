@@ -991,7 +991,9 @@ class Venue < ActiveRecord::Base
       new_venue_tweets = self.update_tweets(true)
 
       total_venue_tweets = []
-      total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}
+      if new_venue_tweets != nil
+        total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}
+      end
       total_venue_tweets << Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
       total_venue_tweets.flatten!.compact!
       return Kaminari.paginate_array(total_venue_tweets)
