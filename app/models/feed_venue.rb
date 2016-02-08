@@ -54,6 +54,7 @@ class FeedVenue < ActiveRecord::Base
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
 		    :added_note => description,
+		    :list_creator_id => feed.user_id,
 		    :activity_id => self.activity.id
 
 		}

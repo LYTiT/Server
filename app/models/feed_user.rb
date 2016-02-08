@@ -39,6 +39,7 @@ class FeedUser < ActiveRecord::Base
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color,
+		    :list_creator_id => feed.user_id,
 		    :activity_id => self.activity.id
 
 		}

@@ -2,6 +2,8 @@ json.id @feed.id
 json.name @feed.name
 json.open @feed.open
 json.creator @feed.user
+json.list_creator_fb_name @feed.user.facebook_name
+json.list_creator_fb_id @feed.user.facebook_id
 json.num_venues @feed.num_venues
 json.num_users @feed.num_users
 json.num_moments @feed.num_moments

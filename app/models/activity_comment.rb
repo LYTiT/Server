@@ -33,6 +33,8 @@ class ActivityComment < ActiveRecord::Base
 		    :user_id => user.id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
+		    :fb_id => user.facebook_id,
+      		:fb_name => user.facebook_name,
 		    :feed_id => activity.feed_id,
 		    :feed_name => activity.feed.name,
 		    :feed_color => activity.feed.feed_color,
