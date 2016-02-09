@@ -22,11 +22,11 @@ class FeedUser < ActiveRecord::Base
 
 			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user_id).first
 			feed_inviter = FeedInvitation.where("feed_id = ? AND invitee_id = ?", feed_id, user_id).first
-			if feed_creator != nil and feed_creator.is_subscribed == true
+			if (feed_creator != nil and feed_creator.is_subscribed == true) && feed_creator.user_id != user.id
 				self.send_new_user_notification(feed_creator.user, true)
 			end
 
-			if feed_inviter != nil and feed_inviter.inviter_id != feed_creator.user_id
+			if (feed_inviter != nil and feed_inviter.inviter_id != feed_creator.user_id) && feed_inviter.inviter_id != user.id
 				self.send_new_user_notification(feed_inviter.inviter, false)
 			end
 		end
