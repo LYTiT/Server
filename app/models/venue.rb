@@ -680,6 +680,19 @@ class Venue < ActiveRecord::Base
   def get_instagrams(day_pull)
     last_instagram_id = nil
 
+    instagrams = instagram_location_ping(day_pull, false)
+
+    instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
+    instagrams.map!(&:to_hash)
+
+    if instagrams.count > 0
+      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
+    end
+
+    return instagrams
+  end
+
+  def instagram_location_ping(day_pull, hourly_pull)
     instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first
     instagram_access_token = instagram_access_token_obj.token rescue nil
     if instagram_access_token != nil
@@ -691,16 +704,12 @@ class Venue < ActiveRecord::Base
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
       self.update_columns(last_instagram_pull_time: Time.now)
+    elsif hourly_pull == true 
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
+      self.update_columns(last_instagram_pull_time: Time.now)
     else
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull)
       self.update_columns(last_instagram_pull_time: Time.now)
-    end
-
-    instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
-    instagrams.map!(&:to_hash)
-
-    if instagrams.count > 0
-      VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     end
 
     return instagrams
@@ -822,6 +831,16 @@ class Venue < ActiveRecord::Base
       end
     end
 
+  end
+
+  def self.initial_list_instagram_pull(initial_list_venue_ids)
+    venues = Venue.where("id IN (#{initial_list_venue_ids})").limit(10)
+    for venue in venues
+      if venue.latest_posted_comment_time < (Time.now - 1.hour)
+        #pull insts from instagram and convert immediately to vcs
+        instagrams = venue.instagram_location_ping(false, true)        
+      end
+    end
   end
   #----------------------------------------------------------------------------->
 

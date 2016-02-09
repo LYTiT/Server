@@ -124,6 +124,7 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_daily_spotlyts'
         end
+        post 'populate_initial_feed'
       end
 
       resources :support_issues do

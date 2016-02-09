@@ -49,6 +49,14 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
+	def populate_initial_feed
+		#this call makes sure that when user opens Lytit for the first time there is activity from his underlying venue 
+		#presented
+		params[:venue_ids]
+		Venue.initial_list_instagram_pull(params[:venue_ids])
+		render json: { success: true }
+	end
+
 	def edit_subscription
 		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
 		if feed_user != nil
