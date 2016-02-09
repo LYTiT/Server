@@ -85,7 +85,7 @@ class Api::V1::VenuesController < ApiBaseController
 				if params[:meta_query] != nil
 					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)					
 				else		
-					@venue.delay.account_page_view
+					@venue.delay.account_page_view(@user.id)
 					cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
 				end
 			else
@@ -119,7 +119,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if @venue.instagram_location_id == nil
 			initial_instagrams = @venue.set_instagram_location_id(100)
-			@venue.delay.account_page_view
+			@venue.delay.account_page_view(@user.id)
 		end
 
 		cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}"
