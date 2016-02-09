@@ -7,10 +7,16 @@ class FeedUser < ActiveRecord::Base
 
 	after_create :delayed_new_user_notification_and_activity
 
+	def update_interest_score(value)
+		#value = 0.1 for opening foreing feed
+		#value = 0.2 for opening own feed
+		#value = 0.05 for opening venue page of underlying feed
+		self.increment!(:interest_score, value)
+	end
+
 	def delayed_new_user_notification_and_activity
 		self.delay.new_user_notification_and_activity 
 	end
-
 
 	def new_user_notification_and_activity
 		if user != nil

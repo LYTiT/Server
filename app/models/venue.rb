@@ -411,6 +411,7 @@ class Venue < ActiveRecord::Base
 
     self.update_columns(page_views: new_page_view_count)
     self.update_columns(latest_page_view_time: Time.now)
+    FeedUser.where("venue_id = ?", self.id).update_all("interest_score = interest_score+0.05")
   end
 
 =begin

@@ -48,6 +48,17 @@ class Feed < ActiveRecord::Base
 
 	belongs_to :user
 
+	def self.register_open(user)
+		feed_user = self.feed_users.where("user_id = ?", user_id)
+		if feed.user_id == feed_user.user_id
+			value = 0.2
+		else
+			value = 0.1
+		end
+		feed_user.update_interest_score(value)
+		self.update_underlying_venues
+	end
+
 	def is_private?
 		self.code != nil
 	end

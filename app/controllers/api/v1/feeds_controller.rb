@@ -5,7 +5,7 @@ class Api::V1::FeedsController < ApiBaseController
 		params[:first_feed]
 		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => params[:open], :description => params[:list_description])
 
-		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true)
+		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true, :interest_score => 1.0)
 
 		render json: feed.as_json
 	end
@@ -52,7 +52,6 @@ class Api::V1::FeedsController < ApiBaseController
 	def populate_initial_feed
 		#this call makes sure that when user opens Lytit for the first time there is activity from his underlying venue 
 		#presented
-		params[:venue_ids]
 		Venue.initial_list_instagram_pull(params[:venue_ids])
 		render json: { success: true }
 	end
@@ -162,8 +161,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feed = Feed.find_by_id(params[:feed_id])		
-		@feed.delay.update_underlying_venues
+		@feed = Feed.find_by_id(params[:feed_id])
+		@feed.delay.register_open(@user.id)
 	end
 
 	def get_activity
