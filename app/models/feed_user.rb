@@ -20,7 +20,7 @@ class FeedUser < ActiveRecord::Base
 			
 			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 
-			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user.id).first
+			feed_creator = FeedUser.where("feed_id = ? AND user_id =?", feed.id, feed.user_id).first
 			feed_inviter = FeedInvitation.where("feed_id = ? AND invitee_id = ?", feed_id, user_id).first
 			if feed_creator != nil and feed_creator.is_subscribed == true
 				self.send_new_user_notification(feed_creator.user, true)
@@ -52,22 +52,22 @@ class FeedUser < ActiveRecord::Base
 			alert = "#{user.name} joined #{feed.name}"
 		end
 
-		notification = self.store_new_user_notification(payload, feed.user, "new list member")
+		notification = self.store_new_user_notification(payload, receiver, "new list member")
 		payload[:notification_id] = notification.id
 
-		if receiver.push_token && receiver.user.active == true
-		  count = Notification.where(user_id: receiver.user.id, read: false, deleted: false).count
-		  APNS.send_notification(receiver.user.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
+		if receiver.push_token && receiver.active == true
+		  count = Notification.where(user_id: receiver.id, read: false, deleted: false).count
+		  APNS.send_notification(receiver.push_token, { :priority =>10, :alert => alert, :content_available => 1, :other => payload, :badge => count})
 		end
 	end
 
 	def store_new_user_notification(payload, user, type)
 		notification = {
 		  :payload => payload,
-		  :gcm => receiver.gcm_token.present?,
-		  :apns => receiver.push_token.present?,
+		  :gcm => user.gcm_token.present?,
+		  :apns => user.push_token.present?,
 		  :response => notification_payload,
-		  :user_id => receiver.id,
+		  :user_id => user.id,
 		  :read => false,
 		  :message => type,
 		  :deleted => false
