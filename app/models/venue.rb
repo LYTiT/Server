@@ -1028,16 +1028,24 @@ class Venue < ActiveRecord::Base
       location_query.chomp!(" OR ") 
       tag_query.chomp!(" OR ") 
 
-      location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a
-      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a
+      location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
+      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
       new_cluster_tweets = []
       total_cluster_tweets = []
-      new_cluster_tweets << location_tweets
-      new_cluster_tweets << tag_query_tweets
-      new_cluster_tweets.flatten!.compact!
-      new_cluster_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
-      
-      total_cluster_tweets << new_cluster_tweets
+
+      if location_tweets != nil 
+        new_cluster_tweets << location_tweets
+      end
+
+      if tag_query_tweets != nil
+        new_cluster_tweets << tag_query_tweets
+      end
+
+      if location_tweets != nil || tag_query_tweets != nil
+        new_cluster_tweets.flatten!.compact!
+        new_cluster_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
+        total_cluster_tweets << new_cluster_tweets
+      end
 
       total_cluster_tweets << Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
           <= #{radius} AND associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
