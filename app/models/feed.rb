@@ -48,8 +48,8 @@ class Feed < ActiveRecord::Base
 
 	belongs_to :user
 
-	def self.register_open(user)
-		feed_user = self.feed_users.where("user_id = ?", user_id).first
+	def self.register_open(u_id)
+		feed_user = self.feed_users.where("user_id = ?", u_id).first
 		if feed.user_id == feed_user.user_id
 			value = 0.2
 		else
