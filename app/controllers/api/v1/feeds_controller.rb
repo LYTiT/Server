@@ -156,7 +156,7 @@ class Api::V1::FeedsController < ApiBaseController
 		#feed = Feed.find_by_id(params[:feed_id])			
 		#feed.delay.underlying_venues
 		#feed.update_media	
-		@feed.delay.register_open(@user.id)
+		@feed.register_open(@user.id)
 		render json: { success: true }
 	end
 
