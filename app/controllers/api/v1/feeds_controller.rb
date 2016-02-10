@@ -161,8 +161,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feed = Feed.find_by_id(params[:feed_id])
-		@feed.delay.register_open(@user.id)
+		@feed = Feed.find_by_id(params[:feed_id])		
 	end
 
 	def get_activity
@@ -200,6 +199,7 @@ class Api::V1::FeedsController < ApiBaseController
 					page += 1
 				end
 				@feed.featured_venues
+				@feed.delay.register_open(@user.id)
 			end
 			@view_cache_key = cache_key+"/view"
 			render 'featured_venues.json.jbuilder'			
