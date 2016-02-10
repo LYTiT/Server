@@ -85,9 +85,5 @@ class FeedUser < ActiveRecord::Base
 	  	nil
 	end
 
-	def update_interest_score
-		
-	end
-
 
 end
