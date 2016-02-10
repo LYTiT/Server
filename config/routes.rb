@@ -199,8 +199,9 @@ LytitServer::Application.routes.draw do
           get 'get_comments'
         end
         get 'get_comments_of_a_venue'
+        get 'get_venue_contexts'
         collection do
-          get 'get_contexts'       
+          get 'get_cluster_contexts'       
         end
         collection do
           get 'get_tweets'       
