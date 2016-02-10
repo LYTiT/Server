@@ -1904,7 +1904,25 @@ CREATE TABLE venues (
     tag_2 character varying(255),
     tag_3 character varying(255),
     tag_4 character varying(255),
-    tag_5 character varying(255)
+    tag_5 character varying(255),
+    venue_comment_created_at timestamp without time zone,
+    venue_comment_media_type character varying(255),
+    venue_comment_content_origin character varying(255),
+    venue_comment_thirdparty_username character varying(255),
+    media_type character varying(255),
+    image_url_1 character varying(255),
+    image_url_2 character varying(255),
+    image_url_3 character varying(255),
+    video_url_1 character varying(255),
+    video_url_2 character varying(255),
+    video_url_3 character varying(255),
+    twitter_id bigint,
+    tweet_text text,
+    tweet_created_at timestamp without time zone,
+    tweet_author_name character varying(255),
+    tweet_author_id character varying(255),
+    tweet_author_avatar_url character varying(255),
+    tweet_handle character varying(255)
 );
 
 
@@ -4034,4 +4052,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160131021144');
 INSERT INTO schema_migrations (version) VALUES ('20160207222129');
 
 INSERT INTO schema_migrations (version) VALUES ('20160210163325');
+
+INSERT INTO schema_migrations (version) VALUES ('20160210213700');
 
