@@ -1916,6 +1916,7 @@ CREATE TABLE venues (
     video_url_1 character varying(255),
     video_url_2 character varying(255),
     video_url_3 character varying(255),
+    lytit_tweet_id integer,
     twitter_id bigint,
     tweet_text text,
     tweet_created_at timestamp without time zone,

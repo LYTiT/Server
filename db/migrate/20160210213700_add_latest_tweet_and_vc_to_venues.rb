@@ -11,6 +11,7 @@ class AddLatestTweetAndVcToVenues < ActiveRecord::Migration
 	add_column :venues, :video_url_1, :string
 	add_column :venues, :video_url_2, :string
 	add_column :venues, :video_url_3, :string
+	add_column :venues, :lytit_tweet_id, :integer
 	add_column :venues, :twitter_id, :integer, :limit => 8
 	add_column :venues, :tweet_text, :text
 	add_column :venues, :tweet_created_at, :datetime
