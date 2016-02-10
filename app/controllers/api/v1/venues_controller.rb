@@ -122,7 +122,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue.delay.account_page_view(@user.id)
 		end
 
-		cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}"
+		cache_key = "venue/#{@venue.id}/comments/page_#{params[:page]}"
 
 		if initial_instagrams != nil
 			@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do					
@@ -137,7 +137,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		end
 
-		@view_cache_key = cache_key+"view"
+		@view_cache_key = cache_key+"/view"
 		#@comments = live_comments.page(params[:page]).per(10)
 	end
 
