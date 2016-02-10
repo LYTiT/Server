@@ -13,10 +13,10 @@ json.cache! @venues, expires_in: 1.hour, key: @view_cache_key  do |json|
     json.longitude venue.longitude
     json.color_rating venue.color_rating
     json.time_zone_offset venue.time_zone_offset
-    json.tag_1 venue.meta_datas.order("relevance_score DESC").limit(1).offset(1).first.try(:meta)
-    json.tag_2 venue.meta_datas.order("relevance_score DESC").limit(1).offset(2).first.try(:meta)
-    json.tag_3 venue.meta_datas.order("relevance_score DESC").limit(1).offset(3).first.try(:meta)
-    json.tag_4 venue.meta_datas.order("relevance_score DESC").limit(1).offset(4).first.try(:meta)
-    json.tag_5 venue.meta_datas.order("relevance_score DESC").limit(1).offset(5).first.try(:meta)
+    json.tag_1 venue.tag_1
+    json.tag_2 venue.tag_2
+    json.tag_3 venue.tag_3
+    json.tag_4 venue.tag_4
+    json.tag_5 venue.tag_5
   end
 end

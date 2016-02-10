@@ -375,41 +375,43 @@ class Activity < ActiveRecord::Base
 	end
 
 	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
-		if featured_venue_entry.class.name == "Venue"
-			venue_id = featured_venue_entry.id
-			venue_name = featured_venue_entry.name
-			venue_address = featured_venue_entry.address
-			venue_city = featured_venue_entry.city
-			venue_country = featured_venue_entry.country
-			venue_latitude = featured_venue_entry.latitude
-			venue_longitude = featured_venue_entry.longitude
-			venue_instagram_location_id = featured_venue_entry.instagram_location_id
-		else
-			venue_id = featured_venue_entry["id"]
-			venue_name = featured_venue_entry["name"]
-			venue_address = featured_venue_entry["address"]
-			venue_city = featured_venue_entry["city"]
-			venue_country = featured_venue_entry["country"]
-			venue_latitude = featured_venue_entry["latitude"]
-			venue_longitude = featured_venue_entry["longitude"]
-			venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
-		end
+		if (content.class.name == "VenueComment" && Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false) || 
+			(content.class.name != "VenueComment" && Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false) 
 
-		if feed_id == nil
-			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
-			if feed != nil				
-				feed_id = feed.id
-				feed_name = feed.name
-				feed_color = feed.feed_color
+			if featured_venue_entry.class.name == "Venue"
+				venue_id = featured_venue_entry.id
+				venue_name = featured_venue_entry.name
+				venue_address = featured_venue_entry.address
+				venue_city = featured_venue_entry.city
+				venue_country = featured_venue_entry.country
+				venue_latitude = featured_venue_entry.latitude
+				venue_longitude = featured_venue_entry.longitude
+				venue_instagram_location_id = featured_venue_entry.instagram_location_id
 			else
-				return nil
+				venue_id = featured_venue_entry["id"]
+				venue_name = featured_venue_entry["name"]
+				venue_address = featured_venue_entry["address"]
+				venue_city = featured_venue_entry["city"]
+				venue_country = featured_venue_entry["country"]
+				venue_latitude = featured_venue_entry["latitude"]
+				venue_longitude = featured_venue_entry["longitude"]
+				venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
 			end
-		end
 
-		new_activity = nil
+			if feed_id == nil
+				feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
+				if feed != nil				
+					feed_id = feed.id
+					feed_name = feed.name
+					feed_color = feed.feed_color
+				else
+					return nil
+				end
+			end
 
-		if content.class.name == "VenueComment"
-			if Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false
+			new_activity = nil
+
+			if content.class.name == "VenueComment"
 				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 					:feed_color => feed_color, :activity_type => "featured_list_venue",
 					:tag_1 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(1).first.try(:meta), 
@@ -426,9 +428,7 @@ class Activity < ActiveRecord::Base
 					:image_url_3 => content.image_url_3, :video_url_1 => content.video_url_1, :video_url_2 => content.video_url_2,
 					:video_url_3 => content.video_url_3, :venue_comment_content_origin => content.content_origin,
 					:venue_comment_thirdparty_username => content.thirdparty_username, :adjusted_sort_position => content.time_wrapper.to_i)
-			end
-		else
-			if Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false
+			else
 				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
 					:feed_color => feed_color, :activity_type => "featured_list_venue",
 					:tag_1 => MetaData.where("venue_id = ?", venue_id).order("relevance_score DESC").limit(1).offset(1).first.try(:meta), 
@@ -447,10 +447,10 @@ class Activity < ActiveRecord::Base
 					:tweet_author_avatar_url => content.author_avatar, :tweet_handle => content.handle, 
 					:adjusted_sort_position => content.timestamp.to_i)
 			end
-		end
 
-		if new_activity != nil
-			ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
+			if new_activity != nil
+				ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
+			end
 		end
 	end
 
