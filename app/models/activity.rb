@@ -449,6 +449,8 @@ class Activity < ActiveRecord::Base
 			if new_activity != nil
 				ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
 			end
+		else
+			puts "Attempted dupe activity creation"
 		end
 	end
 
