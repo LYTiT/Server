@@ -1364,6 +1364,15 @@ class Venue < ActiveRecord::Base
     0
   end  
 
+  def calibrate_top_tags
+    top_tags = self.meta_datas.order("relevance_score DESC").limit(5)
+    self.update_columns(tag_1: top_tags[0].try(:meta))
+    self.update_columns(tag_2: top_tags[1].try(:meta))
+    self.update_columns(tag_3: top_tags[2].try(:meta))
+    self.update_columns(tag_4: top_tags[3].try(:meta))
+    self.update_columns(tag_5: top_tags[4].try(:meta))
+  end
+
   def Venue.cleanup_and_calibration
     active_venue_ids = "SELECT venue_id FROM lyt_spheres"
     stale_venue_ids = "SELECT id FROM venues WHERE id NOT IN (#{active_venue_ids}) AND color_rating > -1.0"

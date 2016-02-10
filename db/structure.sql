@@ -1899,7 +1899,12 @@ CREATE TABLE venues (
     meta_data_vector tsvector,
     metaphone_name_vector tsvector,
     event_id integer,
-    is_live boolean DEFAULT false
+    is_live boolean DEFAULT false,
+    tag_1 character varying(255),
+    tag_2 character varying(255),
+    tag_3 character varying(255),
+    tag_4 character varying(255),
+    tag_5 character varying(255)
 );
 
 
@@ -4027,4 +4032,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160130204920');
 INSERT INTO schema_migrations (version) VALUES ('20160131021144');
 
 INSERT INTO schema_migrations (version) VALUES ('20160207222129');
+
+INSERT INTO schema_migrations (version) VALUES ('20160210163325');
 

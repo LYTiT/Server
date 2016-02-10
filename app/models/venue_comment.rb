@@ -430,6 +430,8 @@ class VenueComment < ActiveRecord::Base
 				end
 			end
 		end
+
+		venue.calibrate_top_tags
 	end
 
 	def extract_venue_comment_meta_data
