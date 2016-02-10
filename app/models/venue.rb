@@ -404,14 +404,14 @@ class Venue < ActiveRecord::Base
     view.save
   end
 
-  def account_page_view(user_id)
+  def account_page_view(u_id)
     view_half_life = 120.0 #minutes
     latest_page_view_time_wrapper = latest_page_view_time || Time.now
     new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)+1.0
 
     self.update_columns(page_views: new_page_view_count)
     self.update_columns(latest_page_view_time: Time.now)
-    FeedUser.where("feed_id = ? AND user_id = ?", self.id, user_id).first.update_interest_score(0.05)
+    FeedUser.joins(feed: :feed_venues).where("venue_id = ?", venue.id).each{|feed_user| feed_user.update_interest_score(0.05)}
   end
 
 =begin
