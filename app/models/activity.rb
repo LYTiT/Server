@@ -381,7 +381,7 @@ class Activity < ActiveRecord::Base
 			venue_address = featured_venue_entry.address
 			venue_city = featured_venue_entry.city
 			venue_country = featured_venue_entry.country
-			venue_latiude = featured_venue_entry.latitude
+			venue_latitude = featured_venue_entry.latitude
 			venue_longitude = featured_venue_entry.longitude
 			venue_instagram_location_id = featured_venue_entry.instagram_location_id
 		else
@@ -390,7 +390,7 @@ class Activity < ActiveRecord::Base
 			venue_address = featured_venue_entry["address"]
 			venue_city = featured_venue_entry["city"]
 			venue_country = featured_venue_entry["country"]
-			venue_latiude = featured_venue_entry["latitude"]
+			venue_latitude = featured_venue_entry["latitude"]
 			venue_longitude = featured_venue_entry["longitude"]
 			venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
 		end
