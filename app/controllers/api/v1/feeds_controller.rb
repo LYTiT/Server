@@ -156,6 +156,7 @@ class Api::V1::FeedsController < ApiBaseController
 		#feed = Feed.find_by_id(params[:feed_id])			
 		#feed.delay.underlying_venues
 		#feed.update_media	
+		@feed.delay.register_open(@user.id)
 		render json: { success: true }
 	end
 
@@ -198,8 +199,7 @@ class Api::V1::FeedsController < ApiBaseController
 				while Rails.cache.delete("feed/#{@feed.id}/list_feed/page_"+page.to_s) == true do
 					page += 1
 				end
-				@feed.featured_venues
-				@feed.delay.register_open(@user.id)
+				@feed.featured_venues				
 			end
 			@view_cache_key = cache_key+"/view"
 			render 'featured_venues.json.jbuilder'			
