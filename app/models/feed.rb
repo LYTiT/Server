@@ -50,7 +50,7 @@ class Feed < ActiveRecord::Base
 
 	def register_open(u_id)
 		feed_user = self.feed_users.where("user_id = ?", u_id).first
-		if feed.user_id == feed_user.user_id
+		if self.user_id == feed_user.user_id
 			value = 0.2
 		else
 			value = 0.1
@@ -118,7 +118,7 @@ class Feed < ActiveRecord::Base
 			stale_venue.update_comments
 			stale_venue.update_tweets(false)			
 		end
-		feed.update_columns(latest_update_time: Time.now)
+		self.update_columns(latest_update_time: Time.now)
 	end
 
 	def comments
