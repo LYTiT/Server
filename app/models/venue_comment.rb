@@ -153,7 +153,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
-		instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
+		#instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
 		num_instagrams = instagram_hashes.count
 		last = false
 		instagram_hashes.each_with_index do |instagram_hash, index|
