@@ -1151,7 +1151,7 @@ class Venue < ActiveRecord::Base
       query = self.name
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
-      begin
+      #begin
         if last_tweet_id != nil
           new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
         else
@@ -1168,10 +1168,10 @@ class Venue < ActiveRecord::Base
           #new_venue_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => false, :venue_id => self.id, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
         end
         new_venue_tweets
-      rescue
-        puts "TWEET ERROR OCCURRED"
-        return nil
-      end
+      #rescue
+      #  puts "TWEET ERROR OCCURRED"
+      #  return nil
+      #end
   end
 
   def self.surrounding_twitter_tweets(user_lat, user_long, venue_ids)
