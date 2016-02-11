@@ -156,12 +156,12 @@ class VenueComment < ActiveRecord::Base
 		instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
 		num_instagrams = instagram_hashes.count
 		last = false
-		for instagram_hashes.each_with_index do |instagram_hash, index|
+		instagram_hashes.each_with_index do |instagram_hash, index|
 			if (index+1) == num_instagrams
 				last = true
 			end
 			VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil, last)
-		end		
+		end
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex, last_of_batch)

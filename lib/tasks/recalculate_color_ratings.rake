@@ -22,7 +22,7 @@ namespace :lytit do
       new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
       instagrams_count = new_instagrams.count
       last = false
-      for new_instagrams.each_with_index do |instagram, index|
+      new_instagrams.each_with_index do |instagram, index|
         if (index+1) == instagrams_count
           last = true
         end
