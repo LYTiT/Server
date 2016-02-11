@@ -154,9 +154,17 @@ class VenueComment < ActiveRecord::Base
 
 	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
 		instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
+		num_instagrams = instagram_hashes.count
+		last = false
+		for instagram_hashes.each_with_index do |instagram_hash, index|
+			if (index+1) == num_instagrams
+				last = true
+			end
+			VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil, last)
+		end		
 	end
 
-	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex)
+	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex, last_of_batch)
 		#begin
 			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
 			
@@ -243,6 +251,10 @@ class VenueComment < ActiveRecord::Base
 				sphere = LytSphere.create_new_sphere(origin_venue)
 				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
 				#to prevent a redundent set_instagram_location_id opperation we assign a last instagram pull time.
+
+				if last_of_batch == true
+					origin_venue.set_last_venue_comment_details(vc)
+				end
 			else
 				nil
 			end

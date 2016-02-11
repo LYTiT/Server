@@ -1373,6 +1373,30 @@ class Venue < ActiveRecord::Base
     self.update_columns(tag_5: top_tags[4].try(:meta))
   end
 
+  def set_last_venue_comment_details(vc)
+    self.update_columns(venue_comment_id: vc.id)
+    self.update_columns(venue_comment_created_at: vc.time_wrapper)
+    self.update_columns(venue_comment_content_origin: vc.content_origin)
+    self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
+    self.update_columns(media_type: vc.media_type)
+    self.update_columns(image_url_1: vc.image_url_1)
+    self.update_columns(image_url_2: vc.image_url_2)
+    self.update_columns(image_url_3: vc.image_url_3)
+    self.update_columns(video_url_1: vc.video_url_1)
+    self.update_columns(video_url_2: vc.video_url_2)
+    self.update_columns(video_url_3: vc.video_url_3)
+  end
+
+  def set_last_tweet_details(tweet)
+    self.update_columns(lytit_tweet_id: tweet.id)
+    self.update_columns(twitter_id: tweet.twitter_id)
+    self.update_columns(tweet_text: tweet.tweet_text)
+    self.update_columns(tweet_created_at: tweet.timestamp)
+    self.update_columns(tweet_author_name: tweet.author_name)
+    self.update_columns(tweet_author_id: tweet.author_id)
+    self.update_columns(tweet_author_avatar_url: tweet.author_name)
+    self.update_columns(tweet_handle: tweet.handle)
+  end
 
 
   def Venue.cleanup_and_calibration

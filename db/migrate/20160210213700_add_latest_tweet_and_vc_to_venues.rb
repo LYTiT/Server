@@ -1,7 +1,7 @@
 class AddLatestTweetAndVcToVenues < ActiveRecord::Migration
   def change
+  	add_column :venues, :venue_comment_id, :integer
   	add_column :venues, :venue_comment_created_at, :datetime
-  	add_column :venues, :venue_comment_media_type, :string
 	add_column :venues, :venue_comment_content_origin, :string
     add_column :venues, :venue_comment_thirdparty_username, :string
     add_column :venues, :media_type, :string    

@@ -20,8 +20,13 @@ namespace :lytit do
       puts "Entered vortex #{vortex.details}"
       vortex.update_columns(last_instagram_pull_time: Time.now)
       new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
-      for instagram in new_instagrams
-        VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex)
+      instagrams_count = new_instagrams.count
+      last = false
+      for new_instagrams.each_with_index do |instagram, index|
+        if (index+1) == instagrams_count
+          last = true
+        end
+        VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex, last)
       end
       #if there are multiple vortexes in a city we traverse through them to save instagram API calls
       if vortex.group_que != nil
