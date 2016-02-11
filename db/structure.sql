@@ -1923,7 +1923,8 @@ CREATE TABLE venues (
     tweet_author_name character varying(255),
     tweet_author_id character varying(255),
     tweet_author_avatar_url character varying(255),
-    tweet_handle character varying(255)
+    tweet_handle character varying(255),
+    venue_comment_instagram_id character varying(255)
 );
 
 
@@ -4055,4 +4056,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160207222129');
 INSERT INTO schema_migrations (version) VALUES ('20160210163325');
 
 INSERT INTO schema_migrations (version) VALUES ('20160210213700');
+
+INSERT INTO schema_migrations (version) VALUES ('20160211205444');
 
