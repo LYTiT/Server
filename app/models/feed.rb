@@ -50,12 +50,14 @@ class Feed < ActiveRecord::Base
 
 	def register_open(u_id)
 		feed_user = self.feed_users.where("user_id = ?", u_id).first
-		if self.user_id == feed_user.user_id
-			value = 0.2
-		else
-			value = 0.1
+		if feed_user != nil
+			if self.user_id != nil and self.user_id == u_id
+				value = 0.2
+			else
+				value = 0.1
+			end
+			feed_user.update_interest_score(value)
 		end
-		feed_user.update_interest_score(value)
 		self.update_underlying_venues
 	end
 
