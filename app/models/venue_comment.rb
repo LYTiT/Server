@@ -204,7 +204,7 @@ class VenueComment < ActiveRecord::Base
 			presence = VenueComment.find_by_instagram_id(instagram_id)
 
 			if instagram_hash["type"] == "video"
-				video_1 = instagram_hash["videos"]["low_bandwidth"]["url"]
+				video_1 = instagram_hash["videos"]["low_bandwidth"]["url"] 
 				video_2 = instagram_hash["videos"]["low_resolution"]["url"]
 				video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
 				if presence == nil

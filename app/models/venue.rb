@@ -849,10 +849,59 @@ class Venue < ActiveRecord::Base
       if venue.latest_posted_comment_time < (Time.now - 1.hour)
         #pull insts from instagram and convert immediately to vcs
         instagrams = venue.instagram_location_ping(false, true)
+        venue.set_last_venue_comment_details(instagrams.first)
         #set venue's last vc fields to latest instagram
         #venue.set_last_venue_comment_details(vc)        
       end
     end
+  end
+
+  def set_last_venue_comment_details(vc)
+    if vc.class.name == "VenueComment"
+      self.update_columns(venue_comment_id: vc.id)
+      self.update_columns(venue_comment_created_at: vc.time_wrapper)
+      self.update_columns(venue_comment_content_origin: vc.content_origin)
+      self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
+      self.update_columns(media_type: vc.media_type)
+      self.update_columns(image_url_1: vc.image_url_1)
+      self.update_columns(image_url_2: vc.image_url_2)
+      self.update_columns(image_url_3: vc.image_url_3)
+      self.update_columns(video_url_1: vc.video_url_1)
+      self.update_columns(video_url_2: vc.video_url_2)
+      self.update_columns(video_url_3: vc.video_url_3)
+    else
+      if vc.type == "video"
+        video_url_1 = vc.videos.try(:low_bandwith).try(:url)
+        video_url_2 = vc.videos.try(:low_resolution).try(:url)
+        video_url_3 = vc.videos.try(:standard_resolution).try(:url)
+      else
+        video_url_1 = nil
+        video_url_2 = nil
+        video_url_3 = nil
+      end
+      self.update_columns(venue_comment_id: nil)
+      self.update_columns(venue_comment_created_at: DateTime.strptime("#{vc.created_time}",'%s'))
+      self.update_columns(venue_comment_content_origin: "instagram")
+      self.update_columns(venue_comment_thirdparty_username: vc.user.username)
+      self.update_columns(media_type: vc.type)
+      self.update_columns(image_url_1: vc.images.try(:thumbnail).try(:url))
+      self.update_columns(image_url_2: vc.images.try(:low_resolution).try(:url))
+      self.update_columns(image_url_3: vc.images.try(:standard_resolution).try(:url))
+      self.update_columns(video_url_1: video_url_1)
+      self.update_columns(video_url_2: video_url_2)
+      self.update_columns(video_url_3: video_url_3)
+    end
+  end
+
+  def set_last_tweet_details(tweet)
+    self.update_columns(lytit_tweet_id: tweet.id)
+    self.update_columns(twitter_id: tweet.twitter_id)
+    self.update_columns(tweet_text: tweet.tweet_text)
+    self.update_columns(tweet_created_at: tweet.timestamp)
+    self.update_columns(tweet_author_name: tweet.author_name)
+    self.update_columns(tweet_author_id: tweet.author_id)
+    self.update_columns(tweet_author_avatar_url: tweet.author_name)
+    self.update_columns(tweet_handle: tweet.handle)
   end
   #----------------------------------------------------------------------------->
 
@@ -1377,32 +1426,6 @@ class Venue < ActiveRecord::Base
     self.update_columns(tag_4: top_tags[3].try(:meta))
     self.update_columns(tag_5: top_tags[4].try(:meta))
   end
-
-  def set_last_venue_comment_details(vc)
-    self.update_columns(venue_comment_id: vc.id)
-    self.update_columns(venue_comment_created_at: vc.time_wrapper)
-    self.update_columns(venue_comment_content_origin: vc.content_origin)
-    self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
-    self.update_columns(media_type: vc.media_type)
-    self.update_columns(image_url_1: vc.image_url_1)
-    self.update_columns(image_url_2: vc.image_url_2)
-    self.update_columns(image_url_3: vc.image_url_3)
-    self.update_columns(video_url_1: vc.video_url_1)
-    self.update_columns(video_url_2: vc.video_url_2)
-    self.update_columns(video_url_3: vc.video_url_3)
-  end
-
-  def set_last_tweet_details(tweet)
-    self.update_columns(lytit_tweet_id: tweet.id)
-    self.update_columns(twitter_id: tweet.twitter_id)
-    self.update_columns(tweet_text: tweet.tweet_text)
-    self.update_columns(tweet_created_at: tweet.timestamp)
-    self.update_columns(tweet_author_name: tweet.author_name)
-    self.update_columns(tweet_author_id: tweet.author_id)
-    self.update_columns(tweet_author_avatar_url: tweet.author_name)
-    self.update_columns(tweet_handle: tweet.handle)
-  end
-
 
   def Venue.cleanup_and_calibration
     active_venue_ids = "SELECT venue_id FROM lyt_spheres"
