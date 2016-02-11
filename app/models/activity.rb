@@ -372,7 +372,7 @@ class Activity < ActiveRecord::Base
 				content = VenueComment.where("venue_id = ?", venue_id).order("time_wrapper DESC").first
 			end
 		end
-		if content != nil
+		if content != nil && feed_id != nil
 			Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 		end
 		return content
@@ -380,6 +380,17 @@ class Activity < ActiveRecord::Base
 
 	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
 		#if ((content.class.name == "VenueComment") && Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false) || ((content.class.name == "Tweet") && Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false)
+		if feed_id == nil
+			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
+			if feed != nil				
+				feed_id = feed.id
+				feed_name = feed.name
+				feed_color = feed.feed_color
+			else
+				return nil
+			end
+		end
+
 		if Activity.where("feed_id = ? AND activity_type = ? AND (venue_comment_id = ? OR lytit_tweet_id = ?)", feed_id, "featured_list_venue", content.id, content.id).any? == false
 			if featured_venue_entry.class.name == "Venue"
 				venue_id = featured_venue_entry.id
@@ -399,17 +410,6 @@ class Activity < ActiveRecord::Base
 				venue_latitude = featured_venue_entry["latitude"]
 				venue_longitude = featured_venue_entry["longitude"]
 				venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
-			end
-
-			if feed_id == nil
-				feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
-				if feed != nil				
-					feed_id = feed.id
-					feed_name = feed.name
-					feed_color = feed.feed_color
-				else
-					return nil
-				end
 			end
 
 			new_activity = nil
