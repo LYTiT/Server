@@ -27,7 +27,7 @@ class SupportMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 		
-		alert = "Team LYTiT responded to your message"
+		alert = "Team Lytit responded to your message"
 
 		if support_user.push_token && support_user.active == true
 		  count = Notification.where(user_id: support_user.id, read: false, deleted: false).count

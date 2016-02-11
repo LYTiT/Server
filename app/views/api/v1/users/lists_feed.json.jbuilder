@@ -8,6 +8,8 @@ json.activity(@activities) do |activity|
   json.activity_type activity.activity_type
   json.user_id activity.user_id
   json.user_name activity.user_name
+  json.fb_id activity.user_facebook_id
+  json.fb_name activity.user_facebook_name
   json.user_phone activity.user_phone
   json.created_at activity.created_at
   json.num_chat_participants activity.num_participants

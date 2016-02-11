@@ -19,6 +19,8 @@ class FeedInvitation < ActiveRecord::Base
 		    :user_id => inviter.id,
 		    :user_name => inviter.name,
 		    :user_phone => inviter.phone_number,
+		   	:fb_id => inviter.facebook_id,
+      		:fb_name => inviter.facebook_name,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color

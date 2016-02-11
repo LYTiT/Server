@@ -16,10 +16,26 @@ class FeedVenue < ActiveRecord::Base
 	def new_venue_notification_and_activity
 		if user == nil
 			user = feed.user
-		end
+			if user != nil
+				user_name = feed.user.name
+				user_phone_number = feed.user.phone_number
+				user_facebook_id = feed.user.facebook_id
+				user_facebook_name = feed.user.facebook_name
+			else
+				user_name = nil
+				user_phone_number = nil
+				user_facebook_id = nil
+				user_facebook_name = nil
+			end
+		else
+			user_name = user.name
+			user_phone_number = user.phone_number
+			user_facebook_id = user.facebook_id
+			user_facebook_name = user.facebook_name
+		end		
 		
 		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
-			:user_id => self.user_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, :user_facebook_name => user.facebook_name,
+			:user_id => self.user_id, :user_name => user_name, :user_phone => user_phone_number, :user_facebook_id => user_facebook_id, :user_facebook_name => user_facebook_name,
 			:venue_id => venue_id, :venue_name => venue.name, 
 			:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
 			:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
@@ -34,7 +50,7 @@ class FeedVenue < ActiveRecord::Base
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
 				#might have to do a delay here/run on a seperate dyno
 				begin
-					self.delay.send_new_venue_notification(feed_user.user)
+					self.send_new_venue_notification(feed_user.user)
 				rescue
 					puts "Nil User encountered!"
 				end
@@ -48,6 +64,8 @@ class FeedVenue < ActiveRecord::Base
 		    :type => 'added_place_notification', 
 		    :user_id => user_id,
 		    :user_name => user.name,
+		    :fb_id => user.facebook_id,
+		    :fb_name => user.facebook_name,
 		    :feed_id => feed_id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color,

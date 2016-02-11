@@ -847,7 +847,9 @@ class Venue < ActiveRecord::Base
     for venue in venues
       if venue.latest_posted_comment_time < (Time.now - 1.hour)
         #pull insts from instagram and convert immediately to vcs
-        instagrams = venue.instagram_location_ping(false, true)        
+        instagrams = venue.instagram_location_ping(false, true)
+        #set venue's last vc fields to latest instagram
+        #venue.set_last_venue_comment_details(vc)        
       end
     end
   end

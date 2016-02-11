@@ -44,6 +44,8 @@ class FeedUser < ActiveRecord::Base
 		    :type => 'added_list_notification', 
 		    :user_id => user.id,
 		    :user_name => user.name,
+			:fb_id => user.facebook_id,
+			:fb_name => user.facebook_name, 
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
 		    :feed_color => feed.feed_color,

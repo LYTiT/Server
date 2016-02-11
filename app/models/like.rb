@@ -37,6 +37,8 @@ class Like < ActiveRecord::Base
 		    :user_name => liker.name,
 		    :user_phone => liker.phone_number,
 		    :user_id => liker_id,
+		    :fb_id => liker.facebook_id,
+		    :fb_name => liker.facebook_name,
 		    :activity_user_name => liked.try(:name),
 		    :activity_user_id => liked_id,
 		    :feed_id => activity.feed_id,

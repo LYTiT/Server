@@ -124,6 +124,8 @@ class Activity < ActiveRecord::Base
 		    :user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
+		    :fb_id => user.facebook_id,
+      		:fb_name => user.facebook_name,
 
 		    :feed_id => activity_feed_of_member.id,
 		    :feed_name => activity_feed_of_member.name,
@@ -227,6 +229,8 @@ class Activity < ActiveRecord::Base
 			:user_id => user_id,
 		    :user_name => user.name,
 		    :user_phone => user.phone_number,
+		    :fb_id => user.facebook_id,
+		    :fb_name => user.facebook_name,
 		    :feed_id => activity_feed_of_member.id,
 		    :feed_name => activity_feed_of_member.name,
 		    :feed_color => activity_feed_of_member.feed_color,
@@ -244,9 +248,9 @@ class Activity < ActiveRecord::Base
 		#member_activity_feed_memberships = member.feed_users.where("feed_id IN (#{underlying_feed_ids})")
 
 		if num_lists == 1
-			preview = "#{user.name} opened a new_topic in #{activity_feed_of_member.name}"
+			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name}"
 		else
-			preview = "#{user.name} opened a new_topic in #{activity_feed_of_member.name} & others"
+			preview = "#{user.name} opened a new topic in #{activity_feed_of_member.name} & others"
 		end
 
 		if member.push_token && member.active == true
