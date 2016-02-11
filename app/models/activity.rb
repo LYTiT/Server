@@ -359,8 +359,8 @@ class Activity < ActiveRecord::Base
 	def Activity.select_content_for_featured_venue_activity(featured_venue_entry, user_id, feed_id, feed_name, feed_color)
 		roll = 1+rand(9)
 		if roll < 7
-			content = {:id => featured_venue_entry["venue_comment_id"], :media_type => featured_venue_entry["media_type"], :venue_id => featured_venue_entry["id"], :created_at => featured_venue_entry["venue_comment_created_at"],
-				:time_wrapper => featured_venue_entry["venue_comment_created_at"], :content_origin => featured_venue_entry["venue_comment_content_origin"],
+			content = {:id => featured_venue_entry["venue_comment_id"], :media_type => featured_venue_entry["media_type"], :venue_id => featured_venue_entry["id"],
+				:time_wrapper => featured_venue_entry["venue_comment_created_at"].to_datetime, :content_origin => featured_venue_entry["venue_comment_content_origin"],
 				:instagram_id => featured_venue_entry["venue_comment_instagram_id"], :thirdparty_username => featured_venue_entry["venue_comment_thirdparty_username"],
 				:instagram_user_id => featured_venue_entry["venue_comment_instagram_user_id"], :image_url_1 => featured_venue_entry["image_url_1"], 
 				:image_url_2 => featured_venue_entry["image_url_2"], :image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], 
@@ -369,12 +369,12 @@ class Activity < ActiveRecord::Base
 			if featured_venue_entry["lytit_tweet_id"] != nil
 				content = {:id => featured_venue_entry["lytit_tweet_id"], :twitter_id => featured_venue_entry["twitter_id"], :tweet_text => featured_venue_entry["tweet_text"],
 					:author_id => featured_venue_entry["tweet_author_id"], :author_name => featured_venue_entry["tweet_author_name"],
-					:author_avatar => featured_venue_entry["tweet_author_avatar_url"], :timestamp => featured_venue_entry["tweet_created_at"], :venue_id => featured_venue_entry["id"],
+					:author_avatar => featured_venue_entry["tweet_author_avatar_url"], :timestamp => featured_venue_entry["tweet_created_at"].to_datetime, :venue_id => featured_venue_entry["id"],
 					:handle => featured_venue_entry["tweet_handle"], :image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
 					:image_url_3 => featured_venue_entry["image_url_3"]}
 			else
 				content = {:id => featured_venue_entry["venue_comment_id"], :media_type => featured_venue_entry["media_type"], :venue_id => featured_venue_entry["id"],
-					:time_wrapper =>  featured_venue_entry["venue_comment_created_at"], :content_origin => featured_venue_entry["venue_comment_content_origin"],
+					:time_wrapper =>  featured_venue_entry["venue_comment_created_at"].to_datetime, :content_origin => featured_venue_entry["venue_comment_content_origin"],
 					:instagram_id => featured_venue_entry["venue_comment_instagram_id"], :thirdparty_username => featured_venue_entry["venue_comment_thirdparty_username"],
 					:instagram_user_id => featured_venue_entry["venue_comment_instagram_user_id"], :image_url_1 => featured_venue_entry["image_url_1"], 
 					:image_url_2 => featured_venue_entry["image_url_2"], :image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], 
