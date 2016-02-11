@@ -91,7 +91,7 @@ class User < ActiveRecord::Base
     notification = self.store_new_friend_joined_lytit_notification(payload, existing_user, type)
     payload[:notification_id] = notification.id
 
-    preview = "#{new_user_fb_name} has joined LYTiT! Check out their Lists!"
+    preview = "#{new_user_fb_name} has joined Lytit! Check out their Lists!"
     
     if existing_user.push_token && existing_user.active == true
       count = Notification.where(user_id: existing_user.id, read: false, deleted: false).count
