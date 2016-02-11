@@ -1143,7 +1143,7 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = 0.5 #Venue.meters_to_miles(100)
+      radius = 0.25 #Venue.meters_to_miles(100)
       #query = ""
       #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
       #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
@@ -1153,9 +1153,9 @@ class Venue < ActiveRecord::Base
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       #begin
         if last_tweet_id != nil
-          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
+          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a #rescue []
         else
-          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{venue.latitude},#{venue.longitude},#{radius}km").take(20).collect.to_a
+          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a #rescue []
         end
         self.update_columns(last_twitter_pull_time: Time.now)
 
