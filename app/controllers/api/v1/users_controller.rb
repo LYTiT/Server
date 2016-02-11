@@ -403,7 +403,7 @@ class Api::V1::UsersController < ApiBaseController
 	def get_nearby_venues
 		@venues = @user.surrounding_venues(params[:latitude], params[:longitude])
 		if @venues.first.is_a?(Hash) 
-			render 'nearby_venues_diry.json.jbuilder'
+			render 'nearby_venues_dirty.json.jbuilder'
 		else
 			render 'nearby_venues_pure.json.jbuilder'
 		end

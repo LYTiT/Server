@@ -320,6 +320,7 @@ class VenueComment < ActiveRecord::Base
 		sphere = LytSphere.create_new_sphere(origin_venue)
 	end
 
+=begin
 	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
 		place_name = instagram.location.name
 		place_id = instagram.location.id
@@ -405,6 +406,7 @@ class VenueComment < ActiveRecord::Base
 		return new_media_created
 
 	end
+=end	
 
 	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
 		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])

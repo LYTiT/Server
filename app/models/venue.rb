@@ -835,7 +835,8 @@ class Venue < ActiveRecord::Base
         end
 
         for instagram in new_instagrams
-          VenueComment.convert_instagram_to_vc(instagram, nil, nil)
+          #VenueComment.convert_instagram_to_vc(instagram, nil, nil)
+          VenueComment.create_vc_from_instagram(instagram.to_hash, nil, nil, true)
         end
       end
     end
@@ -1183,6 +1184,7 @@ class Venue < ActiveRecord::Base
     return surrounding_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}  
   end
 
+=begin
   def self.surrounding_feed(lat, long, surrounding_venue_ids)
     if surrounding_venue_ids != nil and surrounding_venue_ids.length > 0
       meter_radius = 100
@@ -1213,6 +1215,7 @@ class Venue < ActiveRecord::Base
 
     return surrounding_feed
   end
+=end 
 
   def self.spherecial_distance_between_points(lat_1, long_1, lat_2, long_2)
     result = Geocoder::Calculations.distance_between([lat_1, long_1], [lat_2, long_2], :units => :km)

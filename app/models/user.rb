@@ -118,9 +118,9 @@ class User < ActiveRecord::Base
     friends = User.where("facebook_id IN (#{fb_friend_ids})").includes(:feed_invitations).order("facebook_name ASC")
   end
 
+=begin
   def surrounding_venues(lat, long)
     center_point = [lat, long]
-    surrounding_lit_venues = Venue.where("color_rating")
     proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 0.15, :units => :kms)
     surrounding_lit_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 
@@ -136,6 +136,7 @@ class User < ActiveRecord::Base
 
     return results
   end
+=end
 
   #IV. Lists
 

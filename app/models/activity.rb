@@ -378,8 +378,7 @@ class Activity < ActiveRecord::Base
 		return content
 	end
 
-	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
-		#if ((content.class.name == "VenueComment") && Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false) || ((content.class.name == "Tweet") && Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false)
+	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)		
 		if feed_id == nil
 			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
 			if feed != nil				
@@ -391,7 +390,8 @@ class Activity < ActiveRecord::Base
 			end
 		end
 
-		if Activity.where("feed_id = ? AND activity_type = ? AND (venue_comment_id = ? OR lytit_tweet_id = ?)", feed_id, "featured_list_venue", content.id, content.id).any? == false
+		if ((content.class.name == "VenueComment") && Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content.id).any? == false) || ((content.class.name == "Tweet") && Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content.id).any? == false)
+		#if Activity.where("feed_id = ? AND activity_type = ? AND (venue_comment_id = ? OR lytit_tweet_id = ?)", feed_id, "featured_list_venue", content.id, content.id).any? == false
 			if featured_venue_entry.class.name == "Venue"
 				venue_id = featured_venue_entry.id
 				venue_name = featured_venue_entry.name
