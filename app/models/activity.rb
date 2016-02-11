@@ -366,7 +366,7 @@ class Activity < ActiveRecord::Base
 				:image_url_2 => featured_venue_entry["image_url_2"], :image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], 
 				:video_url_2 => featured_venue_entry["video_url_2"], :video_url_3 => featured_venue_entry["video_url_3"]}
 		else
-			if lytit_tweet_id != nil
+			if featured_venue_entry["lytit_tweet_id"] != nil
 				content = {:id => featured_venue_entry["lytit_tweet_id"], :twitter_id => featured_venue_entry["twitter_id"], :tweet_text => featured_venue_entry["tweet_text"],
 					:author_id => featured_venue_entry["tweet_author_id"], :author_name => featured_venue_entry["tweet_author_name"],
 					:author_avatar => featured_venue_entry["tweet_author_avatar_url"], :timestamp => featured_venue_entry["tweet_created_at"], :venue_id => featured_venue_entry["id"],
