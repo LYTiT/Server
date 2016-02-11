@@ -28,10 +28,10 @@ class FeedVenue < ActiveRecord::Base
 				user_facebook_name = nil
 			end
 		else
-			user_name = user.name
-			user_phone_number = user.phone_number
-			user_facebook_id = user.facebook_id
-			user_facebook_name = user.facebook_name
+			user_name = self.user.name
+			user_phone_number = self.user.phone_number
+			user_facebook_id = self.user.facebook_id
+			user_facebook_name = self.user.facebook_name
 		end		
 		
 		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
@@ -48,12 +48,7 @@ class FeedVenue < ActiveRecord::Base
 
 		for feed_user in feed_members
 			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
-				#might have to do a delay here/run on a seperate dyno
-				begin
-					self.send_new_venue_notification(feed_user.user)
-				rescue
-					puts "Nil User encountered!"
-				end
+				self.send_new_venue_notification(feed_user.user)
 			end
 		end
 	end
