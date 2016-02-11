@@ -1924,7 +1924,8 @@ CREATE TABLE venues (
     tweet_author_id character varying(255),
     tweet_author_avatar_url character varying(255),
     tweet_handle character varying(255),
-    venue_comment_instagram_id character varying(255)
+    venue_comment_instagram_id character varying(255),
+    venue_comment_instagram_user_id bigint
 );
 
 

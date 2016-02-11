@@ -253,6 +253,29 @@ class User < ActiveRecord::Base
       tag_3,
       tag_4,
       tag_5,
+
+      venue_comment_id,
+      venue_comment_created_at,
+      venue_comment_content_origin,
+      venue_comment_thirdparty_username,
+      media_type,
+      image_url_1,
+      image_url_2,
+      image_url_3,
+      video_url_1,
+      video_url_2,
+      video_url_3,
+      lytit_tweet_id,
+      twitter_id,
+      tweet_text,
+      tweet_created_at,
+      tweet_author_name,
+      tweet_author_id,
+      tweet_author_avatar_url,
+      tweet_handle,
+      venue_comment_instagram_id,
+      venue_comment_instagram_user_id,
+
       (#{rating_weight}*rating+#{interest_weight}*(SELECT interest_score FROM feed_users WHERE feed_id IN (SELECT feed_id FROM feed_venues WHERE venue_id = venues.id) AND user_id = #{self.id} ORDER BY interest_score DESC LIMIT 1)) AS relevance_score 
       FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL AND (NOW() - latest_posted_comment_time) <= INTERVAL '1 HOUR') GROUP BY id ORDER BY relevance_score DESC LIMIT 10"
 
