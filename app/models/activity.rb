@@ -381,11 +381,96 @@ class Activity < ActiveRecord::Base
 					:video_url_2 => featured_venue_entry["video_url_2"], :video_url_3 => featured_venue_entry["video_url_3"]}		
 			end
 		end
-		#if content.first.nil? == false && feed_id != nil
-		#	Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
-		#end
+		if content.first.nil? == false && feed_id != nil
+			Activity.delay.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)
+		end
 		return content		
 	end
+
+	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)		
+		if feed_id == nil
+			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
+			if feed != nil				
+				feed_id = feed.id
+				feed_name = feed.name
+				feed_color = feed.feed_color
+			else
+				return nil
+			end
+		end
+
+		if ((content[:twitter_id] == nil) && Activity.where("feed_id = ? AND activity_type = ? AND venue_comment_id = ?", feed_id, "featured_list_venue", content[:id]).any? == false) || ((content[:twitter_id] != nil) && Activity.where("feed_id = ? AND activity_type = ? AND lytit_tweet_id = ?", feed_id, "featured_list_venue", content[:id]).any? == false)
+		#if Activity.where("feed_id = ? AND activity_type = ? AND (venue_comment_id = ? OR lytit_tweet_id = ?)", feed_id, "featured_list_venue", content.id, content.id).any? == false
+			if featured_venue_entry.class.name == "Venue"
+				venue_id = featured_venue_entry.id
+				venue_name = featured_venue_entry.name
+				venue_address = featured_venue_entry.address
+				venue_city = featured_venue_entry.city
+				venue_country = featured_venue_entry.country
+				venue_latitude = featured_venue_entry.latitude
+				venue_longitude = featured_venue_entry.longitude
+				venue_instagram_location_id = featured_venue_entry.instagram_location_id
+			else
+				venue_id = featured_venue_entry["id"]
+				venue_name = featured_venue_entry["name"]
+				venue_address = featured_venue_entry["address"]
+				venue_city = featured_venue_entry["city"]
+				venue_country = featured_venue_entry["country"]
+				venue_latitude = featured_venue_entry["latitude"]
+				venue_longitude = featured_venue_entry["longitude"]
+				venue_instagram_location_id = featured_venue_entry["instagram_location_id"]
+			end
+
+			new_activity = nil
+
+			if content.class.name == "VenueComment"
+				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
+					:feed_color => feed_color, :activity_type => "featured_list_venue",
+					:tag_1 => featured_venue_entry["tag_1"], 
+					:tag_2 => featured_venue_entry["tag_2"], 
+					:tag_3 => featured_venue_entry["tag_3"],
+					:tag_4 => featured_venue_entry["tag_4"], 
+					:tag_5 => featured_venue_entry["tag_5"], 
+					:venue_id => venue_id, :venue_name => venue_name,
+					:venue_address => venue_address, :venue_city => venue_city,
+					:venue_country => venue_country, :venue_latitude => venue_latitude, 
+					:venue_longitude => venue_longitude, :venue_instagram_location_id => venue_instagram_location_id,
+					:venue_comment_id => content[:id], :venue_comment_created_at => content[:time_wrapper],
+					:media_type => content[:media_type], :image_url_1 => content[:image_url_1], :image_url_2 => content[:image_url_2],
+					:image_url_3 => content[:image_url_3], :video_url_1 => content[:video_url_1], :video_url_2 => content[:video_url_2],
+					:video_url_3 => content[:video_url_3], :venue_comment_content_origin => content[:content_origin],
+					:venue_comment_thirdparty_username => content[:thirdparty_username], :adjusted_sort_position => content[:time_wrapper].to_i)
+			else
+				new_activity = Activity.create!(:feed_id => feed_id, :feed_name => feed_name,
+					:feed_color => feed_color, :activity_type => "featured_list_venue",
+					:tag_1 => featured_venue_entry["tag_1"], 
+					:tag_2 => featured_venue_entry["tag_2"], 
+					:tag_3 => featured_venue_entry["tag_3"],
+					:tag_4 => featured_venue_entry["tag_4"], 
+					:tag_5 => featured_venue_entry["tag_5"], 
+					:venue_id => venue_id, :venue_name => venue_name,
+					:venue_address => venue_address, :venue_city => venue_city,
+					:venue_country => venue_country, :venue_latitude => venue_latitude, 
+					:venue_longitude => venue_longitude, :venue_instagram_location_id => venue_instagram_location_id,						
+					:image_url_1 => content[:image_url_1], :image_url_2 => content[:image_url_2],
+					:image_url_3 => content[:image_url_3], :lytit_tweet_id => content[:id], :twitter_id => content[:twitter_id], 
+					:tweet_text => content[:tweet_text], :tweet_created_at => content[:timestamp],
+					:tweet_author_name => content[:author_name], :tweet_author_id => content[:author_id],
+					:tweet_author_avatar_url => content[:author_avatar], :tweet_handle => content[:handle], 
+					:adjusted_sort_position => content[:timestamp].to_i)
+			end
+
+			if new_activity != nil
+				ActivityFeed.create!(:feed_id => feed_id, :activity_id => new_activity.id)
+			end
+		else
+			puts "Attempted dupe activity creation"
+		end
+	end
+
+
+
+
 
 
 	def Activity.select_content_for_featured_venue_activity_old(featured_venue_entry, user_id, feed_id, feed_name, feed_color)
@@ -410,7 +495,7 @@ class Activity < ActiveRecord::Base
 		return content
 	end
 
-	def Activity.create_featured_list_venue_activity(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)		
+	def Activity.create_featured_list_venue_activity_old(featured_venue_entry, content, user_id, feed_id, feed_name, feed_color)		
 		if feed_id == nil
 			feed = Feed.joins(:feed_venues, :feed_users).where("feed_venues.venue_id = ? AND feed_users.user_id = ?", venue_id, user_id).order("feed_users.interest_score DESC").first
 			if feed != nil				

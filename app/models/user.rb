@@ -253,7 +253,6 @@ class User < ActiveRecord::Base
       tag_3,
       tag_4,
       tag_5,
-
       venue_comment_id,
       venue_comment_created_at,
       venue_comment_content_origin,
