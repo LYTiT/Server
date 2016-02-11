@@ -38,6 +38,9 @@ class Api::V1::SupportIssuesController < ApiBaseController
 
 		sm = SupportMessage.create!(:message => params[:message], :support_issue_id => support_issue_id, :user_id => @user.id)
 		if sm != nil
+			if @user.is_admin? != true
+				new_support_issue.update_columns(latest_message_time: Time.now)
+			end
 			render json: { success: true }	
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "Support message sending issue" } }, status: :unprocessable_entity
