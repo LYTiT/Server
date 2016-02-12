@@ -118,6 +118,17 @@ class User < ActiveRecord::Base
     friends = User.where("facebook_id IN (#{fb_friend_ids})").includes(:feed_invitations).order("facebook_name ASC")
   end
 
+  def User.purge_cached_news_feed(u_ids)
+    for u_id in u_ids
+      cache_key = "user/#{u_id}/featured_venues"
+      Rails.cache.delete(cache_key)
+      page = 1
+      while Rails.cache.delete("user/#{u_id}/list_feed/page_"+page.to_s) == true do
+        page += 1
+      end    
+    end
+  end
+
 =begin
   def surrounding_venues(lat, long)
     center_point = [lat, long]

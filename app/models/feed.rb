@@ -76,8 +76,15 @@ class Feed < ActiveRecord::Base
 	end
 
 	def Feed.lost_member_calibration(feed_id, user_id)
-		Feed.find_by_id(feed_id).decrement!(:num_users, 1)
-		User.find_by_id(user_id).decrement!(:num_lists, 1)		
+		feed = Feed.find_by_id(feed_id)
+		user = User.find_by_id(user_id)
+
+		if feed != nil
+			feed.decrement!(:num_users, 1)
+		end
+		if user != nil
+			user.decrement!(:num_lists, 1)		
+		end
 	end
 
 	def Feed.added_venue_calibration(feed_id, venue_id)

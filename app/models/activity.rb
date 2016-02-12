@@ -201,6 +201,9 @@ class Activity < ActiveRecord::Base
 			:user_facebook_name => user.facebook_name, :activity_type => "new_topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, 
 			:feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
 		ActivityFeed.bulk_creation(new_activity.id, f_ids)
+		feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{new_activity.id}"
+		u_ids = FeedUser.where("feed_id IN (#{feed_ids})").pluck(:user_id)
+		User.purge_cached_news_feed(u_ids)
 		new_activity.delay.new_topic_notification(f_ids)
 		return new_activity
 	end

@@ -152,6 +152,10 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
 
+	def self.map_instagrams_to_hashes_and_convert(instagrams)
+		self.convert_bulk_instagrams_to_vcs(instagrams.map!(&:to_hash), nil)		
+	end
+
 	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
 		#instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
 		num_instagrams = instagram_hashes.count

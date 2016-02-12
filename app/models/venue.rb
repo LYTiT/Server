@@ -844,13 +844,14 @@ class Venue < ActiveRecord::Base
   end
 
   def self.initial_list_instagram_pull(initial_list_venue_ids)
-    venues = Venue.where("id IN (#{initial_list_venue_ids})").limit(10)
+    venues = Venue.where("id IN (#{initial_list_venue_ids}) AND instagram_location_id != nil").limit(10)
     for venue in venues
       if venue.latest_posted_comment_time < (Time.now - 1.hour)
         #pull insts from instagram and convert immediately to vcs
         instagrams = venue.instagram_location_ping(false, true)
         instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
         venue.set_last_venue_comment_details(instagrams.first)
+        VenueComment.delay.map_instagrams_to_hashes_and_convert(instagrams)
         #set venue's last vc fields to latest instagram
         #venue.set_last_venue_comment_details(vc)        
       end
