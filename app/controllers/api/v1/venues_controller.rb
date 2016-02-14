@@ -35,6 +35,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def venue_primer
+=begin
+
 		venue_id = params[:venue_id]
 		
 		#venue lookup if needed
@@ -64,6 +66,8 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			render json: { success: false }
 		end
+=end		
+		render json: { success: true }
 	end
 
 	def cluster_primer
