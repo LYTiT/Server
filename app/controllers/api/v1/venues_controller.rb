@@ -83,6 +83,7 @@ class Api::V1::VenuesController < ApiBaseController
 		
 		if venue_ids.count == 1
 			@venue = Venue.find_by_id(venue_ids.first)
+			@venue.delay.account_page_view(@user.id)
 
 			if params[:meta_query] != nil
 				@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
@@ -116,6 +117,38 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
+	def get_comments_implicitly
+		if params[:country] != nil
+			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
+		else
+			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
+		end
+		@venue.delay.account_page_view(@user.id)
+
+		instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
+		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
+			@venue.get_instagrams(false)
+		end
+		latest_instagrams_count = latest_venue_instagrams.length
+
+		@view_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}/view"
+		if (latest_instagrams_count > 0) && (num_elements_per_page*(page-1) < latest_instagrams_count)
+			start_index = (page-1)
+			end_index = (page-1)+(num_elements_per_page-1)
+			@comments = latest_venue_instagrams[start_index..end_index]
+			render 'dirty_comments.json.jbuilder'
+		else
+			offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
+			vc_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
+			@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
+				VenueComment.where("venue_id = ?", venue_ids.first).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
+			end
+			render 'pure_comments.json.jbuilder'
+		end
+
+	end	
+=begin
 	def get_comments_old
 		#register feed open
 		@user = User.find_by_authentication_token(params[:auth_token])
@@ -154,7 +187,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
-	def get_comments_implicitly
+	def get_comments_implicitly_old
 		if params[:country] != nil
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
@@ -195,6 +228,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feeds = Feed.feeds_in_cluster(params[:cluster_venue_ids]).page(params[:page]).per(10)
 	end
+=end		
 
 	def get_tweets
 		venue_ids = params[:cluster_venue_ids].split(',')
