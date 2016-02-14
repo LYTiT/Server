@@ -72,6 +72,46 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments
+		num_elements_per_page = 10
+		page = params[:page].to_i
+		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
+
+		
+		if venue_ids.count == 1
+			@venue = Venue.find_by_id(venue_ids.first)
+
+			if params[:meta_query] != nil
+				@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
+				render 'pure_comments.json.jbuilder'
+			else						
+				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
+				latest_venue_instagrams = Rails.cache.fetch(instagram_cache_key, :expires_in => 10.minutes) do
+					@venue.update_comments
+				end
+				latest_instagrams_count = latest_venue_instagrams.length
+
+				@view_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}/view"
+				if (latest_instagrams_count > 0) && (num_elements_per_page*(page-1) < latest_instagrams_count)
+					start_index = (page-1)
+					end_index = (page-1)+(num_elements_per_page-1)
+					@comments = latest_venue_instagrams[start_index..end_index]
+					render 'dirty_comments.json.jbuilder'
+				else
+					offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
+					vc_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
+					@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
+						VenueComment.where("venue_id = ?", venue_ids.first).order("time_wrapper DESC").page(offset_page).per(10)
+					end
+					render 'pure_comments.json.jbuilder'
+				end
+			end
+		else
+			cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
+			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
+		end
+	end
+
+	def get_comments_old
 		#register feed open
 		@user = User.find_by_authentication_token(params[:auth_token])
 		
@@ -83,7 +123,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if venue_ids.count == 1
 				@venue = Venue.find_by_id(venue_ids.first)
 				if params[:meta_query] != nil
-					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)					
+					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
 				else		
 					@venue.delay.account_page_view(@user.id)
 					cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
@@ -245,7 +285,7 @@ class Api::V1::VenuesController < ApiBaseController
 		cache_key = "lyt_map"
 		@view_cache_key = cache_key+"/view"
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			Venue.where("color_rating > -1.0 OR is_live IS TRUE")
+			Venue.where("color_rating > -1.0")
 		end
 		render 'display.json.jbuilder'
 	end
@@ -297,7 +337,7 @@ class Api::V1::VenuesController < ApiBaseController
 				if page == 1
 					cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
 					nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-						Venue.in_bounds(proximity_box).where("color_rating > -1.0 OR is_live IS TRUE")
+						Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 					end
 					@venues = nearby_venues
 				else
@@ -311,7 +351,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				cache_key = "total_lyt_map"
 				venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-					Venue.where("color_rating > -1.0 OR is_live IS TRUE")
+					Venue.where("color_rating > -1.0")
 				end
 				ordered_venues = venues.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
 				user_city = ordered_venues.first.city || ordered_venues[1].city || ordered_venues[2].city || ordered_venues[3].city || ordered_venues[4].city
