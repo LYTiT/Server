@@ -85,7 +85,7 @@ class Api::V1::VenuesController < ApiBaseController
 				render 'pure_comments.json.jbuilder'
 			else						
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
-				latest_venue_instagrams = Rails.cache.fetch(instagram_cache_key, :expires_in => 10.minutes) do
+				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
 					@venue.update_comments
 				end
 				latest_instagrams_count = latest_venue_instagrams.length
@@ -108,6 +108,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
 			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
+			render 'pure_comments.json.jbuilder'
 		end
 	end
 
