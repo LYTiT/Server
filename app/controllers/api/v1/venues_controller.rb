@@ -118,13 +118,16 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_comments_implicitly
+		num_elements_per_page = 10
+		page = params[:page].to_i
+
 		if params[:country] != nil
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
 		else
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
 		end
-		@venue.delay.account_page_view(@user.id)
+		#@venue.delay.account_page_view(@user.id)
 
 		instagrams_cache_key = "venue/#{@venue.id}/latest_instagrams"
 		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
