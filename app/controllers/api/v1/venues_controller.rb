@@ -120,6 +120,7 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_comments_implicitly
 		num_elements_per_page = 10
 		page = params[:page].to_i
+		@venue = nil
 
 		if params[:country] != nil
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
