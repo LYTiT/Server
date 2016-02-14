@@ -86,7 +86,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else						
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
 				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
-					@venue.update_comments
+					@venue.get_instagrams(false)
 				end
 				latest_instagrams_count = latest_venue_instagrams.length
 
