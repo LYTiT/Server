@@ -12,6 +12,7 @@ json.cache! @comments, expires_in: 3.minutes, key: @view_cache_key  do |json|
     json.video_url_3 comment["videos"].try(:[], "standard_resolution").try(:[], "url")    
     json.created_at DateTime.strptime(comment["created_time"],'%s')
     json.content_origin 'instagram'
+    json.venue_id @venue_id
     json.thirdparty_username comment["user"]["username"]
   end
 end

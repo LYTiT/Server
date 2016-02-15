@@ -129,8 +129,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
 		end
-		#@venue.delay.account_page_view(@user.id)
-		@venue_id = @venue.id
+		#@venue.delay.account_page_view(@user.id)		
 
 		instagrams_cache_key = "venue/#{@venue.id}/latest_instagrams"
 		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
@@ -143,6 +142,7 @@ class Api::V1::VenuesController < ApiBaseController
 			start_index = (page-1)
 			end_index = (page-1)+(num_elements_per_page-1)
 			@comments = latest_venue_instagrams[start_index..end_index]
+			@venue_id = @venue.id
 			render 'dirty_comments.json.jbuilder'
 		else
 			offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
