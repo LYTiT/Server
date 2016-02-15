@@ -139,8 +139,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 		@view_cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}/view"
 		if (latest_instagrams_count > 0) && (num_elements_per_page*(page-1) < latest_instagrams_count)
-			start_index = (page-1)
-			end_index = (page-1)+(num_elements_per_page-1)
+			start_index = (page-1)*(num_elements_per_page)
+			end_index = start_index+(num_elements_per_page-1)
 			@comments = latest_venue_instagrams[start_index..end_index]
 			@venue_id = @venue.id
 			render 'dirty_comments.json.jbuilder'
@@ -148,7 +148,7 @@ class Api::V1::VenuesController < ApiBaseController
 			offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
 			vc_cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}"
 			@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
-				VenueComment.where("venue_id = ?", @venue.id).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
+				VenueComment.where("venue_id = ? AND created_at <= ?", @venue.id, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 			end
 			render 'pure_comments.json.jbuilder'
 		end
