@@ -150,6 +150,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
 				VenueComment.where("venue_id = ? AND created_at <= ?", @venue.id, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 			end
+			@venue_id = @venue.id
 			render 'pure_comments.json.jbuilder'
 		end
 
