@@ -124,8 +124,8 @@ class Feed < ActiveRecord::Base
 		instagram_refresh_rate = 15 #minutes
 		stale_venues = self.venues.where("last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes)
 		for stale_venue in stale_venues			
-			stale_venue.update_comments
-			stale_venue.update_tweets(false)			
+			stale_venue.update_comments rescue nil
+			stale_venue.update_tweets(false) rescue nil			
 		end
 		self.update_columns(latest_update_time: Time.now)
 	end
