@@ -106,7 +106,7 @@ class Api::V1::VenuesController < ApiBaseController
 					offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
 					vc_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
 					@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
-						VenueComment.where("venue_id = ?", venue_ids.first).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
+						VenueComment.where("venue_id = ? AND created_at <= ?", venue_ids.first, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 					end
 					render 'pure_comments.json.jbuilder'
 				end
