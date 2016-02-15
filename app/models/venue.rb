@@ -681,11 +681,11 @@ class Venue < ActiveRecord::Base
   def get_instagrams(day_pull)
     last_instagram_id = nil
 
-    instagrams = instagram_location_ping(day_pull, false)
+    instagrams = instagram_location_ping(day_pull, false).map!(&:to_hash)
 
     if instagrams.count > 0
-      instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
-      instagrams.map!(&:to_hash)
+      #instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
+      #instagrams.map!(&:to_hash)
       VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
     else
       instagrams = []
