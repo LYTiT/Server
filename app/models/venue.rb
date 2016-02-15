@@ -730,12 +730,12 @@ class Venue < ActiveRecord::Base
       Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
     else
       if self.last_instagram_post != nil
-        Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.set_instagram_location_id(100)
+        Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue nil
       else
         if hourly_pull == true
-          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue self.set_instagram_location_id(100)
+          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue nil
         else
-          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.set_instagram_location_id(100)
+          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue nil
         end
       end
     end
