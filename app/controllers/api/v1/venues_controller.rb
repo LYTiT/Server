@@ -98,8 +98,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 				@view_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}/view"
 				if (latest_instagrams_count > 0) && (num_elements_per_page*(page-1) < latest_instagrams_count)
-					start_index = (page-1)
-					end_index = (page-1)+(num_elements_per_page-1)
+					start_index = (page-1)*(num_elements_per_page)
+					end_index = start_index+(num_elements_per_page-1)
 					@comments = latest_venue_instagrams[start_index..end_index]
 					render 'dirty_comments.json.jbuilder'
 				else
