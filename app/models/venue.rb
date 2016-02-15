@@ -687,6 +687,8 @@ class Venue < ActiveRecord::Base
       instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
       instagrams.map!(&:to_hash)
       VenueComment.delay.convert_bulk_instagrams_to_vcs(instagrams, self)
+    else
+      instagrams = []
     end
 
     return instagrams
