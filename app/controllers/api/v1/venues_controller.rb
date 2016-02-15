@@ -130,6 +130,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
 		end
 		#@venue.delay.account_page_view(@user.id)
+		@venue_id = @venue.id
 
 		instagrams_cache_key = "venue/#{@venue.id}/latest_instagrams"
 		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
