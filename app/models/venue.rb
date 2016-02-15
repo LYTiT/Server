@@ -681,7 +681,7 @@ class Venue < ActiveRecord::Base
   def get_instagrams(day_pull)
     last_instagram_id = nil
 
-    instagrams = instagram_location_ping(day_pull, false).map!(&:to_hash)
+    instagrams = instagram_location_ping(day_pull, false)
 
     if instagrams.count > 0
       #instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)}
@@ -714,7 +714,11 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    return instagrams
+    if hourly_pull == true
+      return instagrams
+    else
+      return instagrams.map!(&:to_hash)
+    end
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull, hourly_pull)
