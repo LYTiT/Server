@@ -714,10 +714,14 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    if hourly_pull == true
-      return instagrams
+    if instagrams != nil
+      if hourly_pull == true
+        return instagrams
+      else
+        return instagrams.map!(&:to_hash)
+      end
     else
-      return instagrams.map!(&:to_hash)
+      return []
     end
   end
 
