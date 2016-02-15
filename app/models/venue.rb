@@ -704,22 +704,18 @@ class Venue < ActiveRecord::Base
 
     instagrams = []
     if day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map!(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false).map!(&:to_hash)
       self.update_columns(last_instagram_pull_time: Time.now)
     elsif hourly_pull == true 
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, false, true)
       self.update_columns(last_instagram_pull_time: Time.now)
     else
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post).map!(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false).map!(&:to_hash)
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
     if instagrams != nil
-      if hourly_pull == true
-        return instagrams
-      else
-        return instagrams.map!(&:to_hash)
-      end
+      return instagrams
     else
       return []
     end
