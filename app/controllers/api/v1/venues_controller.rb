@@ -406,13 +406,13 @@ class Api::V1::VenuesController < ApiBaseController
 		else		
 			if page == 1
 				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
-				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 					Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 				end
 				@venues = nearby_venues
 			else
 				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
-				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
+				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
 					Venue.where("((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})) AND (color_rating > -1.0)").order("city ASC").limit(num_page_entries).offset((page-2)*num_page_entries)
 				end
 				@venues = faraway_venues			
