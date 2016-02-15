@@ -225,7 +225,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@view_cache_key = cache_key+"/view"
 		#@comments = live_comments.page(params[:page]).per(10)
 	end
-
+=end
 	def get_venue_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feeds = Feed.feeds_in_venue(params[:venue_id])
@@ -235,8 +235,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feeds = Feed.feeds_in_cluster(params[:cluster_venue_ids]).page(params[:page]).per(10)
 	end
-=end		
-
+		
 	def get_tweets
 		venue_ids = params[:cluster_venue_ids].split(',')
 		cluster_lat = params[:cluster_latitude]
