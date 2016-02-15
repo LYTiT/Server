@@ -83,6 +83,7 @@ class Api::V1::VenuesController < ApiBaseController
 		
 		if venue_ids.count == 1
 			@venue = Venue.find_by_id(venue_ids.first)
+			@venue_id = @venue.id
 			@venue.delay.account_page_view(@user.id)
 
 			if params[:meta_query] != nil
@@ -113,6 +114,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
 			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
+			@venue_id = nil
 			render 'pure_comments.json.jbuilder'
 		end
 	end

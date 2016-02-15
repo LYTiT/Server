@@ -16,4 +16,4 @@ json.cache! @comments, expires_in: 3.minutes, key: @view_cache_key  do |json|
     json.thirdparty_username comment.thirdparty_username
   end  
 end
-json.venue_id @venue.id
+json.venue_id @venue_id
