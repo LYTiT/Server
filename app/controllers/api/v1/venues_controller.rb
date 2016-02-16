@@ -154,11 +154,20 @@ class Api::V1::VenuesController < ApiBaseController
 		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
 		if latest_venue_instagrams == nil
 			latest_venue_instagrams = @venue.get_instagrams(false)
-			Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
+			#in version 1.1.0 the next page is not pulled if there is less than 6 elements returned on the previous page.
+			#To resolve this we introduce this hack to backfill the last element enough time so that the size of the array is
+			#6. These dupes are then filtered out on the front.
+			if (latest_venue_instagrams.length%num_elements_per_page) != 0 && latest_venue_instagrams.last != nil
+				if latest_venue_instagrams.length < num_elements_per_page
+					(num_elements_per_page - latest_venue_instagrams.length).times{latest_venue_instagrams <<  latest_venue_instagrams.last}
+				else
+					(num_elements_per_page - (latest_venue_instagrams.length%num_elements_per_page)).times{latest_venue_instagrams <<  latest_venue_instagrams.last}						
+				end
+				Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
+			else						
+				Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
+			end
 		end
-		#latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
-		#	@venue.get_instagrams(false)
-		#end
 		latest_instagrams_count = latest_venue_instagrams.length
 
 		@view_cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}/view"
