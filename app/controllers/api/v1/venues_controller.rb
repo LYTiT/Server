@@ -101,7 +101,7 @@ class Api::V1::VenuesController < ApiBaseController
 						if latest_venue_instagrams.length < 6
 							(6-latest_venue_instagrams.length).times{latest_venue_instagrams <<  latest_venue_instagrams.last}
 						else
-							(latest_venue_instagrams.length%6).times{latest_venue_instagrams <<  latest_venue_instagrams.last}
+							(latest_venue_instagrams.length + 6 - (latest_venue_instagrams.length%6)).times{latest_venue_instagrams <<  latest_venue_instagrams.last}
 						end
 						Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
 					else						
