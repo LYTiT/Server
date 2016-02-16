@@ -28,7 +28,7 @@ class AddVectorColumnToVenueComments < ActiveRecord::Migration
         ON venue_comments FOR EACH ROW EXECUTE PROCEDURE fill_meta_data_vector_for_venue_comments();
     EOS
 
-    VenueComment.find_each(&:touch)
+    
   end
 
   def down
