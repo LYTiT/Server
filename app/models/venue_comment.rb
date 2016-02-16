@@ -454,6 +454,7 @@ class VenueComment < ActiveRecord::Base
 					lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
 					if lookup == nil
 						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
+						self.touch
 					else
 						lookup.increment_relevance_score
 					end
@@ -477,6 +478,7 @@ class VenueComment < ActiveRecord::Base
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
 					extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
 					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue MetaData.increment_relevance_score(data, venue_id)
+					self.touch
 				end
 			end
 		end
