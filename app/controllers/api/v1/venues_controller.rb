@@ -91,9 +91,15 @@ class Api::V1::VenuesController < ApiBaseController
 				render 'pure_comments.json.jbuilder'
 			else						
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
-				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
-					@venue.get_instagrams(false)
+				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
+				if latest_venue_instagrams == nil
+					latest_venue_instagrams = @venue.get_instagrams(false)
+					Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
 				end
+
+				#latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
+				#	@venue.get_instagrams(false)
+				#end
 				latest_instagrams_count = latest_venue_instagrams.length
 
 				@view_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}/view"
