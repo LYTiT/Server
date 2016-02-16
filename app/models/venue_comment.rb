@@ -1,5 +1,16 @@
 class VenueComment < ActiveRecord::Base
+	include PgSearch
 	#validates :comment, presence: true
+	pg_search_scope :meta_search, #name and/or associated meta data
+		against: :meta_data_vector,
+		using: {
+		  tsearch: {
+		    dictionary: 'english',
+		    any_word: true,
+		    prefix: true,
+		    tsvector_column: 'meta_data_vector'
+		  }
+		}           
 
 	belongs_to :user
 	belongs_to :venue
@@ -13,6 +24,7 @@ class VenueComment < ActiveRecord::Base
 	validate :comment_or_media
 
 	before_destroy :deincrement_feed_moment_counts
+
 
 	def VenueComment.cleanup_and_recalibration
 		expired_venue_comment_ids = VenueComment.where("content_origin = ? AND (NOW() - time_wrapper) >= INTERVAL '1 DAY'", 'instagram').pluck(:id)
@@ -475,7 +487,7 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(latitude))))*6376.77271) 
           <= #{radius}").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC").order("venue_comments.created_at DESC")
 	end
-
+=begin
 	def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
 		#no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
 		if query[0..2].downcase == "insta"
@@ -495,6 +507,7 @@ class VenueComment < ActiveRecord::Base
 
 		return results
 	end
+=end		
 
 	#Making sure that meta results are reasonable relative to the search term. Also we make sure the comment is not older than a day.
 	def meta_search_sanity_check(query)

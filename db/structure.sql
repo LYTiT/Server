@@ -93,6 +93,31 @@ CREATE FUNCTION fill_meta_data_vector_for_venue() RETURNS trigger
 
 
 --
+-- Name: fill_meta_data_vector_for_venue_comments(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_meta_data_vector_for_venue_comments() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+        venue_comment_meta_data record;
+        
+
+      begin
+        
+        
+        select string_agg(meta, ' ') as meta into venue_comment_meta_data from meta_data where venue_comment_id = new.id and (NOW() - created_at) <= INTERVAL '1 DAY';
+
+        new.meta_data_vector :=
+          to_tsvector('pg_catalog.english', coalesce(venue_comment_meta_data.meta, ''));
+
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_metaphone_name_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1662,7 +1687,8 @@ CREATE TABLE venue_comments (
     video_url_1 character varying(255),
     video_url_2 character varying(255),
     video_url_3 character varying(255),
-    instagram_user_id bigint
+    instagram_user_id bigint,
+    meta_data_vector tsvector
 );
 
 
@@ -3207,6 +3233,13 @@ CREATE UNIQUE INDEX index_venue_comments_on_instagram_id ON venue_comments USING
 
 
 --
+-- Name: index_venue_comments_on_meta_data_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venue_comments_on_meta_data_vector ON venue_comments USING gin (meta_data_vector);
+
+
+--
 -- Name: index_venue_comments_on_time_wrapper; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3386,6 +3419,13 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 --
 
 CREATE TRIGGER feed_search_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_search_vector_for_feed();
+
+
+--
+-- Name: venues_comment_meta_data_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_comment_meta_data_trigger BEFORE INSERT OR UPDATE ON venue_comments FOR EACH ROW EXECUTE PROCEDURE fill_meta_data_vector_for_venue_comments();
 
 
 --
@@ -4059,4 +4099,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160210163325');
 INSERT INTO schema_migrations (version) VALUES ('20160210213700');
 
 INSERT INTO schema_migrations (version) VALUES ('20160211205444');
+
+INSERT INTO schema_migrations (version) VALUES ('20160215202907');
 

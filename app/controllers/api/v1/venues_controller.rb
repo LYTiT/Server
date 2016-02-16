@@ -87,7 +87,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue.delay.account_page_view(@user.id)
 
 			if params[:meta_query] != nil
-				@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
+				@comments = VenueComment.where("venue_id = ?", @venue.id).meta_search(params[:meta_query]).order("time_wrapper DESC").page(params[:page]).per(10)#VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
 				render 'pure_comments.json.jbuilder'
 			else						
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
