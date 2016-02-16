@@ -112,7 +112,7 @@ class Api::V1::VenuesController < ApiBaseController
 					offset_page = page - (latest_instagrams_count.to_f/num_elements_per_page.to_f).ceil
 					vc_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
 					@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
-						VenueComment.where("venue_id = ? AND created_at <= ?", venue_ids.first, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
+						VenueComment.where("venue_id = ? AND created_at <= ?", @venue_id, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 					end
 					render 'pure_comments.json.jbuilder'
 				end
@@ -138,9 +138,15 @@ class Api::V1::VenuesController < ApiBaseController
 		#@venue.delay.account_page_view(@user.id)		
 
 		instagrams_cache_key = "venue/#{@venue.id}/latest_instagrams"
-		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
-			@venue.get_instagrams(false)
+
+		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
+		if latest_venue_instagrams == nil
+			latest_venue_instagrams = @venue.get_instagrams(false)
+			Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
 		end
+		#latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
+		#	@venue.get_instagrams(false)
+		#end
 		latest_instagrams_count = latest_venue_instagrams.length
 
 		@view_cache_key = "venue/#{@venue.id}/comments/page#{params[:page]}/view"
