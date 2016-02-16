@@ -97,7 +97,7 @@ class Api::V1::VenuesController < ApiBaseController
 					#in version 1.1.0 the next page is not pulled if there is less than 6 elements returned on the previous page.
 					#To resolve this we introduce this hack to backfill the last element enough time so that the size of the array is
 					#6. These dupes are then filtered out on the front.
-					if latest_venue_instagrams.length < 6
+					if latest_venue_instagrams.length < 6 && latest_venue_instagrams.last != nil
 						(6-latest_venue_instagrams.length).times{latest_venue_instagrams <<  latest_venue_instagrams.last}
 					else						
 						Rails.cache.write(instagrams_cache_key, latest_venue_instagrams, :expires_in => 10.minutes)
