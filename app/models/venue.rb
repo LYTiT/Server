@@ -710,7 +710,7 @@ class Venue < ActiveRecord::Base
       instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, false, true)
       self.update_columns(last_instagram_pull_time: Time.now)
     else
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post).map!(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false).map!(&:to_hash)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post).map!(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
@@ -730,12 +730,12 @@ class Venue < ActiveRecord::Base
       Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i)
     else
       if self.last_instagram_post != nil
-        Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post) rescue []
+        Instagram.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post).map!(&:to_hash) rescue []
       else
         if hourly_pull == true
           Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue []
         else
-          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i) rescue []
+          Instagram.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map!(&:to_hash) rescue []
         end
       end
     end
