@@ -488,7 +488,7 @@ class Activity < ActiveRecord::Base
 			content = VenueComment.where("venue_id = ?", venue_id).order("time_wrapper DESC").first
 		else
 			content = Tweet.where("venue_id = ?", venue_id).order("timestamp DESC").first
-			if content == nil or content.timestamp <= (Time.now - 1.hour)
+			if content == nil or content.timestamp < (Time.now - 1.hour)
 				content = VenueComment.where("venue_id = ?", venue_id).order("time_wrapper DESC").first
 			end
 		end
