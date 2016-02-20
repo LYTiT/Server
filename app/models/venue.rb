@@ -99,7 +99,7 @@ class Venue < ActiveRecord::Base
     } % [longitude, latitude, distance_in_meters])
   }
 
-  
+
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
@@ -445,7 +445,7 @@ class Venue < ActiveRecord::Base
 
     self.update_columns(page_views: new_page_view_count)
     self.update_columns(latest_page_view_time: Time.now)
-    FeedUser.joins(feed: :feed_venues).where("venue_id = ?", venue.id).each{|feed_user| feed_user.update_interest_score(0.05)}
+    FeedUser.joins(feed: :feed_venues).where("venue_id = ?", self.id).each{|feed_user| feed_user.update_interest_score(0.05)}
   end
 
 =begin

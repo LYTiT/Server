@@ -367,7 +367,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 		render 'display.json.jbuilder'
 	end
-
+=begin
 	def refresh_map_view_by_parts_v_old
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
@@ -390,6 +390,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@venues = ordered_venues.page(params[:page]).per(num_page_entries)
 		render 'display_by_parts.json.jbuilder'
 	end
+=end		
 
 	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
@@ -421,7 +422,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
 			faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0")
+				Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0").limit(num_page_entries).offset((page-2)*num_page_entries)
 				#Venue.where("((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})) AND (color_rating > -1.0)").order("city ASC").limit(num_page_entries).offset((page-2)*num_page_entries)
 			end
 			@venues = faraway_venues			
