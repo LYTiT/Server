@@ -1327,45 +1327,6 @@ ALTER SEQUENCE meta_data_id_seq OWNED BY meta_data.id;
 
 
 --
--- Name: old_events; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE old_events (
-    id integer NOT NULL,
-    name character varying(255),
-    description text,
-    start_date timestamp without time zone,
-    end_date timestamp without time zone,
-    location_name text,
-    latitude text,
-    longitude text,
-    venue_id integer,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: old_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE old_events_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: old_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE old_events_id_seq OWNED BY old_events.id;
-
-
---
 -- Name: pg_search_documents; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1544,7 +1505,7 @@ CREATE TABLE temp_posting_housings (
     id integer NOT NULL,
     comment character varying(255),
     media_type character varying(255),
-    image_url_1 character varying(255),
+    media_url character varying(255),
     session integer,
     username_private boolean,
     user_id integer,
@@ -1940,7 +1901,6 @@ CREATE TABLE venues (
     fetched_at timestamp without time zone,
     r_up_votes double precision DEFAULT 1.0,
     r_down_votes double precision DEFAULT 1.0,
-    user_id integer,
     menu_link character varying(255),
     color_rating double precision DEFAULT (-1.0),
     key bigint,
@@ -1952,6 +1912,7 @@ CREATE TABLE venues (
     popularity_rank double precision DEFAULT 0.0,
     popularity_percentile double precision,
     page_views double precision DEFAULT 0,
+    user_id integer,
     instagram_location_id integer,
     last_instagram_pull_time timestamp without time zone,
     verified boolean DEFAULT true,
@@ -2268,13 +2229,6 @@ ALTER TABLE ONLY menu_sections ALTER COLUMN id SET DEFAULT nextval('menu_section
 --
 
 ALTER TABLE ONLY meta_data ALTER COLUMN id SET DEFAULT nextval('meta_data_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY old_events ALTER COLUMN id SET DEFAULT nextval('old_events_id_seq'::regclass);
 
 
 --
@@ -2642,14 +2596,6 @@ ALTER TABLE ONLY menu_sections
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT meta_data_pkey PRIMARY KEY (id);
-
-
---
--- Name: old_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY old_events
-    ADD CONSTRAINT old_events_pkey PRIMARY KEY (id);
 
 
 --
@@ -3154,10 +3100,10 @@ CREATE INDEX index_meta_data_on_meta ON meta_data USING btree (meta);
 
 
 --
--- Name: index_meta_data_on_meta_and_venue_comment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_meta_data_on_meta_and_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_meta_data_on_meta_and_venue_comment_id ON meta_data USING btree (meta, venue_comment_id);
+CREATE UNIQUE INDEX index_meta_data_on_meta_and_venue_id ON meta_data USING btree (meta, venue_id);
 
 
 --
@@ -3459,13 +3405,6 @@ CREATE INDEX index_venues_on_metaphone_name_vector ON venues USING gin (metaphon
 --
 
 CREATE INDEX index_venues_on_popularity_rank ON venues USING btree (popularity_rank);
-
-
---
--- Name: index_venues_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venues_on_user_id ON venues USING btree (user_id);
 
 
 --
@@ -4170,5 +4109,5 @@ INSERT INTO schema_migrations (version) VALUES ('20160211205444');
 
 INSERT INTO schema_migrations (version) VALUES ('20160215202907');
 
-INSERT INTO schema_migrations (version) VALUES ('20160219012159');
+INSERT INTO schema_migrations (version) VALUES ('20160219012158');
 

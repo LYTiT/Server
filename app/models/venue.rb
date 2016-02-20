@@ -89,6 +89,15 @@ class Venue < ActiveRecord::Base
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
+  def set_lonlat
+   # lat = self.latitude
+   # long = self.longitude
+   # p2 = factory.point(long, lat) 
+
+    self.lonlat = RGeo::Cartesian.factory(:srid => 4326).parse_wkt('POINT(28.72292 77.123434)')
+    self.save
+  end
+
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
     if query.first =="/"  
