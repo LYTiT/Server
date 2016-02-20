@@ -75,6 +75,17 @@ class Venue < ActiveRecord::Base
 
   MILE_RADIUS = 2
 
+  scope :close_to, -> (latitude, longitude, distance_in_meters = 2000) {
+    where(%{
+      ST_DWithin(
+        ST_GeographyFromText(
+          'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
+        ),
+        ST_GeographyFromText('SRID=4326;POINT(%f %f)'),
+        %d
+      )
+    } % [longitude, latitude, distance_in_meters])
+  }
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
@@ -1302,7 +1313,7 @@ class Venue < ActiveRecord::Base
   end
 
   def account_new_vote(vote_value, vote_id)
-    puts "bar position = #{LytitBar.instance.position}"
+    #puts "bar position = #{LytitBar.instance.position}"
     if vote_value > 0
       puts "up vote, accounting"
       account_up_vote

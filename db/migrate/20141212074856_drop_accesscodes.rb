@@ -1,6 +1,6 @@
 class DropAccesscodes < ActiveRecord::Migration
   def up
-  	drop_table :accesscodes
+  	#drop_table :accesscodes
   end
 
   def down

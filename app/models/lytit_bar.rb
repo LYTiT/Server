@@ -1,5 +1,5 @@
 class LytitBar < ActiveRecord::Base
-  acts_as_singleton
+  #acts_as_singleton
 
   def recalculate_bar_position
     sum = 0

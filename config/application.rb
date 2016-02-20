@@ -26,7 +26,7 @@ module LytitServer
     config.active_record.schema_format = :sql
 
     config.action_mailer.default_options = {
-      from: "LYTiT <noreply@lytit.com>"
+      from: "Lytit <noreply@lytit.com>"
     }
 
     # Settings in config/environments/* take precedence over those specified here.

@@ -55,6 +55,7 @@ gem 'twitter'
 gem 'kdtree'
 gem 'postgresql_cursor'
 gem 'pg_search', '= 1.0.3'
+gem 'activerecord-postgis-adapter'
 
 # design
 gem 'sass-rails'

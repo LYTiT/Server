@@ -22,11 +22,12 @@ APNS.pass = 'lytit'
 
 # acts_as_singleton gem is raising a strange NoMethodError when
 # calling the position method the first time after app starts up
-begin
-  LytitBar.instance.position
-rescue NoMethodError => e
+
+#begin
+#  LytitBar.instance.position
+#rescue NoMethodError => e
   # do nothing actually, it should work from now on... O.o
-  puts e
-  LytitBar.instance.position # just to make sure :)
-end
+#  puts e
+#  LytitBar.instance.position # just to make sure :)
+#end
 

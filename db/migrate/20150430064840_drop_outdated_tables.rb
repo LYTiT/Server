@@ -1,6 +1,6 @@
 class DropOutdatedTables < ActiveRecord::Migration
   def change
-  	drop_table :events
+  	#drop_table :events
   	drop_table :events_groups
   	drop_table :flagged_events
   	drop_table :flagged_groups
