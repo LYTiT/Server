@@ -99,18 +99,22 @@ class Venue < ActiveRecord::Base
     } % [longitude, latitude, distance_in_meters])
   }
 
+  scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
+    where(%{ST_Intersects(ST_MakeEnvelope(%f, %f, %f, %f, 4326), ST_GeographyFromText('SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')') )} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
+  }
+=begin    
+    where(%{ST_GeographyFromText(
+          'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
+        ) 
+      && ST_MakeEnvelope(%f, %f, %f, %f, 4326), 2223)
+    } % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
+  }
+=end
+
 
 
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
-  def set_lonlat
-   # lat = self.latitude
-   # long = self.longitude
-   # p2 = factory.point(long, lat) 
-
-    self.lonlat = RGeo::Cartesian.factory(:srid => 4326).parse_wkt('POINT(28.72292 77.123434)')
-    self.save
-  end
 
   #I. Search------------------------------------------------------->
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
@@ -121,8 +125,10 @@ class Venue < ActiveRecord::Base
       if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
         central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
         if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 10 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
+            
             search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
             proximity_results = Venue.in_bounds(search_box).search(query)
+
         else
             in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
         end
