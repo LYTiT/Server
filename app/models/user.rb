@@ -169,8 +169,8 @@ class User < ActiveRecord::Base
 
   #determine which venues the user should be updated about as determined by the list they are in and the amount of activity they are experiencing
   def featured_list_venues
-    interest_weight = 1.0 #0.6
-    rating = rating_weight = 1.0#(1 - interest_weight)
+    interest_weight = 0.6
+    rating = rating_weight = (1 - interest_weight)
     feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}" 
     venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{feed_ids})"
 
