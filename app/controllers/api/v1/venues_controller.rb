@@ -399,7 +399,11 @@ class Api::V1::VenuesController < ApiBaseController
 		if nearby_vortex != nil
 			center_point = [nearby_vortex.latitude, nearby_vortex.longitude]
 		else
-			center_point = [lat.to_f.round(2), long.to_f.round(2)]
+			if params[:version] == "1.1.0"
+				center_point = [40.741140, -73.981917]
+			else			
+				center_point = [lat.to_f.round(2), long.to_f.round(2)]
+			end
 		end
 		proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
 
