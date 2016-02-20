@@ -1173,8 +1173,8 @@ class Venue < ActiveRecord::Base
         total_cluster_tweets << new_cluster_tweets
       end
 
-      cluster_center = [cluster_lat, cluster_long]
-      search_box = Geokit::Bounds.from_point_and_radius(center_point, radius, :units => :kms)
+      cluster_center_point = [cluster_lat, cluster_long]
+      search_box = Geokit::Bounds.from_point_and_radius(cluster_center_point, radius, :units => :kms)
       proximity_results = Venue.in_bounds(search_box).search(query)
 
 
