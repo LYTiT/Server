@@ -100,8 +100,18 @@ class Venue < ActiveRecord::Base
   }
 
   scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
-    where(%{ST_Intersects(ST_MakeEnvelope(%f, %f, %f, %f, 4326), ST_GeographyFromText('SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')') )} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
+    where(%{
+        ST_GeographyFromText('SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')') @ ST_MakeEnvelope(%f, %f, %f, %f, 4326) 
+        } % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
   }
+=begin
+    where(%{
+      ST_Intersects(
+        ST_MakeEnvelope(%f, %f, %f, %f, 4326), ST_GeographyFromText('SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')') 
+        )} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
+  }
+
+
 =begin    
     where(%{ST_GeographyFromText(
           'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
@@ -530,7 +540,7 @@ class Venue < ActiveRecord::Base
 
 
     nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).order("popularity_rank DESC").limit(nearby_count)
-    nearby_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).order("popularity_rank DESC").limit(nearby_count)
+    global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).order("popularity_rank DESC").limit(nearby_count)
 
     return (nearby_trends+global_trends).shuffle
   end
