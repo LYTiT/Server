@@ -275,7 +275,7 @@ class Venue < ActiveRecord::Base
     end
     
     if phone != nil
-      venue.phone_number = formatTelephone(phone)
+      venue.phone_number = Venue.formatTelephone(phone)
     end
 
     if venue.latitude < 0 && venue.longitude >= 0
@@ -343,7 +343,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(country: auth_country) 
 
       if auth_phone != nil
-        self.phone_number = formatTelephone(auth_phone)
+        self.phone_number = Venue.formatTelephone(auth_phone)
       end
       self.save
     end
@@ -406,7 +406,7 @@ class Venue < ActiveRecord::Base
   end
 
   #Uniform formatting of venues phone numbers into a "(XXX)-XXX-XXXX" style
-  def self.formatTelephone(number)
+  def Venue.formatTelephone(number)
     if number == nil
       return
     end
@@ -506,7 +506,7 @@ class Venue < ActiveRecord::Base
       #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #  <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
       i = 0
-      nearby_trending_venues = Venue.in_bounds(proximity_box).order("popularity_rank DESC").limit(num_diverse_venues).shuffle
+      nearby_trending_venues = Venue.close_to(center_point.first, center_point.last, 10000).where("color_rating > -1.0").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
       venue = nearby_trending_venues[i]
       if previous_venue_ids.include?(venue.id) 
         while previous_venue_ids.include?(venue.id)
@@ -518,7 +518,7 @@ class Venue < ActiveRecord::Base
       #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #  > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
       i = 0
-      faraway_trending_venues = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
+      faraway_trending_venues = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}) AND color_rating > -1.0 ").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
       venue = faraway_trending_venues[i]
       if previous_venue_ids.include?(venue.id) 
         while previous_venue_ids.include?(venue.id)
@@ -539,8 +539,8 @@ class Venue < ActiveRecord::Base
     proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
 
 
-    nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).order("popularity_rank DESC").limit(nearby_count)
-    global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).order("popularity_rank DESC").limit(nearby_count)
+    nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
+    global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
 
     return (nearby_trends+global_trends).shuffle
   end
