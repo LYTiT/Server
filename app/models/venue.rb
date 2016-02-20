@@ -1132,6 +1132,8 @@ class Venue < ActiveRecord::Base
     cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
     cluster_venue_ids = venue_ids.split(',').map(&:to_i)
     radius = map_scale.to_f/2.0 * 1/1000#Venue.meters_to_miles(map_scale.to_f/2.0)
+    cluster_center_point = [cluster_lat, cluster_long]
+    search_box = Geokit::Bounds.from_point_and_radius(cluster_center_point, radius, :units => :kms)
 
     time_out_minutes = 3
     if cluster.last_twitter_pull_time == nil or cluster.last_twitter_pull_time > Time.now - time_out_minutes.minutes
@@ -1172,11 +1174,6 @@ class Venue < ActiveRecord::Base
         new_cluster_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
         total_cluster_tweets << new_cluster_tweets
       end
-
-      cluster_center_point = [cluster_lat, cluster_long]
-      search_box = Geokit::Bounds.from_point_and_radius(cluster_center_point, radius, :units => :kms)
-      proximity_results = Venue.in_bounds(search_box).search(query)
-
 
       total_cluster_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
 
