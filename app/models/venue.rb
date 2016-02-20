@@ -506,7 +506,7 @@ class Venue < ActiveRecord::Base
       #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #  <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
       i = 0
-      nearby_trending_venues = Venue.close_to(center_point.first, center_point.last, 10000).where("color_rating > -1.0").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
+      nearby_trending_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
       venue = nearby_trending_venues[i]
       if previous_venue_ids.include?(venue.id) 
         while previous_venue_ids.include?(venue.id)
