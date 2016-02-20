@@ -87,6 +87,20 @@ class Venue < ActiveRecord::Base
     } % [longitude, latitude, distance_in_meters])
   }
 
+  scope :far_from, -> (latitude, longitude, distance_in_meters = 2000) {
+    where(%{
+      NOT ST_DWithin(
+        ST_GeographyFromText(
+          'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
+        ),
+        ST_GeographyFromText('SRID=4326;POINT(%f %f)'),
+        %d
+      )
+    } % [longitude, latitude, distance_in_meters])
+  }
+
+  
+
   scope :visible, -> { joins(:lytit_votes).where('lytit_votes.created_at > ?', Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes) }
 
   def set_lonlat

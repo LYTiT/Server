@@ -3121,6 +3121,13 @@ CREATE INDEX index_meta_data_on_venue_id ON meta_data USING btree (venue_id);
 
 
 --
+-- Name: index_on_venues_location; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_on_venues_location ON venues USING gist (st_geographyfromtext((((('SRID=4326;POINT('::text || longitude) || ' '::text) || latitude) || ')'::text)));
+
+
+--
 -- Name: index_pg_search_documents_on_searchable_id_and_searchable_type; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4110,4 +4117,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160211205444');
 INSERT INTO schema_migrations (version) VALUES ('20160215202907');
 
 INSERT INTO schema_migrations (version) VALUES ('20160219012158');
+
+INSERT INTO schema_migrations (version) VALUES ('20160220064304');
 
