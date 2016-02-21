@@ -89,11 +89,13 @@ class Feed < ActiveRecord::Base
 
 	def Feed.added_venue_calibration(feed_id, venue_id)
 		feed = Feed.find_by_id(feed_id)
-		feed.increment!(:num_venues, 1)
-		venue = Venue.find_by_id(venue_id)
-		added_moment_count = venue.venue_comments.count || 0
-		feed.increment!(:num_moments, added_moment_count)	
-		feed.update_geo_mass_center
+		if feed != nil
+			feed.increment!(:num_venues, 1)
+			venue = Venue.find_by_id(venue_id)
+			added_moment_count = venue.venue_comments.count || 0
+			feed.increment!(:num_moments, added_moment_count)	
+			feed.update_geo_mass_center
+		end
 	end
 
 	def Feed.removed_venue_calibration(feed_id)
@@ -356,7 +358,7 @@ class Feed < ActiveRecord::Base
 	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 2 OFFSET 4"
 
 	    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-	    Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
+	    #Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
 	    return results.shuffle		
 
 	end

@@ -14,41 +14,43 @@ class FeedVenue < ActiveRecord::Base
 	end
 
 	def new_venue_notification_and_activity
-		if user == nil
-			user = feed.user
-			if user != nil
-				user_name = feed.user.name
-				user_phone_number = feed.user.phone_number
-				user_facebook_id = feed.user.facebook_id
-				user_facebook_name = feed.user.facebook_name
+		if feed != nil
+			if user == nil
+				user = feed.user
+				if user != nil
+					user_name = feed.user.name
+					user_phone_number = feed.user.phone_number
+					user_facebook_id = feed.user.facebook_id
+					user_facebook_name = feed.user.facebook_name
+				else
+					user_name = nil
+					user_phone_number = nil
+					user_facebook_id = nil
+					user_facebook_name = nil
+				end
 			else
-				user_name = nil
-				user_phone_number = nil
-				user_facebook_id = nil
-				user_facebook_name = nil
-			end
-		else
-			user_name = self.user.name
-			user_phone_number = self.user.phone_number
-			user_facebook_id = self.user.facebook_id
-			user_facebook_name = self.user.facebook_name
-		end		
-		
-		a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
-			:user_id => self.user_id, :user_name => user_name, :user_phone => user_phone_number, :user_facebook_id => user_facebook_id, :user_facebook_name => user_facebook_name,
-			:venue_id => venue_id, :venue_name => venue.name, 
-			:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
-			:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
-			:venue_state => venue.state, :venue_country => venue.country, :venue_added_note => self.description,
-			:adjusted_sort_position => (self.created_at).to_i)
+				user_name = self.user.name
+				user_phone_number = self.user.phone_number
+				user_facebook_id = self.user.facebook_id
+				user_facebook_name = self.user.facebook_name
+			end		
+			
+			a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
+				:user_id => self.user_id, :user_name => user_name, :user_phone => user_phone_number, :user_facebook_id => user_facebook_id, :user_facebook_name => user_facebook_name,
+				:venue_id => venue_id, :venue_name => venue.name, 
+				:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
+				:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
+				:venue_state => venue.state, :venue_country => venue.country, :venue_added_note => self.description,
+				:adjusted_sort_position => (self.created_at).to_i)
 
 
-		ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
-		feed_members = feed.feed_users
+			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
+			feed_members = feed.feed_users
 
-		for feed_user in feed_members
-			if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
-				self.send_new_venue_notification(feed_user.user)
+			for feed_user in feed_members
+				if feed_user.is_subscribed == true && (feed_user.user_id != self.user_id && feed_user.user != nil)
+					self.send_new_venue_notification(feed_user.user)
+				end
 			end
 		end
 	end
