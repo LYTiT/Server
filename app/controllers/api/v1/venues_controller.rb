@@ -415,7 +415,6 @@ class Api::V1::VenuesController < ApiBaseController
 			num_page_entries = 750
 		end
 
-
 		if page == 1
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
 			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
