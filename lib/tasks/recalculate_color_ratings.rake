@@ -14,24 +14,28 @@ namespace :lytit do
     ClusterTracker.delete_all
 
     #Instagram data pull----------->
-    puts "Pulling from Instagram"
-    vortexes = InstagramVortex.where("active = ?", true)
-    for vortex in vortexes
-      puts "Entered vortex #{vortex.details}"
-      vortex.update_columns(last_instagram_pull_time: Time.now)
-      new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
-      new_instagrams.each do |instagram|
-        VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex, true)
-      end
-      #if there are multiple vortexes in a city we traverse through them to save instagram API calls
-      if vortex.group_que != nil
-        vortex.update_columns(active: false)
-        next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, vortex.group_que+1).first
-        #if vortex is the last in que (no vortex exists with group_que+1) activate the first vortex in the city
-        if next_city_vortex == nil
-          next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, 1).first
+    disable_pull = true
+
+    if disable_pull == false
+      puts "Pulling from Instagram"
+      vortexes = InstagramVortex.where("active = ?", true)
+      for vortex in vortexes
+        puts "Entered vortex #{vortex.details}"
+        vortex.update_columns(last_instagram_pull_time: Time.now)
+        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+        new_instagrams.each do |instagram|
+          VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex, true)
         end
-        next_city_vortex.update_columns(active: true)
+        #if there are multiple vortexes in a city we traverse through them to save instagram API calls
+        if vortex.group_que != nil
+          vortex.update_columns(active: false)
+          next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, vortex.group_que+1).first
+          #if vortex is the last in que (no vortex exists with group_que+1) activate the first vortex in the city
+          if next_city_vortex == nil
+            next_city_vortex = InstagramVortex.where("group = ? AND group_que = ?", vortex.group, 1).first
+          end
+          next_city_vortex.update_columns(active: true)
+        end
       end
     end
     

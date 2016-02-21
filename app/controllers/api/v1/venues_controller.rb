@@ -131,7 +131,8 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		else
 			cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
-			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
+			@comments = VenueComment.joins(:venue).where("venues.id in (#{params[:cluster_venue_ids]})").order("time_wrapper DESC").page(page).per(10)
+			#@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
 			@venue_id = nil
 			render 'pure_comments.json.jbuilder'
 		end
