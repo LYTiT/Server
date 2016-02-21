@@ -3058,13 +3058,6 @@ CREATE UNIQUE INDEX index_lyt_spheres_on_venue_id ON lyt_spheres USING btree (ve
 
 
 --
--- Name: index_lytit_votes_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_lytit_votes_on_user_id ON lytit_votes USING btree (user_id);
-
-
---
 -- Name: index_lytit_votes_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3363,20 +3356,6 @@ CREATE INDEX index_venues_on_event_id ON venues USING btree (event_id);
 --
 
 CREATE INDEX index_venues_on_instagram_location_id ON venues USING btree (instagram_location_id);
-
-
---
--- Name: index_venues_on_key; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venues_on_key ON venues USING btree (key);
-
-
---
--- Name: index_venues_on_l_sphere; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venues_on_l_sphere ON venues USING btree (l_sphere);
 
 
 --
@@ -4119,4 +4098,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160215202907');
 INSERT INTO schema_migrations (version) VALUES ('20160219012158');
 
 INSERT INTO schema_migrations (version) VALUES ('20160220064304');
+
+INSERT INTO schema_migrations (version) VALUES ('20160221014119');
 
