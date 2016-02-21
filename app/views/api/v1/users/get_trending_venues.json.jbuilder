@@ -1,4 +1,4 @@
-json.cache! @venues, expires_in: 1.hour, key: @view_cache_key  do |json|
+json.cache! @venues, expires_in: 30.minutes, key: @view_cache_key  do |json|
   json.array! @venues do |venue|
     json.id venue.id
     json.instagram_location_id venue.instagram_location_id

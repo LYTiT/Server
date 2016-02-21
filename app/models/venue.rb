@@ -540,7 +540,7 @@ class Venue < ActiveRecord::Base
 
 
     nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
-    global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
+    global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("color_rating > -1.0").order("popularity_rank DESC").limit(global_count)
 
     return (nearby_trends+global_trends).shuffle
   end
