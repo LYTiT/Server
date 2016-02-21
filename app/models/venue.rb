@@ -536,7 +536,7 @@ class Venue < ActiveRecord::Base
     nearby_count = total_trends*nearby_ratio
     global_count = (total_trends-nearby_count)
     center_point = [user_lat, user_long]
-    proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
+    #proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
 
 
     nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
