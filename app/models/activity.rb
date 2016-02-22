@@ -370,11 +370,21 @@ class Activity < ActiveRecord::Base
 				:video_url_2 => featured_venue_entry["video_url_2"], :video_url_3 => featured_venue_entry["video_url_3"]}
 		else
 			if featured_venue_entry["lytit_tweet_id"] != nil
+				if featured_venue_entry["image_url_1"][0..9] == "http://pbs"
+					image_url_1 = featured_venue_entry["image_url_1"]
+					image_url_2 = featured_venue_entry["image_url_2"]
+					image_url_3 = featured_venue_entry["image_url_3"]
+				else
+					image_url_1 = nil
+					image_url_2 = nil
+					image_url_3 = nil
+				end
+
 				content = {:id => featured_venue_entry["lytit_tweet_id"], :twitter_id => featured_venue_entry["twitter_id"], :tweet_text => featured_venue_entry["tweet_text"],
 					:author_id => featured_venue_entry["tweet_author_id"], :author_name => featured_venue_entry["tweet_author_name"],
 					:author_avatar => featured_venue_entry["tweet_author_avatar_url"], :timestamp => featured_venue_entry["tweet_created_at"].to_datetime, :venue_id => featured_venue_entry["id"],
-					:handle => featured_venue_entry["tweet_handle"], :image_url_1 => featured_venue_entry["image_url_1"], :image_url_2 => featured_venue_entry["image_url_2"],
-					:image_url_3 => featured_venue_entry["image_url_3"]}
+					:handle => featured_venue_entry["tweet_handle"], :image_url_1 => image_url_1, :image_url_2 => image_url_2,
+					:image_url_3 => image_url_3}
 			else
 				content = {:id => featured_venue_entry["venue_comment_id"], :media_type => featured_venue_entry["media_type"], :venue_id => featured_venue_entry["id"],
 					:time_wrapper =>  featured_venue_entry["venue_comment_created_at"].to_datetime, :content_origin => featured_venue_entry["venue_comment_content_origin"],
