@@ -505,10 +505,10 @@ class Venue < ActiveRecord::Base
     if proximity == "nearby"
       venue = Venue.in_bounds(proximity_box).where("id NOT IN (#{previous_venue_ids}) AND color_rating > -1.0").order("popularity_rank DESC").limit(num_diverse_venues).shuffle.first
       if venue == nil
-          if previous_venue_ids == nil
+          if previous_venue_ids == "0"
             venue = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}) AND color_rating > -1.0 ").order("popularity_rank DESC").limit(num_diverse_venues).shuffle.first
           else
-            venue = nil
+            venue = []
           end
       end
     else
