@@ -360,8 +360,8 @@ class Activity < ActiveRecord::Base
 	end
 =end	
 	def Activity.select_content_for_featured_venue_activity(featured_venue_entry, user_id, feed_id, feed_name, feed_color)
-		roll = 1+rand(9)
-		if roll < 7
+		roll = rand(9)
+		if roll < 6
 			content = {:id => featured_venue_entry["venue_comment_id"], :media_type => featured_venue_entry["media_type"], :venue_id => featured_venue_entry["id"],
 				:time_wrapper => featured_venue_entry["venue_comment_created_at"].to_datetime, :content_origin => featured_venue_entry["venue_comment_content_origin"],
 				:instagram_id => featured_venue_entry["venue_comment_instagram_id"], :thirdparty_username => featured_venue_entry["venue_comment_thirdparty_username"],
