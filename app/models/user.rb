@@ -158,7 +158,7 @@ class User < ActiveRecord::Base
     else
       activity_ids = "SELECT activity_id FROM activity_feeds WHERE feed_id IN (#{user_feed_ids})"
     end
-    Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ? AND created_at < ?", Time.now-1.day, Time.now-10.minutes).includes(:venue).order("adjusted_sort_position DESC")
+    Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:venue).order("adjusted_sort_position DESC")
   end
 
   def live_list_venues
