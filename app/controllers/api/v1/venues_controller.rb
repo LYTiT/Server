@@ -422,6 +422,10 @@ class Api::V1::VenuesController < ApiBaseController
 				Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0")
 				#Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 			end
+
+			if nearby_venues.count == 0
+				nearby_venues << Venue.where("color_rating > -1.0").first
+			end
 			@venues = nearby_venues
 		else
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
