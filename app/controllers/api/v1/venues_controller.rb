@@ -493,7 +493,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			previous_venue_ids = previous_venue_ids.split(',').map(&:to_i)
 		end
-		@venue = Venue.discover(params[:proximity], previous_venue_ids, params[:latitude], params[:longitude])
+		@venue = Venue.discover(params[:proximity], params[:previous_venue_ids], params[:latitude], params[:longitude])
 	end
 
 	def get_trending_venues_for_user_list_feed
