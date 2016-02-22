@@ -131,8 +131,8 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		else
 			cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
-			@comments = VenueComment.joins(:venue).where("venues.id in (#{params[:cluster_venue_ids]})").order("time_wrapper DESC").page(page).per(10)
-			#@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
+			#@comments = VenueComment.joins(:venue).where("venues.id in (#{params[:cluster_venue_ids]})").order("time_wrapper DESC").page(page).per(10)
+			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
 			@venue_id = nil
 			render 'pure_comments.json.jbuilder'
 		end
@@ -422,7 +422,7 @@ class Api::V1::VenuesController < ApiBaseController
 				Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0")
 				#Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 			end
-
+			#this is a hack to prevent a nil page return which casause app to crash.
 			if nearby_venues.count == 0
 				nearby_venues << Venue.where("color_rating > -1.0").first
 			end
