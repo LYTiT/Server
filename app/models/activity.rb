@@ -369,7 +369,7 @@ class Activity < ActiveRecord::Base
 				:image_url_2 => featured_venue_entry["image_url_2"], :image_url_3 => featured_venue_entry["image_url_3"], :video_url_1 => featured_venue_entry["video_url_1"], 
 				:video_url_2 => featured_venue_entry["video_url_2"], :video_url_3 => featured_venue_entry["video_url_3"]}
 		else
-			if featured_venue_entry["lytit_tweet_id"] != nil
+			if featured_venue_entry["lytit_tweet_id"] != nil and featured_venue_entry["tweet_created_at"].to_datetime >= (Time.now - 1.hour)
 				if featured_venue_entry["image_url_1"][0..9] == "http://pbs"
 					image_url_1 = featured_venue_entry["image_url_1"]
 					image_url_2 = featured_venue_entry["image_url_2"]
