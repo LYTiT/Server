@@ -454,14 +454,13 @@ class VenueComment < ActiveRecord::Base
 					lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
 					if lookup == nil
 						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
-						self.touch
 					else
 						lookup.increment_relevance_score
 					end
 				end
 			end
 		end
-
+		self.touch
 		venue.set_top_tags
 	end
 
