@@ -935,41 +935,43 @@ class Venue < ActiveRecord::Base
   end
 
   def set_last_venue_comment_details(vc)
-    if vc.class.name == "VenueComment"
-      self.update_columns(venue_comment_id: vc.id)
-      self.update_columns(venue_comment_instagram_id: vc.instagram_id)
-      self.update_columns(venue_comment_created_at: vc.time_wrapper)
-      self.update_columns(venue_comment_content_origin: vc.content_origin)
-      self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
-      self.update_columns(media_type: vc.media_type)
-      self.update_columns(image_url_1: vc.image_url_1)
-      self.update_columns(image_url_2: vc.image_url_2)
-      self.update_columns(image_url_3: vc.image_url_3)
-      self.update_columns(video_url_1: vc.video_url_1)
-      self.update_columns(video_url_2: vc.video_url_2)
-      self.update_columns(video_url_3: vc.video_url_3)
-    else
-      if vc.type == "video"
-        video_url_1 = vc.videos.try(:low_bandwith).try(:url)
-        video_url_2 = vc.videos.try(:low_resolution).try(:url)
-        video_url_3 = vc.videos.try(:standard_resolution).try(:url)
+    if vc != nil
+      if vc.class.name == "VenueComment"
+        self.update_columns(venue_comment_id: vc.id)
+        self.update_columns(venue_comment_instagram_id: vc.instagram_id)
+        self.update_columns(venue_comment_created_at: vc.time_wrapper)
+        self.update_columns(venue_comment_content_origin: vc.content_origin)
+        self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
+        self.update_columns(media_type: vc.media_type)
+        self.update_columns(image_url_1: vc.image_url_1)
+        self.update_columns(image_url_2: vc.image_url_2)
+        self.update_columns(image_url_3: vc.image_url_3)
+        self.update_columns(video_url_1: vc.video_url_1)
+        self.update_columns(video_url_2: vc.video_url_2)
+        self.update_columns(video_url_3: vc.video_url_3)
       else
-        video_url_1 = nil
-        video_url_2 = nil
-        video_url_3 = nil
+        if vc.type == "video"
+          video_url_1 = vc.videos.try(:low_bandwith).try(:url)
+          video_url_2 = vc.videos.try(:low_resolution).try(:url)
+          video_url_3 = vc.videos.try(:standard_resolution).try(:url)
+        else
+          video_url_1 = nil
+          video_url_2 = nil
+          video_url_3 = nil
+        end
+        self.update_columns(venue_comment_id: nil)
+        self.update_columns(venue_comment_instagram_id: vc.id)
+        self.update_columns(venue_comment_created_at: DateTime.strptime("#{vc.created_time}",'%s'))
+        self.update_columns(venue_comment_content_origin: "instagram")
+        self.update_columns(venue_comment_thirdparty_username: vc.user.username)
+        self.update_columns(media_type: vc.type)
+        self.update_columns(image_url_1: vc.images.try(:thumbnail).try(:url))
+        self.update_columns(image_url_2: vc.images.try(:low_resolution).try(:url))
+        self.update_columns(image_url_3: vc.images.try(:standard_resolution).try(:url))
+        self.update_columns(video_url_1: video_url_1)
+        self.update_columns(video_url_2: video_url_2)
+        self.update_columns(video_url_3: video_url_3)
       end
-      self.update_columns(venue_comment_id: nil)
-      self.update_columns(venue_comment_instagram_id: vc.id)
-      self.update_columns(venue_comment_created_at: DateTime.strptime("#{vc.created_time}",'%s'))
-      self.update_columns(venue_comment_content_origin: "instagram")
-      self.update_columns(venue_comment_thirdparty_username: vc.user.username)
-      self.update_columns(media_type: vc.type)
-      self.update_columns(image_url_1: vc.images.try(:thumbnail).try(:url))
-      self.update_columns(image_url_2: vc.images.try(:low_resolution).try(:url))
-      self.update_columns(image_url_3: vc.images.try(:standard_resolution).try(:url))
-      self.update_columns(video_url_1: video_url_1)
-      self.update_columns(video_url_2: video_url_2)
-      self.update_columns(video_url_3: video_url_3)
     end
   end
   #----------------------------------------------------------------------------->
