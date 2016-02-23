@@ -34,7 +34,7 @@ namespace :lytit do
     for vortex in vortexes
         if vortex.details == "auto generated" && (vortex.last_user_ping == nil or vortex.last_user_ping < (Time.now-2.days))
             if vortex.created_at < Time.now - 5.days
-                vorte.delete
+                vortex.delete
             else
                 vortex.update_columns(active: false)
             end
