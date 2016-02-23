@@ -14,6 +14,8 @@ namespace :lytit do
 
     $scheduler.every '1h' do
       Activity.feature_venue_cleanup
+      VenueComment.cleanup_and_recalibration
+      Venue.cleanup_and_calibration
     end
 
     #Instagram Pulling and LYT Updating ------------------------------>
