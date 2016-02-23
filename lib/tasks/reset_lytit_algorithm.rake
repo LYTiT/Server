@@ -19,9 +19,9 @@ namespace :lytit do
 
     #delete Instagrams, Meta Data, Feed Activity and Notifications older than a day old
     #VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
-    VenueComment.cleanup_and_recalibration
+    
     Tweet.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
-    Venue.cleanup_and_calibration
+    
     #MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
     #Activity.where("(NOW() - created_at) >= INTERVAL '1 DAY' AND venue_comment_id IS NOT NULL").delete_all
     Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
@@ -33,10 +33,16 @@ namespace :lytit do
 
     for vortex in vortexes
         if vortex.details == "auto generated" && (vortex.last_user_ping == nil or vortex.last_user_ping < (Time.now-2.days))
-            vortex.update_columns(active: false)
+            if vortex.created_at < Time.now - 5.days
+                vorte.delete
+            else
+                vortex.update_columns(active: false)
+            end
         end
     end
 
+    VenueComment.cleanup_and_recalibration
+    Venue.cleanup_and_calibration
 
     puts "done."
   end

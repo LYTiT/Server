@@ -937,7 +937,9 @@ CREATE TABLE instagram_vortexes (
     last_user_ping timestamp without time zone,
     country character varying(255),
     vortex_group integer,
-    time_zone_offset double precision
+    time_zone_offset double precision,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -4100,4 +4102,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160219012158');
 INSERT INTO schema_migrations (version) VALUES ('20160220064304');
 
 INSERT INTO schema_migrations (version) VALUES ('20160221014119');
+
+INSERT INTO schema_migrations (version) VALUES ('20160223171025');
 
