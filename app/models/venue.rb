@@ -920,7 +920,7 @@ class Venue < ActiveRecord::Base
   end
 
   def self.initial_list_instagram_pull(initial_list_venue_ids)
-    venues = Venue.where("id IN (#{initial_list_venue_ids}) AND instagram_location_id != nil").limit(10)
+    venues = Venue.where("id IN (#{initial_list_venue_ids}) AND instagram_location_id IS NOT NULL").limit(10)
     for venue in venues
       if venue.latest_posted_comment_time < (Time.now - 1.hour)
         #pull insts from instagram and convert immediately to vcs
