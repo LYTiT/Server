@@ -289,7 +289,7 @@ LytitServer::Application.routes.draw do
   get 'privacy' => 'pages#privacy'
   get 'features' => 'pages#features'
 
-  get "/download" => redirect("https://itunes.apple.com/us/app/lytit-live-connection-to-your/id990171203?ls=1&mt=8"), :as => :app_store
+  get "/download" => redirect("http://appsto.re/us/dbnb7.i"), :as => :app_store
 
   root :to => 'pages#home'
 
