@@ -251,10 +251,12 @@ class Api::V1::FeedsController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:activity_id] != nil
 			fa = Activity.find_by_id(params[:activity_id])
+		else
+			fa = Activity.implicit_topic_activity_find(params[:user_id], params[:feed_id], params[:topic])
 		end
-		fa.increment!(:num_likes, 1)
-		fa.user.increment!(:num_likes, 1)
 		if Like.create!(:liker_id => params[:user_id], :liked_id => fa.user_id, :activity_id => fa.id)
+			fa.increment!(:num_likes, 1)
+			fa.user.increment!(:num_likes, 1)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not like feed activity'] } }, status: :unprocessable_entity
