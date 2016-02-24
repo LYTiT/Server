@@ -41,6 +41,7 @@ class Api::V1::SupportIssuesController < ApiBaseController
 		if sm != nil
 			if @user.is_admin? != true
 				support_issue.update_columns(latest_message_time: Time.now)
+  				Mailer.delay.new_support_message(@user)
 			end
 			render json: { success: true }	
 		else

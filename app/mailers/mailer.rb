@@ -25,6 +25,17 @@ class Mailer < ActionMailer::Base
     )
   end
 
+  def new_support_message(help_requester)
+    @user = help_requester
+    admin_emails = ["leonid@lytit.com", "tim@lytit.com", "support@lytit.com"]
+    for email in admin_emails
+      mail(
+        to: email, 
+        subject: 'In-App Support Assitance Needed'
+      )
+    end
+  end
+
   def notify_admins_of_monthly_winners(user)
     @user = user
     @winners = LumenGameWinner.where("email_sent = TRUE AND created_at >= ?", (Time.now-1.day).beginning_of_month)
