@@ -25,8 +25,9 @@ class Mailer < ActionMailer::Base
     )
   end
 
-  def new_support_message(help_requester)
+  def new_support_message(help_requester, message)
     @user = help_requester
+    @message = message
     admin_emails = ["leonid@lytit.com", "tim@lytit.com", "support@lytit.com"]
     for email in admin_emails
       mail(
