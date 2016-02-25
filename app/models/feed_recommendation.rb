@@ -82,4 +82,14 @@ class FeedRecommendation < ActiveRecord::Base
 	  	nil
 	end
 
+	def FeedRecommendation.set_daily_spotlyt
+		previous_spotlyt_ids = "SELECT feed_id FROM feed_recommendations WHERE spotlyt IS TRUE"
+
+		v_weight = 0.5
+		m_weight = 0.1
+		new_spotlyt_ids = Feed.where("num_venues > 0 AND num_users > 0 AND id NOT IN (#{previous_spotlyt_ids})").order("(num_venues*#{v_weight}+num_users*#{m_weight})").limit(30).order("RANDOM()").limit(3).pluck(:id)
+		FeedRecommendation.update_all(spotlyt: false)
+		FeedRecommendation.where("id IN (?)", new_spotlyt_ids).update_all(spotlyt: true)
+	end
+
 end
