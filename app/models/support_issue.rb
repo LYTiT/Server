@@ -4,7 +4,7 @@ class SupportIssue < ActiveRecord::Base
 
 	def unread_messages_present?
 		if self.latest_message_time != nil && self.latest_open_time != nil
-			self.latest_message_time <= self.latest_open_time
+			self.latest_message_time >= self.latest_open_time
 		else
 			false
 		end
