@@ -2,8 +2,6 @@ class FeedRecommendation < ActiveRecord::Base
 	belongs_to :feed
 
 	has_one :activity, :dependent => :destroy
-	after_create :create_feed_acitivity
-	after_create :spotlyt_notification
 
 
 	def FeedRecommendation.for_user(user, user_lat, user_long)
