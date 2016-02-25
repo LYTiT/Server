@@ -89,7 +89,7 @@ class FeedRecommendation < ActiveRecord::Base
 
 		FeedRecommendation.update_all(spotlyt: false)
 		for id in new_spotlyt_ids
-			feed_rec = FeedRecommendation.where("feed_id IN (?)", new_spotlyt_ids).first
+			feed_rec = FeedRecommendation.where("feed_id = ?", id).first
 			if  feed_rec == nil
 				FeedRecommendation.create!(:feed_id => id, :active => true, :spotlyt => true)
 			else
