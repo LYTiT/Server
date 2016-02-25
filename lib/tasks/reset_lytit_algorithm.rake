@@ -47,4 +47,6 @@ namespace :lytit do
     puts "done."
   end
 
+  FeedRecommendation.set_daily_spotlyt
+
 end
