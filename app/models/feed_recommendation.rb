@@ -88,8 +88,16 @@ class FeedRecommendation < ActiveRecord::Base
 		v_weight = 0.5
 		m_weight = 0.1
 		new_spotlyt_ids = Feed.where("num_venues > 0 AND num_users > 0 AND id NOT IN (#{previous_spotlyt_ids})").order("(num_venues*#{v_weight}+num_users*#{m_weight})").limit(30).order("RANDOM()").limit(3).pluck(:id)
+
 		FeedRecommendation.update_all(spotlyt: false)
-		FeedRecommendation.where("id IN (?)", new_spotlyt_ids).update_all(spotlyt: true)
+		for id in new_spotlyt_ids
+			feed_rec = FeedRecommendation.where("feed_id IN (?)", new_spotlyt_ids).first
+			if  feed_rec == nil
+				FeedRecommendation.create!(:feed_id => id, :active => true, :spotlyt => true)
+			else
+				feed_rec.update_columns(spotlyt: true)
+			end
+		end		
 	end
 
 end
