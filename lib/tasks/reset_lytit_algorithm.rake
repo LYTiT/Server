@@ -43,10 +43,9 @@ namespace :lytit do
 
     VenueComment.cleanup_and_recalibration
     Venue.cleanup_and_calibration
+    FeedRecommendation.set_daily_spotlyt
 
     puts "done."
-  end
-
-  FeedRecommendation.set_daily_spotlyt
+  end  
 
 end

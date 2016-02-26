@@ -89,7 +89,7 @@ class Feed < ActiveRecord::Base
 
 	def Feed.added_venue_calibration(feed_id, venue_id)
 		feed = Feed.find_by_id(feed_id)
-		if feed != nil
+		if feed != nil && venue_id != nil
 			feed.increment!(:num_venues, 1)
 			venue = Venue.find_by_id(venue_id)
 			added_moment_count = venue.venue_comments.count || 0
