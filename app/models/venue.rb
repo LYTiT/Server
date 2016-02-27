@@ -9,7 +9,7 @@ class Venue < ActiveRecord::Base
                   :prefix => true
                 }  
               },
-              :ranked_by => ":dmetaphone + (0.25 * :trigram)"#{}":trigram"
+              :ranked_by => ":trigram"#":dmetaphone + (0.25 * :trigram)"
 
   pg_search_scope :meta_search, #name and/or associated meta data
     against: :meta_data_vector,
