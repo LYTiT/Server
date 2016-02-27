@@ -371,13 +371,21 @@ class Api::V1::UsersController < ApiBaseController
 		max_id = params[:max_id].to_i
 		if page == 1
 			cache_key = "user/#{@user.id}/featured_venues"
-			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+			@activities = Rails.cache.read(cache_key) 
+			if @activities == nil
 				#clear list feed cache
 				page += 1
 				while Rails.cache.delete("user/#{@user.id}/list_feed/page_"+page.to_s) == true do
 					page += 1
 				end
-				@user.featured_list_venues
+				@activities = @user.featured_list_venues
+				if @activities.first != nil
+					Rails.cache.write(cache_key, @activities, :expires_in => 10.minutes)
+				end
+
+				#Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				#	@user.featured_list_venues
+				#end
 			end
 			@view_cache_key = cache_key+"/view"
 			render 'featured_list_venues.json.jbuilder'			
