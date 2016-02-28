@@ -1,5 +1,7 @@
 class AddPointIndexToVenues < ActiveRecord::Migration
   def up
+    enable_extension :postgis
+    
     execute %{
       create index index_on_venues_location ON venues using gist (
         ST_GeographyFromText(

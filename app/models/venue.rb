@@ -1,7 +1,39 @@
 class Venue < ActiveRecord::Base
   include PgSearch
+=begin
+  pg_search_scope :search, #name and/or associated meta data
+    against: :ts_name_vector,
+    using: {
+      tsearch: {
+        dictionary: 'english',
+        any_word: true,
+        prefix: true,
+        tsvector_column: 'ts_name_vector',
 
-  pg_search_scope :search,
+      }
+    },
+    :ranked_by => ":dmetaphone + (0.25 * :trigram)" 
+=end        
+
+  pg_search_scope :search, #name and/or associated meta data
+    :against => [:ts_name_vector, :metaphone_name_vector],
+    :using => {
+      :tsearch => {
+        :normalization => 2,
+        :dictionary => 'english',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_vector',
+      },
+      :dmetaphone => {
+        :tsvector_column => "metaphone_name_vector",
+        :prefix => true,
+      }  
+    },
+    :ranked_by => "( ((:dmetaphone) + (:trigram))*(:tsearch) + (:trigram))" 
+
+
+  pg_search_scope :phonetic_search,
               :against => "metaphone_name_vector",
               :using => {
                 :dmetaphone => {
@@ -9,7 +41,7 @@ class Venue < ActiveRecord::Base
                   :prefix => true
                 }  
               },
-              :ranked_by => ":trigram"#":dmetaphone + (0.25 * :trigram)"
+              :ranked_by => ":dmetaphone + (0.25 * :trigram)"#":trigram"#
 
   pg_search_scope :meta_search, #name and/or associated meta data
     against: :meta_data_vector,
@@ -34,7 +66,6 @@ class Venue < ActiveRecord::Base
       }
     }
   }
-
                 
                           
 #---------------------------------------------------------------------------------------->
@@ -137,16 +168,23 @@ class Venue < ActiveRecord::Base
         if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 10 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
             
             search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
-            proximity_results = Venue.in_bounds(search_box).search(query)
+            proximity_results = Venue.in_bounds(search_box).search(query).limit(50)
+            sorted_proximity_results = (proximity_results.rotate(offset) if offset = proximity_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
 
         else
-            in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
+            distant_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(50)
+            in_view_results = (distant_results.rotate(offset) if offset = distant_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
+
+            #Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
         end
       else
-        results = Venue.search(query).limit(10)
+        raw_results = Venue.search(query).limit(50)
+        sorted_results = (raw_results.rotate(offset) if offset = raw_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
       end
     end
   end
+
+  #Venue.search(query).limit(50).rotate(offset) if offset = Venue.search(query).limit(50).find_index{|b| b.name.size > 0 and b.name[0] == query.first}
 
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first    

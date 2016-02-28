@@ -38,6 +38,20 @@ COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance betwe
 
 
 --
+-- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
+
+
+--
 -- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -128,10 +142,8 @@ CREATE FUNCTION fill_metaphone_name_vector_for_venue() RETURNS trigger
       begin
 
         new.metaphone_name_vector :=
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name, ''))), 'A') ||
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.city, ''))), 'B') ||
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.state, ''))), 'C') ||
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.country, ''))), 'C');
+          to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name, '')));
+
 
 
         return new;
@@ -157,6 +169,28 @@ CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
           setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
           setweight(to_tsvector('pg_catalog.english', coalesce(new.description, '')), 'B') ||
           setweight(to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, '')), 'C');
+
+        return new;
+      end
+      $$;
+
+
+--
+-- Name: fill_ts_name_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_name_vector_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+        venue_meta_data record;
+        
+
+      begin
+        
+        
+        new.ts_name_vector :=
+        	to_tsvector('pg_catalog.english', coalesce(new.name||new.city, ''));
 
         return new;
       end
@@ -782,11 +816,11 @@ ALTER SEQUENCE feed_venues_id_seq OWNED BY feed_venues.id;
 CREATE TABLE feeds (
     id integer NOT NULL,
     name character varying(255),
-    user_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     num_venues integer DEFAULT 0,
     feed_color character varying(255),
+    user_id integer,
     open boolean DEFAULT true,
     num_users integer DEFAULT 1,
     latest_content_time timestamp without time zone,
@@ -1925,7 +1959,6 @@ CREATE TABLE venues (
     latest_rating_update_time timestamp without time zone,
     last_twitter_pull_time timestamp without time zone,
     meta_data_vector tsvector,
-    metaphone_name_vector tsvector,
     event_id integer,
     is_live boolean DEFAULT false,
     tag_1 character varying(255),
@@ -1953,7 +1986,9 @@ CREATE TABLE venues (
     tweet_author_avatar_url character varying(255),
     tweet_handle character varying(255),
     venue_comment_instagram_id character varying(255),
-    venue_comment_instagram_user_id bigint
+    venue_comment_instagram_user_id bigint,
+    ts_name_vector tsvector,
+    metaphone_name_vector tsvector
 );
 
 
@@ -2983,13 +3018,6 @@ CREATE INDEX index_feeds_on_search_vector ON feeds USING gin (search_vector);
 
 
 --
--- Name: index_feeds_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feeds_on_user_id ON feeds USING btree (user_id);
-
-
---
 -- Name: index_instagram_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3095,10 +3123,10 @@ CREATE INDEX index_meta_data_on_meta ON meta_data USING btree (meta);
 
 
 --
--- Name: index_meta_data_on_meta_and_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+-- Name: index_meta_data_on_meta_and_venue_comment_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
-CREATE UNIQUE INDEX index_meta_data_on_meta_and_venue_id ON meta_data USING btree (meta, venue_id);
+CREATE UNIQUE INDEX index_meta_data_on_meta_and_venue_comment_id ON meta_data USING btree (meta, venue_comment_id);
 
 
 --
@@ -3396,6 +3424,13 @@ CREATE INDEX index_venues_on_popularity_rank ON venues USING btree (popularity_r
 
 
 --
+-- Name: index_venues_on_ts_name_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_ts_name_vector ON venues USING gin (ts_name_vector);
+
+
+--
 -- Name: index_vortex_paths_on_instagram_vortex_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3435,6 +3470,13 @@ CREATE TRIGGER venues_meta_data_trigger BEFORE INSERT OR UPDATE ON venues FOR EA
 --
 
 CREATE TRIGGER venues_metaphone_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_metaphone_name_vector_for_venue();
+
+
+--
+-- Name: venues_ts_name_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_ts_name_vector_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_vector_for_venue();
 
 
 --
@@ -4097,11 +4139,15 @@ INSERT INTO schema_migrations (version) VALUES ('20160211205444');
 
 INSERT INTO schema_migrations (version) VALUES ('20160215202907');
 
-INSERT INTO schema_migrations (version) VALUES ('20160219012158');
-
 INSERT INTO schema_migrations (version) VALUES ('20160220064304');
 
 INSERT INTO schema_migrations (version) VALUES ('20160221014119');
 
 INSERT INTO schema_migrations (version) VALUES ('20160223171025');
+
+INSERT INTO schema_migrations (version) VALUES ('20160227235518');
+
+INSERT INTO schema_migrations (version) VALUES ('20160228024412');
+
+INSERT INTO schema_migrations (version) VALUES ('20160228030312');
 
