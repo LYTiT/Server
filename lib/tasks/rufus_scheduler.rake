@@ -7,10 +7,10 @@ namespace :lytit do
     $scheduler = Rufus::Scheduler.singleton
 
     #Heroku restart every 18 hours------------------->
-    $scheduler.every '18h' do
-      puts "Restarting Heroku Dynos"
+    #$scheduler.every '18h' do
+      #puts "Restarting Heroku Dynos"
       #Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
-    end
+    #end
 
     $scheduler.every '1h' do
       Activity.feature_venue_cleanup

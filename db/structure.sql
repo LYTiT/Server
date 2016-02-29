@@ -38,6 +38,20 @@ COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance betwe
 
 
 --
+-- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
+
+
+--
+-- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
+
+
+--
 -- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -1988,7 +2002,9 @@ CREATE TABLE venues (
     venue_comment_instagram_id character varying(255),
     venue_comment_instagram_user_id bigint,
     ts_name_vector tsvector,
-    metaphone_name_vector tsvector
+    metaphone_name_vector tsvector,
+    open_hours hstore DEFAULT ''::hstore NOT NULL,
+    instagram_vortex_id integer
 );
 
 
@@ -3375,13 +3391,6 @@ CREATE INDEX index_venues_on_color_rating ON venues USING btree (color_rating);
 
 
 --
--- Name: index_venues_on_event_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venues_on_event_id ON venues USING btree (event_id);
-
-
---
 -- Name: index_venues_on_instagram_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4150,4 +4159,12 @@ INSERT INTO schema_migrations (version) VALUES ('20160227235518');
 INSERT INTO schema_migrations (version) VALUES ('20160228024412');
 
 INSERT INTO schema_migrations (version) VALUES ('20160228030312');
+
+INSERT INTO schema_migrations (version) VALUES ('20160228223830');
+
+INSERT INTO schema_migrations (version) VALUES ('20160228224625');
+
+INSERT INTO schema_migrations (version) VALUES ('20160229043538');
+
+INSERT INTO schema_migrations (version) VALUES ('20160229170236');
 

@@ -220,7 +220,9 @@ class InstagramVortex < ActiveRecord::Base
 				begin
 					user_city = Venue.reverse_geo_city_lookup(lat, long)
 					user_country = Venue.reverse_geo_country_lookup(lat, long)
-					iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :city => user_city, :country => user_country, :details => "auto generated")
+					if user_city != nil
+						iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :city => user_city, :country => user_country, :details => "auto generated")
+					end
 					#vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
 				rescue
 					puts "Oops! Something went wrong in creating a vortex."

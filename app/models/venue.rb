@@ -1,21 +1,7 @@
 class Venue < ActiveRecord::Base
-  include PgSearch
-=begin
-  pg_search_scope :search, #name and/or associated meta data
-    against: :ts_name_vector,
-    using: {
-      tsearch: {
-        dictionary: 'english',
-        any_word: true,
-        prefix: true,
-        tsvector_column: 'ts_name_vector',
+  include PgSearch  
 
-      }
-    },
-    :ranked_by => ":dmetaphone + (0.25 * :trigram)" 
-=end        
-
-  pg_search_scope :search, #name and/or associated meta data
+  pg_search_scope :name_search, #name and/or associated meta data
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
@@ -30,7 +16,7 @@ class Venue < ActiveRecord::Base
         :prefix => true,
       }  
     },
-    :ranked_by => "( ((:dmetaphone) + (:trigram))*(:tsearch) + (:trigram))" 
+    :ranked_by => "(((:dmetaphone) + (:trigram))*(:tsearch) + (:trigram))"    
 
 
   pg_search_scope :phonetic_search,
@@ -158,28 +144,69 @@ class Venue < ActiveRecord::Base
 
 
   #I. Search------------------------------------------------------->
+  def Venue.search(query, proximity_box, view_box)
+    first_letter = query.first
+    second_letter = query[1]
+    #perculate results with matching first letters to front.
+    if proximity_box == nil
+      raw_results = Venue.name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+    elsif view_box != nil
+      raw_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", 
+        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+    else
+      raw_results = Venue.in_bounds(proximity_box).name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+    end
+
+    first_letter_match_offset = raw_results.find_index{|venue| venue.name.size > 0 and (venue.name[0].downcase == first_letter.downcase)}
+    if first_letter_match_offset != nil
+      first_letter_sorted_results = raw_results.rotate(first_letter_match_offset)
+    else
+      first_letter_sorted_results = []
+    end
+    
+    if first_letter_sorted_results != []
+      second_letter_match_offset = first_letter_sorted_results.find_index{|venue| venue.name.size > 0 and (venue.name[1].downcase == second_letter.downcase)}
+      if second_letter_match_offset != nil
+        second_letter_sorted_results = first_letter_sorted_results.rotate(second_letter_match_offset).first(10)
+        results = second_letter_sorted_results
+      else
+        results = first_letter_sorted_results.first(10)
+      end
+    end
+
+    if results.first.pg_search_rank >= 0.1
+      results
+    else
+      []
+    end
+
+  end
+
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
     if query.first =="/"  
       query[0] = ""
       meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
     else
+      first_letter = query.first
       if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
         central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
         if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 10 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
             
             search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
-            proximity_results = Venue.in_bounds(search_box).search(query).limit(50)
-            sorted_proximity_results = (proximity_results.rotate(offset) if offset = proximity_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
-
+            Venue.search(query, search_box, nil)
+            #proximity_results = Venue.in_bounds(search_box).search(query).limit(50)
+            #sorted_proximity_results = (proximity_results.rotate(offset) if offset = proximity_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
         else
-            distant_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(50)
-            in_view_results = (distant_results.rotate(offset) if offset = distant_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
+            outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
+            Venue.search(query, nil, outer_region)
 
+            #distant_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(50)
+            #in_view_results = (distant_results.rotate(offset) if offset = distant_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
             #Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
         end
       else
-        raw_results = Venue.search(query).limit(50)
-        sorted_results = (raw_results.rotate(offset) if offset = raw_results.find_index{|venue| venue.name.size > 0 and venue.name[0] == query.first})[0..9]
+        Venue.search(query, nil, nil)
+        #sorted_results = (raw_results.rotate(offset) if offset = raw_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
       end
     end
   end
@@ -281,18 +308,17 @@ class Venue < ActiveRecord::Base
         city = closest_venue.city
         country = closest_venue.country
       else
-        city = Venue.reverse_geo_city_lookup(latitude, longitude)
-        raw_country = Venue.reverse_geo_country_lookup(latitude, longitude)
-        lytit_country = InstagramVortex.fuzzy_country_name_search(raw_country, 0.85).first
-        if lytit_country != nil
-          country = lytit_country
+        if origin_vortex != nil
+          city = origin_vortex.city
+          country = origin_vortex.country
         else
-          country = raw_country
-        end
+          city = nil
+          country = nil
+        end  
       end
     end
 
-    city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s rescue nil#Removing accent marks
+    #city = city.mb_chars.normalize(:kd).gsub(/[^\x00-\x7F]/n,'').to_s rescue nil#Removing accent marks
 
     venue.update_columns(address: address) 
 
@@ -306,7 +332,7 @@ class Venue < ActiveRecord::Base
     venue.update_columns(formatted_address: part4) 
     venue.update_columns(city: city) 
     venue.update_columns(state: state) 
-    venue.update_columns(country: country) 
+    venue.update_columns(country: country)
 
     if postal_code != nil
       venue.postal_code = postal_code.to_s
@@ -339,7 +365,12 @@ class Venue < ActiveRecord::Base
     end
 
     venue.save
+
+    if origin_vortex != nil
+      venue.update_columns(instagram_vortex_id: origin_vortex.id)      
+    end    
     venue.delay.set_time_zone_and_offset(origin_vortex)
+
     return venue    
   end
 
@@ -482,8 +513,98 @@ class Venue < ActiveRecord::Base
       number = '(%s)-%s-%s' % [digits[0,3], digits[3,3], digits[6,4]]
     end
     update_columns(phone_number: number)
-  end  
+  end
+
+  def set_open_hours
+    #find venue's foursquare id
+    #lookup venue on foursquare
+    #extract open hours
+    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
+    foursquare_search_results = client.search_venues(:ll => "#{self.latitude},#{self.longitude}", :query => self.name)
+    foursquare_search_venue = foursquare_search_results.first.last.first
+    foursquare_venue_with_details = client.venue(foursquare_search_venue.id)
+    venue_hours = foursquare_venue_with_details.hours
+    open_hours_hash = Hash.new
+    if venue_hours != nil
+      timeframes = venue_hours.timeframes
+
+      for timeframe in timeframes
+        days = Venue.create_days_array(timeframe.days)
+        for day in days
+          open_spans = timeframe.open
+          span_hash = Hash.new
+          i = 0
+          for span in open_spans            
+            frame_hash = Hash.new
+            open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
+            frame_hash["frame_"+i.to_s] = {"open_time" => open_close_array.first, "close_time" => open_close_array.last}            
+            span_hash.merge!(frame_hash)
+            i += 1
+          end
+          open_hours_hash[day] = span_hash
+        end
+      end
+      self.update_columns(open_hours: open_hours_hash)
+    
+    end
+  end
+
+  def Venue.create_days_array(timeframe_days)
+    timeframe_array = timeframe_days.split("–")
+    days = Hash.new
+    days["Mon"] = 1
+    days["Tue"] = 2
+    days["Wed"] = 3
+    days["Thu"] = 4
+    days["Fri"] = 5
+    days["Sat"] = 6
+    days["Sun"] = 7
+    #days = {"Mon" => 1, "Tue" => 2, "Wed"=> 3, "Thu" => 4, "Fri" => 5, "Sat" => 6, "Sun" => 7}
+    days_array = []
+    [*days[timeframe_array.first]..days[timeframe_array.last]].each{|day_num| days_array << days.key(day_num)}
+    return days_array
+  end
+
+  def Venue.convert_span_to_minutes(span)
+    span_array=span.split("–")
+    opening = span_array.first
+    closing = span_array.last
+
+    if opening.last(2) == "AM"
+      opening = opening.split(" ").first.gsub(":",".").to_f
+    elsif opening == "Midnight"
+      opening = 0.0
+    elsif opening == "Noon"
+      opening = 12.0      
+    else
+      opening = opening.split(" ").first.gsub(":",".").to_f+12.0
+    end
+
+    if closing.last(2) == "PM"
+      closing = closing.split(" ").first.gsub(":",".").to_f+12.0
+    elsif closing == "Midnight"
+      closing = 0.0
+    elsif closing == "Noon"
+      closing = 12.0
+    else
+      closing = closing.split(" ").first.gsub(":",".").to_f
+    end
+
+    return [opening, closing]
+  end
+
+  def is_open(day, time)
+    open_hours = self.hours[day]
+    if time >= open_hours["open"] && time <= open_hours["closes"]
+      true
+    else
+      false
+    end
+  end
   
+  def Venue.convert_hourly_to_mins
+    
+  end
   #------------------------------------------------------------------------>
 
 
@@ -1103,14 +1224,17 @@ class Venue < ActiveRecord::Base
     return result_city
   end
 
-  def self.reverse_geo_city_lookup(lat, long)
+  def Venue.reverse_geo_city_lookup(lat, long)
     query = lat.to_s + "," + long.to_s
     result = Geocoder.search(query).first 
+    city = result.city
+=begin    
     city = result.city || result.county
     if city == nil
       city = result.state
     end
     city.slice!(" County")
+=end
   end
 
   def self.reverse_geo_country_lookup(lat, long)

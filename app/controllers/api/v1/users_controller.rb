@@ -273,10 +273,10 @@ class Api::V1::UsersController < ApiBaseController
 			render json: { bool_response: false }
 		end
 	end
-	#---------------------------------------------------->
-
-
-	#Functionality Methods------------------------------->
+	#-------------------------------------------------------------------------------->
+	#-------------------------------------------------------------------------------->
+	#-------------------------------------------------------------------------------->
+	#Functionality Methods----------------------------------------------------------->
 	def get_map_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_map_details.json.jbuilder'
@@ -285,16 +285,6 @@ class Api::V1::UsersController < ApiBaseController
 	def get_startup_details
 		@user = User.find_by_id(params[:user_id])
 		render 'get_startup_details.json.jbuilder'
-	end
-
-	def get_comments_by_time
-		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).includes(:venue).order("id desc")
-		@comments = venue_comments.page(params[:page]).per(20)
-	end
-
-	def get_comments_by_venue
-		venue_comments = @user.venue_comments.where("venue_comments.created_at > ?", DateTime.new(2015, 7, 2, 0, 0, 0)).joins(:venue).order("venues.name asc").order("id desc")
-		@comments = venue_comments.page(params[:page]).per(20)
 	end
 
 	def get_user_feeds
@@ -306,23 +296,6 @@ class Api::V1::UsersController < ApiBaseController
 		@feeds = @user.feeds.includes(:user, :feed_venues, :feed_users).order("name asc").page(params[:page]).per(20)
 	end
 
-	def calculate_lumens
-		@user = User.find(params[:user_id])
-		@user.calculate_lumens()
-	end
-
-	def get_lumens
-		@user = User.find(params[:user_id])
-		@user.lumen_rank
-	end
-
-	def get_daily_lumens
-		@user = User.find(params[:user_id])
-	end
-
-	def get_lumen_notification_details
-		@user = User.find(params[:user_id])
-	end
 
 	def toggle_group_notification
 		status, message = @user.toggle_group_notification(params[:group_id], params[:enabled])
@@ -338,32 +311,6 @@ class Api::V1::UsersController < ApiBaseController
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 		@user.delay.update_user_feeds
 	end
-=begin
-	def get_list_feed
-		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
-		page = params[:page].to_i
-		max_id = params[:max_id].to_i
-
-		if page == 1
-			cache_key = "user/#{@user.id}/featured_venues"
-			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				@user.featured_list_venues
-			end
-			#render 'featured_list_venues.json.jbuilder'
-			render 'featured_list_venues_2.json.jbuilder'
-		else
-			cache_key = "user/#{@user.id}/list_feed/page_#{page-1}"
-			
-			@activities = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				#add current and less page expirations
-				@user.aggregate_list_feed(max_id).limit(10).offset((page-2)*10)
-			end
-
-			render 'lists_feed.json.jbuilder'
-		end
-		@user.delay.update_user_feeds
-	end
-=end
 
 	def get_list_feed
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
@@ -435,26 +382,6 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_live_list_venues
 		@venues = @user.live_list_venues
-	end
-
-	def go_live
-		@user = User.find_by_authentication_token(params[:auth_token])
-		venue_id = params[:venue_id]
-		if venue_id != nil
-			venue = Venue.find_by_id(venue_id)
-		else
-			if params[:instagram_location_id] != nil
-				venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil)
-			else
-				venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
-			end
-		end
-		if LiveUser.create!(:venue_id => venue.id, :user_id => @user.id)
-			venue.update_columns(is_live: true)
-			render json: { id: venue.id }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
-		end
 	end
 
 	def checkout

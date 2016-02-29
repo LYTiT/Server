@@ -189,77 +189,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 	end	
-=begin
-	def get_comments_old
-		#register feed open
-		@user = User.find_by_authentication_token(params[:auth_token])
-		
-		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 
-		if not venue_ids 
-			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue(s) not found"] } }, :status => :not_found
-		else
-			if venue_ids.count == 1
-				@venue = Venue.find_by_id(venue_ids.first)
-				if params[:meta_query] != nil
-					@comments = VenueComment.meta_search_results(@venue.id, params[:meta_query]).page(params[:page]).per(10)
-				else		
-					@venue.delay.account_page_view(@user.id)
-					cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}"
-				end
-			else
-				cache_key = "cluster/cluster_#{venue_ids.length}_#{params[:cluster_latitude]},#{params[:cluster_longitude]}/comments/page#{params[:page]}"
-			end
-
-			if params[:meta_query] == nil
-				@view_cache_key = cache_key+"view"
-				@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-					Venue.get_comments(venue_ids).limit(10).offset((params[:page].to_i-1)*10)
-				end
-
-				if venue_ids.count > 1 or @comments.first.is_a?(Hash) == false
-					render 'pure_comments.json.jbuilder'
-				else
-					render 'get_comments.json.jbuilder'
-				end
-			else
-				render 'meta_search_comments.json.jbuilder'
-			end
-		end
-	end
-
-	def get_comments_implicitly_old
-		if params[:country] != nil
-			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
-			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
-		else
-			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
-		end
-
-		if @venue.instagram_location_id == nil
-			initial_instagrams = @venue.set_instagram_location_id(100)
-			@venue.delay.account_page_view(@user.id)
-		end
-
-		cache_key = "venue/#{@venue.id}/comments/page_#{params[:page]}"
-
-		if initial_instagrams != nil
-			@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do					
-				venue_comments = Kaminari.paginate_array(initial_instagrams).page(params[:page]).per(10)
-				Kaminari::PaginatableArray.new(venue_comments.to_a, limit: venue_comments.limit_value, offset: venue_comments.offset_value, total_count: venue_comments.total_count)
-			end
-		else
-			puts "Making a Get Comments Call because no initial instagrams present!"
-			@comments = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				venue_comments = Venue.get_comments([@venue.id]).page(params[:page]).per(10)
-				Kaminari::PaginatableArray.new(venue_comments.to_a, limit: venue_comments.limit_value, offset: venue_comments.offset_value, total_count: venue_comments.total_count)
-			end
-		end
-
-		@view_cache_key = cache_key+"/view"
-		#@comments = live_comments.page(params[:page]).per(10)
-	end
-=end
 	def get_venue_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@feeds = Feed.feeds_in_venue(params[:venue_id])
@@ -368,30 +298,6 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 		render 'display.json.jbuilder'
 	end
-=begin
-	def refresh_map_view_by_parts_v_old
-		lat = params[:latitude] || 40.741140
-		long = params[:longitude] || -73.981917
-
-		if params[:page].to_i == 1
-			num_page_entries = 500
-		else
-			num_page_entries = 1000
-		end
-
-		cache_key = "lyt_map_by_parts"
-		venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			Venue.where("color_rating > -1.0 OR is_live IS TRUE")
-		end
-
-		ordered_venues = venues.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC")
-		user_city = ordered_venues.first.city || ordered_venues[1].city || ordered_venues[2].city || ordered_venues[3].city || ordered_venues[4].city
-		@view_cache_key = cache_key+"/#{user_city}/part_"+params[:page]
-
-		@venues = ordered_venues.page(params[:page]).per(num_page_entries)
-		render 'display_by_parts.json.jbuilder'
-	end
-=end		
 
 	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
@@ -547,52 +453,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: { success: true }
 	end
 
-	def get_questions
-		if params[:venue_id] != nil
-			@venue = Venue.find_by_id(params[:venue_id])
-		else
-			if params[:instagram_location_id]
-				@venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
-			else
-				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
-			end
-		end
-		@questions = @venue.venue_questions.where("created_at > ?", Time.now-1.day).includes(:user).order("ID DESC").page(params[:page]).per(15)
-	end
-
-	def get_question_comments
-		venue_question = VenueQuestion.find_by_id(params[:venue_question_id])
-		@question_comments = venue_question.venue_question_comments.order("ID DESC").page(params[:page]).per(15)
-	end
-
-	def post_new_question
-		if params[:venue_id] != nil
-			v_id = params[:venue_id]
-		else
-			if params[:instagram_location_id]
-				@venue = Venue.find_by_instagram_location_id(params[:instagram_location_id])
-			else
-				@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
-			end
-			v_id = @venue.id
-		end
-		vq = VenueQuestion.create!(:venue_id => v_id, :question => params[:question], :user_id => @user.id)
-		if vq
-			render json: { id: vq.id }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
-		end
-	end
-
-	def send_new_question_comment
-		new_venue_question_comment = VenueQuestionComment.new_comment(params[:venue_question_id], params[:comment], params[:venue_id], params[:user_id], params[:user_on_location])
-		if new_venue_question_comment
-			VenueQuestion.find_by_id(params[:venue_question_id]).increment!(:num_comments, 1)
-			render json: { success: true }
-		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: [message]} }, status: :unprocessable_entity
-		end
-	end
 
 	def get_linked_user_lists
 		@user = User.find_by_authentication_token(params[:auth_token])

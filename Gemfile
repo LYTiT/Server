@@ -56,6 +56,7 @@ gem 'kdtree'
 gem 'postgresql_cursor'
 gem 'pg_search', '= 1.0.3'
 gem 'activerecord-postgis-adapter'
+gem 'foursquare2'
 
 # design
 gem 'sass-rails'
