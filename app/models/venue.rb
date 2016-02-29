@@ -219,7 +219,7 @@ class Venue < ActiveRecord::Base
     if lat_long_lookup == nil
       center_point = [vlatitude, vlongitude]
       search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-      result = Venue.in_bounds(search_box).search(vname).first
+      result = Venue.search(vname, search_box, nil).first
       if result == nil
         if vaddress == nil
           if vcity != nil #city search
@@ -273,7 +273,7 @@ class Venue < ActiveRecord::Base
 
         name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
         if name_lookup == nil
-          name_lookup = Venue.in_bounds(search_box).search(vname).first
+          name_lookup = Venue.search(vname, search_box, nil).first
         end
 
         if name_lookup != nil
