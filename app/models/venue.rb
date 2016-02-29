@@ -172,9 +172,11 @@ class Venue < ActiveRecord::Base
       else
         results = first_letter_sorted_results.first(10)
       end
+    else
+      results = []
     end
 
-    if results.first.pg_search_rank >= 0.1
+    if results != [] and results.first.pg_search_rank >= 0.1
       results
     else
       []
