@@ -106,7 +106,11 @@ class VenueComment < ActiveRecord::Base
 
 	def is_live?
 		venue_open_hours = self.venue.open_hours
-		if venue_open_hours.length > 0
+		if venue_open_hours == {}
+			venue.set_open_hours
+		end
+
+		if venue_open_hours.keys.first != "NA"
 			weekday = Date::ABBR_DAYNAMES[Time.now.wday]
 			frames = venue_open_hours[weekday].values
 			utc_offset = venue.time_zone_offset || 0.0

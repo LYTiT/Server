@@ -548,6 +548,8 @@ class Venue < ActiveRecord::Base
       end
       self.update_columns(open_hours: open_hours_hash)
     
+    else
+      self.update_columns(open_hours: {"NA"=>"NA"})
     end
   end
 
