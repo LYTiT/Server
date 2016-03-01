@@ -2003,7 +2003,7 @@ CREATE TABLE venues (
     venue_comment_instagram_user_id bigint,
     ts_name_vector tsvector,
     metaphone_name_vector tsvector,
-    open_hours hstore DEFAULT ''::hstore NOT NULL,
+    open_hours json DEFAULT '{}'::json NOT NULL,
     instagram_vortex_id integer
 );
 
