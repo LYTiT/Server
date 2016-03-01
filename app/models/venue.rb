@@ -589,7 +589,7 @@ class Venue < ActiveRecord::Base
     elsif closing == "Noon"
       closing = 12.0
     else
-      closing = closing.split(" ").first.gsub(":",".").to_f
+      closing = closing.split(" ").first.gsub(":",".").to_f+24.0
     end
 
     return [opening, closing]
