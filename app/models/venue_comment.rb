@@ -110,7 +110,7 @@ class VenueComment < ActiveRecord::Base
 			venue.set_open_hours
 		end
 
-		if venue_open_hours.keys.first != "NA"
+		if venue_open_hours.keys.first != "NA" && venue_open_hours != {}
 			weekday = Date::ABBR_DAYNAMES[Time.now.wday]
 			weekly_time_spans = venue_open_hours[weekday]
 			if weekly_time_spans != nil
