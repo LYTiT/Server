@@ -555,6 +555,7 @@ class Venue < ActiveRecord::Base
     else
       self.update_columns(open_hours: {"NA"=>"NA"})
     end
+    return open_hours
   end
 
   def Venue.create_days_array(timeframe_days)

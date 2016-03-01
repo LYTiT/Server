@@ -107,7 +107,7 @@ class VenueComment < ActiveRecord::Base
 	def is_live?
 		venue_open_hours = self.venue.open_hours
 		if venue_open_hours == {}
-			venue.set_open_hours
+			venue_open_hours = venue.set_open_hours		
 		end
 
 		if venue_open_hours.keys.first != "NA" && venue_open_hours != {}
