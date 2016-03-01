@@ -113,7 +113,7 @@ class VenueComment < ActiveRecord::Base
 		local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
 		is_live = false
 		for frame in frames
-			if frame["open_time"] <= dec_time_creation && frame["close_time"] >= dec_time_creation
+			if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
 				is_live = true
 				break
 			end
