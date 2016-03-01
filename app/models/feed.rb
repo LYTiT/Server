@@ -231,7 +231,7 @@ class Feed < ActiveRecord::Base
 		#FeedRecommendation.select("category as category").group("category").having("count(category) > ?", 3).pluck(:category)
 		
 		default_categories = ["parks", "bars", "coffee", "dog", "cat", "mouse", "house", "literature", "sports", "france", "germany", "netherlands", "russia", "travel", "cracerjacks", "watermellons"]
-		used_categories = FeedRecommendation.uniq.pluck(:category)
+		used_categories = FeedRecommendation.where("category IS NOT NULL").uniq.pluck(:category)
 		if used_categories.count == 0
 			return default_categories
 		else

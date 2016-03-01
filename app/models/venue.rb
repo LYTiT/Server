@@ -524,30 +524,34 @@ class Venue < ActiveRecord::Base
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
     foursquare_search_results = client.search_venues(:ll => "#{self.latitude},#{self.longitude}", :query => self.name)
     foursquare_search_venue = foursquare_search_results.first.last.first
-    foursquare_venue_with_details = client.venue(foursquare_search_venue.id)
-    venue_hours = foursquare_venue_with_details.hours
-    open_hours_hash = Hash.new
-    if venue_hours != nil
-      timeframes = venue_hours.timeframes
+    if foursquare_search_venue != nil
+      foursquare_venue_with_details = client.venue(foursquare_search_venue.id)
+      venue_hours = foursquare_venue_with_details.hours
+      open_hours_hash = Hash.new
+      if venue_hours != nil
+        timeframes = venue_hours.timeframes
 
-      for timeframe in timeframes
-        days = Venue.create_days_array(timeframe.days)
-        for day in days
-          open_spans = timeframe.open
-          span_hash = Hash.new
-          i = 0
-          for span in open_spans            
-            frame_hash = Hash.new
-            open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
-            frame_hash["frame_"+i.to_s] = {"open_time" => open_close_array.first, "close_time" => open_close_array.last}            
-            span_hash.merge!(frame_hash)
-            i += 1
+        for timeframe in timeframes
+          days = Venue.create_days_array(timeframe.days)
+          for day in days
+            open_spans = timeframe.open
+            span_hash = Hash.new
+            i = 0
+            for span in open_spans            
+              frame_hash = Hash.new
+              open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
+              frame_hash["frame_"+i.to_s] = {"open_time" => open_close_array.first, "close_time" => open_close_array.last}            
+              span_hash.merge!(frame_hash)
+              i += 1
+            end
+            open_hours_hash[day] = span_hash
           end
-          open_hours_hash[day] = span_hash
         end
+        self.update_columns(open_hours: open_hours_hash)
+      
+      else
+        self.update_columns(open_hours: {"NA"=>"NA"})
       end
-      self.update_columns(open_hours: open_hours_hash)
-    
     else
       self.update_columns(open_hours: {"NA"=>"NA"})
     end
