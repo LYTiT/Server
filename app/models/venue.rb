@@ -164,7 +164,7 @@ class Venue < ActiveRecord::Base
       first_letter_sorted_results = []
     end
     
-    if first_letter_sorted_results != []
+    if first_letter_sorted_results != [] && query.length >= 2
       second_letter_match_offset = first_letter_sorted_results.find_index{|venue| venue.name.size > 0 and (venue.name[1].downcase == second_letter.downcase)}
       if second_letter_match_offset != nil
         second_letter_sorted_results = first_letter_sorted_results.rotate(second_letter_match_offset).first(10)
