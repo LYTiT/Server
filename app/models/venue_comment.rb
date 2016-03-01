@@ -112,19 +112,22 @@ class VenueComment < ActiveRecord::Base
 
 		if venue_open_hours.keys.first != "NA"
 			weekday = Date::ABBR_DAYNAMES[Time.now.wday]
-			frames = venue_open_hours[weekday].values
-			utc_offset = venue.time_zone_offset || 0.0
+			weekly_time_spans = venue_open_hours[weekday]
+			if weekly_time_spans != nil
+				frames = weekly_time_spans.values
+				utc_offset = venue.time_zone_offset || 0.0
 
-			local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
-			is_live = false
-			for frame in frames
-				if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
-					is_live = true
-					break
-				else
-					if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
+				local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
+				is_live = false
+				for frame in frames
+					if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
 						is_live = true
 						break
+					else
+						if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
+							is_live = true
+							break
+						end
 					end
 				end
 			end
