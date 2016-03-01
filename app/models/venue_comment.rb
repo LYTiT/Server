@@ -106,22 +106,26 @@ class VenueComment < ActiveRecord::Base
 
 	def is_live?
 		venue_open_hours = self.venue.open_hours
-		weekday = Date::ABBR_DAYNAMES[Time.now.wday]
-		frames = venue_open_hours[weekday].values
-		utc_offset = venue.time_zone_offset || 0.0
+		if venue_open_hours.length > 0
+			weekday = Date::ABBR_DAYNAMES[Time.now.wday]
+			frames = venue_open_hours[weekday].values
+			utc_offset = venue.time_zone_offset || 0.0
 
-		local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
-		is_live = false
-		for frame in frames
-			if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
-				is_live = true
-				break
-			else
-				if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
+			local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
+			is_live = false
+			for frame in frames
+				if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
 					is_live = true
 					break
+				else
+					if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
+						is_live = true
+						break
+					end
 				end
 			end
+		else
+			is_live = true 
 		end
 		return is_live
 	end
@@ -280,11 +284,13 @@ class VenueComment < ActiveRecord::Base
 				origin_venue.feeds.update_all("num_moments = num_moments+1")
 
 				#Venue LYTiT ratings related methods
-				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+				if vc.is_live? == true
+					vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
-				origin_venue.update_r_up_votes(created_time)
-				origin_venue.delay.update_rating()
-				origin_venue.update_columns(latest_rating_update_time: Time.now)											
+					origin_venue.update_r_up_votes(created_time)
+					origin_venue.delay.update_rating()
+					origin_venue.update_columns(latest_rating_update_time: Time.now)											
+				end
 
 				sphere = LytSphere.create_new_sphere(origin_venue)
 				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
@@ -349,102 +355,17 @@ class VenueComment < ActiveRecord::Base
 		origin_venue.feeds.update_all("num_moments = num_moments+1")
 
 		#Venue LYTiT ratings related methods
-		vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+		if vc.is_live? == true
+			vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
 											:prime => 0.0, :raw_value => 1.0, :time_wrapper => instagram_created_time)
-		origin_venue.update_r_up_votes(instagram_created_time)
-		origin_venue.delay.update_rating()
-		origin_venue.update_columns(latest_rating_update_time: Time.now)											
+			origin_venue.update_r_up_votes(instagram_created_time)
+			origin_venue.delay.update_rating()
+			origin_venue.update_columns(latest_rating_update_time: Time.now)
+		end
 
 		sphere = LytSphere.create_new_sphere(origin_venue)
 	end
 
-=begin
-	def self.convert_instagram_to_vc(instagram, origin_venue, vortex)
-		place_name = instagram.location.name
-		place_id = instagram.location.id
-		lat = instagram.location.latitude
-		long = instagram.location.longitude
-
-		new_media_created = false
-
-		if origin_venue == nil
-			if Venue.name_is_proper?(place_name) == true
-				lytit_venue = Venue.fetch_venues_for_instagram_pull(place_name, lat, long, place_id, vortex)	
-			else
-				return nil
-			end
-		else
-			lytit_venue = origin_venue
-		end
-
-		if vortex != nil && lytit_venue != nil
-			if lytit_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
-				return nil
-			else
-				if lytit_venue.city == nil
-					if vortex.city.last == ")"
-						raw_city = vortex.city
-						lytit_venue.update_columns(city: raw_city.chomp(raw_city.last(3)).strip)
-					else
-						lytit_venue.update_columns(city: vortex.city)
-					end
-				end
-
-				if lytit_venue.country == nil
-					lytit_venue.update_columns(country: vortex.country)
-				end
-			end
-		end
-
-		#create a Venue Comment if its creation time is after the latest pull time of its venue (to prevent duplicates)
-		if lytit_venue !=nil #and (lytit_venue.last_instagram_pull_time == nil || (lytit_venue.last_instagram_pull_time != nil && DateTime.strptime("#{instagram.created_time}",'%s') >= lytit_venue.last_instagram_pull_time ))
-			vc = nil
-			begin
-				image_1 = instagram.images.thumbnail.url rescue nil
-				image_2 = instagram.images.low_resolution.url rescue nil
-				image_3 = instagram.images.standard_resolution.url rescue nil
-				if instagram.type == "video"
-					video_1 = instagram.videos.low_bandwith.url rescue nil
-					video_2 = instagram.videos.low_resolution.url rescue nil
-					video_3 = instagram.videos.standard_resolution.url rescue nil
-					vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-				else
-					vc = VenueComment.create!(:venue_id => lytit_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-				end
-			rescue
-				puts "Oops, uniqueness violation!"
-			end
-			if vc != nil
-				new_media_created = true
-				if origin_venue == nil
-					lytit_venue.update_columns(last_instagram_pull_time: Time.now-10.minutes)#hackery, to make sure that all instagrams of a venue in pull are not excluded after the first one
-				end
-				vote = LytitVote.new(:value => 1, :venue_id => lytit_venue.id, :user_id => nil, :venue_rating => lytit_venue.rating ? lytit_venue.rating : 0, 
-													:prime => 0.0, :raw_value => 1.0, :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'))			
-				vote.save
-				lytit_venue.update_r_up_votes(vote.time_wrapper)
-				if lytit_venue.latest_posted_comment_time == nil or lytit_venue.latest_posted_comment_time < vote.time_wrapper
-					lytit_venue.update_columns(latest_posted_comment_time: DateTime.strptime("#{instagram.created_time}",'%s'))
-				end
-				lytit_venue.delay.update_rating()
-				lytit_venue.update_columns(latest_rating_update_time: Time.now)
-				
-				if LytSphere.where("venue_id = ?", lytit_venue.id).any? == false
-					LytSphere.create_new_sphere(lytit_venue)
-				end
-				puts "instagram venue comment created, id: #{vc.id}"
-				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
-				lytit_venue.feeds.update_all(latest_content_time: vc.created_at)
-				lytit_venue.feeds.update_all("num_moments = num_moments+1")
-				instagram_tags = instagram.tags
-				instagram_captions = instagram.caption.text.split rescue nil
-				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
-			end
-		end
-		return new_media_created
-
-	end
-=end	
 
 	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
 		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
