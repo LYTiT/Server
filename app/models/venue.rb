@@ -565,7 +565,11 @@ class Venue < ActiveRecord::Base
     days["Sun"] = 7
     #days = {"Mon" => 1, "Tue" => 2, "Wed"=> 3, "Thu" => 4, "Fri" => 5, "Sat" => 6, "Sun" => 7}
     days_array = []
-    [*days[timeframe_array.first]..days[timeframe_array.last]].each{|day_num| days_array << days.key(day_num)}
+    commence_day = timeframe_array.first
+    end_day = timeframe_array.last
+    if days[commence_day] != nil && days[end_day] != nil
+      [*days[commence_day]..days[end_day]].each{|day_num| days_array << days.key(day_num)}
+    end
     return days_array
   end
 
