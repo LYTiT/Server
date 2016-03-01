@@ -108,9 +108,9 @@ class VenueComment < ActiveRecord::Base
 		venue_open_hours = self.venue.open_hours
 		weekday = Date::ABBR_DAYNAMES[Time.now.wday]
 		frames = venue_open_hours[weekday].values
-		utc_offset = Venue.time_zone_offset || 0
+		utc_offset = Venue.time_zone_offset || 0.0
 
-		local_time_creation = (time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
+		local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
 		is_live = false
 		for frame in frames
 			if frame["open_time"] <= dec_time_creation && frame["close_time"] >= dec_time_creation
