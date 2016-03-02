@@ -1772,10 +1772,13 @@ class Venue < ActiveRecord::Base
 
   end
 
-  def Venue.general_scrub
-    "SELECT venue_id FROM feed_ids"
-    Venue.joins(:feed_venues).where("verified IS FALSE")
+  def Venue.cleanup_venues_for_crackle    
+    feed_venue_ids = "SELECT venue_id FROM feed_venues"
+    Venue.joins(:feed_venues).where("verified IS FALSE").update_all(verified: true)
+    Venue.where("verified IS FALSE AND instagram_location_id IS NULL AND id NOT IN (#{feed_venue_ids})")
   end
+
+  
   #----------------------------------------------------------------------------->
   #VII.
 

@@ -108,7 +108,7 @@ class VenueComment < ActiveRecord::Base
 		if self.venue == nil
 			return false
 		end
-		
+
 		venue_open_hours = self.venue.open_hours
 		if venue_open_hours == {}
 			venue_open_hours = venue.set_open_hours		
@@ -395,24 +395,26 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)
-		inst_hashtags = instagram_tags
-		inst_comment = instagram_captions
-		#inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
+		if venue != nil
+			inst_hashtags = instagram_tags
+			inst_comment = instagram_captions
+			#inst_meta_data = (inst_hashtags << inst_comment).flatten.compact
 
-		if inst_hashtags != nil and inst_hashtags.count != 0
-			inst_hashtags.each do |data|
-				if data.length > 2 && (data.include?("inst") == false && data.include?("gram") == false && data.include?("like") == false)
-					lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
-					if lookup == nil
-						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
-					else
-						lookup.increment_relevance_score
+			if inst_hashtags != nil and inst_hashtags.count != 0
+				inst_hashtags.each do |data|
+					if data.length > 2 && (data.include?("inst") == false && data.include?("gram") == false && data.include?("like") == false)
+						lookup = MetaData.where("meta = ? AND venue_id = ?", data, venue_id).first
+						if lookup == nil
+							venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => data, :clean_meta => nil) #rescue MetaData.increment_relevance_score(data, venue_id)
+						else
+							lookup.increment_relevance_score
+						end
 					end
 				end
 			end
+			self.touch
+			venue.set_top_tags
 		end
-		self.touch
-		venue.set_top_tags
 	end
 
 	def extract_venue_comment_meta_data
