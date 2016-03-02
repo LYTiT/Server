@@ -222,6 +222,7 @@ class InstagramVortex < ActiveRecord::Base
 					user_country = Venue.reverse_geo_country_lookup(lat, long)
 					if user_city != nil
 						iv = InstagramVortex.create!(:latitude => lat, :longitude => long, :pull_radius => 5000, :active => true, :city => user_city, :country => user_country, :details => "auto generated")
+						iv.set_timezone_offsets
 					end
 					#vp = VortexPath.create!(:origin_lat => lat, :origin_long => long, :span => 15000, :increment_distance => 5000, :instagram_vortex_id => iv.id)
 				rescue
@@ -239,13 +240,15 @@ class InstagramVortex < ActiveRecord::Base
 
 	end
 
-	def InstagramVortex.set_timezone_offsets
-		radius = 5
+	def set_timezone_offsets
+      Timezone::Configure.begin do |c|
+      c.username = 'LYTiT'
+      end
+      timezone = Timezone::Zone.new :latlon => [self.latitude, self.longitude] rescue nil
 
-		for vortex in InstagramVortex.all
-			closest_venue_with_timzone = Venue.within(radius.to_i, :units => :kms, :origin => [vortex.latitude, vortex.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
-			vortex.update_columns(time_zone_offset: closest_venue_with_timzone.time_zone_offset) rescue p "Nil values encountered"
-		end
+      self.time_zone = timezone.active_support_time_zone rescue nil
+      self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+      self.save
 	end
 
 end

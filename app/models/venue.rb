@@ -390,6 +390,7 @@ class Venue < ActiveRecord::Base
 
       self.time_zone = timezone.active_support_time_zone rescue nil
       self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
+      self.save
     else
       self.update_columns(time_zone_offset: origin_vortex.time_zone_offset)
     end
@@ -1775,10 +1776,22 @@ class Venue < ActiveRecord::Base
   def Venue.cleanup_venues_for_crackle    
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     Venue.joins(:feed_venues).where("verified IS FALSE").update_all(verified: true)
-    Venue.where("verified IS FALSE AND instagram_location_id IS NULL AND id NOT IN (#{feed_venue_ids})")
+    Venue.where("verified IS FALSE AND instagram_location_id IS NULL AND id NOT IN (#{feed_venue_ids}) AND address IS NULL")
   end
 
-  
+  def Venue.timezone_and_vortex_calibration
+    ivs = InstagramVortex.all
+    for iv in ivs
+      iv.set_timezone_offsets
+      center_point = [iv.latitude, iv.longitude]
+      proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
+      nearby_venues = Venue.in_bounds(proximity_box)
+      nearby_venues.update_all(instagram_vortex_id: iv.id)
+      nearby_venues.update_all(time_zone: iv.time_zone)
+      nearby_venues.update_all(time_zone_offset: iv.time_zone_offset)
+    end
+  end
+
   #----------------------------------------------------------------------------->
   #VII.
 
