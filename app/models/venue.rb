@@ -528,14 +528,24 @@ class Venue < ActiveRecord::Base
 
     if venue_foursquare_id == nil
       foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude)
-      if foursquare_venue != nil
+      if foursquare_venue != nil || foursquare_venue != "F2 ERROR"
         venue_foursquare_id = foursquare_venue.id
+      else
+        if foursquare_venue == "F2 ERROR"
+          return
+        else
+          self.update_columns(open_hours: {"NA"=>"NA"})
+          return open_hours
+        end
       end
     end
 
     if venue_foursquare_id != nil
       client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-      foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue nil
+      foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue "F2 ERROR"
+      if foursquare_venue_with_details == "F2 ERROR"
+        return 
+      end
       if foursquare_venue_with_details != nil
         venue_hours = foursquare_venue_with_details.hours
         open_hours_hash = Hash.new
@@ -872,8 +882,8 @@ class Venue < ActiveRecord::Base
 
   def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue []
-    if foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0
+    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue "F2 ERROR"
+    if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
       if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false        
         require 'fuzzystringmatch'
@@ -892,7 +902,11 @@ class Venue < ActiveRecord::Base
 
       return foursquare_venue
     else
-      return nil
+      if foursquare_search_results == "F2 ERROR"
+        return "F2 ERROR"
+      else
+        return nil
+      end
     end
   end
 
