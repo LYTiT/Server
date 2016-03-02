@@ -873,7 +873,7 @@ class Venue < ActiveRecord::Base
   def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
     foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue []
-    if foursquare_search_results.first.last.count > 0
+    if foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0
       foursquare_venue = foursquare_search_results.first.last.first
       if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false        
         require 'fuzzystringmatch'
