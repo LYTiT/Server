@@ -1785,7 +1785,6 @@ class Venue < ActiveRecord::Base
     LytSphere.where("venue_id IN (?)", false_venues).delete_all
     VenuePageView.where("venue_id IN (?)", false_venues).delete_all
     Activity.where("venue_id IN (?)", false_venues).delete_all
-    
   end
 
   def Venue.timezone_and_vortex_calibration
