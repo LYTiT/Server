@@ -105,6 +105,10 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def is_live?
+		if self.venue == nil
+			return false
+		end
+		
 		venue_open_hours = self.venue.open_hours
 		if venue_open_hours == {}
 			venue_open_hours = venue.set_open_hours		
