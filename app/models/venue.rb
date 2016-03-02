@@ -867,23 +867,27 @@ class Venue < ActiveRecord::Base
   def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
     foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name)
-    foursquare_venue = foursquare_search_results.first.last.first
-    if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false
-      foursquare_venue = nil
-      require 'fuzzystringmatch'
-      jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-      jarow_winkler_proximity = p jarow.getDistance(venue_name, foursquare_search_results.name)
-      if jarow_winkler_proximity < 0.7
-        for entry in foursquare_search_results.first.last
-          jarow_winkler_proximity = p jarow.getDistance(venue_name, entry.name)
-          if jarow_winkler_proximity >= 0.7
-            foursquare_venue = entry
+    if foursquare_search_results.first.last.count > 0
+      foursquare_venue = foursquare_search_results.first.last.first
+      if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false
+        foursquare_venue = nil
+        require 'fuzzystringmatch'
+        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+        jarow_winkler_proximity = p jarow.getDistance(venue_name, foursquare_venue.name)
+        if jarow_winkler_proximity < 0.7
+          for entry in foursquare_search_results.first.last
+            jarow_winkler_proximity = p jarow.getDistance(venue_name, entry.name)
+            if jarow_winkler_proximity >= 0.7
+              foursquare_venue = entry
+            end
           end
         end
       end
-    end
 
-    return foursquare_venue
+      return foursquare_venue
+    else
+      return nil
+    end
   end
 
   def set_instagram_location_id(search_radius)
@@ -1761,6 +1765,11 @@ class Venue < ActiveRecord::Base
     Venue.where("id IN (#{stale_venue_ids})").update_all(color_rating: -1.0)
     Venue.where("id IN (#{stale_venue_ids})").update_all(popularity_rank: 0.0)
 
+  end
+
+  def Venue.general_scrub
+    "SELECT venue_id FROM feed_ids"
+    Venue.joins(:feed_venues).where("verified IS FALSE")
   end
   #----------------------------------------------------------------------------->
   #VII.
