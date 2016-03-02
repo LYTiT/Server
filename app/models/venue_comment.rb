@@ -218,12 +218,8 @@ class VenueComment < ActiveRecord::Base
 			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
 			
 			if origin_venue == nil
-				if Venue.name_is_proper?(instagram_hash["location"]["name"]) == true and (instagram_hash["location"]["latitude"] != nil && instagram_hash["location"]["longitude"] != nil)
-					origin_venue = Venue.fetch_venues_for_instagram_pull(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"], vortex)	
-					if origin_venue == nil
-						return nil
-					end
-				else
+				origin_venue = Venue.validate_venue(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"], vortex)
+				if origin_venue == nil
 					return nil
 				end
 			end
@@ -379,7 +375,8 @@ class VenueComment < ActiveRecord::Base
 		if presence == nil
 			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
 				if origin_venue_id == nil	
-					venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
+					#venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
+					venue = Venue.validate_venue(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
 				else
 					venue = Venue.find_by_id(origin_venue_id)
 				end
