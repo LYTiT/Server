@@ -1776,7 +1776,15 @@ class Venue < ActiveRecord::Base
   def Venue.cleanup_venues_for_crackle    
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     Venue.joins(:feed_venues).where("verified IS FALSE").update_all(verified: true)
-    Venue.where("verified IS FALSE AND instagram_location_id IS NULL AND id NOT IN (#{feed_venue_ids}) AND address IS NULL")
+    Venue.where("address IS NOT NULL AND verified IS FALSE").update_all(verified: true)
+    false_venues = Venue.where("verified IS FALSE").pluck(:id)
+    VenueComment.where("venue_id IN (?)", false_venues).delete_all
+    MetaData.where("venue_id IN (?)", false_venues).delete_all
+    LytitVote.where("venue_id IN (?)", false_venues).delete_all
+    Tweet.where("venue_id IN (?)", false_venues).delete_all
+    LytSphere.where("venue_id IN (?)", false_venues).delete_all
+    VenuePageView.where("venue_id IN (?)", false_venues).delete_all
+    Activity.where("venue_id IN (?)", false_venues).delete_all
   end
 
   def Venue.timezone_and_vortex_calibration
