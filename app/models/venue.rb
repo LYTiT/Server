@@ -528,11 +528,11 @@ class Venue < ActiveRecord::Base
 
     if venue_foursquare_id == nil
       foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude)
-      if foursquare_venue != nil || foursquare_venue != "F2 ERROR"
+      if foursquare_venue != nil && foursquare_venue != "F2 ERROR"
         venue_foursquare_id = foursquare_venue.id
       else
         if foursquare_venue == "F2 ERROR"
-          return
+          return {}
         else
           self.update_columns(open_hours: {"NA"=>"NA"})
           return open_hours
@@ -544,7 +544,7 @@ class Venue < ActiveRecord::Base
       client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
       foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue "F2 ERROR"
       if foursquare_venue_with_details == "F2 ERROR"
-        return 
+        return {}
       end
       if foursquare_venue_with_details != nil
         venue_hours = foursquare_venue_with_details.hours
