@@ -23,7 +23,7 @@ class AddNewMetaphoneVectorToVenues < ActiveRecord::Migration
         ON venues FOR EACH ROW EXECUTE PROCEDURE fill_metaphone_name_vector_for_venue();
     EOS
 
-    Venue.find_each(&:touch)
+    #Venue.find_each(&:touch)
   end
 
   def down
