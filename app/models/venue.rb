@@ -858,7 +858,7 @@ class Venue < ActiveRecord::Base
         scrubbed_venue_name = Venue.scrub_venue_name(venue_name, origin_vortex)
         foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_venue_name, venue_lat, venue_long)
           #no corresponding venue found in Foursquare database
-        if foursquare_venue == nil
+        if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
         else
           new_lytit_venue = Venue.create_new_db_entry(venue_name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
