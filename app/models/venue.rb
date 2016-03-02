@@ -855,6 +855,7 @@ class Venue < ActiveRecord::Base
         if lytit_venue_lookup.verified == true
           return lytit_venue_lookup
         else
+          lytit_venue_lookup.delete
           return nil
         end
       end
