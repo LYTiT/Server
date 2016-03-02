@@ -264,7 +264,7 @@ class Venue < ActiveRecord::Base
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
-    vname = scrub_venue_name(vname)
+    vname = scrub_venue_name(vname, vortex)
     if vname != nil
       if inst_id_lookup != nil && inst_loc_id.to_i != 0
         result = inst_id_lookup.venue
@@ -281,8 +281,7 @@ class Venue < ActiveRecord::Base
         if name_lookup != nil
           result = name_lookup
         else
-          result = Venue.create_new_db_entry(vname, nil, nil, nil, nil, nil, nil, lat, long, inst_loc_id, vortex)
-          InstagramLocationIdLookup.delay.create!(:venue_id => result.id, :instagram_location_id => inst_loc_id)
+          result = nil
         end
       end
       return result
@@ -291,13 +290,18 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.scrub_venue_name(raw_name)
+  def self.scrub_venue_name(raw_name, origin_vortex)
     #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
+    clean_name = raw_name
+
     if raw_name.include?("@") == true
       clean_name = raw_name.partition("@").last.strip
-    else
-      clean_name = raw_name
     end
+
+    if clean_name.include?("#{origin_vortex.city}" == true)
+      clean_name = clean_name.partition("#{origin_vortex.city}").first.strip
+    end
+
     return clean_name 
   end
 
@@ -518,14 +522,17 @@ class Venue < ActiveRecord::Base
   end
 
   def set_open_hours
-    #find venue's foursquare id
-    #lookup venue on foursquare
-    #extract open hours
-    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-    foursquare_search_results = client.search_venues(:ll => "#{self.latitude},#{self.longitude}", :query => self.name)
-    foursquare_search_venue = foursquare_search_results.first.last.first
-    if foursquare_search_venue != nil
-      foursquare_venue_with_details = client.venue(foursquare_search_venue.id)
+    venue_foursquare_id = self.foursquare_id
+
+    if venue_foursquare_id == nil
+      foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude)
+      if foursquare_venue != nil
+        venue_foursquare_id = foursquare_venue.id
+      end
+    end
+
+    if venue_foursquare_id != nil
+      foursquare_venue_with_details = client.venue(venue_foursquare_id)
       venue_hours = foursquare_venue_with_details.hours
       open_hours_hash = Hash.new
       if venue_hours != nil
@@ -615,9 +622,7 @@ class Venue < ActiveRecord::Base
     end
   end
   
-  def Venue.convert_hourly_to_mins
-    
-  end
+
   #------------------------------------------------------------------------>
 
 
@@ -754,7 +759,7 @@ class Venue < ActiveRecord::Base
   end
 
   #name checker for instagram venue creation
-  def self.name_is_proper?(vname) 
+  def Venue.name_is_proper?(vname) 
     emoji_and_symbols = ["💗", "❤", "✌", "😊", "😀", "😁", "😂", "😃", "😄", "😅", "😆", "😇", "😈", "👿", "😉", "😊", "☺️", "😋", "😌", "😍", "😎", "😏", "😐", "😑", "😒", "😓", "😔", "😕", "😖", "😗", "😘", "😙", "😚", "😛", "😜", "😝", "😞", "😟", "😠", 
       "😡", "😢", "😣", "😤", "😥", "😦", "😧", "😨", "😩", "😪", "😫", "😬", "😭", "😮", "😯", "😰", "😱", "😲", "😳", "😴", "😵", "😶", "😷", "🙁", "🙂", "😸", "😹", "😺", "😻", "😼", "😽", "😾", "😿", "🙀", "👣", "👤", "👥", "👦", "👧", "👨", "👩", "👨‍",
       "👶", "👷", "👸", "💂", "👼", "🎅", "👻", "👹", "👺", "💩", "💀", "👽", "👾", "🙇", "💁", "🙅", "🙆", "🙋", "🙎", "🙍", "💆", "💇", "💑", "👩‍❤️‍👩", "👨‍❤️‍👨", "💏", "👩‍❤️‍💋‍👩", "👨‍❤️‍💋‍👨", "💅", "👂", "👀", "👃", "👄", "💋", "👅👋", "👍", "👎", "☝️", "👆", "👇", 
@@ -822,6 +827,62 @@ class Venue < ActiveRecord::Base
       result = true
     end
     return result
+  end
+
+  def Venue.validate_venue(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
+    #Used to establish if a location tied to an Instagram is legitimate and not a fake, "Best Place Ever" type one.
+    #Returns a venue object if location is valid, otherwise nil. Primary check occurs through a Froursquare lookup.
+    if Venue.name_is_proper?(venue_name)
+      #strip city from name if present
+      lytit_venue_lookup = Venue.fetch_venues_for_instagram_pull(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+
+      if lytit_venue_lookup == nil
+        #scrub the name of such things like appended city. Foursquare does not handle such queries well.i.e F2 will not recognize 'Marquee New York' as 'Marquee'.
+        scrubbed_venue_name = Venue.scrub_venue_name(venue_name, origin_vortex)
+        foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_venue_name, venue_lat, venue_long)
+          #no corresponding venue found in Foursquare database
+        if foursquare_venue == nil
+          return nil
+        else
+          new_lytit_venue = Venue.create_new_db_entry(venue_name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+          new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
+          new_lytit_venue.update_columns(verified: true)
+          InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
+          return new_lytit_venue
+        end
+      else
+        if lytit_venue_lookup.verified == true
+          return lytit_venue_lookup
+        else
+          return nil
+        end
+      end
+    else
+      nil
+    end
+  end
+
+  def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long)
+    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
+    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name)
+    foursquare_venue = foursquare_search_results.first.last.first
+    if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false
+      foursquare_venue = nil
+      require 'fuzzystringmatch'
+      jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+      jarow_winkler_proximity = p jarow.getDistance(venue_name, foursquare_search_results.name)
+      if jarow_winkler_proximity < 0.7
+        for entry in foursquare_search_results.first.last
+          jarow_winkler_proximity = p jarow.getDistance(venue_name, entry.name)
+          if jarow_winkler_proximity >= 0.7
+            foursquare_venue = entry
+          end
+        end
+      end
+    end
+
+    return foursquare_venue
   end
 
   def set_instagram_location_id(search_radius)

@@ -2004,7 +2004,8 @@ CREATE TABLE venues (
     ts_name_vector tsvector,
     metaphone_name_vector tsvector,
     open_hours json DEFAULT '{}'::json NOT NULL,
-    instagram_vortex_id integer
+    instagram_vortex_id integer,
+    foursquare_id character varying(255)
 );
 
 
@@ -4167,4 +4168,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160228224625');
 INSERT INTO schema_migrations (version) VALUES ('20160229043538');
 
 INSERT INTO schema_migrations (version) VALUES ('20160229170236');
+
+INSERT INTO schema_migrations (version) VALUES ('20160302055418');
 
