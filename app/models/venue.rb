@@ -250,6 +250,7 @@ class Venue < ActiveRecord::Base
     if result == nil
       if vlatitude != nil && vlongitude != nil 
         result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil)
+        result.update_columns(verified: true)
       else
         return nil
       end
