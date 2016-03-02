@@ -532,6 +532,7 @@ class Venue < ActiveRecord::Base
     end
 
     if venue_foursquare_id != nil
+      client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
       foursquare_venue_with_details = client.venue(venue_foursquare_id)
       venue_hours = foursquare_venue_with_details.hours
       open_hours_hash = Hash.new
