@@ -336,6 +336,7 @@ class Venue < ActiveRecord::Base
     part3 = [part2, postal_code].compact.join(' ')
     part4 = [part3, country].compact.join(', ')
 
+    city = city || ""
     venue.update_columns(formatted_address: part4) 
     venue.update_columns(city: city) 
     venue.update_columns(state: state) 
