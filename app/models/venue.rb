@@ -5,7 +5,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
-        #:normalization => 2,
+        :normalization => 2,
         :dictionary => 'english',
         :any_word => true,
         :prefix => true,
@@ -22,7 +22,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector],
     :using => {
       :tsearch => {
-        #:normalization => 2,
+        :normalization => 2,
         :dictionary => 'english',
         :any_word => true,
         :prefix => true,
@@ -35,7 +35,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector],
     :using => {
       :tsearch => {
-        #:normalization => 2,
+        :normalization => 2,
         :dictionary => 'english',
         :any_word => true,
         :prefix => true,
@@ -72,7 +72,7 @@ class Venue < ActiveRecord::Base
                   :prefix => true
                 }  
               },
-              :ranked_by => ":dmetaphone + (0.25 * :trigram)"#":trigram"#
+              :ranked_by => ":dmetaphone + (0.75 * :trigram)"#":trigram"#
 
   pg_search_scope :meta_search, #name and/or associated meta data
     against: :meta_data_vector,
