@@ -16,7 +16,7 @@ class Venue < ActiveRecord::Base
         :prefix => true,
       }  
     },
-    :ranked_by => "(((:dmetaphone) + (:trigram))*(:tsearch) + (:trigram))"    
+    :ranked_by => "(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
 
   pg_search_scope :phonetic_search,
