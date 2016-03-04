@@ -15,8 +15,8 @@ class AddNewSearchVectorsToVenues < ActiveRecord::Migration
         
         
         new.ts_name_vector_expd :=
-        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
-        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name||new.city, '')), 'A');
+        	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Z\d\s:]+', '', 'g'), '')), 'A') ||
+        	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Z\d\s:]+', '', 'g')||new.city, '')), 'A');
 
         return new;
       end
@@ -34,8 +34,8 @@ class AddNewSearchVectorsToVenues < ActiveRecord::Migration
       begin
 
         new.metaphone_name_vector_expd :=
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name, ''))), 'A') ||
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name||new.city, ''))), 'A');
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(regexp_replace(new.name, '[^a-zA-Z\d\s:]+', '', 'g'), ''))), 'A') ||
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(regexp_replace(new.name, '[^a-zA-Z\d\s:]+', '', 'g')||new.city, ''))), 'A');
 
 
 

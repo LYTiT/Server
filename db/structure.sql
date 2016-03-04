@@ -156,8 +156,8 @@ CREATE FUNCTION fill_metaphone_name_vector_expd_for_venue() RETURNS trigger
       begin
 
         new.metaphone_name_vector_expd :=
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name, ''))), 'A') ||
-          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name||new.city, ''))), 'A');
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g'), ''))), 'A') ||
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g')||new.city, ''))), 'A');
 
 
 
@@ -225,8 +225,8 @@ CREATE FUNCTION fill_ts_name_vector_expd_for_venue() RETURNS trigger
         
         
         new.ts_name_vector_expd :=
-        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
-        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name||new.city, '')), 'A');
+        	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g'), '')), 'A') ||
+        	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g')||new.city, '')), 'A');
 
         return new;
       end

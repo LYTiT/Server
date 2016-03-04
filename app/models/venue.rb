@@ -162,6 +162,7 @@ class Venue < ActiveRecord::Base
 
   #I. Search------------------------------------------------------->
   def Venue.search(query, proximity_box, view_box)
+    query.gsub!(/[^0-9a-z ]/i, '')
     first_letter = query.first
     second_letter = query[1]
     #perculate results with matching first letters to front.
@@ -174,7 +175,7 @@ class Venue < ActiveRecord::Base
       raw_results = Venue.in_bounds(proximity_box).name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     end
 
-    first_letter_match_offset = raw_results.find_index{|venue| venue.name.size > 0 and (venue.name[0].downcase == first_letter.downcase)}
+    first_letter_match_offset = raw_results.find_index{|venue| venue.name.gsub(/[^0-9a-z ]/i, '').size > 0 and (venue.name.gsub(/[^0-9a-z ]/i, '')[0].downcase == first_letter.downcase)}
     if first_letter_match_offset != nil
       first_letter_sorted_results = raw_results.rotate(first_letter_match_offset)
     else
@@ -182,7 +183,7 @@ class Venue < ActiveRecord::Base
     end
     
     if first_letter_sorted_results != [] && query.length >= 2
-      second_letter_match_offset = first_letter_sorted_results.find_index{|venue| venue.name.size > 0 and (venue.name[1].downcase == second_letter.downcase)}
+      second_letter_match_offset = first_letter_sorted_results.find_index{|venue| venue.name.gsub(/[^0-9a-z ]/i, '').size > 0 and (venue.name.gsub(/[^0-9a-z ]/i, '')[1].downcase == second_letter.downcase)}
       if second_letter_match_offset != nil
         second_letter_sorted_results = first_letter_sorted_results.rotate(second_letter_match_offset).first(10)
         results = second_letter_sorted_results
