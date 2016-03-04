@@ -31,7 +31,7 @@ class Venue < ActiveRecord::Base
     },
     :ranked_by => "(:tsearch)"
 
-  pg_search_scope :trigam, #name and/or associated meta data
+  pg_search_scope :trigam_search, #name and/or associated meta data
     :against => [:ts_name_vector],
     :using => {
       :tsearch => {
@@ -42,7 +42,7 @@ class Venue < ActiveRecord::Base
         :tsvector_column => 'ts_name_vector',
       }
     },
-    :ranked_by => "(:trigam)"    
+    :ranked_by => "(:trigram)"    
 
 
 
