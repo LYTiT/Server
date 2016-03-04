@@ -18,6 +18,51 @@ class Venue < ActiveRecord::Base
     },
     :ranked_by => "(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
+  pg_search_scope :tsearch, #name and/or associated meta data
+    :against => [:ts_name_vector],
+    :using => {
+      :tsearch => {
+        #:normalization => 2,
+        :dictionary => 'english',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_vector',
+      }
+    },
+    :ranked_by => "(:tsearch)"
+
+  pg_search_scope :trigam, #name and/or associated meta data
+    :against => [:ts_name_vector],
+    :using => {
+      :tsearch => {
+        #:normalization => 2,
+        :dictionary => 'english',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_vector',
+      }
+    },
+    :ranked_by => "(:trigam)"    
+
+
+
+  pg_search_scope :name_search_2, #name and/or associated meta data
+    :against => [:ts_name_vector, :metaphone_name_vector],
+    :using => {
+      :tsearch => {
+        #:normalization => 2,
+        :dictionary => 'english',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_vector',
+      },
+      :dmetaphone => {
+        :tsvector_column => "metaphone_name_vector",
+        :prefix => true,
+      }  
+    },
+    :ranked_by => "((1.5*(:trigram))*(:tsearch) + (:trigram))"    
+
 
   pg_search_scope :phonetic_search,
               :against => "metaphone_name_vector",
