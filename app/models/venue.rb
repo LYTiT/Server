@@ -529,8 +529,9 @@ class Venue < ActiveRecord::Base
 
     if venue_foursquare_id == nil
       foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude)
-      if foursquare_venue != nil && foursquare_venue != "F2 ERROR"
+      if foursquare_venue != nil && foursquare_venue != "F2 ERROR"        
         venue_foursquare_id = foursquare_venue.id
+        self.update_columns(foursquare_id: venue_foursquare_id)
       else
         if foursquare_venue == "F2 ERROR"
           return {}
