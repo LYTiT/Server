@@ -146,6 +146,27 @@ CREATE FUNCTION fill_meta_data_vector_for_venue_comments() RETURNS trigger
 
 
 --
+-- Name: fill_metaphone_name_vector_expd_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_metaphone_name_vector_expd_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+        
+      begin
+
+        new.metaphone_name_vector_expd :=
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name, ''))), 'A') ||
+          setweight(to_tsvector('pg_catalog.english', pg_search_dmetaphone(coalesce(new.name||new.city, ''))), 'A');
+
+
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_metaphone_name_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -183,6 +204,29 @@ CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
           setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
           setweight(to_tsvector('pg_catalog.english', coalesce(new.description, '')), 'B') ||
           setweight(to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, '')), 'C');
+
+        return new;
+      end
+      $$;
+
+
+--
+-- Name: fill_ts_name_vector_expd_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_name_vector_expd_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+        venue_meta_data record;
+        
+
+      begin
+        
+        
+        new.ts_name_vector_expd :=
+        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name, '')), 'A') ||
+        	setweight(to_tsvector('pg_catalog.english', coalesce(new.name||new.city, '')), 'A');
 
         return new;
       end
@@ -2006,7 +2050,9 @@ CREATE TABLE venues (
     metaphone_name_vector tsvector,
     open_hours json DEFAULT '{}'::json NOT NULL,
     instagram_vortex_id integer,
-    foursquare_id character varying(255)
+    foursquare_id character varying(255),
+    ts_name_vector_expd tsvector,
+    metaphone_name_vector_expd tsvector
 );
 
 
@@ -3428,6 +3474,13 @@ CREATE INDEX index_venues_on_metaphone_name_vector ON venues USING gin (metaphon
 
 
 --
+-- Name: index_venues_on_metaphone_name_vector_expd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_metaphone_name_vector_expd ON venues USING gin (metaphone_name_vector_expd);
+
+
+--
 -- Name: index_venues_on_popularity_rank; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3439,6 +3492,13 @@ CREATE INDEX index_venues_on_popularity_rank ON venues USING btree (popularity_r
 --
 
 CREATE INDEX index_venues_on_ts_name_vector ON venues USING gin (ts_name_vector);
+
+
+--
+-- Name: index_venues_on_ts_name_vector_expd; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_ts_name_vector_expd ON venues USING gin (ts_name_vector_expd);
 
 
 --
@@ -3477,10 +3537,24 @@ CREATE TRIGGER venues_meta_data_trigger BEFORE INSERT OR UPDATE ON venues FOR EA
 
 
 --
+-- Name: venues_metaphone_expd_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_metaphone_expd_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_metaphone_name_vector_expd_for_venue();
+
+
+--
 -- Name: venues_metaphone_trigger; Type: TRIGGER; Schema: public; Owner: -
 --
 
 CREATE TRIGGER venues_metaphone_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_metaphone_name_vector_for_venue();
+
+
+--
+-- Name: venues_ts_name_vector_expd_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_ts_name_vector_expd_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_vector_expd_for_venue();
 
 
 --
@@ -4173,4 +4247,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160229170236');
 INSERT INTO schema_migrations (version) VALUES ('20160302055418');
 
 INSERT INTO schema_migrations (version) VALUES ('20160302081315');
+
+INSERT INTO schema_migrations (version) VALUES ('20160304054607');
 

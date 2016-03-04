@@ -5,7 +5,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
-        :normalization => 2,
+        #:normalization => 2,
         :dictionary => 'english',
         :any_word => true,
         :prefix => true,
@@ -18,62 +18,33 @@ class Venue < ActiveRecord::Base
     },
     :ranked_by => "(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
-  pg_search_scope :tsearch, #name and/or associated meta data
-    :against => [:ts_name_vector],
+  pg_search_scope :name_search_expd, #name and/or associated meta data
+    :against => [:ts_name_vector_expd, :metaphone_name_vector_expd],
     :using => {
       :tsearch => {
-        :normalization => 2,
-        :dictionary => 'english',
+        :normalization => 1,
+        :dictionary => 'simple',
         :any_word => true,
         :prefix => true,
-        :tsvector_column => 'ts_name_vector',
-      }
-    },
-    :ranked_by => "(:tsearch)"
-
-  pg_search_scope :trigam_search, #name and/or associated meta data
-    :against => [:ts_name_vector],
-    :using => {
-      :tsearch => {
-        :normalization => 2,
-        :dictionary => 'english',
-        :any_word => true,
-        :prefix => true,
-        :tsvector_column => 'ts_name_vector',
-      }
-    },
-    :ranked_by => "(:trigram)"    
-
-
-
-  pg_search_scope :name_search_2, #name and/or associated meta data
-    :against => [:ts_name_vector, :metaphone_name_vector],
-    :using => {
-      :tsearch => {
-        #:normalization => 2,
-        :dictionary => 'english',
-        :any_word => true,
-        :prefix => true,
-        :tsvector_column => 'ts_name_vector',
+        :tsvector_column => 'ts_name_vector_expd',
       },
       :dmetaphone => {
-        :tsvector_column => "metaphone_name_vector",
-        :prefix => true,
+        :tsvector_column => "metaphone_name_vector_expd",
+        #:prefix => true,
       }  
     },
-    :ranked_by => "((1.5*(:trigram))*(:tsearch) + (:trigram))"    
-
+    :ranked_by => ":dmetaphone + :trigram*5 +:tsearch*4"
+    
 
   pg_search_scope :phonetic_search,
               :against => "metaphone_name_vector",
               :using => {
                 :dmetaphone => {
-                  :normalization => 2,
                   :tsvector_column => "metaphone_name_vector",
                   :prefix => true
                 }  
               },
-              :ranked_by => ":dmetaphone + (0.75 * :trigram)"#":trigram"#
+              :ranked_by => ":dmetaphone"# + (0.25 * :trigram)"#":trigram"#
 
   pg_search_scope :meta_search, #name and/or associated meta data
     against: :meta_data_vector,
@@ -195,12 +166,12 @@ class Venue < ActiveRecord::Base
     second_letter = query[1]
     #perculate results with matching first letters to front.
     if proximity_box == nil
-      raw_results = Venue.name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+      raw_results = Venue.name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     elsif view_box != nil
       raw_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", 
-        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     else
-      raw_results = Venue.in_bounds(proximity_box).name_search(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+      raw_results = Venue.in_bounds(proximity_box).name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     end
 
     first_letter_match_offset = raw_results.find_index{|venue| venue.name.size > 0 and (venue.name[0].downcase == first_letter.downcase)}
@@ -934,7 +905,7 @@ class Venue < ActiveRecord::Base
     foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
-      if venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.downcase.name).include?(venue_name.downcase) == false        
+      if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.downcase.name).include?(venue_name.downcase) == false)
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, foursquare_venue.name.downcase)
