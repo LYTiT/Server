@@ -886,14 +886,14 @@ class Venue < ActiveRecord::Base
     foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
-      if venue_name.include?(foursquare_venue.name) == false && (foursquare_venue.name).include?(venue_name) == false        
+      if venue_name.downcase.include?(foursquare_venue.downcase.name) == false && (foursquare_venue.downcase.name).include?(venue_name.downcase) == false        
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        jarow_winkler_proximity = p jarow.getDistance(venue_name, foursquare_venue.name)
+        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, foursquare_venue.name.downcase)
         if jarow_winkler_proximity < 0.7
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
-            jarow_winkler_proximity = p jarow.getDistance(venue_name, entry.name)
+            jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, entry.name.downcase)
             if jarow_winkler_proximity >= 0.7
               foursquare_venue = entry
             end
