@@ -549,7 +549,7 @@ class Venue < ActiveRecord::Base
         return {}
       end
       if foursquare_venue_with_details != nil
-        venue_hours = foursquare_venue_with_details.hours
+        venue_hours = foursquare_venue_with_details.hours || foursquare_venue_with_details.popular
         open_hours_hash = Hash.new
         if venue_hours != nil
           timeframes = venue_hours.timeframes
