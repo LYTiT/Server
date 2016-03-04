@@ -68,6 +68,7 @@ class Venue < ActiveRecord::Base
               :against => "metaphone_name_vector",
               :using => {
                 :dmetaphone => {
+                  :normalization => 2,
                   :tsvector_column => "metaphone_name_vector",
                   :prefix => true
                 }  
