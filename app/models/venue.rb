@@ -177,9 +177,10 @@ class Venue < ActiveRecord::Base
     end
 
     if results != [] and results.first.pg_search_rank >= 0.1
-      results
+      results.each{|x| p "#{x.name} (#{x.pg_search_rank})"}
+      return results
     else
-      []
+      return []
     end
 
   end
