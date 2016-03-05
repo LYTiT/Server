@@ -211,6 +211,45 @@ CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
 
 
 --
+-- Name: fill_ts_description_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_description_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+	 	begin         
+        new.ts_description_vector :=
+        	to_tsvector('pg_catalog.english', coalesce(new.description, ''));
+
+        return new;
+      end
+      $$;
+
+
+--
+-- Name: fill_ts_meta_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_meta_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+      	feed_venue_data record;
+        
+      begin
+
+      	select string_agg(description, ' ') as added_note into feed_venue_data from feed_venues where feed_id = new.id;
+
+        new.ts_meta_vector :=
+          to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, ''));
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_ts_name_vector_expd_for_venue(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -227,6 +266,23 @@ CREATE FUNCTION fill_ts_name_vector_expd_for_venue() RETURNS trigger
         new.ts_name_vector_expd :=
         	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g'), '')), 'A') ||
         	setweight(to_tsvector('pg_catalog.english', coalesce(regexp_replace(new.name, '[^a-zA-Zd :]+', '', 'g')||new.city, '')), 'A');
+
+        return new;
+      end
+      $$;
+
+
+--
+-- Name: fill_ts_name_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_name_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+      begin 
+        new.ts_name_vector :=
+        	to_tsvector('pg_catalog.english', coalesce(new.name, ''));
 
         return new;
       end
@@ -888,7 +944,10 @@ CREATE TABLE feeds (
     central_mass_latitude double precision,
     central_mass_longitude double precision,
     search_vector tsvector,
-    latest_update_time timestamp without time zone
+    latest_update_time timestamp without time zone,
+    ts_name_vector tsvector,
+    ts_description_vector tsvector,
+    ts_meta_vector tsvector
 );
 
 
@@ -3082,6 +3141,27 @@ CREATE INDEX index_feeds_on_search_vector ON feeds USING gin (search_vector);
 
 
 --
+-- Name: index_feeds_on_ts_description_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_ts_description_vector ON feeds USING gin (ts_description_vector);
+
+
+--
+-- Name: index_feeds_on_ts_meta_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_ts_meta_vector ON feeds USING gin (ts_meta_vector);
+
+
+--
+-- Name: index_feeds_on_ts_name_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_ts_name_vector ON feeds USING gin (ts_name_vector);
+
+
+--
 -- Name: index_instagram_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3520,6 +3600,27 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 --
 
 CREATE TRIGGER feed_search_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_search_vector_for_feed();
+
+
+--
+-- Name: feeds_ts_description_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feeds_ts_description_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_description_vector_for_feed();
+
+
+--
+-- Name: feeds_ts_meta_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feeds_ts_meta_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_meta_vector_for_feed();
+
+
+--
+-- Name: feeds_ts_name_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feeds_ts_name_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_vector_for_feed();
 
 
 --
@@ -4249,4 +4350,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160302055418');
 INSERT INTO schema_migrations (version) VALUES ('20160302081315');
 
 INSERT INTO schema_migrations (version) VALUES ('20160304054607');
+
+INSERT INTO schema_migrations (version) VALUES ('20160305202505');
 

@@ -24,7 +24,25 @@ class Feed < ActiveRecord::Base
         prefix: true,
         tsvector_column: 'search_vector'
       }
-    }    
+    }  
+
+
+  pg_search_scope :combined_search,
+                  :against => {
+                  	:ts_name_vector => 'A', 
+                  	:ts_description_vector => 'B',
+                  	:ts_meta_vector => 'C'
+                  	},
+                  :using => {
+                    :tsearch => { 
+                    	dictionary: 'english',
+                    	any_word: true,
+                    	prefix: true, 
+                    },
+                    :trigram => {
+                      :only => [:ts_name_vector]
+                    }
+                  }      
 
 
 
