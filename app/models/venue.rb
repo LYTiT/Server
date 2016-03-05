@@ -260,7 +260,7 @@ class Venue < ActiveRecord::Base
           end
         else #venue search
           search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-          result = Venue.search(vname, search_box, nil)
+          result = Venue.search(vname, search_box, nil).first
           #result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
         end
       end
