@@ -285,7 +285,7 @@ class Venue < ActiveRecord::Base
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
-    vname = scrub_venue_name(vname, vortex)
+    vname = scrub_venue_name(vname, nil, vortex)
     if vname != nil
       if inst_id_lookup != nil && inst_loc_id.to_i != 0
         result = inst_id_lookup.venue
@@ -311,7 +311,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def self.scrub_venue_name(raw_name, origin_vortex)
+  def self.scrub_venue_name(raw_name, city, origin_vortex)
     #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
     clean_name = raw_name
 
@@ -319,8 +319,9 @@ class Venue < ActiveRecord::Base
       clean_name = raw_name.partition("@").last.strip
     end
 
-    if (orgin_vortex.city != nil && origin_vortex.city != "") and clean_name.include?("#{origin_vortex.city}") == true
-      clean_name = clean_name.partition("#{origin_vortex.city}").first.strip
+    city =  city || orgin_vortex.city
+    if (city != nil && city != "") and clean_name.include?("#{city}") == true
+      clean_name = clean_name.partition("#{city}").first.strip
     end
 
     return clean_name 
@@ -548,7 +549,8 @@ class Venue < ActiveRecord::Base
     venue_foursquare_id = self.foursquare_id
 
     if venue_foursquare_id == nil
-      foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude)
+      scrubbed_name = Venue.scrub_venue_name(self.name, self.city, nil)
+      foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_name, self.latitude, self.longitude)
       if foursquare_venue != nil && foursquare_venue != "F2 ERROR"        
         venue_foursquare_id = foursquare_venue.id
         self.update_columns(foursquare_id: venue_foursquare_id)
@@ -877,7 +879,7 @@ class Venue < ActiveRecord::Base
 
       if lytit_venue_lookup == nil
         #scrub the name of such things like appended city. Foursquare does not handle such queries well.i.e F2 will not recognize 'Marquee New York' as 'Marquee'.
-        scrubbed_venue_name = Venue.scrub_venue_name(venue_name, origin_vortex)
+        scrubbed_venue_name = Venue.scrub_venue_name(venue_name, nil, origin_vortex)
         foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_venue_name, venue_lat, venue_long)
           #no corresponding venue found in Foursquare database
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"

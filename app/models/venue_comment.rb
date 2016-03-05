@@ -126,6 +126,9 @@ class VenueComment < ActiveRecord::Base
 					weekday = Date::ABBR_DAYNAMES[(Time.now+utc_offset.hours).wday-1]
 					if venue_open_hours[weekday] != nil
 						frames = venue_open_hours[weekday].values
+					else
+						is_live = false
+						return is_live
 					end
 				end
 
