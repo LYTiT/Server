@@ -319,7 +319,7 @@ class Venue < ActiveRecord::Base
       clean_name = raw_name.partition("@").last.strip
     end
 
-    if clean_name.include?("#{origin_vortex.city}") == true
+    if (orgin_vortex.city != nil && origin_vortex.city != "") and clean_name.include?("#{origin_vortex.city}") == true
       clean_name = clean_name.partition("#{origin_vortex.city}").first.strip
     end
 
