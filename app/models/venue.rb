@@ -324,7 +324,7 @@ class Venue < ActiveRecord::Base
     end
 
     if origin_vortex != nil
-      city = city || orgin_vortex.try(:city)
+      city = city || origin_vortex.try(:city)
     else
       city = city || nil
     end
