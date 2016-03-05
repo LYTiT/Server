@@ -50,13 +50,17 @@ class AddNewVectorColumnsToFeeds < ActiveRecord::Migration
       CREATE OR REPLACE FUNCTION fill_ts_meta_vector_for_feed() RETURNS trigger LANGUAGE plpgsql AS $$
       declare
       	feed_venue_data record;
+      	assgined_category record;
         
       begin
 
       	select string_agg(description, ' ') as added_note into feed_venue_data from feed_venues where feed_id = new.id;
+      	select string_agg(category, ' ') as category into assgined_category from feed_recommendations where feed_id = new.id and category is not null;
 
         new.ts_meta_vector :=
-          to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, ''));
+          to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, '')) ||
+          to_tsvector('pg_catalog.english', coalesce(assgined_category.category, ''));
+
 
         return new;
       end
