@@ -31,6 +31,7 @@ class Feed < ActiveRecord::Base
                   :against => {
                   	:ts_name_vector => 'A', 
                   	:ts_description_vector => 'B',
+                  	:ts_categories_vector => 'B',
                   	:ts_meta_vector => 'C'
                   	},
                   :using => {

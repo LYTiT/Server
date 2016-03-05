@@ -211,6 +211,29 @@ CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
 
 
 --
+-- Name: fill_ts_categories_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_categories_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+      declare
+      	assgined_category record;
+        
+      begin
+
+      	select string_agg(category, ' ') as category into assgined_category from feed_recommendations where feed_id = new.id and category is not null;
+
+        new.ts_categories_vector :=
+          to_tsvector('pg_catalog.english', coalesce(assgined_category.category, ''));
+
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_ts_description_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -241,11 +264,9 @@ CREATE FUNCTION fill_ts_meta_vector_for_feed() RETURNS trigger
       begin
 
       	select string_agg(description, ' ') as added_note into feed_venue_data from feed_venues where feed_id = new.id;
-      	select string_agg(category, ' ') as category into assgined_category from feed_recommendations where feed_id = new.id and category is not null;
 
         new.ts_meta_vector :=
-          to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, '')) ||
-          to_tsvector('pg_catalog.english', coalesce(assgined_category.category, ''));
+          to_tsvector('pg_catalog.english', coalesce(feed_venue_data.added_note, ''));
 
 
         return new;
@@ -951,6 +972,7 @@ CREATE TABLE feeds (
     latest_update_time timestamp without time zone,
     ts_name_vector tsvector,
     ts_description_vector tsvector,
+    ts_categories_vector tsvector,
     ts_meta_vector tsvector
 );
 
@@ -3145,6 +3167,13 @@ CREATE INDEX index_feeds_on_search_vector ON feeds USING gin (search_vector);
 
 
 --
+-- Name: index_feeds_on_ts_categories_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_ts_categories_vector ON feeds USING gin (ts_categories_vector);
+
+
+--
 -- Name: index_feeds_on_ts_description_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3604,6 +3633,13 @@ CREATE UNIQUE INDEX unique_schema_migrations ON schema_migrations USING btree (v
 --
 
 CREATE TRIGGER feed_search_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_search_vector_for_feed();
+
+
+--
+-- Name: feeds_ts_categories_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feeds_ts_categories_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_categories_vector_for_feed();
 
 
 --
