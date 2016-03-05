@@ -281,6 +281,10 @@ class Venue < ActiveRecord::Base
     return result 
   end
 
+  def Venue.fetch_new
+  end
+
+
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
@@ -319,7 +323,12 @@ class Venue < ActiveRecord::Base
       clean_name = raw_name.partition("@").last.strip
     end
 
-    city =  city || orgin_vortex.city
+    if origin_vortex != nil
+      city = city || orgin_vortex.try(:city)
+    else
+      city = city || nil
+    end
+
     if (city != nil && city != "") and clean_name.include?("#{city}") == true
       clean_name = clean_name.partition("#{city}").first.strip
     end

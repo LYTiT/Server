@@ -61,7 +61,7 @@ class Announcement < ActiveRecord::Base
 				:announcement_title => self.title,
 				:surprise_image => for_background_update
 			}
-			message = "#{self.news}"
+			message = "#{self.title}"
 			notification = self.store_new_announcement(payload, member, message)
 			payload[:notification_id] = notification.id
 
