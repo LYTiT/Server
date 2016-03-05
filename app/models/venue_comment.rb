@@ -115,16 +115,21 @@ class VenueComment < ActiveRecord::Base
 		end
 
 		if venue_open_hours.keys.first != "NA" && venue_open_hours != {}
+			utc_offset = venue.time_zone_offset || 0.0
 			weekday = Date::ABBR_DAYNAMES[Time.now.wday]
 			weekly_time_spans = venue_open_hours[weekday]
 			if weekly_time_spans != nil
-				frames = weekly_time_spans.values
-				utc_offset = venue.time_zone_offset || 0.0
-
+				frames = weekly_time_spans.values				
 				local_time_creation = time_wrapper.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
+				#if the post is coming in at 2:00 in the morning we have to look at the previous days business hours (applicable to nightlife establishments)
+				if (frames.last["close_time"] > 24.0 && frames.last["open_time"] > local_time_creation) and venue_open_hours[weekday-1] != nil
+					frames = venue_open_hours[weekday-1].values
+				end
+
 				is_live = false
 				for frame in frames
-					if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
+					if frame["close_time"] > 24.0 and ((frame["close_time"]-24.0) >= local_time_creation && local_time_creation+24.0 >= frame["open_time"])
+					#if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
 						is_live = true
 						break
 					else
