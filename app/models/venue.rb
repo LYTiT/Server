@@ -260,7 +260,8 @@ class Venue < ActiveRecord::Base
           end
         else #venue search
           search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-          result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
+          result = Venue.search(vname, search_box, nil)
+          #result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
         end
       end
     else
@@ -280,10 +281,6 @@ class Venue < ActiveRecord::Base
 
     return result 
   end
-
-  def Venue.fetch_new
-  end
-
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
     #Reference LYTiT Instagram Location Id Database
@@ -1080,6 +1077,7 @@ class Venue < ActiveRecord::Base
     if instagrams != nil
       return instagrams
     else
+      puts "No Instagrams"
       return []
     end
   end
