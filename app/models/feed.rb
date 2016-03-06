@@ -75,21 +75,7 @@ class Feed < ActiveRecord::Base
 		query.gsub!(/\d\s?/, "")			
 		search_results = Feed.robust_search(query).where("id NOT IN (#{direct_match_ids})").with_pg_search_rank.limit(10)
 		top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
-		return Feed.where("id in (#{direct_match_ids})").limit(5)+top_search_results
-=begin		
-		if (query =~ /\d/) != nil #we check if query contains a number in it. If it does we 
-			#have to do an explicit lookup since pg:search struggles with digits for some reason.			
-			direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) = ('#{query.downcase}')"
-			query.gsub!(/\d\s?/, "")			
-			search_results = Feed.robust_search(query).with_pg_search_rank.limit(10)
-			top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
-			return Feed.where("id in (#{direct_match_ids})").limit(5)+top_search_results
-		else
-			search_results = Feed.robust_search(query).with_pg_search_rank.limit(15)
-			top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
-			return top_search_results
-		end
-=end				
+		Feed.where("id in (#{direct_match_ids})").limit(5)+top_search_results		
 	end
 
 	def register_open(u_id)
