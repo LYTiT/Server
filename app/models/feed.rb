@@ -15,7 +15,7 @@ class Feed < ActiveRecord::Base
     		:description => 'B'
     	}
 =end
-  pg_search_scope :search, #name and/or associated meta data
+  pg_search_scope :basic_search, #name and/or associated meta data
     against: :search_vector,
     using: {
       tsearch: {
@@ -27,7 +27,7 @@ class Feed < ActiveRecord::Base
     }  
 
 
-  pg_search_scope :combined_search,
+  pg_search_scope :robust_search,
                   :against => {
                   	:ts_name_vector => 'A', 
                   	:ts_description_vector => 'B',
@@ -66,6 +66,21 @@ class Feed < ActiveRecord::Base
 	has_many :activities
 
 	belongs_to :user
+
+	def Feed.lookup(query)
+		if (query =~ /\d/) != nil #we check if query contains a number in it. If it does we 
+			#have to do an explicit lookup since pg:search struggles with digits for some reason.
+			direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) = #{query.downcase}"
+			Feed.robust_search(query).where("id NOT IN (#{direct_match_ids})")
+			search_results = Feed.robust_search(query).with_pg_search_rank
+			top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
+			return Feed.where("id in (#{direct_match_ids})").limit(5)+top_search_results.limit(10)
+		else
+			search_results = Feed.robust_search(query).with_pg_search_rank.limit(15)
+			top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
+			return top_search_results
+		end
+	end
 
 	def register_open(u_id)
 		feed_user = self.feed_users.where("user_id = ?", u_id).first
