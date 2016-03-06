@@ -13,7 +13,7 @@ class Like < ActiveRecord::Base
 
 	def new_like_notification
 		if activity.user_id != liker_id
-			self.delay.send_new_like_notification
+			self.delay(:priority => -1).send_new_like_notification
 		end
 	end
 
