@@ -293,7 +293,8 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.find_by_id(params[:user_id]) 
 		@venue_id = params[:venue_id]
 		@num_likes = @user.num_likes #HACK ALERT: This is placed into each List that is returned, need to return seperately
-		@feeds = @user.feeds.includes(:user, :feed_venues, :feed_users).order("name asc").page(params[:page]).per(20)
+
+		@feeds = Kaminari.paginate_array(user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id = ?", user.id).order("name asc")+user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id != ?", user.id).order("name asc")).page(params[:page]).per(20)
 	end
 
 
@@ -356,7 +357,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_nearby_venues
-		@venues = @user.surrounding_venues(params[:latitude], params[:longitude])
+
+		@venues = []#@user.surrounding_venues(params[:latitude], params[:longitude])
 		if @venues.first.is_a?(Hash) 
 			render 'nearby_venues_dirty.json.jbuilder'
 		else
