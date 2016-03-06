@@ -1476,8 +1476,8 @@ class Venue < ActiveRecord::Base
       location_query.chomp!(" OR ") 
       tag_query.chomp!(" OR ") 
 
-      location_tweets = client.search(location_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
-      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geo_code: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
+      location_tweets = client.search(location_query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
+      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
       new_cluster_tweets = []
       total_cluster_tweets = []
 
@@ -1532,9 +1532,9 @@ class Venue < ActiveRecord::Base
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       #begin
         if last_tweet_id != nil
-          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a rescue []
+          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a rescue []
         else
-          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geo_code: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a rescue []
+          new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a rescue []
         end
         self.update_columns(last_twitter_pull_time: Time.now)
 
