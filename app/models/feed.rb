@@ -41,7 +41,9 @@ class Feed < ActiveRecord::Base
                     	prefix: true, 
                     },
                     :trigram => {
-                      :only => [:ts_name_vector]
+                    	any_word: true,
+                    	prefix: true, 
+                    	:only => [:ts_name_vector]
                     }
                   }      
 
