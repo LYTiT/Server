@@ -294,7 +294,7 @@ class Api::V1::UsersController < ApiBaseController
 		@venue_id = params[:venue_id]
 		@num_likes = @user.num_likes #HACK ALERT: This is placed into each List that is returned, need to return seperately
 
-		@feeds = Kaminari.paginate_array(user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id = ?", user.id).order("LOWER(name) asc")+user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id != ?", user.id).order("LOWER(name) asc")).page(params[:page]).per(20)
+		@feeds = Kaminari.paginate_array(@user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id = ?", @user.id).order("LOWER(name) asc")+@user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id != ?", @user.id).order("LOWER(name) asc")).page(params[:page]).per(20)
 	end
 
 
