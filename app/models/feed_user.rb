@@ -15,7 +15,7 @@ class FeedUser < ActiveRecord::Base
 	end
 
 	def delayed_new_user_notification_and_activity
-		self.delay.new_user_notification_and_activity 
+		self.delay(:priority => -2).new_user_notification_and_activity 
 	end
 
 	def new_user_notification_and_activity

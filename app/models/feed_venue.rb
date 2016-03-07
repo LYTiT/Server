@@ -10,7 +10,7 @@ class FeedVenue < ActiveRecord::Base
 
 
 	def delayed_new_venue_notification_and_activity
-		self.delay.new_venue_notification_and_activity
+		self.delay(:priority => -3).new_venue_notification_and_activity
 	end
 
 	def new_venue_notification_and_activity

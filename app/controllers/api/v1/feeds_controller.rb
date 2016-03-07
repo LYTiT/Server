@@ -40,7 +40,7 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 
 			if update_activities == true
-				feed.delay.update_activity_feed_related_details
+				feed.delay(:priority => -1).update_activity_feed_related_details
 			end
 
 			render json: feed.as_json
@@ -75,7 +75,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_feed
 		feed_user = FeedUser.new(:feed_id => params[:feed_id], :user_id => params[:user_id], :creator => false)
 		if feed_user.save
-			Feed.delay.new_member_calibration(params[:feed_id], params[:user_id])
+			Feed.delay(:priority => -1).new_member_calibration(params[:feed_id], params[:user_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User could not join List'] } }, status: :unprocessable_entity
@@ -84,7 +84,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def leave_feed
 		feed_user = FeedUser.where("user_id = ? AND feed_id = ?", params[:user_id], params[:feed_id]).first
-		Feed.delay.lost_member_calibration(params[:feed_id], params[:user_id])
+		Feed.delay(:priority => -1).lost_member_calibration(params[:feed_id], params[:user_id])
 		if feed_user.delete
 			render json: { success: true }
 		else
@@ -109,7 +109,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:added_note])
 			if new_feed_venue.save
-				Feed.delay.added_venue_calibration(params[:id], params[:venue_id])
+				Feed.delay(:priority => -2).added_venue_calibration(params[:id], params[:venue_id])
 				render json: { success: true }
 			end
 		else
@@ -128,7 +128,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id], :description => params[:added_note])
 			if new_feed_venue.save
-				Feed.delay.added_venue_calibration(params[:feed_id], venue.id)
+				Feed.delay(:priority => -2).added_venue_calibration(params[:feed_id], venue.id)
 				render json: { id: venue.id }
 			end
 		else
@@ -148,7 +148,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
-		Feed.delay.removed_venue_calibration(params[:id])
+		Feed.delay(:priority => -2).removed_venue_calibration(params[:id])
 		feed_venue.destroy		
 		render json: { success: true }
 	end

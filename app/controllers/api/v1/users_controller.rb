@@ -90,7 +90,7 @@ class Api::V1::UsersController < ApiBaseController
 
 
 		if @user.save		
-			@user.delay.update_list_activity_user_details
+			@user.delay(:priority => -1).update_list_activity_user_details
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: "User cannot be updated with given parameters"} }, status: :unprocessable_entity
@@ -310,7 +310,7 @@ class Api::V1::UsersController < ApiBaseController
 	def get_aggregate_activity
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
-		@user.delay.update_user_feeds
+		@user.delay(:priority => -3).update_user_feeds
 	end
 
 	def get_list_feed
@@ -353,7 +353,7 @@ class Api::V1::UsersController < ApiBaseController
 		@recommendations = Rails.cache.fetch(cache_key, :expires_in => 24.hours) do
 			FeedRecommendation.for_user(@user, params[:latitude], params[:longitude]).limit(10)
 		end
-		@user.delay.update_user_feeds
+		@user.delay(:priority => -3).update_user_feeds
 	end
 
 	def get_nearby_venues

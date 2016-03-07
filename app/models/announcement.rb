@@ -33,7 +33,7 @@ class Announcement < ActiveRecord::Base
 		end
 
 		if audience.count > 0
-			self.delay.send_new_announcement(audience.to_a, nil, nil)
+			self.delay(:priority => -2).send_new_announcement(audience.to_a, nil, nil)
 		end
 	end
 
@@ -45,7 +45,7 @@ class Announcement < ActiveRecord::Base
 		end
 
 		if audience.count > 0
-			self.delay.send_new_announcement(audience.to_a, nil, update)
+			self.delay(:priority => -2).send_new_announcement(audience.to_a, nil, update)
 		end
 	end
 

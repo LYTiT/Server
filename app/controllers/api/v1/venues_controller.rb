@@ -290,7 +290,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
-		Venue.delay.instagram_content_pull(params[:latitude], params[:longitude])
+		Venue.delay(:priority => -2).instagram_content_pull(params[:latitude], params[:longitude]) #this is to handle places not near a vortex
 		cache_key = "lyt_map"
 		@view_cache_key = cache_key+"/view"
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do

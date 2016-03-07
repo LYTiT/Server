@@ -51,7 +51,7 @@ class Venue < ActiveRecord::Base
     using: {
       tsearch: {
         dictionary: 'english',
-        any_word: true,
+        #any_word: true,
         prefix: true,
         tsvector_column: 'meta_data_vector'
       }
