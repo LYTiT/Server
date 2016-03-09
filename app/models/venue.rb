@@ -52,7 +52,7 @@ class Venue < ActiveRecord::Base
       tsearch: {
         dictionary: 'english',
         #any_word: true,
-        prefix: true,
+        #prefix: true,
         tsvector_column: 'meta_data_vector'
       }
     }                
