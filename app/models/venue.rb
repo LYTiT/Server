@@ -1478,28 +1478,23 @@ class Venue < ActiveRecord::Base
 
       query = ""
       tags = MetaData.cluster_top_meta_tags(venue_ids).to_a      
-
       tags.each{|tag| query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}      
       query.chomp!(" OR ")
-      tag_query_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil      
 
+      tag_query_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil      
 
       if tag_query_tweets != nil && tag_query_tweets.count > 0
         tag_query_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
         Tweet.delay.bulk_conversion(tag_query_tweets, nil, cluster_lat, cluster_long, zoom_level, map_scale)
-      end
-
-      tag_query_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
-
-      #Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-      #    <= #{radius} AND associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
-      total_cluster_tweets = tag_query_tweets.flatten!.compact!
-
-      return Kaminari.paginate_array(total_cluster_tweets)
+        tag_query_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
+        total_cluster_tweets = tag_query_tweets.flatten!.compact!
+        return Kaminari.paginate_array(total_cluster_tweets)
+      else
+        total_cluster_tweets = Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
+        return total_cluster_tweets
+      end      
     else
       Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
-      #Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-      #    <= #{radius} AND associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
     end
   end
 
