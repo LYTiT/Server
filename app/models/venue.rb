@@ -1079,7 +1079,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
-    if instagrams != nil
+    if instagrams != nil and instagrams.first != nil
       return instagrams
     else
       puts "No Instagrams"

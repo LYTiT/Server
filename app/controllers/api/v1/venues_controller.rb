@@ -93,7 +93,7 @@ class Api::V1::VenuesController < ApiBaseController
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
 				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
 				if latest_venue_instagrams == nil
-						latest_venue_instagrams = @venue.update_comments
+					latest_venue_instagrams = @venue.update_comments
 					#in version 1.1.0 the next page is not pulled if there is less than 6 elements returned on the previous page.
 					#To resolve this we introduce this hack to backfill the last element enough time so that the size of the array is
 					#6. These dupes are then filtered out on the front.
