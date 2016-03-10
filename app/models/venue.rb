@@ -1004,7 +1004,8 @@ class Venue < ActiveRecord::Base
         #if little content is offered on the geo pull make a venue specific pull
         if venue_instagrams.count < 3
           puts ("making a venue get instagrams calls")
-          venue_instagrams.concat(self.get_instagrams(true))
+          venue_instagrams = self.get_instagrams(true)
+          #venue_instagrams.concat(self.get_instagrams(true))
           #venue_instagrams.flatten!
           #to preserve API calls if we make a call now a longer period must pass before making another pull of a venue's instagram comments
           self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
@@ -1055,22 +1056,24 @@ class Venue < ActiveRecord::Base
   end
 
   def instagram_location_ping(day_pull, hourly_pull)
-    instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first
-    instagram_access_token = instagram_access_token_obj.token rescue nil
-    if instagram_access_token != nil
-      instagram_access_token_obj.increment!(:num_used, 1) rescue nil
+    instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first    
+    if instagram_access_token_obj == nil
+      client = Instagram.client
+    else
+      instagram_access_token = instagram_access_token_obj.token
+      instagram_access_token_obj.increment!(:num_used, 1)
+      client = Instagram.client(:access_token => instagram_access_token)
     end
-    client = Instagram.client(:access_token => instagram_access_token)
 
     instagrams = []
-    if (day_pull == true || ((last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours) || self.last_instagram_post == nil)) && hourly_pull == false
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false).map(&:to_hash)
+    if (day_pull == true && hourly_pull == false) || (last_instagram_pull_time == nil or last_instagram_pull_time <= Time.now - 24.hours)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash)# rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false).map(&:to_hash)
       self.update_columns(last_instagram_pull_time: Time.now)
     elsif hourly_pull == true 
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i) rescue self.rescue_instagram_api_call(instagram_access_token, false, true)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_timestamp => (Time.now-1.hour).to_time.to_i)# rescue self.rescue_instagram_api_call(instagram_access_token, false, true)
       self.update_columns(last_instagram_pull_time: Time.now)
     else
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash)# rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
