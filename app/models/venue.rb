@@ -1533,7 +1533,12 @@ class Venue < ActiveRecord::Base
         config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
       end
 
-      radius = 0.25 #Venue.meters_to_miles(100)
+      if verified == true && (self.address == nil || self.address == "" || (self.address.downcase == self.name.downcase))
+        radius =  1
+      else
+        radius = 0.075 #Venue.meters_to_miles(100)
+      end
+
       query = ""
       top_tags = [self.tag_1, self.tag_2, self.tag_3, self.tag_4, self.tag_5].compact#self.meta_datas.order("relevance_score DESC LIMIT 5")
       if top_tags.count > 0
