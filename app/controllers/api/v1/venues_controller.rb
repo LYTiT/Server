@@ -93,11 +93,7 @@ class Api::V1::VenuesController < ApiBaseController
 				instagrams_cache_key = "venue/#{venue_ids.first}/latest_instagrams"
 				latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
 				if latest_venue_instagrams == nil
-					if (@venue.instagram_location_id == nil) || (@venue.last_instagram_pull_time == nil or @venue.last_instagram_pull_time <= Time.now - 24.hours)
-						latest_venue_instagrams = @venue.get_instagrams(true)
-					else
-						latest_venue_instagrams = @venue.get_instagrams(false)
-					end
+						latest_venue_instagrams = @venue.update_comments
 					#in version 1.1.0 the next page is not pulled if there is less than 6 elements returned on the previous page.
 					#To resolve this we introduce this hack to backfill the last element enough time so that the size of the array is
 					#6. These dupes are then filtered out on the front.
@@ -158,11 +154,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key)
 		if latest_venue_instagrams == nil
-			if (@venue.instagram_location_id == nil) || (@venue.last_instagram_pull_time == nil or @venue.last_instagram_pull_time <= Time.now - 24.hours)
-				latest_venue_instagrams = @venue.get_instagrams(true)
-			else
-				latest_venue_instagrams = @venue.get_instagrams(false)
-			end
+			latest_venue_instagrams = @venue.update_comments
 			#in version 1.1.0 the next page is not pulled if there is less than 6 elements returned on the previous page.
 			#To resolve this we introduce this hack to backfill the last element enough time so that the size of the array is
 			#6. These dupes are then filtered out on the front.
