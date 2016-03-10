@@ -1534,11 +1534,14 @@ class Venue < ActiveRecord::Base
       end
 
       radius = 0.25 #Venue.meters_to_miles(100)
-      #query = ""
-      #top_tags = self.meta_datas.order("relevance_score DESC LIMIT 5")
-      #top_tags.each{|tag| query+=(tag.meta+" OR ") if tag.meta != nil || tag.meta != ""}
-      #query+=(" OR "+self.name)
-      query = self.name
+      query = ""
+      top_tags = [self.tag_1, self.tag_2, self.tag_3, self.tag_4, self.tag_5].compact!#self.meta_datas.order("relevance_score DESC LIMIT 5")
+      if top_tags.count > 0
+        top_tags.each{|tag| query+=(tag+" OR ")}        
+        query+= self.name
+      else
+        query = self.name
+      end
 
       last_tweet_id = Tweet.where("venue_id = ?", self.id).order("twitter_id desc").first.try(:twitter_id)
       #begin
