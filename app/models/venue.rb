@@ -1487,7 +1487,7 @@ class Venue < ActiveRecord::Base
         tag_query_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
         Tweet.delay.bulk_conversion(tag_query_tweets, nil, cluster_lat, cluster_long, zoom_level, map_scale)
         tag_query_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
-        total_cluster_tweets = tag_query_tweets.flatten!.compact!
+        total_cluster_tweets = tag_query_tweets.flatten.compact
         return Kaminari.paginate_array(total_cluster_tweets)
       else
         total_cluster_tweets = Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
