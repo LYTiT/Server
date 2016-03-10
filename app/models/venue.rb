@@ -918,11 +918,13 @@ class Venue < ActiveRecord::Base
       if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(venue_name.downcase) == false)
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, foursquare_venue.name.downcase)
+        overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
+        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.7
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
-            jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, entry.name.downcase)
+            overlap = venue_name.downcase.split & entry.name.downcase.split
+            jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
             if jarow_winkler_proximity >= 0.7
               foursquare_venue = entry
             end
