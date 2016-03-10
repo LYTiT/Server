@@ -1480,12 +1480,13 @@ class Venue < ActiveRecord::Base
       tags = MetaData.cluster_top_meta_tags(venue_ids).to_a      
 
       tags.each{|tag| query+=(tag.first.last+" OR ") if tag.first.last != nil || tag.first.last != ""}      
-      tag_query_tweets = client.search(tag_query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil
-      tag_query.chomp!(" OR ")
+      query.chomp!(" OR ")
+      tag_query_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil      
 
 
-      if tag_query_tweets != nil
+      if tag_query_tweets != nil && tag_query_tweets.count > 0
         tag_query_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
+        Tweet.delay.bulk_conversion(tag_query_tweets, nil, cluster_lat, cluster_long, zoom_level, map_scale)
       end
 
       tag_query_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
@@ -1493,11 +1494,6 @@ class Venue < ActiveRecord::Base
       #Tweet.where("venue_id IN (?) OR (ACOS(least(1,COS(RADIANS(#{cluster_lat}))*COS(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{cluster_lat}))*SIN(RADIANS(#{cluster_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{cluster_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
       #    <= #{radius} AND associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", cluster_venue_ids, zoom_level).order("timestamp DESC").order("popularity_score DESC")
       total_cluster_tweets = tag_query_tweets.flatten!.compact!
-
-      if tag_query_tweets.length > 0
-        Tweet.delay.bulk_conversion(new_cluster_tweets, nil, cluster_lat, cluster_long, zoom_level, map_scale)
-        #new_cluster_tweets.each{|tweet| Tweet.delay.create!(:twitter_id => tweet.id, :tweet_text => tweet.text, :image_url_1 => Tweet.implicit_image_url_1(tweet), :image_url_2 => Tweet.implicit_image_url_2(tweet), :image_url_3 => Tweet.implicit_image_url_3(tweet), :author_id => tweet.user.id, :handle => tweet.user.screen_name, :author_name => tweet.user.name, :author_avatar => tweet.user.profile_image_url.to_s, :timestamp => tweet.created_at, :from_cluster => true, :associated_zoomlevel => zoom_level, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count))}
-      end
 
       return Kaminari.paginate_array(total_cluster_tweets)
     else
