@@ -1449,7 +1449,8 @@ class Venue < ActiveRecord::Base
 
       total_venue_tweets = []
       if new_venue_tweets != nil
-        total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}
+        #total_venue_tweets << new_venue_tweets.sort_by{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}
+        total_venue_tweets << new_venue_tweets.sort_by{|tweet_1, tweet_2| Tweet.sort(tweet_1, tweet_2)}
       end
       total_venue_tweets << Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
       total_venue_tweets.flatten!.compact!
@@ -1458,6 +1459,7 @@ class Venue < ActiveRecord::Base
       Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", id).order("timestamp DESC").order("popularity_score DESC")
     end
   end
+  #total_venue_tweets << new_venue_tweets.sort_by{|tweet_1, tweet_2| Venue.tweet_sorting(tweet_1, tweet_2)}
 
   def self.cluster_twitter_tweets(cluster_lat, cluster_long, zoom_level, map_scale, venue_ids)    
     cluster = ClusterTracker.check_existence(cluster_lat, cluster_long, zoom_level)
@@ -1484,7 +1486,8 @@ class Venue < ActiveRecord::Base
       tag_query_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{cluster_lat},#{cluster_long},#{radius}km").take(20).collect.to_a rescue nil      
 
       if tag_query_tweets != nil && tag_query_tweets.count > 0
-        tag_query_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
+        #tag_query_tweets.sort_by!{|tweet| Tweet.popularity_score_calculation(tweet.user.followers_count, tweet.retweet_count, tweet.favorite_count)}      
+        tag_query_tweets.sort_by{|tweet_1, tweet_2| Tweet.sort(tweet_1, tweet_2)}
         Tweet.delay.bulk_conversion(tag_query_tweets, nil, cluster_lat, cluster_long, zoom_level, map_scale)
         tag_query_tweets << Tweet.in_bounds(search_box).where("associated_zoomlevel >= ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", zoom_level).order("timestamp DESC").order("popularity_score DESC")
         total_cluster_tweets = tag_query_tweets.flatten.compact
