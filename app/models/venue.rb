@@ -29,7 +29,7 @@ class Venue < ActiveRecord::Base
         :tsvector_column => 'ts_name_city_vector',
       }  
     },
-    :ranked_by => ":trigram*5 +:tsearch*4"    
+    :ranked_by => ":trigram*5 +:tsearch*4 + 0.4*Cast(venues.verified as integer)"    
 
   pg_search_scope :name_country_search, #name and/or associated meta data
     :against => :ts_name_country_vector,
@@ -42,7 +42,7 @@ class Venue < ActiveRecord::Base
         :tsvector_column => 'ts_name_country_vector',
       }  
     },
-    :ranked_by => ":trigram*5 +:tsearch*4"   
+    :ranked_by => ":trigram*5 +:tsearch*4 + 0.4*Cast(venues.verified as integer)"   
 
 
 
@@ -212,12 +212,17 @@ class Venue < ActiveRecord::Base
       return nearby_results
     else
       puts "Far Away"      
-      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
+      if query_parts.count <= 2
+        rigor = 0.5
+      else
+        rigor = 0.75
+      end      
+      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", rigor).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
         return direct_search
       else
         geography = '%'+query_parts.last.capitalize+'%'        
-        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 3.0,
+        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 0.0,
           geography).with_pg_search_rank.limit(10).to_a
         if city_spec.count > 0
           return city_spec
