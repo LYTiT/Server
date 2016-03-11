@@ -5,8 +5,8 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
-        #:normalization => 2,
-        :dictionary => 'english',
+        :normalization => 1,
+        :dictionary => 'simple',
         :any_word => true,
         :prefix => true,
         :tsvector_column => 'ts_name_vector',
@@ -16,7 +16,7 @@ class Venue < ActiveRecord::Base
         :prefix => true,
       }  
     },
-    :ranked_by => "(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
+    :ranked_by => ":dmetaphone + :trigram*5 +:tsearch*4"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
   pg_search_scope :name_search_expd, #name and/or associated meta data
     :against => [:ts_name_vector_expd, :metaphone_name_vector_expd],
@@ -161,18 +161,57 @@ class Venue < ActiveRecord::Base
 
 
   #I. Search------------------------------------------------------->
+
+  def Venue.search(query, proximity_box, view_box)
+    if proximity_box != nil
+      sw_lat = proximity_box.sw.lat
+      sw_long = proximity_box.sw.lng
+      ne_lat = proximity_box.ne.lat
+      ne_long = proximity_box.ne.lng
+    elsif view_box != nil 
+      sw_lat = view_box[:sw_lat]
+      sw_long = view_box[:sw_long]
+      ne_lat = view_box[:sw_lat]
+      ne_long = view_box[:ne_long]
+    else
+      default_search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
+      sw_lat = default_search_box.sw.lat
+      sw_long = default_search_box.sw.lng
+      ne_lat = default_search_box.ne.lat
+      ne_long = default_search_box.ne.lng
+    end
+    
+    query_parts = query.split
+    nearby_results = Venue.name_search(query).where("pg_search.rank >= ? AND (latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?)", 2.0, 
+      sw_lat, ne_lat, sw_long, ne_long).with_pg_search_rank.limit(10).to_a
+
+    if nearby_results.count > 0
+      puts "Returning Nearby ONLY!"
+      return nearby_results
+    else
+      puts "Far Away"
+      if query_parts.count <= 3
+        return Venue.name_search(query).where("pg_search.rank >= ?", 2.0).with_pg_search_rank.limit(10)
+      else        
+        return Venue.name_search_expd(query).where("pg_search.rank >= ? AND city LIKE ?", 3.0,
+          '%'+query_parts.last.capitalize+'%').with_pg_search_rank.limit(10)
+      end
+    end
+  end
+
+=begin
   def Venue.search(query, proximity_box, view_box)
     query.gsub!(/[^0-9a-z ]/i, '')
     first_letter = query.first
     second_letter = query[1]
     #perculate results with matching first letters to front.
     if proximity_box == nil
-      raw_results = Venue.name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+      raw_results = Venue.name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     elsif view_box != nil
       raw_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", 
-        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     else
-      raw_results = Venue.in_bounds(proximity_box).name_search_expd(query).with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
+      raw_results = Venue.in_bounds(proximity_box).name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
     end
 
     first_letter_match_offset = raw_results.find_index{|venue| venue.name.gsub(/[^0-9a-z ]/i, '').size > 0 and (venue.name.gsub(/[^0-9a-z ]/i, '')[0].downcase == first_letter.downcase)}
@@ -194,41 +233,33 @@ class Venue < ActiveRecord::Base
       results = []
     end
 
-    if results != [] and results.first.pg_search_rank >= 0.1
-      top_results = results.select { |venue| venue.pg_search_rank >= 2.0 }
-      top_results.each{|x| p "#{x.name} (#{x.pg_search_rank})"}
-      return top_results
+    if results != [] #and results.first.pg_search_rank >= 0.1
+      #top_results = results.select { |venue| venue.pg_search_rank >= 2.0 }
+      results.each{|x| p "#{x.name} (#{x.pg_search_rank})"}
+      return results
     else
       return []
     end
 
   end
+=end      
 
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
     if query.first =="/"  
       query[0] = ""
       meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
     else
-      first_letter = query.first
       if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
         central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
-        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 10 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
-            
+        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
             search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
             Venue.search(query, search_box, nil)
-            #proximity_results = Venue.in_bounds(search_box).search(query).limit(50)
-            #sorted_proximity_results = (proximity_results.rotate(offset) if offset = proximity_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
         else
             outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
             Venue.search(query, nil, outer_region)
-
-            #distant_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(50)
-            #in_view_results = (distant_results.rotate(offset) if offset = distant_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
-            #Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).search(query).limit(10)
         end
       else
         Venue.search(query, nil, nil)
-        #sorted_results = (raw_results.rotate(offset) if offset = raw_results.find_index{|venue| venue.name.size > 0 and venue.name[0].downcase == first_letter.downcase})[0..9] rescue nil
       end
     end
   end
