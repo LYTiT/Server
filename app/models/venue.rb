@@ -5,7 +5,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
-        :normalization => 1,
+        #:normalization => 1,
         :dictionary => 'simple',
         #:any_word => true,
         :prefix => true,
