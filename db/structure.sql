@@ -275,6 +275,42 @@ CREATE FUNCTION fill_ts_meta_vector_for_feed() RETURNS trigger
 
 
 --
+-- Name: fill_ts_name_city_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_name_city_vector_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+      begin
+         
+        new.ts_name_city_vector :=
+        	to_tsvector('pg_catalog.english', coalesce(new.name||new.city, ''));
+
+        return new;
+      end
+      $$;
+
+
+--
+-- Name: fill_ts_name_country_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_name_country_vector_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+      begin
+         
+        new.ts_name_country_vector :=
+        	to_tsvector('pg_catalog.english', coalesce(new.name||new.country, ''));
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_ts_name_vector_expd_for_venue(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2137,7 +2173,9 @@ CREATE TABLE venues (
     foursquare_id character varying(255),
     ts_name_vector_expd tsvector,
     metaphone_name_vector_expd tsvector,
-    ts_name_vector tsvector
+    ts_name_vector tsvector,
+    ts_name_city_vector tsvector,
+    ts_name_country_vector tsvector
 );
 
 
@@ -3601,6 +3639,20 @@ CREATE INDEX index_venues_on_popularity_rank ON venues USING btree (popularity_r
 
 
 --
+-- Name: index_venues_on_ts_name_city_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_ts_name_city_vector ON venues USING gin (ts_name_city_vector);
+
+
+--
+-- Name: index_venues_on_ts_name_country_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_ts_name_country_vector ON venues USING gin (ts_name_country_vector);
+
+
+--
 -- Name: index_venues_on_ts_name_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3689,6 +3741,20 @@ CREATE TRIGGER venues_metaphone_expd_trigger BEFORE INSERT OR UPDATE ON venues F
 --
 
 CREATE TRIGGER venues_metaphone_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_metaphone_name_vector_for_venue();
+
+
+--
+-- Name: venues_ts_name_city_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_ts_name_city_vector_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_city_vector_for_venue();
+
+
+--
+-- Name: venues_ts_name_country_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_ts_name_country_vector_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_country_vector_for_venue();
 
 
 --
@@ -4396,4 +4462,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160305202505');
 INSERT INTO schema_migrations (version) VALUES ('20160311062925');
 
 INSERT INTO schema_migrations (version) VALUES ('20160311063220');
+
+INSERT INTO schema_migrations (version) VALUES ('20160311194214');
 

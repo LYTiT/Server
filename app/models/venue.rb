@@ -18,6 +18,37 @@ class Venue < ActiveRecord::Base
     },
     :ranked_by => "0.1*:dmetaphone + 0.5*:trigram + :tsearch + 0.4*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
+  pg_search_scope :name_city_search, #name and/or associated meta data
+    :against => :ts_name_city_vector,
+    :using => {
+      :tsearch => {
+        :normalization => 1,
+        :dictionary => 'simple',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_city_vector',
+      }  
+    },
+    :ranked_by => ":trigram*5 +:tsearch*4"    
+
+  pg_search_scope :name_country_search, #name and/or associated meta data
+    :against => :ts_name_country_vector,
+    :using => {
+      :tsearch => {
+        :normalization => 1,
+        :dictionary => 'simple',
+        :any_word => true,
+        :prefix => true,
+        :tsvector_column => 'ts_name_country_vector',
+      }  
+    },
+    :ranked_by => ":trigram*5 +:tsearch*4"   
+
+
+
+
+
+
   pg_search_scope :name_search_expd, #name and/or associated meta data
     :against => [:ts_name_vector_expd, :metaphone_name_vector_expd],
     :using => {
@@ -33,8 +64,8 @@ class Venue < ActiveRecord::Base
         #:prefix => true,
       }  
     },
-    :ranked_by => ":dmetaphone + :trigram*5 +:tsearch*4"
-    
+    :ranked_by => ":dmetaphone + :trigram*5 +:tsearch*4" 
+
 
   pg_search_scope :phonetic_search,
               :against => "metaphone_name_vector",
@@ -180,13 +211,21 @@ class Venue < ActiveRecord::Base
       puts "Returning Nearby ONLY!"
       return nearby_results
     else
-      puts "Far Away"
-      if query_parts.count <= 3
-        return Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10)
+      puts "Far Away"      
+      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
+      if direct_search.count > 0    
+        return direct_search
       else
         geography = '%'+query_parts.last.capitalize+'%'        
-        return Venue.name_search_expd(query).where("pg_search.rank >= ? AND (city LIKE ? OR country LIKE ?)", 3.0,
-          geography, geography).with_pg_search_rank.limit(10)
+        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 3.0,
+          geography).with_pg_search_rank.limit(10).to_a
+        if city_spec.count > 0
+          return city_spec
+        else
+          #country_spec
+          return  Venue.name_country_search(query).where("pg_search.rank >= ? AND country LIKE ?", 3.0,
+            geography).with_pg_search_rank.limit(10).to_a
+        end
       end
     end
   end
