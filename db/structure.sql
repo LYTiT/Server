@@ -329,7 +329,7 @@ CREATE FUNCTION fill_ts_name_vector_for_venue() RETURNS trigger
         
         
         new.ts_name_vector :=
-        	to_tsvector('pg_catalog.english', coalesce(new.name||new.city, ''));
+        	to_tsvector('pg_catalog.english', coalesce(new.name, ''));
 
         return new;
       end
@@ -2131,13 +2131,13 @@ CREATE TABLE venues (
     tweet_handle character varying(255),
     venue_comment_instagram_id character varying(255),
     venue_comment_instagram_user_id bigint,
-    ts_name_vector tsvector,
     metaphone_name_vector tsvector,
     open_hours json DEFAULT '{}'::json NOT NULL,
     instagram_vortex_id integer,
     foursquare_id character varying(255),
     ts_name_vector_expd tsvector,
-    metaphone_name_vector_expd tsvector
+    metaphone_name_vector_expd tsvector,
+    ts_name_vector tsvector
 );
 
 
@@ -4392,4 +4392,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160302081315');
 INSERT INTO schema_migrations (version) VALUES ('20160304054607');
 
 INSERT INTO schema_migrations (version) VALUES ('20160305202505');
+
+INSERT INTO schema_migrations (version) VALUES ('20160311062925');
+
+INSERT INTO schema_migrations (version) VALUES ('20160311063220');
 
