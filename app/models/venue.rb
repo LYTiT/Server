@@ -212,22 +212,30 @@ class Venue < ActiveRecord::Base
       return nearby_results
     else
       puts "Far Away"      
-      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
+      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.4).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
         return direct_search
       else
-        geography = '%'+query_parts.last.capitalize+'%'        
-        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 0.5,
+        geography = '%'+query_parts.last.downcase+'%'        
+        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 2.0,
           geography).with_pg_search_rank.limit(10).to_a
         if city_spec.count > 0
           return city_spec
         else
           #country_spec
-          return  Venue.name_country_search(query).where("pg_search.rank >= ? AND country LIKE ?", 3.0,
+          return  Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 2.0,
             geography).with_pg_search_rank.limit(10).to_a
         end
       end
     end
+  end
+
+  def Venue.database_cleanup
+    #exclude
+    feed_venue_ids = "SELECT venue_id FROM feed_venues"
+    InstagramLocationIdLookup.all.joins(:venue).where("latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND address is NULL or city = ?", Time.now - 1.weeks, "").delete_all
+    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND address is NULL OR city = ?", Time.now - 1.weeks, "").delete_all
+
   end
 
 =begin
