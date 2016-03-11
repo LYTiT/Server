@@ -13,11 +13,8 @@ class Venue < ActiveRecord::Base
       },
       :dmetaphone => {
         :tsvector_column => "metaphone_name_vector",
-        :prefix => true,
-      },
-      :trigram => {
-        :threshold => 0.5,
-      }  
+        #:prefix => true,
+      },  
     },
     :ranked_by => "0.1*:dmetaphone + 0.5*:trigram + :tsearch + 0.4*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
