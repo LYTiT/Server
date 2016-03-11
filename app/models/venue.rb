@@ -163,27 +163,16 @@ class Venue < ActiveRecord::Base
   #I. Search------------------------------------------------------->
 
   def Venue.search(query, proximity_box, view_box)
-    if proximity_box != nil
-      sw_lat = proximity_box.sw.lat
-      sw_long = proximity_box.sw.lng
-      ne_lat = proximity_box.ne.lat
-      ne_long = proximity_box.ne.lng
+    if proximity_box != nil      
+      search_box = proximity_box
     elsif view_box != nil 
-      sw_lat = view_box[:sw_lat]
-      sw_long = view_box[:sw_long]
-      ne_lat = view_box[:sw_lat]
-      ne_long = view_box[:ne_long]
+      search_box = Geokit::Bounds.new([view_box[:sw_lat],view_box[:sw_long]], [view_box[:ne_lat],view_box[:ne_long]])
     else
-      default_search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
-      sw_lat = default_search_box.sw.lat
-      sw_long = default_search_box.sw.lng
-      ne_lat = default_search_box.ne.lat
-      ne_long = default_search_box.ne.lng
+      search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
     end
     
     query_parts = query.split
-    nearby_results = Venue.name_search(query).where("pg_search.rank >= ? AND (latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?)", 2.0, 
-      sw_lat, ne_lat, sw_long, ne_long).with_pg_search_rank.limit(10).to_a
+    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 2.0).with_pg_search_rank.limit(10).to_a
 
     if nearby_results.count > 0
       puts "Returning Nearby ONLY!"
