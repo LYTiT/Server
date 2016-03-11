@@ -193,7 +193,7 @@ class Venue < ActiveRecord::Base
 
   #I. Search------------------------------------------------------->
 
-  def Venue.search(query, proximity_box, view_box)
+  def Venue.search(query, proximity_box, view_box)    
     if proximity_box != nil      
       search_box = proximity_box
     elsif view_box != nil 
@@ -209,19 +209,25 @@ class Venue < ActiveRecord::Base
 
     if nearby_results.count > 0
       puts "Returning Nearby ONLY!"
+      Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
       return nearby_results
-    else
-      puts "Far Away"      
+    else            
       direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
+        puts "Direct Lookup Result"
+        Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
         return direct_search
       else
         geography = '%'+query_parts.last.downcase+'%'        
         city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 2.0,
           geography).with_pg_search_rank.limit(10).to_a
         if city_spec.count > 0
+          puts "City Lookup Result"
+          Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
           return city_spec
         else
+          puts "Country Lookup Result"
+          Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
           #country_spec
           return  Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 2.0,
             geography).with_pg_search_rank.limit(10).to_a
