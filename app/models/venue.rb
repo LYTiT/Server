@@ -167,7 +167,7 @@ class Venue < ActiveRecord::Base
       search_box = proximity_box
     elsif view_box != nil 
     sw_point = Geokit::LatLng.new(view_box[:sw_lat], view_box[:sw_long])
-    ne_point =Geokit::LatLng.new(view_box[:ne_lat], view_box[:ne_lat]))
+    ne_point =Geokit::LatLng.new(view_box[:ne_lat], view_box[:ne_lat])
     search_box = Geokit::Bounds.new(sw_point, ne_point)
     else
       search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
