@@ -205,7 +205,7 @@ class Venue < ActiveRecord::Base
     end
     
     query_parts = query.split
-    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR name LIKE ?", 0.5, '%'+query+'%').with_pg_search_rank.limit(10).to_a
+    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR LOWER(name) LIKE ?", 0.5, '%'+query.downcase+'%').with_pg_search_rank.limit(10).to_a
 
     if nearby_results.count > 0
       puts "Returning Nearby ONLY!"
