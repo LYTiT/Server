@@ -7,7 +7,7 @@ class Venue < ActiveRecord::Base
       :tsearch => {
         :normalization => 1,
         :dictionary => 'simple',
-        :any_word => true,
+        #:any_word => true,
         :prefix => true,
         :tsvector_column => 'ts_name_vector',
       },
