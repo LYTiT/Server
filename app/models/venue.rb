@@ -5,7 +5,7 @@ class Venue < ActiveRecord::Base
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
       :tsearch => {
-        :normalization => 1,
+        :normalization => 2,
         :dictionary => 'simple',
         #:any_word => true,
         :prefix => true,
@@ -16,7 +16,7 @@ class Venue < ActiveRecord::Base
         #:prefix => true,
       },  
     },
-    :ranked_by => "0.1*:dmetaphone + 0.5*:trigram + :tsearch + 0.4*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
+    :ranked_by => "0.1*:dmetaphone + 0.5*:trigram + :tsearch + 0.3*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
   pg_search_scope :name_city_search, #name and/or associated meta data
     :against => :ts_name_city_vector,
