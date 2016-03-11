@@ -166,9 +166,9 @@ class Venue < ActiveRecord::Base
     if proximity_box != nil      
       search_box = proximity_box
     elsif view_box != nil 
-    sw_point = Geokit::LatLng.new(view_box[:sw_lat], view_box[:sw_long])
-    ne_point =Geokit::LatLng.new(view_box[:ne_lat], view_box[:ne_lat])
-    search_box = Geokit::Bounds.new(sw_point, ne_point)
+      sw_point = Geokit::LatLng.new(view_box[:sw_lat], view_box[:sw_long])
+      ne_point =Geokit::LatLng.new(view_box[:ne_lat], view_box[:ne_lat])
+      search_box = Geokit::Bounds.new(sw_point, ne_point)
     else
       search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
     end
@@ -182,7 +182,7 @@ class Venue < ActiveRecord::Base
     else
       puts "Far Away"
       if query_parts.count <= 3
-        return Venue.name_search(query).where("pg_search.rank >= ?", 2.0).with_pg_search_rank.limit(10)
+        return Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10)
       else
         geography = '%'+query_parts.last.capitalize+'%'        
         return Venue.name_search_expd(query).where("pg_search.rank >= ? AND (city LIKE ? OR country LIKE ?)", 3.0,
