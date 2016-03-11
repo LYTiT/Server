@@ -212,17 +212,12 @@ class Venue < ActiveRecord::Base
       return nearby_results
     else
       puts "Far Away"      
-      if query_parts.count <= 2
-        rigor = 0.5
-      else
-        rigor = 0.75
-      end      
-      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", rigor).with_pg_search_rank.limit(10).to_a
+      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
         return direct_search
       else
         geography = '%'+query_parts.last.capitalize+'%'        
-        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 0.0,
+        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND city LIKE ?", 0.5,
           geography).with_pg_search_rank.limit(10).to_a
         if city_spec.count > 0
           return city_spec
