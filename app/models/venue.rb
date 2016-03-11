@@ -181,9 +181,10 @@ class Venue < ActiveRecord::Base
       puts "Far Away"
       if query_parts.count <= 3
         return Venue.name_search(query).where("pg_search.rank >= ?", 2.0).with_pg_search_rank.limit(10)
-      else        
-        return Venue.name_search_expd(query).where("pg_search.rank >= ? AND city LIKE ?", 3.0,
-          '%'+query_parts.last.capitalize+'%').with_pg_search_rank.limit(10)
+      else
+        geography = '%'+query_parts.last.capitalize+'%'        
+        return Venue.name_search_expd(query).where("pg_search.rank >= ? AND (city LIKE ? OR country LIKE ?)", 3.0,
+          geography, geography).with_pg_search_rank.limit(10)
       end
     end
   end
