@@ -208,7 +208,7 @@ class Venue < ActiveRecord::Base
     query_parts = query.split
     nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR LOWER(name) LIKE ?", 0.5, '%'+query.downcase+'%').with_pg_search_rank.limit(10).to_a
 
-    if nearby_results.count > 0
+    if nearby_results.count > 0ƒ
       puts "Returning Nearby ONLY!"
       nearby_results.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
       return nearby_results
@@ -369,7 +369,8 @@ class Venue < ActiveRecord::Base
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
     vname = scrub_venue_name(vname, nil, vortex)
-    if vname != nil
+
+    if vname != nil && vname != ""
       if inst_id_lookup != nil && inst_loc_id.to_i != 0
         result = inst_id_lookup.venue
       else
