@@ -292,22 +292,26 @@ class Venue < ActiveRecord::Base
 =end      
 
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
-    if query.first =="/"  
-      query[0] = ""
-      meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
-    else
-      if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
-        central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
-        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
-            search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
-            Venue.search(query, search_box, nil)
-        else
-            outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
-            Venue.search(query, nil, outer_region)
-        end
+    if query != nil && query != ""
+      if query.first =="/"  
+        query[0] = ""
+        meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
       else
-        Venue.search(query, nil, nil)
+        if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
+          central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
+          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
+              search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
+              Venue.search(query, search_box, nil)
+          else
+              outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
+              Venue.search(query, nil, outer_region)
+          end
+        else
+          Venue.search(query, nil, nil)
+        end
       end
+    else
+      []
     end
   end
 
@@ -997,7 +1001,7 @@ class Venue < ActiveRecord::Base
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
-        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, foursquare_venue.name.downcase)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.7
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
