@@ -208,7 +208,7 @@ class Venue < ActiveRecord::Base
     query_parts = query.split
     nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR LOWER(name) LIKE ?", 0.5, '%'+query.downcase+'%').with_pg_search_rank.limit(10).to_a
 
-    if nearby_results.count > 0ƒ
+    if nearby_results.count > 0
       puts "Returning Nearby ONLY!"
       nearby_results.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
       return nearby_results
@@ -393,6 +393,12 @@ class Venue < ActiveRecord::Base
     else
       return nil
     end
+  end
+
+  def clear_stop_words
+    stop_words = ["the", "a", "cafe", "café", "restaurant", "club", "bar", "downtown", "updtown", "midtown", "park", "national", "of", "university", ",", "."]
+    instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub("café", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("bar", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub("of", "").gsub("university", "").gsub(",", "").gsub(" ", "")
+    
   end
 
   def self.scrub_venue_name(raw_name, city, origin_vortex)
