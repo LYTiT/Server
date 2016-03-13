@@ -239,10 +239,20 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.database_cleanup
-    #exclude
+    #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
+    #database size and improve searching/lookup performance. 
+    #Keep venues that fit following criteria:
+    #1. Venue is in a List
+    #2. Venue has been Bookmarked
+    #3. Venue is an Apple verified venue (address != nil, city != nil)
+    #4. Venue CURRENTLY has a color rating
+    #5. Venue has been posted at in the past 3 days
+    #5. 
+
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
-    InstagramLocationIdLookup.all.joins(:venue).where("latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND address is NULL or city = ?", Time.now - 1.weeks, "").delete_all
+    InstagramLocationIdLookup.all.joins(:venue).where("latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND address is NULL or city = ?", Time.now - 3.days, "").delete_all
     Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND address is NULL OR city = ?", Time.now - 1.weeks, "").delete_all
+    VenueComment.all
 
   end
 

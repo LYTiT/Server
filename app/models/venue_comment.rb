@@ -107,11 +107,11 @@ class VenueComment < ActiveRecord::Base
 	#Checks if the instagram was created during open hours of venue. If not, then obviously not live.
 	def VenueComment.post_is_live?(origin_venue, post_created_at)
 		venue = origin_venue
-		if self.venue == nil
+		if venue == nil
 			return false
 		end
 
-		venue_open_hours = self.venue.open_hours
+		venue_open_hours = venue.open_hours
 		if venue_open_hours == {}
 			venue_open_hours = venue.set_open_hours		
 		end
