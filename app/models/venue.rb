@@ -1318,36 +1318,36 @@ class Venue < ActiveRecord::Base
 
   def update_comments
     if self.is_open?
-        instagram_refresh_rate = 10 #minutes
-        instagram_venue_id_ping_rate = 1 #days      
+      instagram_refresh_rate = 10 #minutes
+      instagram_venue_id_ping_rate = 1 #days      
 
-        if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
-          #try to establish instagram location id if previous attempts failed every 1 day
-          if self.instagram_location_id == 0 
-            if self.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= self.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= self.last_instagram_pull_time))
-              new_instagrams = self.set_instagram_location_id(100)
-              self.update_columns(last_instagram_pull_time: Time.now)
-            else
-              new_instagrams = []
-            end
-          elsif self.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= self.last_instagram_pull_time)
-              new_instagrams = self.set_instagram_location_id(100)
-              self.update_columns(last_instagram_pull_time: Time.now)
+      if self.instagram_location_id != nil && self.last_instagram_pull_time != nil
+        #try to establish instagram location id if previous attempts failed every 1 day
+        if self.instagram_location_id == 0 
+          if self.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= self.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= self.last_instagram_pull_time))
+            new_instagrams = self.set_instagram_location_id(100)
+            self.update_columns(last_instagram_pull_time: Time.now)
           else
-            if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
-              new_instagrams = self.get_instagrams(false)
-            else
-              new_instagrams = []
-            end
+            new_instagrams = []
           end
+        elsif self.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= self.last_instagram_pull_time)
+            new_instagrams = self.set_instagram_location_id(100)
+            self.update_columns(last_instagram_pull_time: Time.now)
         else
-          new_instagrams = self.set_instagram_location_id(100)
-          self.update_columns(last_instagram_pull_time: Time.now)
+          if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
+            new_instagrams = self.get_instagrams(false)
+          else
+            new_instagrams = []
+          end
         end
-        new_instagrams
       else
-        []
+        new_instagrams = self.set_instagram_location_id(100)
+        self.update_columns(last_instagram_pull_time: Time.now)
       end
+      new_instagrams
+    else
+      []
+    end
   end
 
 
