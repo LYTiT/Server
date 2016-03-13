@@ -104,6 +104,56 @@ class VenueComment < ActiveRecord::Base
 		update_columns(adj_views: (adjusted_view + previous).round(4))
 	end
 
+	#Checks if the instagram was created during open hours of venue. If not, then obviously not live.
+	def VenueComment.post_is_live?(origin_venue, post_created_at)
+		venue = origin_venue
+		if self.venue == nil
+			return false
+		end
+
+		venue_open_hours = self.venue.open_hours
+		if venue_open_hours == {}
+			venue_open_hours = venue.set_open_hours		
+		end
+
+		if venue_open_hours.keys.first != "NA" && venue_open_hours != {}
+			utc_offset = venue.time_zone_offset || 0.0
+			weekday = Date::ABBR_DAYNAMES[(Time.now+utc_offset.hours).wday]
+			weekly_time_spans = venue_open_hours[weekday]
+			if weekly_time_spans != nil
+				frames = weekly_time_spans.values				
+				local_time_creation = post_created_at.hour.to_f+time_wrapper.min.to_f/100.0+utc_offset
+				#if the post is coming in at 2:00 in the morning we have to look at the previous days business hours (applicable to nightlife establishments)
+				if (frames.last["close_time"] > 24.0 && frames.last["open_time"] > local_time_creation)
+					weekday = Date::ABBR_DAYNAMES[(Time.now+utc_offset.hours).wday-1]
+					if venue_open_hours[weekday] != nil
+						frames = venue_open_hours[weekday].values
+					else
+						is_live = false
+						return is_live
+					end
+				end
+
+				is_live = false
+				for frame in frames
+					if frame["close_time"] > 24.0 and ((frame["close_time"]-24.0) >= local_time_creation && local_time_creation+24.0 >= frame["open_time"])
+					#if frame["close_time"] > 24.0 and (local_time_creation <= 12.0 and local_time_creation+24.0 >= frame["open_time"])
+						is_live = true
+						break
+					else
+						if frame["open_time"] <= local_time_creation && frame["close_time"] >= local_time_creation
+							is_live = true
+							break
+						end
+					end
+				end
+			end
+		else
+			is_live = true 
+		end
+		return is_live		
+	end
+
 	def is_live?
 		if self.venue == nil
 			return false
@@ -230,15 +280,16 @@ class VenueComment < ActiveRecord::Base
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex, last_of_batch)
 		#begin
-			#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis
-			
+		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis		
+		if origin_venue == nil
+			origin_venue = Venue.validate_venue(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"], vortex)
 			if origin_venue == nil
-				origin_venue = Venue.validate_venue(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"], vortex)
-				if origin_venue == nil
-					return nil
-				end
+				return nil
 			end
+		end
+		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
 
+		if VenueComment.post_is_live?(origin_venue, created_time)
 			#Instagram sometimes returns posts outside the vortex radius, we filter them out
 			if vortex != nil && origin_venue != nil
 				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
@@ -254,7 +305,6 @@ class VenueComment < ActiveRecord::Base
 				end
 			end
 
-			created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
 			instagram_id = instagram_hash["id"]
 			username = instagram_hash["user"]["username"]
 			image_1 = instagram_hash["images"]["thumbnail"]["url"]
@@ -302,13 +352,11 @@ class VenueComment < ActiveRecord::Base
 				origin_venue.feeds.update_all("num_moments = num_moments+1")
 
 				#Venue LYTiT ratings related methods
-				if vc.is_live? == true
-					vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
-													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
-					origin_venue.update_r_up_votes(created_time)
-					origin_venue.delay.update_rating()
-					origin_venue.update_columns(latest_rating_update_time: Time.now)											
-				end
+				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+												:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
+				origin_venue.update_r_up_votes(created_time)
+				origin_venue.delay.update_rating()
+				origin_venue.update_columns(latest_rating_update_time: Time.now)											
 
 				sphere = LytSphere.create_new_sphere(origin_venue)
 				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
@@ -320,9 +368,10 @@ class VenueComment < ActiveRecord::Base
 			else
 				nil
 			end
-		#rescue
-		#	puts "Failed to convert instagram to Venue Comment"
-		#end
+			#rescue
+			#	puts "Failed to convert instagram to Venue Comment"
+			#end
+		end
 	end
 
 	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)

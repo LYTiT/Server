@@ -364,64 +364,6 @@ class Venue < ActiveRecord::Base
     return result 
   end
 
-  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
-    #Reference LYTiT Instagram Location Id Database
-    inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
-
-    vname = scrub_venue_name(vname, nil, vortex)
-
-    if vname != nil && vname != ""
-      if inst_id_lookup != nil && inst_loc_id.to_i != 0
-        result = inst_id_lookup.venue
-      else
-        #Check if there is a direct name match in proximity
-        center_point = [lat, long]
-        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.3, :units => :kms)
-
-        name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
-        if name_lookup == nil
-          name_lookup = Venue.search(vname, search_box, nil).first
-        end
-
-        if name_lookup != nil
-          result = name_lookup
-        else
-          result = nil
-        end
-      end
-      return result
-    else
-      return nil
-    end
-  end
-
-  def clear_stop_words
-    stop_words = ["the", "a", "cafe", "café", "restaurant", "club", "bar", "downtown", "updtown", "midtown", "park", "national", "of", "university", ",", "."]
-    instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub("café", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("bar", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub("of", "").gsub("university", "").gsub(",", "").gsub(" ", "")
-    
-  end
-
-  def self.scrub_venue_name(raw_name, city, origin_vortex)
-    #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
-    clean_name = raw_name
-
-    if raw_name.include?("@") == true
-      clean_name = raw_name.partition("@").last.strip
-    end
-
-    if origin_vortex != nil
-      city = city || origin_vortex.try(:city)
-    else
-      city = city || nil
-    end
-
-    if (city != nil && city != "") and clean_name.include?("#{city}") == true
-      clean_name = clean_name.partition("#{city}").first.strip
-    end
-
-    return clean_name 
-  end
-
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id, origin_vortex)
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
@@ -643,9 +585,8 @@ class Venue < ActiveRecord::Base
   def set_open_hours
     venue_foursquare_id = self.foursquare_id
 
-    if venue_foursquare_id == nil
-      scrubbed_name = Venue.scrub_venue_name(self.name, self.city, nil)
-      foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_name, self.latitude, self.longitude)
+    if venue_foursquare_id == nil      
+      foursquare_venue = Venue.foursquare_venue_lookup(name, self.latitude, self.longitude)
       if foursquare_venue != nil && foursquare_venue != "F2 ERROR"        
         venue_foursquare_id = foursquare_venue.id
         self.update_columns(foursquare_id: venue_foursquare_id)
@@ -948,7 +889,7 @@ class Venue < ActiveRecord::Base
       result = false
     elsif (vname.downcase.include? "www.") || (vname.downcase.include? ".com") || (vname.downcase.include? "http://") || (vname.downcase.include? "https://")
       result = false
-    elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";")
+    elsif (vname.downcase.include? "|") || (vname.downcase.include? "#") || (vname.downcase.include? ";") || (vname.downcase.include? "/")
       result = false
     elsif (vname.downcase.include? "snapchat") || (vname.downcase.include? "whatsapp") || (vname.downcase.include? "viber") || (vname.downcase.include? "sms")
       result = false
@@ -964,25 +905,49 @@ class Venue < ActiveRecord::Base
     return result
   end
 
+  def Venue.scrub_venue_name(raw_name, city)
+    #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
+    clean_name = raw_name
+
+    if raw_name.include?("@") == true
+      clean_name = raw_name.partition("@").last.strip
+    end
+
+    if (city != nil && city != "") and clean_name.downcase.include?("#{city.downcase}") == true
+      clean_name = clean_name.partition("#{city}").first.strip
+    end
+
+    return clean_name 
+  end
+
+  def Venue.clear_stop_words(venue_name)
+    stop_words = ["the", "a", "cafe", "café", "restaurant", "club", "bar", "downtown", "updtown", "midtown", "park", "national", "of", "at", "university", ",", "."]
+    pattern = /\b(?:#{ Regexp.union(stop_words).source })\b/    
+    venue_name[pattern]
+    venue_name.gsub(pattern, '').squeeze(' ').strip
+  end
+
+  def Venue.name_for_comparison(raw_venue_name, city)
+    scrubbed_name = Venue.scrub_venue_name(raw_venue_name, city)
+    stop_word_cleared_name = Venue.clear_stop_words(scrubbed_name)
+  end
+
   def Venue.validate_venue(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
-    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
     #Used to establish if a location tied to an Instagram is legitimate and not a fake, "Best Place Ever" type one.
     #Returns a venue object if location is valid, otherwise nil. Primary check occurs through a Froursquare lookup.
     if Venue.name_is_proper?(venue_name)
-      #strip city from name if present
       lytit_venue_lookup = Venue.fetch_venues_for_instagram_pull(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
 
       if lytit_venue_lookup == nil
-        #scrub the name of such things like appended city. Foursquare does not handle such queries well.i.e F2 will not recognize 'Marquee New York' as 'Marquee'.
-        scrubbed_venue_name = Venue.scrub_venue_name(venue_name, nil, origin_vortex)
-        foursquare_venue = Venue.foursquare_venue_lookup(scrubbed_venue_name, venue_lat, venue_long)
+        foursquare_venue = Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long, origin_vortex.city)
           #no corresponding venue found in Foursquare database
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
         else
-          new_lytit_venue = Venue.create_new_db_entry(venue_name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+          new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
           new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
           new_lytit_venue.update_columns(verified: true)
+          new_lytit_venue.set_open_hours
           InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
           return new_lytit_venue
         end
@@ -999,21 +964,21 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long)
+  def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long, origin_city)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name) rescue "F2 ERROR"
+    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name, :radius => 250) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
       if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(venue_name.downcase) == false)
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
-        jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, foursquare_venue.name.downcase)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), Venue.name_for_comparison(foursquare_venue.name.downcase, origin_city))#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.75
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
             overlap = venue_name.downcase.split & entry.name.downcase.split
-            jarow_winkler_proximity = p jarow.getDistance(venue_name.downcase, entry.name.downcase)#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
+            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), Venue.name_for_comparison(entry.name.downcase, origin_city))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
             if jarow_winkler_proximity >= 0.75
               foursquare_venue = entry
             end
@@ -1028,6 +993,37 @@ class Venue < ActiveRecord::Base
       else
         return nil
       end
+    end
+  end
+
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
+    #Reference LYTiT Instagram Location Id Database
+    inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
+
+    vname = scrub_venue_name(vname, vortex.city)
+
+    if vname != nil && vname != ""
+      if inst_id_lookup != nil && inst_loc_id.to_i != 0
+        result = inst_id_lookup.venue
+      else
+        #Check if there is a direct name match in proximity
+        center_point = [lat, long]
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.3, :units => :kms)
+
+        name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
+        if name_lookup == nil
+          name_lookup = Venue.search(vname, search_box, nil).first
+        end
+
+        if name_lookup != nil
+          result = name_lookup
+        else
+          result = nil
+        end
+      end
+      return result
+    else
+      return nil
     end
   end
 
@@ -1059,8 +1055,9 @@ class Venue < ActiveRecord::Base
         if instagram.location.name != nil
           puts("#{instagram.location.name}, #{instagram.location.id}")
           #when working with proper names words like "the" and "a" hinder accuracy    
-          instagram_location_name_clean = instagram.location.name.downcase.gsub("the", "").gsub("café", "").gsub(" a ", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("bar", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub("of", "").gsub("university", "").gsub(",", "").gsub(" ", "")
-          venue_name_clean = self.name.downcase.gsub("the", "").gsub(" a ", "").gsub("café", "").gsub("cafe", "").gsub("restaurant", "").gsub("club", "").gsub("bar", "").gsub("downtown", "").gsub("updtown", "").gsub("park", "").gsub("national", "").gsub("of", "").gsub("university", "").gsub(",", "").gsub(" ", "")
+          instagram_location_name_clean = Venue.scrub_venue_name(instagram.location.name.downcase, city)
+          venue_name_clean = Venue.scrub_venue_name(self.name.downcase, city)
+        
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
           if jarow_winkler_proximity.round(1) >= 0.7 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
