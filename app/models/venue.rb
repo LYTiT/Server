@@ -7,7 +7,7 @@ class Venue < ActiveRecord::Base
       :tsearch => {
         :normalization => 2,
         :dictionary => 'simple',
-        #:any_word => true,
+        :any_word => true,
         :prefix => true,
         :tsvector_column => 'ts_name_vector',
       },
@@ -16,7 +16,7 @@ class Venue < ActiveRecord::Base
         #:prefix => true,
       },  
     },
-    :ranked_by => "0.1*:dmetaphone + 0.5*:trigram + :tsearch + 0.3*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
+    :ranked_by => "0.5*:trigram + :tsearch + 0.3*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
   pg_search_scope :name_city_search, #name and/or associated meta data
     :against => :ts_name_city_vector,
@@ -253,22 +253,22 @@ class Venue < ActiveRecord::Base
     criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
     InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Inst Location Ids Cleared"    
+    p "Associated Inst Location Ids Cleared"    
     VenueComment.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Venue Comments Cleared"    
+    p "Associated Venue Comments Cleared"    
     MetaData.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Meta Data Cleared"
+    p "Associated Meta Data Cleared"
     Tweet.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Tweets Cleared"
+    p "Associated Tweets Cleared"
     LytitVote.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Lytit Votes Cleared"
+    p "Associated Lytit Votes Cleared"
     LytSphere.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Lyt Spheres Cleared"
+    p "Associated Lyt Spheres Cleared"
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
-    p "#Associated Venue Pages Cleared"
+    p "Associated Venue Page Views Cleared"
 
     Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, "").delete_all
-    p "#Venues Cleared. Database cleanup complete!"
+    p "Venues Cleared. Database cleanup complete!"
   end
 
 =begin
@@ -936,6 +936,10 @@ class Venue < ActiveRecord::Base
 
     if raw_name.include?("@") == true
       clean_name = raw_name.partition("@").last.strip
+    end
+
+    if raw_name.downcase.include?(" at ") == true
+      clean_name = raw_name.downcase.partition(" at ").last.strip.capitalize
     end
 
     if (city != nil && city != "") and clean_name.downcase.include?("#{city.downcase}") == true
