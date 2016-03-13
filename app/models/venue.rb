@@ -767,7 +767,7 @@ class Venue < ActiveRecord::Base
             close_time = frame["close_time"]
           end
 
-          if close_time > 24.0 && open_time > close_time - 24.0
+          if (close_time > 24.0 && (close_time - 24.0) >= local_time)
             time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) - (24.0-open_time).hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
           else
             time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + open_time.hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
