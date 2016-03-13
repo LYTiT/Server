@@ -191,7 +191,7 @@ class VenueComment < ActiveRecord::Base
 		end
 		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
 
-		if Venue.is_open_on(created_time)
+		if origin_venue.is_open_on(created_time)
 			#Instagram sometimes returns posts outside the vortex radius, we filter them out
 			if vortex != nil && origin_venue != nil
 				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
