@@ -714,13 +714,77 @@ class Venue < ActiveRecord::Base
     return [opening, closing]
   end
 
-  def is_open(day, time)
-    open_hours = self.hours[day]
-    if time >= open_hours["open"] && time <= open_hours["closes"]
-      true
+  def is_open_on(date_time)
+    is_open = nil
+
+    if open_hours == {} || open_hours == {"NA"=>"NA"}
+      is_open = true   
     else
-      false
+      utc_offset = self.time_zone_offset || 0.0
+      local_time = date_time.utc.hour.to_f+date_time.utc.min.to_f/100.0+utc_offset
+      today = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday]
+      today_time_spans = open_hours[today]
+      yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
+      yesterday_time_spans = open_hours[yesterday]
+
+      if today_time_spans == nil
+        if yesterday_time_spans != nil
+          if yesterday_time_spans.values.last["close_time"] > 24.0 && (yesterday_time_spans.values.last["close_time"] - 24.0) >= local_time
+            today_time_spans = yesterday_time_spans
+            frames = yesterday_time_spans.values
+          else
+            is_open = false
+          end
+        else
+          is_open = false
+        end
+      else
+        frames = today_time_spans.values
+        if frames.last["close_time"].to_i == 0.0
+          close_time = 24.0
+        else
+          close_time = frames.last["close_time"]
+        end
+
+        #if the post is coming in at 2:00 in the morning we have to look at the previous days business hours (applicable to nightlife establishments)
+        if (close_time > 24.0 && (close_time - 24.0) >= local_time)
+          yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
+          if open_hours[yesterday] != nil
+            frames = open_hours[yesterday].values
+          else
+            is_open = false
+          end
+        end
+      end
+
+      if is_open == nil
+        for frame in frames
+          open_time = frame["open_time"]
+ 
+          if frame["close_time"].to_i == 0.0
+            close_time = 24.0
+          else
+            close_time = frame["close_time"]
+          end
+
+          if close_time > 24.0 && open_time > close_time - 24.0
+            time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) - (24.0-open_time).hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
+          else
+            time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + open_time.hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
+          end
+
+          is_open = (time_range === (Time.now.utc+utc_offset.hours).to_i)
+          if is_open == true
+            break
+          end
+        end
+      end
     end
+    return is_open
+  end
+
+  def is_open?
+    is_open_on(Time.now)
   end
   
 
@@ -932,28 +996,31 @@ class Venue < ActiveRecord::Base
 
   def Venue.scrub_venue_name(raw_name, city)
     #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
-    clean_name = raw_name
+    lower_raw_name = raw_name.downcase 
+    lower_city = city.downcase
 
-    if raw_name.include?("@") == true
-      clean_name = raw_name.partition("@").last.strip
+    if lower_raw_name.include?("@") == true
+      lower_raw_name = lower_raw_name.partition("@").last.strip
     end
 
-    if raw_name.downcase.include?(" at ") == true
-      clean_name = raw_name.downcase.partition(" at ").last.strip.capitalize
+    if lower_raw_name.include?(" at ") == true
+      lower_raw_name = lower_raw_name.partition(" at ").last.strip.capitalize
     end
 
-    if (city != nil && city != "") and clean_name.downcase.include?("#{city.downcase}") == true
-      clean_name = clean_name.partition("#{city}").first.strip
+    if (lower_city != nil && lower_city != "") and lower_raw_name.include?("#{lower_city}") == true
+      lower_raw_name = lower_raw_name.partition("#{lower_city}").first.strip
     end
 
+    clean_name = lower_raw_name.titleize
     return clean_name 
   end
 
   def Venue.clear_stop_words(venue_name)
-    stop_words = ["the", "a", "cafe", "café", "restaurant", "club", "bar", "downtown", "updtown", "midtown", "park", "national", "of", "at", "university", ",", "."]
+    lower_venue_name = venue_name.downcase
+    stop_words = ["the", "a", "cafe", "café", "restaurant", "club", "bar", "hotel", "downtown", "updtown", "midtown", "park", "national", "of", "at", "university", ",", "."]
     pattern = /\b(?:#{ Regexp.union(stop_words).source })\b/    
-    venue_name[pattern]
-    venue_name.gsub(pattern, '').squeeze(' ').strip
+    lower_venue_name[pattern]
+    lower_venue_name.gsub(pattern, '').squeeze(' ').strip.titleize
   end
 
   def Venue.name_for_comparison(raw_venue_name, city)
@@ -995,7 +1062,7 @@ class Venue < ActiveRecord::Base
 
   def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long, origin_city)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => venue_name, :radius => 250) rescue "F2 ERROR"
+    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => Venue.name_for_comparison(venue_name.downcase, origin_city), :radius => 250) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
       if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(venue_name.downcase) == false)
@@ -1231,8 +1298,8 @@ class Venue < ActiveRecord::Base
     else
     #dealing with an individual venue which could require an instagram pull
       venue = Venue.find_by_id(venue_ids.first)
-      new_instagrams = []
 
+      new_instagrams = []
       new_instagrams = venue.update_comments
 
       #new_instagrams.sort_by{|instagram| instagram["created_time"].reverse}
