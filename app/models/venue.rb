@@ -250,7 +250,7 @@ class Venue < ActiveRecord::Base
 
     days_back = 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
-    criteria = "latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
+    criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
     InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "#Associated Inst Location Ids Cleared"    
@@ -267,7 +267,7 @@ class Venue < ActiveRecord::Base
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "#Associated Venue Pages Cleared"
 
-    Venue.where(criteria, Time.now - days_back.days, "").delete_all
+    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, "").delete_all
     p "#Venues Cleared. Database cleanup complete!"
   end
 
