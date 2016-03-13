@@ -247,20 +247,28 @@ class Venue < ActiveRecord::Base
     #3. Venue is an Apple verified venue (address != nil, city != nil)
     #4. Venue CURRENTLY has a color rating
     #5. Venue has been posted at in the past 3 days
-    days_back = 3
 
+    days_back = 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     criteria = "latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
-    InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all    
+    InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Inst Location Ids Cleared"    
     VenueComment.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Venue Comments Cleared"    
     MetaData.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Meta Data Cleared"
     Tweet.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Tweets Cleared"
     LytitVote.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Lytit Votes Cleared"
     LytSphere.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Lyt Spheres Cleared"
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Associated Venue Pages Cleared"
 
     Venue.where(criteria, Time.now - days_back.days, "").delete_all
+    p "#Venues Cleared. Database cleanup complete!"
   end
 
 =begin
