@@ -247,13 +247,20 @@ class Venue < ActiveRecord::Base
     #3. Venue is an Apple verified venue (address != nil, city != nil)
     #4. Venue CURRENTLY has a color rating
     #5. Venue has been posted at in the past 3 days
-    #5. 
+    days_back = 3
 
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
-    InstagramLocationIdLookup.all.joins(:venue).where("latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND address is NULL or city = ?", Time.now - 3.days, "").delete_all
-    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND address is NULL OR city = ?", Time.now - 1.weeks, "").delete_all
-    VenueComment.all
+    criteria = "latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
+    InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all    
+    VenueComment.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    MetaData.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    Tweet.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    LytitVote.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    LytSphere.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+    VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
+
+    Venue.where(criteria, Time.now - days_back.days, "").delete_all
   end
 
 =begin
