@@ -94,7 +94,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if vc
 			vc.delay(:priority => -4).post_lytit_vc_creation_calibration		
-			render json: { success: true }
+			render json: vc
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
 		end
