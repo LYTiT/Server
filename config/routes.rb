@@ -241,6 +241,9 @@ LytitServer::Application.routes.draw do
         end
         post 'send_new_question_comment'
         get 'get_linked_user_lists'
+        collection do
+          post 'post_comment'
+        end
       end
 
       controller :lytit_bar do
