@@ -88,8 +88,8 @@ class Api::V1::VenuesController < ApiBaseController
 			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "image", :media_dimensions => params[:media_dimensions], :image_url_2 => "small-"+params[:image_url_3],
 				:image_url_3 => params[:image_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit") 
 		else
-			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions], :image_url_2 => "small-"+params[:image_url_3],
-				:image_url_3 => params[:image_url_3], :video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit")
+			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions],
+				:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit")
 		end
 
 		if vc

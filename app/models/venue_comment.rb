@@ -52,7 +52,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def comment_or_media
-		if self.comment.blank? and self.image_url_3.blank?
+		if self.comment.blank? and (self.image_url_3.blank? && self.video_url_3.blank?)
 			errors.add(:comment, 'or image is required')
 		end
 	end
