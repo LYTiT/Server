@@ -996,23 +996,25 @@ class Venue < ActiveRecord::Base
 
   def Venue.scrub_venue_name(raw_name, city)
     #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
-    lower_raw_name = raw_name.downcase 
-    lower_city = city.downcase
+    if raw_name != nil && city != nil
+      lower_raw_name = raw_name.downcase 
+      lower_city = city.downcase
 
-    if lower_raw_name.include?("@") == true
-      lower_raw_name = lower_raw_name.partition("@").last.strip
+      if lower_raw_name.include?("@") == true
+        lower_raw_name = lower_raw_name.partition("@").last.strip
+      end
+
+      if lower_raw_name.include?(" at ") == true
+        lower_raw_name = lower_raw_name.partition(" at ").last.strip.capitalize
+      end
+
+      if (lower_city != nil && lower_city != "") and lower_raw_name.include?("#{lower_city}") == true
+        lower_raw_name = lower_raw_name.partition("#{lower_city}").first.strip
+      end
+
+      clean_name = lower_raw_name.titleize
+      return clean_name
     end
-
-    if lower_raw_name.include?(" at ") == true
-      lower_raw_name = lower_raw_name.partition(" at ").last.strip.capitalize
-    end
-
-    if (lower_city != nil && lower_city != "") and lower_raw_name.include?("#{lower_city}") == true
-      lower_raw_name = lower_raw_name.partition("#{lower_city}").first.strip
-    end
-
-    clean_name = lower_raw_name.titleize
-    return clean_name 
   end
 
   def Venue.clear_stop_words(venue_name)
