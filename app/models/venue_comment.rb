@@ -276,6 +276,22 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def post_creation_extractions_and_calibrations
+		if venue.latest_posted_comment_time == nil or venue.latest_posted_comment_time < created_time
+			venue.update_columns(latest_posted_comment_time: time_wrapper)
+		end
+		extract_instagram_meta_data(instagram_tags, instagram_captions)
+		venue.feeds.update_all("num_moments = num_moments+1")
+		vote = LytitVote.create!(:value => 1, :venue_id => venue.id, :user_id => nil, :venue_rating => venue.rating ? venue.rating : 0, 
+								:prime => 0.0, :raw_value => 1.0, :time_wrapper => time_wrapper)
+
+		venue.update_r_up_votes(time_wrapper)
+		venue.update_rating()
+		venue.update_columns(latest_rating_update_time: Time.now)											
+
+		sphere = LytSphere.create_new_sphere(venue)		
+	end
+
 	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)
 		for instagram in instagrams
 			self.convert_instagram_hashie_to_vc(instagram, origin_venue)
@@ -380,7 +396,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def extract_venue_comment_meta_data
-		text = self.comment.split rescue nil
+		text = self.comment.split rescue []
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our", "finally"]
 =begin	
 		junk_words_2 = ["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  
@@ -407,69 +423,18 @@ class VenueComment < ActiveRecord::Base
 				puts "Dirty Data: #{sub_entry}...Clean Data: #{clean_data}"
 				if clean_data.length>2 && junk_words.include?(clean_data) == false
 					extra_clean_data = remove_meta_data_prefixes_suffixes(clean_data)
-					venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data) rescue MetaData.increment_relevance_score(data, venue_id)
-					self.touch
+					lookup = MetaData.where("meta = ? AND venue_id = ?", extra_clean_data, venue_id).first
+					if lookup == nil
+						venue_meta_data = MetaData.create!(:venue_id => venue_id, :venue_comment_id => id, :meta => clean_data, :clean_meta => extra_clean_data)
+					else
+						lookup.increment_relevance_score					
+					end
 				end
 			end
 		end
+		self.touch
+		venue.set_top_tags
 	end
-
-	def self.surrounding_feed(lat, long)
-		radius = 1000 * 1/1000#* 0.000621371
-		VenueComment.joins(:venue).where("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-          <= #{radius}").order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC").order("venue_comments.created_at DESC")
-	end
-=begin
-	def self.meta_search(query, lat, long, sw_lat, sw_long, ne_lat, ne_long)
-		#no direct instagram unique hashtag searches such as instagood, instafood, etc. (legal purposes)
-		if query[0..2].downcase == "insta"
-		  return nil
-		end
-		query = '%'+query+'%'
-
-		meta_vc_ids = "SELECT venue_comment_id FROM meta_data WHERE LOWER(meta) LIKE '#{query}'"
-
-		#user searching around himself as determined by centered positioning on map screen
-		if (sw_lat.to_i == 0 && ne_long.to_i == 0)		  
-		  results = VenueComment.joins(:venue).all.order("(ACOS(least(1,COS(RADIANS(#{lat}))*COS(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*COS(RADIANS(venues.longitude))+COS(RADIANS(#{lat}))*SIN(RADIANS(#{long}))*COS(RADIANS(venues.latitude))*SIN(RADIANS(venues.longitude))+SIN(RADIANS(#{lat}))*SIN(RADIANS(venues.latitude))))*6376.77271) ASC").where("venue_comments.id IN (#{meta_vc_ids})").to_a
-		#user searching over an area of view
-		else
-		  results = VenueComment.joins(:venue).where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("venue_comments.id IN (#{meta_vc_ids})").to_a
-		end
-
-		return results
-	end
-=end		
-
-	#Making sure that meta results are reasonable relative to the search term. Also we make sure the comment is not older than a day.
-	def meta_search_sanity_check(query)
-		passed = false
-		if (self.created_at + 1.day) >= Time.now
-			require 'fuzzystringmatch'
-			jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-			prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]
-			suffixes = ["able", "ible", "al", "ial", "ed", "en", "er", "est", "ful", "ic", "ing", "ion", "tion", "ation", "ition", "ity", "ty", "ive", "ative", "itive", "less", "ly", "ment", "ness", "ous", "eous", "ious", "y"]      
-
-			for entry in self.meta_datas
-				raw_jarow_distance = p jarow.getDistance(entry.meta, query)
-				if entry.clean_meta != nil
-					clean_jarow_distance = p jarow.getDistance(entry.clean_meta, query)
-					clean_meta_length = entry.clean_meta.length
-				else
-					implicit_clean_meta = self.remove_meta_data_prefixes_suffixes(entry.meta)
-					clean_jarow_distance = p jarow.getDistance(implicit_clean_meta, query)
-					clean_meta_length = implicit_clean_meta.length
-				end
-				#we compare lengths because search results and meta data should have equal (or close to) roots
-				if raw_jarow_distance > 0.9 || (clean_jarow_distance > 0.7 && clean_meta_length < query.length*2)
-					passed = true
-					break
-				end	
-			end	
-
-		end
-		return passed
-	end 
 
 	def remove_meta_data_prefixes_suffixes(data)
 		prefixes = ["anti", "de", "dis", "en", "fore", "in", "im", "ir", "inter", "mid", "mis", "non", "over", "pre", "re", "semi", "sub", "super", "trans", "un", "under"]

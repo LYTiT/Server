@@ -75,6 +75,36 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def post_comment
+		if params[:venue_id] != nil
+			venue = Venue.find_by_id(params[:venue_id])
+		else
+			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+		end
+
+		user = User.find_by_authentication_token(params[:auth_token])
+
+		if params[:media_type] == "image"
+			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "image", :image_url_1 => params[:image_url_1],
+				:image_url_2 => params[:image_url_2], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit") 
+		else
+			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :image_url_2 => "small-"+params[:image_url_3],
+				:image_url_3 => params[:image_url_3], :video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit")
+		end
+
+		if vc
+		#extract meta data
+		#lytit up
+		#create lyt sphere			
+
+
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
+		end
+	end
+
+
+
 	def get_comments
 		num_elements_per_page = 10
 		page = params[:page].to_i

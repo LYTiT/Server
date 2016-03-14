@@ -1031,7 +1031,7 @@ class Venue < ActiveRecord::Base
   def Venue.validate_venue(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
     #Used to establish if a location tied to an Instagram is legitimate and not a fake, "Best Place Ever" type one.
     #Returns a venue object if location is valid, otherwise nil. Primary check occurs through a Froursquare lookup.
-    if Venue.name_is_proper?(venue_name)
+    if venue_name != nil and Venue.name_is_proper?(venue_name)
       lytit_venue_lookup = Venue.fetch_venues_for_instagram_pull(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
 
       if lytit_venue_lookup == nil
