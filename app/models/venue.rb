@@ -1909,6 +1909,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_rating()
+    latest_posted_comment_time = latest_posted_comment_time || Time.now
     new_r_up_vote_count = ((self.r_up_votes-1.0) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     self.update_columns(r_up_votes: new_r_up_vote_count)
 

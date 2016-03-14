@@ -276,11 +276,11 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def post_creation_extractions_and_calibrations
-		if venue.latest_posted_comment_time == nil or venue.latest_posted_comment_time < created_time
+	def post_lytit_vc_creation_calibration
+		if venue.latest_posted_comment_time == nil or venue.latest_posted_comment_time < created_at
 			venue.update_columns(latest_posted_comment_time: time_wrapper)
 		end
-		extract_instagram_meta_data(instagram_tags, instagram_captions)
+		self.extract_venue_comment_meta_data
 		venue.feeds.update_all("num_moments = num_moments+1")
 		vote = LytitVote.create!(:value => 1, :venue_id => venue.id, :user_id => nil, :venue_rating => venue.rating ? venue.rating : 0, 
 								:prime => 0.0, :raw_value => 1.0, :time_wrapper => time_wrapper)
@@ -320,7 +320,7 @@ class VenueComment < ActiveRecord::Base
 
 	end
 
-	def self.post_vc_creation_calibration(origin_venue, vc, instagram)
+	def self.post_instagram_vc_creation_calibration(origin_venue, vc, instagram)
 		instagram_created_time = DateTime.strptime("#{instagram.created_time}",'%s')
 
 		if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < instagram_created_time

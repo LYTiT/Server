@@ -93,17 +93,12 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if vc
-		#extract meta data
-		#lytit up
-		#create lyt sphere			
-
-
+			vc.delay(:priority => -4).post_lytit_vc_creation_calibration		
+			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
-
-
 
 	def get_comments
 		num_elements_per_page = 10
