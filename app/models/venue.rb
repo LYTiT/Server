@@ -1220,10 +1220,9 @@ class Venue < ActiveRecord::Base
     
     #We must identify landmarks, parks, etc. because of their large areas and pull instagrams from a bigger radius. Most of these types
     #of locations will not have a specific address, city or particularly postal code because of their size.
-    if (self.address == nil || self.city == nil) || self.postal_code == nil
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 5000, :count => 100) #, :min_timestamp => (Time.now-48.hours).to_time.to_i)
+
+    if self.name.downcase.include?("university") || self.name.downcase.include?("park")
       wide_area_search = true
-    elsif self.name.downcase.include?("university") || self.name.downcase.include?("park")
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 1000, :count => 100)
     else
       #Dealing with an establishment so can afford a smaller pull radius.
