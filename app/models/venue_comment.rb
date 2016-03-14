@@ -255,7 +255,7 @@ class VenueComment < ActiveRecord::Base
 
 				#Venue LYTiT ratings related methods
 				#if venue is currently popular the probability of an assigned lytit vote is 100%, else 75% (that's the rand(3)).
-				if (venue.is_popular? ? 1:0) + rand(4) > 0
+				if (origin_venue.is_popular? ? 1:0) + rand(4) > 0
 					vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
 													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
 					origin_venue.update_r_up_votes(created_time)
