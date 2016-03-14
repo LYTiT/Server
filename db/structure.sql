@@ -2176,7 +2176,8 @@ CREATE TABLE venues (
     metaphone_name_vector_expd tsvector,
     ts_name_vector tsvector,
     ts_name_city_vector tsvector,
-    ts_name_country_vector tsvector
+    ts_name_country_vector tsvector,
+    popular_hours json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4467,4 +4468,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160311063220');
 INSERT INTO schema_migrations (version) VALUES ('20160311194214');
 
 INSERT INTO schema_migrations (version) VALUES ('20160314033653');
+
+INSERT INTO schema_migrations (version) VALUES ('20160314185258');
 

@@ -247,6 +247,7 @@ class Venue < ActiveRecord::Base
     #3. Venue is an Apple verified venue (address != nil, city != nil)
     #4. Venue CURRENTLY has a color rating
     #5. Venue has been posted at in the past 3 days
+    num_venues_before_cleanup = Venue.all.count
 
     days_back = 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
@@ -268,7 +269,10 @@ class Venue < ActiveRecord::Base
     p "Associated Venue Page Views Cleared"
 
     Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, "").delete_all
-    p "Venues Cleared. Database cleanup complete!"
+    p "Venues Cleared"
+    num_venues_after_cleanup = Venue.all.count
+
+    p"Venue Database cleanup complete! Venue Count Before: #{num_venues_before_cleanup}. Venue Count After: #{num_venues_after_cleanup}. Total Cleared: #{num_venues_before_cleanup - num_venues_after_cleanup}"
   end
 
 =begin
@@ -607,7 +611,7 @@ class Venue < ActiveRecord::Base
     update_columns(phone_number: number)
   end
 
-  def set_open_hours
+  def set_hours
     venue_foursquare_id = self.foursquare_id
 
     if venue_foursquare_id == nil      
@@ -634,41 +638,83 @@ class Venue < ActiveRecord::Base
         return {}
       end
       if foursquare_venue_with_details != nil
-        venue_hours = foursquare_venue_with_details.hours || foursquare_venue_with_details.popular
-        open_hours_hash = Hash.new
-        if venue_hours != nil
-          timeframes = venue_hours.timeframes
+        fq_open_hours = foursquare_venue_with_details.hours #|| foursquare_venue_with_details.popular
+        fq_popular_hours = foursquare_venue_with_details.popular
 
-          for timeframe in timeframes
-            days = Venue.create_days_array(timeframe.days)
-            for day in days
-              open_spans = timeframe.open
-              span_hash = Hash.new
-              i = 0
-              for span in open_spans            
-                frame_hash = Hash.new
-                open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
-                frame_hash["frame_"+i.to_s] = {"open_time" => open_close_array.first, "close_time" => open_close_array.last}            
-                span_hash.merge!(frame_hash)
-                i += 1
-              end
-              open_hours_hash[day] = span_hash
-            end
-          end
-          self.update_columns(open_hours: open_hours_hash)
-        else
-          self.update_columns(open_hours: {"NA"=>"NA"})
-        end      
+        self.set_open_hours(fq_open_hours)
+        self.set_popular_hours(fq_popular_hours)
       else
         self.update_columns(open_hours: {"NA"=>"NA"})
+        self.update_columns(popular_hours: {"NA"=>"NA"})
       end
     else
       self.update_columns(open_hours: {"NA"=>"NA"})
+      self.update_columns(popular_hours: {"NA"=>"NA"})
     end
     return open_hours
   end
 
-  def Venue.create_days_array(timeframe_days)
+  def set_open_hours(fq_open_hours)
+    if fq_open_hours != nil
+      open_hours_hash = Hash.new
+      timeframes = fq_open_hours.timeframes
+      utc_offset_hours = self.time_zone_offset || 0.0
+
+      for timeframe in timeframes
+        if timeframe.open.first.renderedTime != "None"
+          days = Venue.create_days_array(timeframe.days, utc_offset_hours)
+          for day in days
+            open_spans = timeframe.open
+            span_hash = Hash.new
+            i = 0
+            for span in open_spans            
+              frame_hash = Hash.new
+              open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
+              frame_hash["frame_"+i.to_s] = {"open_time" => open_close_array.first, "close_time" => open_close_array.last}            
+              span_hash.merge!(frame_hash)
+              i += 1
+            end
+            open_hours_hash[day] = span_hash
+          end
+        end
+      end
+      self.update_columns(open_hours: open_hours_hash)
+    else
+      self.update_columns(open_hours: {"NA"=>"NA"})
+    end          
+  end
+
+  def set_popular_hours(fq_popular_hours)
+    if fq_popular_hours != nil
+      popular_hours_hash = Hash.new
+      timeframes = fq_popular_hours.timeframes
+      utc_offset_hours = self.time_zone_offset || 0.0
+
+      for timeframe in timeframes
+        if timeframe.open.first.renderedTime != "None"    
+          days = Venue.create_days_array(timeframe.days, utc_offset_hours)
+          for day in days
+            popular_spans = timeframe.open
+            span_hash = Hash.new
+            i = 0
+            for span in popular_spans            
+              frame_hash = Hash.new
+              open_close_array = Venue.convert_span_to_minutes(span.renderedTime)                      
+              frame_hash["frame_"+i.to_s] = {"start_time" => open_close_array.first, "end_time" => open_close_array.last}            
+              span_hash.merge!(frame_hash)
+              i += 1
+            end
+            popular_hours_hash[day] = span_hash
+          end
+        end
+      end
+      self.update_columns(popular_hours: popular_hours_hash)
+    else
+      self.update_columns(popular_hours: {"NA"=>"NA"})
+    end    
+  end
+
+  def Venue.create_days_array(timeframe_days, venue_utc_offset)
     days = Hash.new
     days["Mon"] = 1
     days["Tue"] = 2
@@ -685,6 +731,7 @@ class Venue < ActiveRecord::Base
     for timeframe in split_timeframe_days
       timeframe.strip!
       if timeframe.include?("–")
+        #Indicates a range of dates 'Mon-Sun'
         timeframe_array = timeframe.split("–")
         commence_day = timeframe_array.first
         end_day = timeframe_array.last
@@ -692,6 +739,10 @@ class Venue < ActiveRecord::Base
           [*days[commence_day]..days[end_day]].each{|day_num| days_array << days.key(day_num)}
         end
       else
+        #Single day timeframe, i.e 'Mon'
+        if timeframe == "Today"
+          timeframe =  Date::ABBR_DAYNAMES[(Time.now.utc+venue_utc_offset.hours).wday]
+        end
         days_array << timeframe
       end
     end
@@ -704,79 +755,92 @@ class Venue < ActiveRecord::Base
     closing = span_array.last
 
     if opening.last(2) == "AM"
-      opening = opening.split(" ").first.gsub(":",".").to_f
+      opening_time = opening.split(" ").first.gsub(":",".").to_f
     elsif opening == "Midnight"
-      opening = 0.0
+      opening_time = 0.0
     elsif opening == "Noon"
-      opening = 12.0      
+      opening_time = 12.0      
     else
-      opening = opening.split(" ").first.gsub(":",".").to_f+12.0
+      opening_time = opening.split(" ").first.gsub(":",".").to_f+12.0
     end
 
     if closing.last(2) == "PM"
-      closing = closing.split(" ").first.gsub(":",".").to_f+12.0
+      closing_time = closing.split(" ").first.gsub(":",".").to_f+12.0
     elsif closing == "Midnight"
-      closing = 0.0
+      closing_time = 0.0
     elsif closing == "Noon"
-      closing = 12.0
+      closing_time = 12.0
     else
-      closing = closing.split(" ").first.gsub(":",".").to_f+24.0
+      if opening.last(2) == "PM"
+        closing_time = closing.split(" ").first.gsub(":",".").to_f+24.0
+      else
+        closing_time = closing.split(" ").first.gsub(":",".").to_f
+      end
     end
 
-    return [opening, closing]
+    return [opening_time, closing_time]
   end
 
-  def is_open_on(date_time)
-    is_open = nil
+  def in_timespan?(hour_type, date_time)
+    if hour_type == "open_hours"
+      hour_type = self.open_hours
+      t_0 = "open_time"
+      t_n = "close_time"
+    else
+      hour_type = self.popular_hours
+      t_0 = "start_time"
+      t_n = "end_time"
+    end
 
-    if open_hours == {} || open_hours == {"NA"=>"NA"}
-      is_open = true   
+    in_timespan = nil
+    if hour_type == {} || hour_type == {"NA"=>"NA"}
+      in_timespan = true   
     else
       utc_offset = self.time_zone_offset || 0.0
       local_time = date_time.utc.hour.to_f+date_time.utc.min.to_f/100.0+utc_offset
       today = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday]
-      today_time_spans = open_hours[today]
+      today_time_spans = hour_type[today]
       yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
-      yesterday_time_spans = open_hours[yesterday]
+      yesterday_time_spans = hour_type[yesterday]
 
       if today_time_spans == nil
         if yesterday_time_spans != nil
-          if yesterday_time_spans.values.last["close_time"] > 24.0 && (yesterday_time_spans.values.last["close_time"] - 24.0) >= local_time
+          if yesterday_time_spans.values.last[t_n] > 24.0 && (yesterday_time_spans.values.last[t_n] - 24.0) >= local_time
             today_time_spans = yesterday_time_spans
             frames = yesterday_time_spans.values
           else
-            is_open = false
+            in_timespan = false
           end
         else
-          is_open = false
+          in_timespan = false
         end
       else
         frames = today_time_spans.values
-        if frames.last["close_time"].to_i == 0.0
+        if frames.last[t_n].to_i == 0.0
           close_time = 24.0
         else
-          close_time = frames.last["close_time"]
+          close_time = frames.last[t_n]
         end
 
         #if the post is coming in at 2:00 in the morning we have to look at the previous days business hours (applicable to nightlife establishments)
         if (close_time > 24.0 && (close_time - 24.0) >= local_time)
           yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
-          if open_hours[yesterday] != nil
-            frames = open_hours[yesterday].values
+          if hour_type[yesterday] != nil
+            frames = hour_type[yesterday].values
           else
-            is_open = false
+            in_timespan = false
           end
         end
       end
 
-      if is_open == nil
+      if in_timespan == nil
         for frame in frames
-          open_time = frame["open_time"]
+          open_time = frame[t_0]
  
-          if frame["close_time"].to_i == 0.0
+          if frame[t_n].to_i == 0.0
             close_time = 24.0
           else
-            close_time = frame["close_time"]
+            close_time = frame[t_n]
           end
 
           if (close_time > 24.0 && (close_time - 24.0) >= local_time)
@@ -785,20 +849,26 @@ class Venue < ActiveRecord::Base
             time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + open_time.hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
           end
 
-          is_open = (time_range === (Time.now.utc+utc_offset.hours).to_i)
-          if is_open == true
+          in_timespan = (time_range === (Time.now.utc+utc_offset.hours).to_i)
+          if in_timespan == true
             break
           end
         end
       end
     end
-    return is_open
-  end
+    return in_timespan
+  end  
 
   def is_open?
-    is_open_on(Time.now)
+    in_timespan?("open_hours", Time.now)
   end
   
+  def is_popular?
+    if open_hours == {}
+      self.set_hours
+    end
+    in_timespan?("popular_hours", Time.now)
+  end
 
   #------------------------------------------------------------------------>
 
@@ -1057,7 +1127,7 @@ class Venue < ActiveRecord::Base
           new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
           new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
           new_lytit_venue.update_columns(verified: true)
-          new_lytit_venue.set_open_hours
+          new_lytit_venue.set_hours
           InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
           return new_lytit_venue
         end

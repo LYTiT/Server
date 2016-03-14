@@ -191,7 +191,7 @@ class VenueComment < ActiveRecord::Base
 		end
 		created_time = DateTime.strptime(instagram_hash["created_time"],'%s')
 
-		if origin_venue.is_open_on(created_time)
+		if origin_venue.in_timespan?("open_hours", created_time)
 			#Instagram sometimes returns posts outside the vortex radius, we filter them out
 			if vortex != nil && origin_venue != nil
 				if origin_venue.distance_from([vortex.latitude, vortex.longitude]) * 1609.34 > 6000
@@ -254,13 +254,16 @@ class VenueComment < ActiveRecord::Base
 				origin_venue.feeds.update_all("num_moments = num_moments+1")
 
 				#Venue LYTiT ratings related methods
-				vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
-												:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
-				origin_venue.update_r_up_votes(created_time)
-				origin_venue.delay.update_rating()
-				origin_venue.update_columns(latest_rating_update_time: Time.now)											
+				#if venue is currently popular the probability of an assigned lytit vote is 100%, else 75% (that's the rand(3)).
+				if (venue.is_popular? ? 1:0) + rand(4) > 0
+					vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
+													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
+					origin_venue.update_r_up_votes(created_time)
+					origin_venue.delay.update_rating()
+					origin_venue.update_columns(latest_rating_update_time: Time.now)											
 
-				sphere = LytSphere.create_new_sphere(origin_venue)
+					sphere = LytSphere.create_new_sphere(origin_venue)
+				end
 				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
 				#to prevent a redundent set_instagram_location_id opperation we assign a last instagram pull time.
 
@@ -282,13 +285,13 @@ class VenueComment < ActiveRecord::Base
 		end
 		self.extract_venue_comment_meta_data
 		venue.feeds.update_all("num_moments = num_moments+1")
+
 		vote = LytitVote.create!(:value => 1, :venue_id => venue.id, :user_id => nil, :venue_rating => venue.rating ? venue.rating : 0, 
 								:prime => 0.0, :raw_value => 1.0, :time_wrapper => time_wrapper)
 
 		venue.update_r_up_votes(time_wrapper)
 		venue.update_rating()
-		venue.update_columns(latest_rating_update_time: Time.now)											
-
+		venue.update_columns(latest_rating_update_time: Time.now)
 		sphere = LytSphere.create_new_sphere(venue)		
 	end
 
