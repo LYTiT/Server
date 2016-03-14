@@ -617,6 +617,7 @@ class Venue < ActiveRecord::Base
         self.update_columns(foursquare_id: venue_foursquare_id)
       else
         if foursquare_venue == "F2 ERROR"
+          puts "Encountered Error"
           return {}
         else
           self.update_columns(open_hours: {"NA"=>"NA"})
@@ -629,6 +630,7 @@ class Venue < ActiveRecord::Base
       client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
       foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue "F2 ERROR"
       if foursquare_venue_with_details == "F2 ERROR"
+        puts "Encountered Error"
         return {}
       end
       if foursquare_venue_with_details != nil
