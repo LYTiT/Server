@@ -669,7 +669,6 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.create_days_array(timeframe_days)
-    timeframe_array = timeframe_days.split("–")
     days = Hash.new
     days["Mon"] = 1
     days["Tue"] = 2
@@ -678,12 +677,23 @@ class Venue < ActiveRecord::Base
     days["Fri"] = 5
     days["Sat"] = 6
     days["Sun"] = 7
-    #days = {"Mon" => 1, "Tue" => 2, "Wed"=> 3, "Thu" => 4, "Fri" => 5, "Sat" => 6, "Sun" => 7}
+
     days_array = []
-    commence_day = timeframe_array.first
-    end_day = timeframe_array.last
-    if days[commence_day] != nil && days[end_day] != nil
-      [*days[commence_day]..days[end_day]].each{|day_num| days_array << days.key(day_num)}
+
+    split_timeframe_days = timeframe_days.split(",")
+
+    for timeframe in split_timeframe_days
+      timeframe.strip!
+      if timeframe.include?("–")
+        timeframe_array = timeframe.split("–")
+        commence_day = timeframe_array.first
+        end_day = timeframe_array.last
+        if days[commence_day] != nil && days[end_day] != nil
+          [*days[commence_day]..days[end_day]].each{|day_num| days_array << days.key(day_num)}
+        end
+      else
+        days_array << timeframe
+      end
     end
     return days_array
   end
