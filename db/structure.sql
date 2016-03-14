@@ -1904,7 +1904,8 @@ CREATE TABLE venue_comments (
     video_url_2 character varying(255),
     video_url_3 character varying(255),
     instagram_user_id bigint,
-    meta_data_vector tsvector
+    meta_data_vector tsvector,
+    media_dimensions character varying(255)
 );
 
 
@@ -4464,4 +4465,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160311062925');
 INSERT INTO schema_migrations (version) VALUES ('20160311063220');
 
 INSERT INTO schema_migrations (version) VALUES ('20160311194214');
+
+INSERT INTO schema_migrations (version) VALUES ('20160314033653');
 
