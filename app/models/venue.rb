@@ -1116,7 +1116,9 @@ class Venue < ActiveRecord::Base
       end
 
       clean_name = lower_raw_name.titleize
-      return clean_name
+      return clean_name || raw_name
+    else
+      raw_name
     end
   end
 
