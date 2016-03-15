@@ -236,7 +236,7 @@ class Venue < ActiveRecord::Base
         end
       end
     else
-      p"No results"
+      p "No results"
       return []
     end
   end

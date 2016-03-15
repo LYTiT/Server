@@ -6,8 +6,14 @@ class Api::V1::VenueCommentsController < ApiBaseController
 	def register_view
 		city = params[:city]
 		country = params[:country] 		
-		venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
-		#geo_view_hash = 
+		vc = VenueComment.find_by_id(params[:venue_comment_id])
+		view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])
+
+		if view 
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['View registered'] } }, status: :unprocessable_entity
+		end
 	end
 
 	def report

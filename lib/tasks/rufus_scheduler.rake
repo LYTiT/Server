@@ -51,7 +51,7 @@ namespace :lytit do
 
       for entry in spheres
         sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{entry}"
-        sphericles = Venue.where("id IN (#{sphericle_venue_ids})").to_a
+        sphericles = Venue.joins(:lyt_spheres).where("sphere = ?", entry).to_a
 
         diff_ratings = Set.new
         for venue in sphericles
