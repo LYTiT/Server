@@ -734,27 +734,32 @@ class Venue < ActiveRecord::Base
     opening = span_array.first
     closing = span_array.last
 
-    if opening.last(2) == "AM"
-      opening_time = opening.split(" ").first.gsub(":",".").to_f
-    elsif opening == "Midnight"
+    if opening == "24 Hours"
       opening_time = 0.0
-    elsif opening == "Noon"
-      opening_time = 12.0      
-    else
-      opening_time = opening.split(" ").first.gsub(":",".").to_f+12.0
-    end
-
-    if closing.last(2) == "PM"
-      closing_time = closing.split(" ").first.gsub(":",".").to_f+12.0
-    elsif closing == "Midnight"
       closing_time = 0.0
-    elsif closing == "Noon"
-      closing_time = 12.0
     else
-      if opening.last(2) == "PM"
-        closing_time = closing.split(" ").first.gsub(":",".").to_f+24.0
+      if opening.last(2) == "AM"
+        opening_time = opening.split(" ").first.gsub(":",".").to_f
+      elsif opening == "Midnight"
+        opening_time = 0.0
+      elsif opening == "Noon"
+        opening_time = 12.0      
       else
-        closing_time = closing.split(" ").first.gsub(":",".").to_f
+        opening_time = opening.split(" ").first.gsub(":",".").to_f+12.0
+      end
+
+      if closing.last(2) == "PM"
+        closing_time = closing.split(" ").first.gsub(":",".").to_f+12.0
+      elsif closing == "Midnight"
+        closing_time = 0.0
+      elsif closing == "Noon"
+        closing_time = 12.0
+      else
+        if opening.last(2) == "PM"
+          closing_time = closing.split(" ").first.gsub(":",".").to_f+24.0
+        else
+          closing_time = closing.split(" ").first.gsub(":",".").to_f
+        end
       end
     end
 
