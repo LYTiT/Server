@@ -815,9 +815,13 @@ class Venue < ActiveRecord::Base
     else
       utc_offset = self.time_zone_offset || 0.0
       local_time = date_time.utc.hour.to_f+date_time.utc.min.to_f/100.0+utc_offset
-      today = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday]
+      if local_time < 0 
+        #utc is ahead of local time
+        local_time += 24
+      end
+      today = Date::ABBR_DAYNAMES[(date_time.utc+utc_offset.hours).wday]
       today_time_spans = hour_type[today]
-      yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
+      yesterday = Date::ABBR_DAYNAMES[(date_time.utc+utc_offset.hours).wday-1]
       yesterday_time_spans = hour_type[yesterday]
 
       if today_time_spans == nil
@@ -841,7 +845,7 @@ class Venue < ActiveRecord::Base
 
         #if the post is coming in at 2:00 in the morning we have to look at the previous days business hours (applicable to nightlife establishments)
         if (close_time > 24.0 && (close_time - 24.0) >= local_time)
-          yesterday = Date::ABBR_DAYNAMES[(Time.now.utc+utc_offset.hours).wday-1]
+          yesterday = Date::ABBR_DAYNAMES[(date_time.utc+utc_offset.hours).wday-1]
           if hour_type[yesterday] != nil
             frames = hour_type[yesterday].values
           else
@@ -861,12 +865,12 @@ class Venue < ActiveRecord::Base
           end
 
           if (close_time > 24.0 && (close_time - 24.0) >= local_time)
-            time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) - (24.0-open_time).hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
+            time_range = (((date_time.utc+utc_offset.hours) - (date_time.utc+utc_offset).hour.hour - (date_time.utc+utc_offset).min.minutes) - (24.0-open_time).hours).to_i..(((date_time.utc+utc_offset) - (date_time.utc+utc_offset).hour.hour - (date_time.utc+utc_offset).min.minutes) + close_time.hours).to_i
           else
-            time_range = ((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + open_time.hours).to_i..((Time.now.utc - Time.now.utc.hour.hour - Time.now.utc.min.minutes) + close_time.hours).to_i
+            time_range = (((date_time.utc+utc_offset.hours).utc - (date_time.utc+utc_offset.hours).utc.hour.hour - (date_time.utc+utc_offset.hours).utc.min.minutes) + open_time.hours).to_i..(((date_time.utc+utc_offset.hours).utc - (date_time.utc+utc_offset.hours).utc.hour.hour - (date_time.utc+utc_offset.hours).utc.min.minutes) + close_time.hours).to_i
           end
 
-          in_timespan = (time_range === (Time.now.utc+utc_offset.hours).to_i)
+          in_timespan = (time_range === (date_time.utc+utc_offset.hours).to_i)
           if in_timespan == true
             break
           end
