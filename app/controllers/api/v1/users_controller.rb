@@ -406,7 +406,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_favorite_venues
-		@user = User.find_by_authentication_token(params[:authentication_token])
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@favorite_venues = @user.favorite_venues.order("venue_name ASC").page(params[:page]).per(10)
 	end
 
