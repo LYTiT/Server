@@ -45,6 +45,8 @@ class User < ActiveRecord::Base
 
   has_many :venue_questions
 
+  has_many :favorite_venues
+
   has_one :live_user
 
   belongs_to :role

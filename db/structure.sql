@@ -847,6 +847,43 @@ ALTER SEQUENCE exported_data_csvs_id_seq OWNED BY exported_data_csvs.id;
 
 
 --
+-- Name: favorite_venues; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE favorite_venues (
+    id integer NOT NULL,
+    venue_id integer,
+    user_id integer,
+    interest_score double precision DEFAULT 1.0,
+    num_new_moments integer,
+    latest_venue_check_time timestamp without time zone,
+    venue_name character varying(255),
+    venue_details json DEFAULT '{}'::json NOT NULL,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: favorite_venues_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE favorite_venues_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: favorite_venues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE favorite_venues_id_seq OWNED BY favorite_venues.id;
+
+
+--
 -- Name: feed_invitations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2321,6 +2358,13 @@ ALTER TABLE ONLY exported_data_csvs ALTER COLUMN id SET DEFAULT nextval('exporte
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY favorite_venues ALTER COLUMN id SET DEFAULT nextval('favorite_venues_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY feed_invitations ALTER COLUMN id SET DEFAULT nextval('feed_invitations_id_seq'::regclass);
 
 
@@ -2654,6 +2698,14 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY exported_data_csvs
     ADD CONSTRAINT exported_data_csvs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: favorite_venues_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY favorite_venues
+    ADD CONSTRAINT favorite_venues_pkey PRIMARY KEY (id);
 
 
 --
@@ -3113,6 +3165,13 @@ CREATE INDEX index_event_organizers_on_user_id ON event_organizers USING btree (
 --
 
 CREATE INDEX index_events_on_venue_id ON events USING btree (venue_id);
+
+
+--
+-- Name: index_favorite_venues_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_favorite_venues_on_user_id ON favorite_venues USING btree (user_id);
 
 
 --
@@ -4470,4 +4529,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160311194214');
 INSERT INTO schema_migrations (version) VALUES ('20160314033653');
 
 INSERT INTO schema_migrations (version) VALUES ('20160314185258');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315043952');
 

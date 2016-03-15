@@ -485,6 +485,33 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 
+	def add_to_favorites
+		venue = Venue.find_by_id(params[:venue_id])
+		venue_details_hash = venue.details_hash
+		fav_venue = FavoriteVenue.create!(:venue_id => venue.id, :venue_name => venue.name, :user_id => params[:user_id], :venue_details => venue_details_hash)
+
+		if fav_venue
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue Not Favorited"] } }, :status => :not_found
+		end
+	end
+
+	def remove_from_favorites
+		if params[:favorite_venue_id]
+			favorite_venue = FavoriteVenue.find_by_id(params[:favorite_venue_id])
+		else
+			favorite_venue = FavoriteVenue.where("venue_id = ? AND user_id = ?", params[:venue_id], params[:user_id]).first
+		end
+
+		if favorite_venue.delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Failed to Remove From Favorites"] } }, :status => :not_found
+		end
+	end
+
+
 	private
 
 	def venue

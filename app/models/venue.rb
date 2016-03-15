@@ -132,6 +132,7 @@ class Venue < ActiveRecord::Base
   has_many :events, :dependent => :destroy
 
   has_many :venue_questions, :dependent => :destroy
+  has_many :favorite_venues
   has_many :live_users
 
   belongs_to :user
@@ -318,7 +319,11 @@ class Venue < ActiveRecord::Base
     end
 
   end
-=end      
+=end
+
+  def details_hash
+    {"address" => address, "city" => city, "state" => state, "country" => country, "postal_code" => postal_code, "latitude" => latitude, "longitude" => longitude}
+  end      
 
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
     if query != nil && query != ""
