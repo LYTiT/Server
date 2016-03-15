@@ -45,10 +45,6 @@ class Venue < ActiveRecord::Base
     :ranked_by => ":trigram*5 +:tsearch*4 + 0.4*Cast(venues.verified as integer)"   
 
 
-
-
-
-
   pg_search_scope :name_search_expd, #name and/or associated meta data
     :against => [:ts_name_vector_expd, :metaphone_name_vector_expd],
     :using => {
@@ -242,7 +238,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.database_cleanup
+  def Venue.database_cleanup(num_days_back)
     #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
     #database size and improve searching/lookup performance. 
     #Keep venues that fit following criteria:
@@ -253,7 +249,7 @@ class Venue < ActiveRecord::Base
     #5. Venue has been posted at in the past 3 days
     num_venues_before_cleanup = Venue.all.count
 
-    days_back = 3
+    days_back = num_days_back || 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
@@ -272,7 +268,7 @@ class Venue < ActiveRecord::Base
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "Associated Venue Page Views Cleared"
 
-    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, "").delete_all
+    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, '').delete_all
     p "Venues Cleared"
     num_venues_after_cleanup = Venue.all.count
 
@@ -360,7 +356,7 @@ class Venue < ActiveRecord::Base
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
     if city == nil
-      closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).order("distance ASC").first
+      closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).where("city is not NULL").order("distance ASC").first
       if closest_venue != nil
         city = closest_venue.city
         country = closest_venue.country
@@ -386,9 +382,13 @@ class Venue < ActiveRecord::Base
     part3 = [part2, postal_code].compact.join(' ')
     part4 = [part3, country].compact.join(', ')
 
-    city = city || ""
+
     venue.update_columns(formatted_address: part4) 
-    venue.update_columns(city: city) 
+    if city != nil
+      venue.update_columns(city: city) 
+    else
+      venue.update_columns(city: '') 
+    end
     venue.update_columns(state: state) 
     venue.update_columns(country: country)
 
