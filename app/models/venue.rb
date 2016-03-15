@@ -462,7 +462,7 @@ class Venue < ActiveRecord::Base
     venue.save
 
     if origin_vortex != nil
-      venue.update_columns(instagram_vortex_id: origin_vortex.id)      
+      venue.update_columns(instagram_vortex_id: origin_vortex.id)     
     end    
     venue.delay.set_time_zone_and_offset(origin_vortex)
 
@@ -480,7 +480,12 @@ class Venue < ActiveRecord::Base
       self.time_zone_offset = Time.now.in_time_zone(timezone.active_support_time_zone).utc_offset/3600.0 rescue nil
       self.save
     else
+      self.update_columns(time_zone: origin_vortex.time_zone)
       self.update_columns(time_zone_offset: origin_vortex.time_zone_offset)
+      #Set nearest instagram vortex id if a vortex within 10kms present
+      radius  = 10000
+      nearest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [self.latitude, self.longitude]).order('distance ASC').first
+      self.update_columns(instagram_vortex_id: nearest_vortex.id)
     end
   end
 
@@ -489,6 +494,17 @@ class Venue < ActiveRecord::Base
     for venue in Venue.all.where("time_zone_offset IS NULL")
       closest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [venue.latitude, venue.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
       venue.update_columns(time_zone_offset: closest_vortex.time_zone_offset)
+    end
+  end
+
+  def Venue.calibrate_venues_after_daylight_savings
+    for vortex in InstagramVortex.all
+      vortex.set_timezone_offsets
+      radius  = 10000
+      vortex_venues = Venue.within(radius.to_i, :units => :kms, :origin => [vortex.latitude, vortex.longitude])
+      vortex_venues.update_all(instagram_vortex_id: vortex.id)
+      vortex_venues.update_all(time_zone: vortex.time_zone)
+      vortex_venues.update_all(time_zone_offset: vortex.time_zone_offset)
     end
   end
 
