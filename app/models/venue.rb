@@ -1204,7 +1204,7 @@ class Venue < ActiveRecord::Base
     vname = scrub_venue_name(vname, vortex.city)
 
     if vname != nil && vname != ""
-      if inst_id_lookup != nil && inst_loc_id.to_i != 0
+      if inst_id_lookup.try(:venue) != nil && inst_loc_id.to_i != 0
         result = inst_id_lookup.venue
       else
         #Check if there is a direct name match in proximity
