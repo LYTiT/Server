@@ -43,6 +43,8 @@ class User < ActiveRecord::Base
   has_many :favorite_venues, :dependent => :destroy
   has_many :moment_requests, :dependent => :destroy
 
+  has_many :reported_objects, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token

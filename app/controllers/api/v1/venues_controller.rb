@@ -235,7 +235,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_venue_feeds
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feeds = Feed.feeds_in_venue(params[:venue_id])
+		@feeds = Feed.feeds_in_venue(params[:venue_id]).page(params[:page]).per(10)
 	end
 
 	def get_cluster_feeds

@@ -19,6 +19,7 @@ class VenueComment < ActiveRecord::Base
 	has_many :comment_views, :dependent => :destroy
 	has_many :meta_datas, :dependent => :destroy
 	has_many :activities, :dependent => :destroy
+	has_many :reported_objects, :dependent => :destroy
 
 	validate :comment_or_media
 

@@ -335,4 +335,13 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
+	def report
+		ro = ReportedObject.create!(:type=> "Feed", :feed_id => params[:feed_id], :reporter_id => params[:reporter_id])
+		if ro 
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Report did not got through'] } }, status: :unprocessable_entity
+		end
+	end
+
 end

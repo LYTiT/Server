@@ -1544,6 +1544,41 @@ ALTER SEQUENCE pg_search_documents_id_seq OWNED BY pg_search_documents.id;
 
 
 --
+-- Name: reported_objects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE reported_objects (
+    id integer NOT NULL,
+    type character varying(255),
+    reporter_id integer,
+    user_id integer,
+    venue_comment_id integer,
+    feed_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: reported_objects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE reported_objects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: reported_objects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE reported_objects_id_seq OWNED BY reported_objects.id;
+
+
+--
 -- Name: roles; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1836,7 +1871,9 @@ CREATE TABLE venue_comments (
     video_url_3 character varying(255),
     instagram_user_id bigint,
     meta_data_vector tsvector,
-    media_dimensions character varying(255)
+    media_dimensions character varying(255),
+    num_views integer,
+    geo_views json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -2358,6 +2395,13 @@ ALTER TABLE ONLY pg_search_documents ALTER COLUMN id SET DEFAULT nextval('pg_sea
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY reported_objects ALTER COLUMN id SET DEFAULT nextval('reported_objects_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY roles ALTER COLUMN id SET DEFAULT nextval('roles_id_seq'::regclass);
 
 
@@ -2698,6 +2742,14 @@ ALTER TABLE ONLY moment_requests
 
 ALTER TABLE ONLY pg_search_documents
     ADD CONSTRAINT pg_search_documents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: reported_objects_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY reported_objects
+    ADD CONSTRAINT reported_objects_pkey PRIMARY KEY (id);
 
 
 --
@@ -4300,4 +4352,10 @@ INSERT INTO schema_migrations (version) VALUES ('20160315043952');
 INSERT INTO schema_migrations (version) VALUES ('20160315063118');
 
 INSERT INTO schema_migrations (version) VALUES ('20160315070023');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315200751');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315201237');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315210035');
 

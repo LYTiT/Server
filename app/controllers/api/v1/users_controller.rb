@@ -392,6 +392,15 @@ class Api::V1::UsersController < ApiBaseController
 	end
 	#-------------------------------------------------->
 
+	def report
+		ro = ReportedObject.create!(:type=> "User", :user_id => params[:user_id], :reporter_id => params[:reporter_id])
+		if ro 
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Report did not got through'] } }, status: :unprocessable_entity
+		end
+	end	
+
 	def get_top_favorite_venues		
 		@top_favorite_venues = FavoriteVenue.top_user_favorites(@user)
 	end

@@ -65,7 +65,8 @@ class Feed < ActiveRecord::Base
 	has_many :feed_invitations, :dependent => :destroy
 	has_many :activity_feeds, :dependent => :destroy
 
-	has_many :activities
+	has_many :activities, :dependent => :destroy
+	has_many :reported_objects, :dependent => :destroy
 
 	belongs_to :user
 
