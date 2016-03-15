@@ -50,7 +50,7 @@ namespace :lytit do
       spheres = LytSphere.uniq.pluck(:sphere)
 
       for entry in spheres
-        sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE id = #{entry.id}"
+        sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{entry}"
         sphericles = Venue.where("id IN (#{sphericle_venue_ids})").to_a
 
         diff_ratings = Set.new
