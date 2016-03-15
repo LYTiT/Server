@@ -7,7 +7,7 @@ class Api::V1::VenueCommentsController < ApiBaseController
 		city = params[:city]
 		country = params[:country] 		
 		venue_comment = VenueComment.find_by_id(params[:venue_comment_id])
-		geo_view_hash = 
+		#geo_view_hash = 
 	end
 
 	def report
