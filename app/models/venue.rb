@@ -499,8 +499,9 @@ class Venue < ActiveRecord::Base
 
   def Venue.calibrate_venues_after_daylight_savings
     for vortex in InstagramVortex.all
+      p "Vortex: #{vortex.city}"
       vortex.set_timezone_offsets
-      radius  = 10000
+      radius = 10000
       vortex_venues = Venue.within(radius.to_i, :units => :kms, :origin => [vortex.latitude, vortex.longitude])
       vortex_venues.update_all(instagram_vortex_id: vortex.id)
       vortex_venues.update_all(time_zone: vortex.time_zone)
