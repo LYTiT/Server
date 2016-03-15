@@ -1323,6 +1323,8 @@ class Venue < ActiveRecord::Base
 
     if venue_instagrams != nil and venue_instagrams.first.nil?
       venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
+    else
+      venue_instagrams = []
     end
 
     return venue_instagrams
