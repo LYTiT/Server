@@ -1147,7 +1147,7 @@ class Venue < ActiveRecord::Base
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
         else
-          new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, nil, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+          new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, origin_vortex.city, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
           new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
           new_lytit_venue.update_columns(verified: true)
           new_lytit_venue.set_hours
@@ -1255,7 +1255,7 @@ class Venue < ActiveRecord::Base
     if nearby_instagram_content.count > 0
       for instagram in nearby_instagram_content
         if instagram.location.name != nil
-          puts("#{instagram.location.name}, #{instagram.location.id}")
+          puts("#{instagram.location.name} (#{instagram.location.id})")
           #when working with proper names words like "the" and "a" hinder accuracy    
           instagram_location_name_clean = Venue.scrub_venue_name(instagram.location.name.downcase, city)
           venue_name_clean = Venue.scrub_venue_name(self.name.downcase, city)
@@ -1295,7 +1295,7 @@ class Venue < ActiveRecord::Base
 
         #if little content is offered on the geo pull make a venue specific pull
         if venue_instagrams.count < 3
-          puts ("making a venue get instagrams calls")
+          puts ("Making a venue get instagrams calls!")
           venue_instagrams = self.get_instagrams(true)
           #venue_instagrams.concat(self.get_instagrams(true))
           #venue_instagrams.flatten!
@@ -1321,7 +1321,7 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    if venue_instagrams != nil and venue_instagrams.first.nil?
+    if venue_instagrams != nil and venue_instagrams.first.nil? == false
       venue_instagrams.sort_by!{|instagram| -(instagram["created_time"].to_i)}
     else
       venue_instagrams = []
@@ -1433,13 +1433,13 @@ class Venue < ActiveRecord::Base
         #try to establish instagram location id if previous attempts failed every 1 day
         if self.instagram_location_id == 0 
           if self.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= self.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= self.last_instagram_pull_time))
-            new_instagrams = self.set_instagram_location_id(100)
+            new_instagrams = self.set_instagram_location_id(250)
             self.update_columns(last_instagram_pull_time: Time.now)
           else
             new_instagrams = []
           end
         elsif self.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= self.last_instagram_pull_time)
-            new_instagrams = self.set_instagram_location_id(100)
+            new_instagrams = self.set_instagram_location_id(250)
             self.update_columns(last_instagram_pull_time: Time.now)
         else
           if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
@@ -1449,7 +1449,7 @@ class Venue < ActiveRecord::Base
           end
         end
       else
-        new_instagrams = self.set_instagram_location_id(100)
+        new_instagrams = self.set_instagram_location_id(250)
         self.update_columns(last_instagram_pull_time: Time.now)
       end
       new_instagrams
