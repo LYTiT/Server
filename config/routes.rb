@@ -67,7 +67,8 @@ LytitServer::Application.routes.draw do
         post 'set_facebook_id'
         get 'get_lytit_facebook_friends'
         get 'get_favorite_venues'
-        get 'get_top_favorite_venues'        
+        get 'get_top_favorite_venues'  
+        get 'get_venue_comments'      
       end
 
       resources :feeds, only: [:create] do
@@ -248,6 +249,8 @@ LytitServer::Application.routes.draw do
         end
         post 'add_to_favorites'
         post 'remove_from_favorites'
+        post 'request_moment'
+        post 'delete_moment_request'
       end
 
       controller :lytit_bar do

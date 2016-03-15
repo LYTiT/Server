@@ -131,9 +131,8 @@ class Venue < ActiveRecord::Base
   has_many :activities, :dependent => :destroy
   has_many :events, :dependent => :destroy
 
-  has_many :venue_questions, :dependent => :destroy
-  has_many :favorite_venues
-  has_many :live_users
+  has_many :favorite_venues, :dependent => :destroy
+  has_many :moment_requests, :dependent => :destroy
 
   belongs_to :user
 
@@ -193,6 +192,10 @@ class Venue < ActiveRecord::Base
 
 
   #I. Search------------------------------------------------------->
+
+  def Venue.lookup(query)
+    Venue.search(query, nil, nil).first
+  end
 
   def Venue.search(query, proximity_box, view_box)
     #Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
@@ -275,51 +278,6 @@ class Venue < ActiveRecord::Base
 
     p"Venue Database cleanup complete! Venue Count Before: #{num_venues_before_cleanup}. Venue Count After: #{num_venues_after_cleanup}. Total Cleared: #{num_venues_before_cleanup - num_venues_after_cleanup}"
   end
-
-=begin
-  def Venue.search(query, proximity_box, view_box)
-    query.gsub!(/[^0-9a-z ]/i, '')
-    first_letter = query.first
-    second_letter = query[1]
-    #perculate results with matching first letters to front.
-    if proximity_box == nil
-      raw_results = Venue.name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
-    elsif view_box != nil
-      raw_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", 
-        view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
-    else
-      raw_results = Venue.in_bounds(proximity_box).name_search_expd(query).where("pg_search.rank >= 0.2").with_pg_search_rank.limit(50).sort_by { |venue| [venue.name.first, -venue.pg_search_rank]}
-    end
-
-    first_letter_match_offset = raw_results.find_index{|venue| venue.name.gsub(/[^0-9a-z ]/i, '').size > 0 and (venue.name.gsub(/[^0-9a-z ]/i, '')[0].downcase == first_letter.downcase)}
-    if first_letter_match_offset != nil
-      first_letter_sorted_results = raw_results.rotate(first_letter_match_offset)
-    else
-      first_letter_sorted_results = []
-    end
-    
-    if first_letter_sorted_results != [] && query.length >= 2
-      second_letter_match_offset = first_letter_sorted_results.find_index{|venue| venue.name.gsub(/[^0-9a-z ]/i, '').size > 0 and (venue.name.gsub(/[^0-9a-z ]/i, '')[1].downcase == second_letter.downcase)}
-      if second_letter_match_offset != nil
-        second_letter_sorted_results = first_letter_sorted_results.rotate(second_letter_match_offset).first(10)
-        results = second_letter_sorted_results
-      else
-        results = first_letter_sorted_results.first(10)
-      end
-    else
-      results = []
-    end
-
-    if results != [] #and results.first.pg_search_rank >= 0.1
-      #top_results = results.select { |venue| venue.pg_search_rank >= 2.0 }
-      results.each{|x| p "#{x.name} (#{x.pg_search_rank})"}
-      return results
-    else
-      return []
-    end
-
-  end
-=end
 
   def details_hash
     {"address" => address, "city" => city, "state" => state, "country" => country, "postal_code" => postal_code, "latitude" => latitude, "longitude" => longitude}

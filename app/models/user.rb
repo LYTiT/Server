@@ -28,8 +28,6 @@ class User < ActiveRecord::Base
   has_many :received_feed_invitations, foreign_key: "invitee_id", class_name: "FeedInvitation", dependent: :destroy
   has_many :inviters, through: :received_feed_invitations, source: :inviter
 
-  #has_many :temp_posting_housings, :dependent => :destroy
-
   has_many :feed_users, :dependent => :destroy
   has_many :feeds, through: :feed_users
   has_many :instagram_auth_tokens
@@ -38,16 +36,12 @@ class User < ActiveRecord::Base
   has_many :activity_comments, :dependent => :destroy
 
   has_one :support_issue, :dependent => :destroy
-  #has_many :surrounding_pull_trackers, :dependent => :destroy
   has_many :support_messages, :dependent => :destroy
   has_many :event_organizers, :dependent => :destroy
   has_many :event_announcements, :dependent => :destroy
 
-  has_many :venue_questions
-
-  has_many :favorite_venues
-
-  has_one :live_user
+  has_many :favorite_venues, :dependent => :destroy
+  has_many :moment_requests, :dependent => :destroy
 
   belongs_to :role
 

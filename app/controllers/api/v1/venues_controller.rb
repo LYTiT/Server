@@ -75,6 +75,24 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: { success: true }
 	end
 
+	def request_moment
+		rm = RequestMoment.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
+		if rm
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
+		end
+	end
+
+	def delete_moment_request
+		rm = RequestMoment.find_by_id(params[:moment_request_id])
+		if rm.delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
+		end
+	end
+
 	def post_comment
 		if params[:venue_id] != nil
 			venue = Venue.find_by_id(params[:venue_id])

@@ -1247,105 +1247,6 @@ ALTER SEQUENCE likes_id_seq OWNED BY likes.id;
 
 
 --
--- Name: live_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE live_users (
-    id integer NOT NULL,
-    venue_id integer,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: live_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE live_users_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: live_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE live_users_id_seq OWNED BY live_users.id;
-
-
---
--- Name: lumen_constants; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE lumen_constants (
-    id integer NOT NULL,
-    constant_name character varying(255),
-    constant_value double precision,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: lumen_constants_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE lumen_constants_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: lumen_constants_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE lumen_constants_id_seq OWNED BY lumen_constants.id;
-
-
---
--- Name: lumen_values; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE lumen_values (
-    id integer NOT NULL,
-    value double precision,
-    user_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone,
-    lytit_vote_id integer,
-    venue_comment_id integer,
-    media_type character varying(255)
-);
-
-
---
--- Name: lumen_values_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE lumen_values_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: lumen_values_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE lumen_values_id_seq OWNED BY lumen_values.id;
-
-
---
 -- Name: lyt_spheres; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1580,6 +1481,36 @@ ALTER SEQUENCE meta_data_id_seq OWNED BY meta_data.id;
 
 
 --
+-- Name: moment_requests; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE moment_requests (
+    id integer NOT NULL,
+    venue_id integer,
+    user_id integer
+);
+
+
+--
+-- Name: moment_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE moment_requests_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: moment_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE moment_requests_id_seq OWNED BY moment_requests.id;
+
+
+--
 -- Name: pg_search_documents; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1748,43 +1679,6 @@ CREATE SEQUENCE surrounding_pull_trackers_id_seq
 --
 
 ALTER SEQUENCE surrounding_pull_trackers_id_seq OWNED BY surrounding_pull_trackers.id;
-
-
---
--- Name: temp_posting_housings; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE temp_posting_housings (
-    id integer NOT NULL,
-    comment character varying(255),
-    media_type character varying(255),
-    media_url character varying(255),
-    session integer,
-    username_private boolean,
-    user_id integer,
-    venue_id integer,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: temp_posting_housings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE temp_posting_housings_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: temp_posting_housings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE temp_posting_housings_id_seq OWNED BY temp_posting_housings.id;
 
 
 --
@@ -2064,40 +1958,6 @@ CREATE SEQUENCE venue_question_comments_id_seq
 --
 
 ALTER SEQUENCE venue_question_comments_id_seq OWNED BY venue_question_comments.id;
-
-
---
--- Name: venue_questions; Type: TABLE; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE TABLE venue_questions (
-    id integer NOT NULL,
-    venue_id integer,
-    question text,
-    user_id integer,
-    num_comments integer DEFAULT 0,
-    created_at timestamp without time zone,
-    updated_at timestamp without time zone
-);
-
-
---
--- Name: venue_questions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE venue_questions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: venue_questions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE venue_questions_id_seq OWNED BY venue_questions.id;
 
 
 --
@@ -2435,27 +2295,6 @@ ALTER TABLE ONLY likes ALTER COLUMN id SET DEFAULT nextval('likes_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY live_users ALTER COLUMN id SET DEFAULT nextval('live_users_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY lumen_constants ALTER COLUMN id SET DEFAULT nextval('lumen_constants_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY lumen_values ALTER COLUMN id SET DEFAULT nextval('lumen_values_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY lyt_spheres ALTER COLUMN id SET DEFAULT nextval('lyt_spheres_id_seq'::regclass);
 
 
@@ -2505,6 +2344,13 @@ ALTER TABLE ONLY meta_data ALTER COLUMN id SET DEFAULT nextval('meta_data_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY moment_requests ALTER COLUMN id SET DEFAULT nextval('moment_requests_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY pg_search_documents ALTER COLUMN id SET DEFAULT nextval('pg_search_documents_id_seq'::regclass);
 
 
@@ -2534,13 +2380,6 @@ ALTER TABLE ONLY support_messages ALTER COLUMN id SET DEFAULT nextval('support_m
 --
 
 ALTER TABLE ONLY surrounding_pull_trackers ALTER COLUMN id SET DEFAULT nextval('surrounding_pull_trackers_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY temp_posting_housings ALTER COLUMN id SET DEFAULT nextval('temp_posting_housings_id_seq'::regclass);
 
 
 --
@@ -2590,13 +2429,6 @@ ALTER TABLE ONLY venue_page_views ALTER COLUMN id SET DEFAULT nextval('venue_pag
 --
 
 ALTER TABLE ONLY venue_question_comments ALTER COLUMN id SET DEFAULT nextval('venue_question_comments_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY venue_questions ALTER COLUMN id SET DEFAULT nextval('venue_questions_id_seq'::regclass);
 
 
 --
@@ -2797,30 +2629,6 @@ ALTER TABLE ONLY likes
 
 
 --
--- Name: live_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY live_users
-    ADD CONSTRAINT live_users_pkey PRIMARY KEY (id);
-
-
---
--- Name: lumen_constants_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY lumen_constants
-    ADD CONSTRAINT lumen_constants_pkey PRIMARY KEY (id);
-
-
---
--- Name: lumen_values_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY lumen_values
-    ADD CONSTRAINT lumen_values_pkey PRIMARY KEY (id);
-
-
---
 -- Name: lyt_spheres_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2877,6 +2685,14 @@ ALTER TABLE ONLY meta_data
 
 
 --
+-- Name: moment_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY moment_requests
+    ADD CONSTRAINT moment_requests_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: pg_search_documents_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2914,14 +2730,6 @@ ALTER TABLE ONLY support_messages
 
 ALTER TABLE ONLY surrounding_pull_trackers
     ADD CONSTRAINT surrounding_pull_trackers_pkey PRIMARY KEY (id);
-
-
---
--- Name: temp_posting_housings_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY temp_posting_housings
-    ADD CONSTRAINT temp_posting_housings_pkey PRIMARY KEY (id);
 
 
 --
@@ -2986,14 +2794,6 @@ ALTER TABLE ONLY venue_page_views
 
 ALTER TABLE ONLY venue_question_comments
     ADD CONSTRAINT venue_question_comments_pkey PRIMARY KEY (id);
-
-
---
--- Name: venue_questions_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
---
-
-ALTER TABLE ONLY venue_questions
-    ADD CONSTRAINT venue_questions_pkey PRIMARY KEY (id);
 
 
 --
@@ -3329,27 +3129,6 @@ CREATE INDEX index_likes_on_liker_id ON likes USING btree (liker_id);
 
 
 --
--- Name: index_live_users_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_live_users_on_user_id ON live_users USING btree (user_id);
-
-
---
--- Name: index_live_users_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_live_users_on_venue_id ON live_users USING btree (venue_id);
-
-
---
--- Name: index_lumen_values_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_lumen_values_on_user_id ON lumen_values USING btree (user_id);
-
-
---
 -- Name: index_lyt_spheres_on_sphere; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3420,6 +3199,20 @@ CREATE INDEX index_meta_data_on_venue_id ON meta_data USING btree (venue_id);
 
 
 --
+-- Name: index_moment_requests_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_moment_requests_on_user_id ON moment_requests USING btree (user_id);
+
+
+--
+-- Name: index_moment_requests_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_moment_requests_on_venue_id ON moment_requests USING btree (venue_id);
+
+
+--
 -- Name: index_on_venues_location; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3452,20 +3245,6 @@ CREATE INDEX index_support_messages_on_support_issue_id ON support_messages USIN
 --
 
 CREATE INDEX index_surrounding_pull_trackers_on_user_id ON surrounding_pull_trackers USING btree (user_id);
-
-
---
--- Name: index_temp_posting_housings_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_temp_posting_housings_on_user_id ON temp_posting_housings USING btree (user_id);
-
-
---
--- Name: index_temp_posting_housings_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_temp_posting_housings_on_venue_id ON temp_posting_housings USING btree (venue_id);
 
 
 --
@@ -3613,20 +3392,6 @@ CREATE INDEX index_venue_question_comments_on_user_id ON venue_question_comments
 --
 
 CREATE INDEX index_venue_question_comments_on_venue_question_id ON venue_question_comments USING btree (venue_question_id);
-
-
---
--- Name: index_venue_questions_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venue_questions_on_user_id ON venue_questions USING btree (user_id);
-
-
---
--- Name: index_venue_questions_on_venue_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_venue_questions_on_venue_id ON venue_questions USING btree (venue_id);
 
 
 --
@@ -4531,4 +4296,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160314033653');
 INSERT INTO schema_migrations (version) VALUES ('20160314185258');
 
 INSERT INTO schema_migrations (version) VALUES ('20160315043952');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315063118');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315070023');
 

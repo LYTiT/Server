@@ -401,6 +401,10 @@ class Api::V1::UsersController < ApiBaseController
 		@favorite_venues = @user.favorite_venues.order("venue_name ASC").page(params[:page]).per(10)
 	end
 
+	def get_venue_comments
+		@comments = @user.venue_comments.where("created_at > ?", Time.now-1.day).order("id DESC").page(params[:page]).per(10)
+	end
+
 	private
 
 	def user_params

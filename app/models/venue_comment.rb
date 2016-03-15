@@ -17,7 +17,6 @@ class VenueComment < ActiveRecord::Base
 
 	has_many :flagged_comments, :dependent => :destroy
 	has_many :comment_views, :dependent => :destroy
-	has_many :lumen_values
 	has_many :meta_datas, :dependent => :destroy
 	has_many :activities, :dependent => :destroy
 
