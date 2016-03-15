@@ -1216,7 +1216,7 @@ class Venue < ActiveRecord::Base
 
     if self.name.downcase.include?("university") || self.name.downcase.include?("park")
       wide_area_search = true
-      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 1000, :count => 100)
+      nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => 200, :count => 100)
     else
       #Dealing with an establishment so can afford a smaller pull radius.
       nearby_instagram_content = Instagram.media_search(latitude, longitude, :distance => search_radius, :count => 100)
