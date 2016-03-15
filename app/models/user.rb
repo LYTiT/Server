@@ -395,14 +395,6 @@ class User < ActiveRecord::Base
   end
   #--------------------------------------------------------------> 
 
-  def checkout_user_from_venue
-    user_live_venue = self.live_user.venue
-    self.live_user.delete  
-    if LiveUser.where("venue_id = ?", user_live_venue.id).count == 0
-      user_live_venue.update_columns(is_live: false)
-    end
-  end
-
   #-------------------------------------------------------------->
 
   def self.lumen_cleanup
