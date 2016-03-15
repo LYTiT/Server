@@ -962,36 +962,6 @@ class Venue < ActiveRecord::Base
     end
 
     return venue
-
-=begin
-    if proximity == "nearby"
-      #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-      #  <= #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
-      i = 0
-      nearby_trending_venues = Venue.in_bounds(proximity_box).where("color_rating > -1.0").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
-      
-      venue = nearby_trending_venues[i]
-      if previous_venue_ids.include?(venue.id) 
-        while previous_venue_ids.include?(venue.id)
-          i += 1
-          venue = nearby_trending_venues[i]
-        end
-      end
-    else
-      #venue = Venue.where("(ACOS(least(1,COS(RADIANS(#{user_lat}))*COS(RADIANS(#{user_long}))*COS(RADIANS(latitude))*COS(RADIANS(longitude))+COS(RADIANS(#{user_lat}))*SIN(RADIANS(#{user_long}))*COS(RADIANS(latitude))*SIN(RADIANS(longitude))+SIN(RADIANS(#{user_lat}))*SIN(RADIANS(latitude))))*6376.77271) 
-      #  > #{nearby_radius}").order("popularity_rank DESC").limit(num_diverse_venues)[rand_position]
-      i = 0
-      faraway_trending_venues = Venue.where("(latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng}) AND color_rating > -1.0 ").order("popularity_rank DESC").limit(num_diverse_venues).shuffle
-      venue = faraway_trending_venues[i]
-      if previous_venue_ids.include?(venue.id) 
-        while previous_venue_ids.include?(venue.id)
-          i += 1
-          venue = faraway_trending_venues[i]
-        end
-      end
-    end
-    return venue
-=end    
   end
 
   def Venue.trending_venues(user_lat, user_long)
@@ -1433,13 +1403,13 @@ class Venue < ActiveRecord::Base
         #try to establish instagram location id if previous attempts failed every 1 day
         if self.instagram_location_id == 0 
           if self.latest_posted_comment_time != nil and ((Time.now - instagram_venue_id_ping_rate.days >= self.latest_posted_comment_time) && (Time.now - (instagram_venue_id_ping_rate/2.0).days >= self.last_instagram_pull_time))
-            new_instagrams = self.set_instagram_location_id(250)
+            new_instagrams = self.set_instagram_location_id(100)
             self.update_columns(last_instagram_pull_time: Time.now)
           else
             new_instagrams = []
           end
         elsif self.latest_posted_comment_time != nil and (Time.now - instagram_venue_id_ping_rate.days >= self.last_instagram_pull_time)
-            new_instagrams = self.set_instagram_location_id(250)
+            new_instagrams = self.set_instagram_location_id(100)
             self.update_columns(last_instagram_pull_time: Time.now)
         else
           if ((Time.now - instagram_refresh_rate.minutes) >= self.last_instagram_pull_time)
@@ -1449,7 +1419,7 @@ class Venue < ActiveRecord::Base
           end
         end
       else
-        new_instagrams = self.set_instagram_location_id(250)
+        new_instagrams = self.set_instagram_location_id(200)
         self.update_columns(last_instagram_pull_time: Time.now)
       end
       new_instagrams
