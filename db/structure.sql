@@ -1046,7 +1046,9 @@ CREATE TABLE feeds (
     ts_name_vector tsvector,
     ts_description_vector tsvector,
     ts_categories_vector tsvector,
-    ts_meta_vector tsvector
+    ts_meta_vector tsvector,
+    preview_image_url character varying(255),
+    cover_image_url character varying(255)
 );
 
 
@@ -1792,7 +1794,8 @@ CREATE TABLE users (
     active boolean DEFAULT true,
     num_lists integer DEFAULT 0,
     facebook_id bigint,
-    facebook_name character varying(255)
+    facebook_name character varying(255),
+    num_daily_bolts integer
 );
 
 
@@ -4358,4 +4361,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160315200751');
 INSERT INTO schema_migrations (version) VALUES ('20160315201237');
 
 INSERT INTO schema_migrations (version) VALUES ('20160315210035');
+
+INSERT INTO schema_migrations (version) VALUES ('20160315213703');
 

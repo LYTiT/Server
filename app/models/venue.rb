@@ -212,7 +212,7 @@ class Venue < ActiveRecord::Base
       puts "Returning Nearby ONLY!"
       nearby_results.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
       return nearby_results
-    else            
+    elsif proximity_box == nil            
       direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
         puts "Direct Lookup Result"
@@ -235,6 +235,9 @@ class Venue < ActiveRecord::Base
           return country_spec
         end
       end
+    else
+      p"No results"
+      return []
     end
   end
 
