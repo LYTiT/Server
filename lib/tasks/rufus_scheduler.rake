@@ -72,7 +72,7 @@ namespace :lytit do
             LytSphere.where("venue_id = ?", venue.id).delete_all
           end
         end
-
+=begin
         diff_ratings = diff_ratings.to_a.sort
         if diff_ratings.size == 1
           step = 0.0
@@ -94,8 +94,8 @@ namespace :lytit do
           #  :venue_id => venue.id,
           #  :color_rating => colors_map[rating]
           #})
-
         end
+=end        
       end
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"

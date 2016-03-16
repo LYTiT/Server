@@ -1888,6 +1888,42 @@ class Venue < ActiveRecord::Base
   end
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
+  def Venue.update_venue_ratings_in(target_sphere)
+    sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{target_sphere}"
+    venues = Venue.joins(:lyt_spheres).where("sphere = ?", entry).to_a 
+    
+    diff_ratings = Set.new
+    for venue in venues
+      if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
+        venue.update_rating()
+      end
+      
+      if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0 
+        venue.update_popularity_rank
+        if venue.rating != nil
+          rat = venue.rating.round(2)
+          diff_ratings.add(rat)
+        end
+      else
+        #venues.delete(venue)
+        venue.update_columns(popularity_rank: 0.0)
+        venues.delete(venue)
+        LytSphere.where("venue_id = ?", venue.id).delete_all
+      end
+    end
+  end
+
+  def Venue.update_venue_color_ratings_in(target_sphere, venues)
+    if venues == nil
+      sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{target_sphere}"
+      venues = Venue.joins(:lyt_spheres).where("sphere = ?", entry) 
+    end
+
+    #venues.
+
+
+  end
+
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end
