@@ -206,14 +206,14 @@ class Venue < ActiveRecord::Base
     end
     
     query_parts = query.split
-    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR LOWER(name) LIKE ?", 0.5, '%'+query.downcase+'%').with_pg_search_rank.limit(10).to_a
+    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ? OR LOWER(name) LIKE ?", 0.44, '%'+query.downcase+'%').with_pg_search_rank.limit(10).to_a
 
     if nearby_results.count > 0
       puts "Returning Nearby ONLY!"
       nearby_results.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
       return nearby_results
     elsif proximity_box == nil            
-      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.5).with_pg_search_rank.limit(10).to_a
+      direct_search = Venue.name_search(query).where("pg_search.rank >= ?", 0.44).with_pg_search_rank.limit(10).to_a
       if direct_search.count > 0    
         puts "Direct Lookup Result"
         direct_search.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
@@ -484,7 +484,7 @@ class Venue < ActiveRecord::Base
     end
 
     #Address
-    if (self.city == nil || self.state == nil) or (self.city != auth_city) #Add venue details if they are not present
+    if (self.city == nil || self.state == nil || self.city = "" || self.city = ' ') or (self.city != auth_city) #Add venue details if they are not present
       self.update_columns(formatted_address: Venue.address_formatter(address, city, state, postal_code, country))
       self.update_columns(city: auth_city)
       self.update_columns(state: auth_state)
@@ -1390,7 +1390,7 @@ class Venue < ActiveRecord::Base
           end
         end
       else
-        new_instagrams = self.set_instagram_location_id(200)
+        new_instagrams = self.set_instagram_location_id(150)
         self.update_columns(last_instagram_pull_time: Time.now)
       end
       new_instagrams
