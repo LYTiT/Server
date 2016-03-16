@@ -8,6 +8,7 @@ class Api::V1::VenueCommentsController < ApiBaseController
 		country = params[:country] 		
 		vc = VenueComment.find_by_id(params[:venue_comment_id])	
 		if vc 
+			User.find_by_id(params[:user_id]).increment!(:num_bolts, 1)
 			view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])
 			vc.increment_geo_views(country)			
 			render json: { success: true }

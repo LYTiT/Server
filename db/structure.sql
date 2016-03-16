@@ -1795,7 +1795,7 @@ CREATE TABLE users (
     num_lists integer DEFAULT 0,
     facebook_id bigint,
     facebook_name character varying(255),
-    num_daily_bolts integer
+    num_bolts integer DEFAULT 0
 );
 
 
