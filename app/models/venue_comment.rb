@@ -43,6 +43,19 @@ class VenueComment < ActiveRecord::Base
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
 	end
 
+	def increment_geo_views(geography)
+		geo_views_hash = geo_views
+		geo_entry = geo_views_hash[geography]
+		if geo_entry != nil
+			geo_entry += 1
+			geo_views_hash[geography] = geo_entry
+			self.update_columns(geo_views: geo_views_hash)
+		else
+			geo_views_hash[geography] = 1
+			self.update_columns(geo_views: geo_views_hash)
+		end		
+	end
+
 	def deincrement_feed_moment_counts
 		begin
 			self.venue.feeds.update_all("num_moments = num_moments-1")
