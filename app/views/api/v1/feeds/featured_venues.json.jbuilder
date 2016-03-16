@@ -27,7 +27,7 @@ json.cache! @venues, expires_in: 10.minutes, key: @view_cache_key do |json|
     json.country venue.country
     json.latitude venue.latitude
     json.longitude venue.longitude
-    json.color_rating venue.color_rating
+    json.color_rating venue.rating
     json.instagram_location_id venue.instagram_location_id
 
     json.added_note nil

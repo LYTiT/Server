@@ -1889,11 +1889,7 @@ class Venue < ActiveRecord::Base
 
   #VI. LYT Algorithm Related Calculations and Calibrations ------------------------->
   def Venue.update_venue_ratings_in(target_sphere)
-    sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{target_sphere}"
-    venues = Venue.joins(:lyt_spheres).where("sphere = ?", entry).to_a 
-    
-    diff_ratings = Set.new
-    for venue in venues
+    for venue in Venue.where("l_sphere = ?", target_sphere).joins(:lyt_spheres)
       if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
         venue.update_rating()
       end

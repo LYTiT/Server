@@ -10,6 +10,6 @@ json.array! @venues do |venue|
   json.latitude venue.latitude
   json.longitude venue.longitude
   json.phone_number venue.phone_number
-  json.color_rating venue.color_rating
+  json.color_rating venue.rating
   json.time_zone_offset venue.time_zone_offset
 end

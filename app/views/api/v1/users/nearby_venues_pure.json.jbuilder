@@ -10,5 +10,5 @@ json.array! @venues do |venue|
   json.postal_code venue.postal_code
   json.latitude venue.latitude
   json.longitude venue.longitude
-  json.color_rating venue.color_rating
+  json.color_rating venue.rating
 end

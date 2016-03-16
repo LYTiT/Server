@@ -6,7 +6,7 @@ json.array! @top_favorite_venues do |favorite_venue|
   json.num_new_moments favorite_venue.num_new_moments
   json.latitude favorite_venue.venue_details["latitude"]
   json.longitude favorite_venue.venue_details["longitude"]
-  json.color_rating favorite_venue.venue.color_rating
+  json.color_rating favorite_venue.venue.rating
   json.address favorite_venue.venue.address
   json.city favorite_venue.venue.city
   json.state favorite_venue.venue.state

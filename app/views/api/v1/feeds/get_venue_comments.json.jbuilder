@@ -16,5 +16,5 @@ json.comments(@comments) do |comment|
   json.thirdparty_username comment.thirdparty_username
   json.latitude comment.venue.latitude
   json.longitude comment.venue.longitude
-  json.color_rating comment.venue.color_rating
+  json.color_rating comment.venue.rating
 end

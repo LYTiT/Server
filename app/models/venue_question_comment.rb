@@ -41,7 +41,7 @@ class VenueQuestionComment < ActiveRecord::Base
 		    :latitude => venue_question.venue.latitude,
 		    :longitude => venue_question.venue.longitude,
 		    :city => venue_question.venue.city,
-		    :color_rating => venue_question.venue.color_rating,
+		    :color_rating => venue_question.venue.rating,
 		    :activity_created_at => venue_question.created_at.to_i
 		}
 		

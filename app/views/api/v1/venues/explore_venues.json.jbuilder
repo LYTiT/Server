@@ -5,6 +5,6 @@ json.city @venue.city
 json.country @venue.country
 json.latitude @venue.latitude
 json.longitude @venue.longitude
-json.color_rating @venue.color_rating
+json.color_rating @venue.rating
 json.time_zone_offset @venue.time_zone_offset
 json.instagram_location_id @venue.instagram_location_id
