@@ -63,42 +63,10 @@ namespace :lytit do
     
     #used for determing which way top venues are trending
     
-    for entry in spheres
-      sphericles = Venue.where("id IN (?)", LytSphere.where(:sphere => entry).pluck(:venue_id)).to_a
+    spheres = LytSphere.uniq.pluck(:sphere)
 
-      diff_ratings = Set.new
-      for venue in sphericles
-        venue.update_rating()
-        venue.update_popularity_rank
-        if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0
-          rat = venue.rating.round(2)
-          diff_ratings.add(rat)
-        else
-          #venues.delete(venue)
-          sphericles.delete(venue)
-          LytSphere.where("venue_id = ?", venue.id).delete_all
-        end
-      end
-
-      diff_ratings = diff_ratings.to_a.sort
-      if diff_ratings.size == 1
-        step = 0.0
-      else
-        step = 1.0 / (diff_ratings.size - 1)
-      end
-      colors_map = {0.0 => 0.0}
-      color = -step
-
-      for rating in diff_ratings
-        color += step
-        colors_map[rating] = color.round(2)
-      end
-
-      for venue in sphericles
-        rating = venue.rating ? venue.rating.round(2) : 0.0
-        venue.update_columns(color_rating: colors_map[rating])
-      end
-
+    for sphere in spheres
+      Venue.update_venue_ratings_in(sphere)
     end
 
     ClusterTracker.delete_all

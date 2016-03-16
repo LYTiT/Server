@@ -1896,28 +1896,11 @@ class Venue < ActiveRecord::Base
       
       if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0 
         venue.update_popularity_rank
-        if venue.rating != nil
-          rat = venue.rating.round(2)
-          diff_ratings.add(rat)
-        end
       else
-        #venues.delete(venue)
         venue.update_columns(popularity_rank: 0.0)
-        venues.delete(venue)
         LytSphere.where("venue_id = ?", venue.id).delete_all
       end
     end
-  end
-
-  def Venue.update_venue_color_ratings_in(target_sphere, venues)
-    if venues == nil
-      sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{target_sphere}"
-      venues = Venue.joins(:lyt_spheres).where("sphere = ?", entry) 
-    end
-
-    #venues.
-
-
   end
 
   def v_up_votes

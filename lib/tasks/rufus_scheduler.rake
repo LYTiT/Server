@@ -49,53 +49,8 @@ namespace :lytit do
       puts("Recalculating color ratings")
       spheres = LytSphere.uniq.pluck(:sphere)
 
-      for entry in spheres
-        sphericle_venue_ids = "SELECT venue_id FROM lyt_spheres WHERE sphere = #{entry}"
-        sphericles = Venue.joins(:lyt_spheres).where("sphere = ?", entry).to_a
-
-        diff_ratings = Set.new
-        for venue in sphericles
-          if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
-            venue.update_rating()
-          end
-          
-          if venue.is_visible? == true #venue.rating != nil && venue.rating > 0.0 
-            venue.update_popularity_rank
-            if venue.rating != nil
-              rat = venue.rating.round(2)
-              diff_ratings.add(rat)
-            end
-          else
-            #venues.delete(venue)
-            venue.update_columns(popularity_rank: 0.0)
-            sphericles.delete(venue)
-            LytSphere.where("venue_id = ?", venue.id).delete_all
-          end
-        end
-=begin
-        diff_ratings = diff_ratings.to_a.sort
-        if diff_ratings.size == 1
-          step = 0.0
-        else
-          step = 1.0 / (diff_ratings.size - 1)
-        end
-        colors_map = {0.0 => 0.0}
-        color = -step
-
-        for rating in diff_ratings
-          color += step
-          colors_map[rating] = color.round(2)
-        end
-
-        for venue in sphericles
-          rating = venue.rating ? venue.rating.round(2) : 0.0
-          venue.update_columns(color_rating: colors_map[rating])
-          #VenueColorRating.create({
-          #  :venue_id => venue.id,
-          #  :color_rating => colors_map[rating]
-          #})
-        end
-=end        
+      for sphere in spheres
+        Venue.update_venue_ratings_in(sphere)
       end
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
