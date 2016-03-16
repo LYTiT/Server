@@ -1907,10 +1907,9 @@ class Venue < ActiveRecord::Base
     for venue in Venue.where("rating IS NOT NULL")
       if venue.is_visible? == true
         venue.update_popularity_rank
-      end
-
-      if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
-        venue.update_rating()
+        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
+          venue.update_rating()
+        end
       end
     end
   end
