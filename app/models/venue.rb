@@ -1903,6 +1903,18 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def Venue.update_all_active_venue_ratings
+    for venue in Venue.where("rating IS NOT NULL")
+      if venue.is_visible? == true
+        venue.update_popularity_rank
+      end
+
+      if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
+        venue.update_rating()
+      end
+    end
+  end
+
   def v_up_votes
     LytitVote.where("venue_id = ? AND value = ? AND created_at >= ?", self.id, 1, Time.now.beginning_of_day)
   end

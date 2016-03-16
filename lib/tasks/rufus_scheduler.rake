@@ -49,9 +49,10 @@ namespace :lytit do
       puts("Recalculating color ratings")
       spheres = LytSphere.uniq.pluck(:sphere)
 
-      for sphere in spheres
-        Venue.update_venue_ratings_in(sphere)
-      end
+      Venue.update_all_active_venue_ratings
+      #for sphere in spheres
+      #  Venue.update_venue_ratings_in(sphere)
+      #end
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
