@@ -57,6 +57,8 @@ gem 'postgresql_cursor'
 gem 'pg_search', '= 1.0.3'
 gem 'activerecord-postgis-adapter'
 gem 'foursquare2'
+gem 'eventful_api'
+gem 'multi_json'
 
 # design
 gem 'sass-rails'
