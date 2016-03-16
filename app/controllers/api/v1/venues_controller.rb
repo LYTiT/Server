@@ -89,7 +89,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if mr.delete
 			render json: { success: true }
 		else
-			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Deletion Failed"] } }, :status => :not_found
 		end
 	end
 
@@ -123,7 +123,6 @@ class Api::V1::VenuesController < ApiBaseController
 		page = params[:page].to_i
 		venue_ids = params[:cluster_venue_ids].split(',').map(&:to_i)
 
-		
 		if venue_ids.count == 1
 			@venue = Venue.find_by_id(venue_ids.first)
 			@venue_id = @venue.id
@@ -414,8 +413,22 @@ class Api::V1::VenuesController < ApiBaseController
 
 		query = params[:q]
 
-		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long).to_a
+		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
 
+		render 'search.json.jbuilder'
+	end
+
+	def meta_fetch
+		position_lat = params[:latitude]
+		position_long = params[:longitude]
+
+		ne_lat = params[:ne_latitude]
+		ne_long = params[:ne_longitude]
+		sw_lat = params[:sw_latitude]
+		sw_long = params[:sw_longitude]
+
+		query = params[:q]
+		@venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(1)
 		render 'search.json.jbuilder'
 	end
 

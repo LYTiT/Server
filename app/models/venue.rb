@@ -286,7 +286,7 @@ class Venue < ActiveRecord::Base
     if query != nil && query != ""
       if query.first =="/"  
         query[0] = ""
-        meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20).order("updated_at DESC")
+        meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20)
       else
         if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
           central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
@@ -1088,12 +1088,18 @@ class Venue < ActiveRecord::Base
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
         else
-          new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, origin_vortex.city, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
-          new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
-          new_lytit_venue.update_columns(verified: true)
-          new_lytit_venue.set_hours
-          InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
-          return new_lytit_venue
+          #for major US cities we only deal with verified venues
+          major_cities = ["New York", "San Francisco", "Los Angeles"]
+          if origin_vortex.city && foursquare_venue.verified == false
+            return nil
+          else
+            new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, origin_vortex.city, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+            new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
+            new_lytit_venue.update_columns(verified: true)
+            new_lytit_venue.set_hours
+            InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
+            return new_lytit_venue
+          end
         end
       else
         if lytit_venue_lookup.verified == true
