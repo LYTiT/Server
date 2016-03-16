@@ -373,7 +373,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 			#this is a hack to prevent a nil page return which casause app to crash.
 			if nearby_venues.count == 0
-				nearby_venues << Venue.where("color_rating > -1.0").first
+				nearby_venues << Venue.where("rating is not null").first
 			end
 			@venues = nearby_venues
 		else
