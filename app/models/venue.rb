@@ -1052,7 +1052,7 @@ class Venue < ActiveRecord::Base
         lower_raw_name = lower_raw_name.partition(" at ").last.strip.capitalize
       end
 
-      if (lower_city != nil && lower_city != "") and lower_raw_name.include?("#{lower_city}") == true
+      if (lower_city != nil && lower_city != "" && lower_city != " ") and lower_raw_name.include?("#{lower_city}") == true
         lower_raw_name = lower_raw_name.partition("#{lower_city}").first.strip
       end
 
