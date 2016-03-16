@@ -180,6 +180,9 @@ LytitServer::Application.routes.draw do
           get 'direct_fetch'
         end
         collection do
+          get 'meta_fetch'
+        end
+        collection do
           get 'get_suggested_venues'
         end
         post 'vote'

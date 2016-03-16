@@ -1090,7 +1090,7 @@ class Venue < ActiveRecord::Base
         else
           #for major US cities we only deal with verified venues
           major_cities = ["New York", "San Francisco", "Los Angeles"]
-          if origin_vortex.city && foursquare_venue.verified == false
+          if major_cities.include? origin_vortex.city == true && foursquare_venue.verified == false
             return nil
           else
             new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, origin_vortex.city, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)

@@ -13,5 +13,4 @@ json.array! @venues do |v|
   json.color_rating v.rating
   json.compare_type v.type
   json.time_zone_offset v.time_zone_offset
-  json.is_meta true
 end
