@@ -76,7 +76,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def request_moment
-		rm = RequestMoment.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
+		rm = MomentRequest.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
 		if rm
 			render json: { success: true }
 		else
