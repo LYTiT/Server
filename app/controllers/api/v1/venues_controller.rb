@@ -76,8 +76,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def request_moment
-		rm = MomentRequest.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
-		if rm
+		mr = MomentRequest.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
+		if mr
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
@@ -85,8 +85,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def delete_moment_request
-		rm = RequestMoment.find_by_id(params[:moment_request_id])
-		if rm.delete
+		mr = MomentRequest.find_by_id(params[:moment_request_id])
+		if mr.delete
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
