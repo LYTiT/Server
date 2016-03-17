@@ -1146,7 +1146,7 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.foursquare_venue(foursquare_venue_id)
+  def foursquare_venue
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
     client.venue(self.foursquare_id)
   end
