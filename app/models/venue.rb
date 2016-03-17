@@ -944,12 +944,12 @@ class Venue < ActiveRecord::Base
     #proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
 
 
-    nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("popularity_rank DESC").limit(nearby_count)
+    nearby_trends = Venue.close_to(center_point.first, center_point.last, 5000).where("rating IS NOT NULL").order("popularity_rank DESC").limit(nearby_count)
     if nearby_trends.count == 0
-      global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("color_rating > -1.0").order("popularity_rank DESC").limit(total_trends)
+      global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("rating IS NOT NULL").order("popularity_rank DESC").limit(total_trends)
       return global_trends.shuffle
     else
-      global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("color_rating > -1.0").order("popularity_rank DESC").limit(global_count)
+      global_trends = Venue.far_from(center_point.first, center_point.last, 50*1000).where("rating IS NOT NULL").order("popularity_rank DESC").limit(global_count)
       return (nearby_trends+global_trends).shuffle
     end
      
