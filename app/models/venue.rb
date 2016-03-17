@@ -2108,6 +2108,14 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def increment_rating(vc_created_at)
+    vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+                :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
+    self.update_r_up_votes(vc_created_at)
+    self.update_rating()
+    self.update_columns(latest_rating_update_time: Time.now)
+  end
+
   #----------------------------------------------------------------------------->
   #VII.
 
@@ -2173,14 +2181,6 @@ class Venue < ActiveRecord::Base
     else
       LytitConstants.threshold_to_venue_be_shown_on_map
     end
-  end
-
-  def increment_rating(vc_created_at)
-    vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
-    self.update_r_up_votes(vc_created_at)
-    self.update_rating()
-    self.update_columns(latest_rating_update_time: Time.now)
   end
 
   def account_up_vote
