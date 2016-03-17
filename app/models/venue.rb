@@ -2175,6 +2175,14 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def increment_rating(vc_created_at)
+    vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+                :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
+    self.update_r_up_votes(vc_created_at)
+    self.update_rating()
+    self.update_columns(latest_rating_update_time: Time.now)
+  end
+
   def account_up_vote
     up_votes = self.v_up_votes.order('id ASC').to_a
     last = up_votes.pop # current vote should not be considered for the sum of the past

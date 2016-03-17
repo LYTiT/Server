@@ -47,7 +47,7 @@ namespace :lytit do
       end
 
       puts("Recalculating color ratings")
-      spheres = LytSphere.uniq.pluck(:sphere)
+      #spheres = LytSphere.uniq.pluck(:sphere)
 
       Venue.update_all_active_venue_ratings
       #for sphere in spheres

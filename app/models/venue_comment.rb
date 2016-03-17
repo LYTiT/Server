@@ -268,15 +268,15 @@ class VenueComment < ActiveRecord::Base
 
 				#Venue LYTiT ratings related methods
 				#if venue is currently popular the probability of an assigned lytit vote is 100%, else 75% (that's the rand(3)).
-				if (origin_venue.is_popular? ? 1:0) + rand(4) > 0
-					vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
-													:prime => 0.0, :raw_value => 1.0, :time_wrapper => created_time)
-					origin_venue.update_r_up_votes(created_time)
-					origin_venue.delay.update_rating()
-					origin_venue.update_columns(latest_rating_update_time: Time.now)											
-
-					sphere = LytSphere.create_new_sphere(origin_venue)
+				#if a venue has popular hours but not open hours, we treat them as open hours. Thus assign lyt only if venue is popular.
+				if origin_venue.in_timespan?("popular_hours", created_time) == true 
+					origin_venue.increment_rating(vc_created_at)							
+				elsif (origin_venue.in_timespan?("popular_hours", created_time) ? 1:0) + rand(4) > 0 && origin_venue.open_hours["NA"] == nil
+					origin_venue.increment_rating(vc_created_at)
+				else
+					p "Comment is most likely not live. Vote not assigend."
 				end
+					
 				#newly created venues for instagrams for vortices will have an instagram id but not a last instagram pull time.
 				#to prevent a redundent set_instagram_location_id opperation we assign a last instagram pull time.
 
@@ -305,7 +305,6 @@ class VenueComment < ActiveRecord::Base
 		venue.update_r_up_votes(time_wrapper)
 		venue.update_rating()
 		venue.update_columns(latest_rating_update_time: Time.now)
-		sphere = LytSphere.create_new_sphere(venue)		
 	end
 
 	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)
