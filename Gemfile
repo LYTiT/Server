@@ -59,6 +59,7 @@ gem 'activerecord-postgis-adapter'
 gem 'foursquare2'
 gem 'eventful_api'
 gem 'multi_json'
+gem 'eventbrite'
 
 # design
 gem 'sass-rails'

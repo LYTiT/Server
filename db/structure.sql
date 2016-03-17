@@ -779,7 +779,6 @@ CREATE TABLE events (
     id integer NOT NULL,
     name character varying(255),
     description text,
-    color character varying(255),
     start_time timestamp without time zone,
     end_time timestamp without time zone,
     venue_id integer,
@@ -787,7 +786,10 @@ CREATE TABLE events (
     medium_image_url character varying(255),
     regular_image_url character varying(255),
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    category character varying(255),
+    source character varying(255),
+    source_url character varying(255)
 );
 
 
@@ -4363,4 +4365,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160315201237');
 INSERT INTO schema_migrations (version) VALUES ('20160315210035');
 
 INSERT INTO schema_migrations (version) VALUES ('20160315213703');
+
+INSERT INTO schema_migrations (version) VALUES ('20160317031738');
 

@@ -68,13 +68,11 @@ GEM
       json (~> 1.7, >= 1.7.7)
       minitest (~> 5.1)
       thread_safe (~> 0.1)
-      tzinfo (~> 1.1)
     acts_as_singleton (0.0.8)
       activerecord (>= 3.1.0)
     addressable (2.3.6)
     arel (5.0.1.20140414130214)
     aws-sdk (1.5.8)
-      httparty (~> 0.7)
       json (~> 1.4)
       nokogiri (>= 1.4.4)
       uuidtools (~> 2.1)
@@ -143,6 +141,8 @@ GEM
     descriptive_statistics (2.4.0)
     diff-lcs (1.2.5)
     docile (1.1.5)
+    domain_name (0.5.20160309)
+      unf (>= 0.0.5, < 1.0.0)
     dotenv (1.0.2)
     dotenv-rails (1.0.2)
       dotenv (= 1.0.2)
@@ -152,6 +152,9 @@ GEM
     erubis (2.7.0)
     ethon (0.8.0)
       ffi (>= 1.3.0)
+    eventbrite (0.0.1)
+      hashie (~> 3.0)
+      rest-client (~> 1.4)
     eventful_api (0.0.1)
       addressable (~> 2.3.4)
       multi_json (~> 1.5.0)
@@ -212,10 +215,12 @@ GEM
       ruby_parser (~> 3.1.1)
     http (0.6.4)
       http_parser.rb (~> 0.6.0)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
     http_parser.rb (0.6.0)
-    httparty (0.13.3)
-      json (~> 1.8)
-      multi_xml (>= 0.5.2)
+    httparty (0.8.3)
+      multi_json (~> 1.0)
+      multi_xml
     i18n (0.7.0)
     instagram (1.1.5)
       faraday (>= 0.7, < 0.10)
@@ -256,6 +261,7 @@ GEM
       bourbon (>= 4.0)
       sass (>= 3.3)
     nested_form (0.3.2)
+    netrc (0.11.0)
     newrelic_rpm (3.9.8.273)
     nokogiri (1.6.5)
       mini_portile (~> 0.6.0)
@@ -332,6 +338,10 @@ GEM
       mail
     ref (1.0.5)
     remotipart (1.2.1)
+    rest-client (1.8.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 3.0)
+      netrc (~> 0.7)
     rgeo (0.5.3)
     rgeo-activerecord (1.2.0)
       activerecord (~> 4.0)
@@ -359,7 +369,6 @@ GEM
       blankslate (>= 2.1.2.3)
       ffi (>= 1.0.7)
     rufus-scheduler (3.0.9)
-      tzinfo
     safe_yaml (1.0.4)
     sass (3.4.19)
     sass-rails (5.0.4)
@@ -418,11 +427,13 @@ GEM
       simple_oauth (~> 0.3.0)
     typhoeus (0.8.0)
       ethon (>= 0.8.0)
-    tzinfo (1.2.2)
-      thread_safe (~> 0.1)
+    tzinfo (0.3.47)
     uglifier (2.6.0)
       execjs (>= 0.3.0)
       json (>= 1.8.0)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.2)
     unicorn (4.8.3)
       kgio (~> 2.6)
       rack
@@ -457,6 +468,7 @@ DEPENDENCIES
   descriptive_statistics
   dotenv-rails
   email_validator
+  eventbrite
   eventful_api
   factory_girl_rails
   faker
