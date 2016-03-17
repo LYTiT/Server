@@ -789,7 +789,7 @@ CREATE TABLE events (
     updated_at timestamp without time zone,
     category character varying(255),
     source character varying(255),
-    source_url character varying(255)
+    source_url text
 );
 
 

@@ -356,8 +356,12 @@ class Api::V1::UsersController < ApiBaseController
 		@user.delay(:priority => -3).update_user_feeds
 	end
 
-	def get_nearby_venues
+	def nearby_moment_requests
+		proximity_box = Geokit::Bounds.from_point_and_radius([params[:latitude], params[:longitude]], 0.15, :units => :kms)
+		@moment_request = MomentRequest.joins(:venues).in_bounds(proximity_box)
+	end
 
+	def get_nearby_venues
 		@venues = []#@user.surrounding_venues(params[:latitude], params[:longitude])
 		if @venues.first.is_a?(Hash) 
 			render 'nearby_venues_dirty.json.jbuilder'
