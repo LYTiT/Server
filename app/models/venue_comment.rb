@@ -270,9 +270,9 @@ class VenueComment < ActiveRecord::Base
 				#if venue is currently popular the probability of an assigned lytit vote is 100%, else 75% (that's the rand(3)).
 				#if a venue has popular hours but not open hours, we treat them as open hours. Thus assign lyt only if venue is popular.
 				if origin_venue.in_timespan?("popular_hours", created_time) == true 
-					origin_venue.increment_rating(vc_created_at)							
+					origin_venue.increment_rating(created_time)							
 				elsif (origin_venue.in_timespan?("popular_hours", created_time) ? 1:0) + rand(4) > 0 && origin_venue.open_hours["NA"] == nil
-					origin_venue.increment_rating(vc_created_at)
+					origin_venue.increment_rating(created_time)
 				else
 					p "Comment is most likely not live. Vote not assigend."
 				end
