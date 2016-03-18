@@ -2040,7 +2040,8 @@ class Venue < ActiveRecord::Base
     latest_page_view_time_wrapper = latest_page_view_time || Time.now
     new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
     self.update_columns(page_views: new_page_view_count)
-    current_hour = (Time.now.hour + self.time_zone_offset).to_i
+    tz_offset = self.time_zone_offset || 0.0
+    current_hour = (Time.now.hour + tz_offset).to_i
     key = "hour_#{current_hour}"
     historical_rating = self.hist_rating_avgs[key]["rating"]
     current_rating = rating || 0
