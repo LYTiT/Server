@@ -2044,7 +2044,7 @@ class Venue < ActiveRecord::Base
     current_hour = (Time.now.hour + tz_offset).to_i
     key = "hour_#{current_hour}"
     p "#{self.name} (#{self.id})"
-    current_spane = self.hist_rating_avgs[key]["rating"]
+    historical_rating = self.hist_rating_avgs[key]["rating"]
     current_rating = rating || 0
     k = 1.0
     m = 0.01
