@@ -2022,6 +2022,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_historical_avg_rating
+    tz_offset = time_zone_offset || 0.0
     current_hour = (Time.now.utc + tz_offset.hours).hour.to_i
     ratings_hash = self.hist_rating_avgs
     key = "hour_#{current_hour}"
