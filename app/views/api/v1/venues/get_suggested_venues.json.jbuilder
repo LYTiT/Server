@@ -6,5 +6,5 @@ json.array! @suggestions do |v|
   json.country v.country
   json.latitude v.latitude
   json.longitude v.longitude
-  json.color_rating v.rating
+  json.color_rating v.color_rating
 end

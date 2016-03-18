@@ -28,7 +28,7 @@ json.activity(@activities) do |activity|
   json.country activity.venue_country
   json.latitude activity.venue_latitude
   json.longitude activity.venue_longitude
-  json.color_rating activity.venue.try(:rating)
+  json.color_rating activity.venue.try(:color_rating)
   json.instagram_location_id activity.venue_instagram_location_id
 
   json.added_note activity.venue_added_note

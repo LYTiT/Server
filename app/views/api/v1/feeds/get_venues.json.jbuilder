@@ -11,7 +11,7 @@ json.array! @feed_venues do |feed_venue|
   json.latitude feed_venue.venue.latitude
   json.longitude feed_venue.venue.longitude
   json.phone_number feed_venue.venue.phone_number
-  json.color_rating feed_venue.venue.rating
+  json.color_rating feed_venue.venue.color_rating
   json.time_zone_offset feed_venue.venue.time_zone_offset
 
   json.added_by_user feed_venue.user.try(:name)

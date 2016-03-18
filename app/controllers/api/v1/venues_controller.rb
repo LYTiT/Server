@@ -336,7 +336,7 @@ class Api::V1::VenuesController < ApiBaseController
 		cache_key = "lyt_map"
 		@view_cache_key = cache_key+"/view"
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
-			Venue.where("rating IS NOT NULL").to_a
+			Venue.where("color_rating > -1.0").to_a
 		end
 		render 'display.json.jbuilder'
 	end
@@ -367,18 +367,18 @@ class Api::V1::VenuesController < ApiBaseController
 		if page == 1
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
 			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				Venue.close_to(center_point.first, center_point.last, 5000).where("rating IS NOT NULL AND latest_posted_comment_time > ?", (Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes)).order("id DESC").to_a
+				Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0 AND latest_posted_comment_time > ?", (Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes)).order("id DESC").to_a
 				#Venue.in_bounds(proximity_box).where("color_rating > -1.0")
 			end
 			#this is a hack to prevent a nil page return which casause app to crash.
 			if nearby_venues.count == 0
-				nearby_venues << Venue.where("rating is not null").first
+				nearby_venues << Venue.where("color_rating > -1.0").first
 			end
 			@venues = nearby_venues
 		else
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
 			faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-				Venue.far_from(center_point.first, center_point.last, 5000).where("rating IS NOT NULL AND latest_posted_comment_time > ?", (Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes)).order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
+				Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0 AND latest_posted_comment_time > ?", (Time.now - LytitConstants.threshold_to_venue_be_shown_on_map.minutes)).order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
 				#Venue.where("((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})) AND (color_rating > -1.0)").order("city ASC").limit(num_page_entries).offset((page-2)*num_page_entries)
 			end
 			@venues = faraway_venues			

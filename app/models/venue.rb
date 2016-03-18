@@ -888,14 +888,6 @@ class Venue < ActiveRecord::Base
   end
 =end  
 
-  def update_popularity_rank
-    view_half_life = 120.0 #minutes
-    latest_page_view_time_wrapper = latest_page_view_time || Time.now
-    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
-    self.update_columns(page_views: new_page_view_count)
-    self.update_columns(popularity_rank: ((self.page_views*0.5+1) * self.rating))
-  end
-
   def ranking_change(new_ranking)
     current_ranking = self.trend_position
     if current_ranking == nil
@@ -2002,32 +1994,61 @@ class Venue < ActiveRecord::Base
     a = self.r_up_votes >= 1.0 ? r_up_votes : 1.0
     b = 1.0
 
-    if (a - 1.0).round(4) == 0.0
-      update_columns(rating: 0.0)
-    else
-      puts "A = #{a}, B = #{b}, Y = #{y}"
+    puts "A = #{a}, B = #{b}, Y = #{y}"
 
-      # x = LytitBar::inv_inc_beta(a, b, y)
-      # for some reason the python interpreter installed is not recognized by RubyPython
-      x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+    # x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
 
-      if $?.to_i == 0
-        puts "rating before = #{self.rating}"
-        puts "rating after = #{x}"
+    if $?.to_i == 0
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
 
-        new_rating = eval(x).round(4)
+      new_rating = eval(x).round(4)
+      color_rating = new_rating.round(1)
 
-        update_columns(rating: new_rating)
-        #update the popularity rank as well if the last rating update was over 5 minutes ago
-        if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 5.minutes
-          update_popularity_rank
-        end
-
-        update_columns(latest_rating_update_time: Time.now)
-      else
-        puts "Could not calculate rating. Status: #{$?.to_i}"
+      update_columns(rating: new_rating)
+      update_columns(color_rating: color_rating)
+      update_historical_avg_rating
+      #update the popularity rank as well if the last rating update was over 5 minutes ago
+      if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 5.minutes
+        update_popularity_rank
       end
+
+      update_columns(latest_rating_update_time: Time.now)
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
     end
+  end
+
+  def update_historical_avg_rating
+    current_hour = (Time.now.hour + self.time_zone_offset).to_i
+    ratings_hash = self.hist_rating_avgs
+    key = "hour_#{current_hour}"
+    count = ratings_hash[key]["count"]
+    previous_hist_rating = ratings_hash[key]["rating"]
+    count += 1
+    current_rating = rating || 0
+    updated_hist_rating = (previous_hist_rating + current_rating)/count.to_f
+    ratings_hash[key]["count"] = count
+    ratings_hash[key]["rating"] = updated_hist_rating
+    self.update_columns(hist_rating_avgs: ratings_hash)
+  end
+
+  def update_popularity_rank
+    view_half_life = 60.0 #minutes
+    latest_page_view_time_wrapper = latest_page_view_time || Time.now
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
+    self.update_columns(page_views: new_page_view_count)
+    current_hour = (Time.now.hour + self.time_zone_offset).to_i
+    key = "hour_#{current_hour}"
+    historical_rating = self.hist_rating_avgs[key]["rating"]
+    current_rating = rating || 0
+    k = 1.0
+    m = 0.01
+    e = 0.2
+    new_popularity_rank = (current_rating + (current_rating - historical_rating)*k) + new_page_view_count*m + event_happening?*e
+    self.update_columns(popularity_rank: new_popularity_rank)
   end
 
   def is_visible?
@@ -2119,6 +2140,10 @@ class Venue < ActiveRecord::Base
     self.update_r_up_votes(vc_created_at)
     self.update_rating()
     self.update_columns(latest_rating_update_time: Time.now)
+  end
+
+  def event_happening?
+    self.events.where("start_time >= ? AND end_time <= ?", Time.now, Time.now).any? ? 1:0
   end
 
   #----------------------------------------------------------------------------->

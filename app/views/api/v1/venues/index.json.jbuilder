@@ -4,5 +4,5 @@ json.array! @venues do |v|
   json.city v.city
   json.latitude v.latitude
   json.longitude v.longitude
-  json.color_rating v.rating
+  json.color_rating v.color_rating
 end
