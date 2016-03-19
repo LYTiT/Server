@@ -289,7 +289,7 @@ class Venue < ActiveRecord::Base
         meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20)
       else
         if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
-          central_screen_point = [(ne_lat.to_f-sw_lat.to_f), (ne_long.to_f-sw_long.to_f)]
+          central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
           if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
               search_box = Geokit::Bounds.from_point_and_radius(center_point, 20, :units => :kms)
               Venue.search(query, search_box, nil)
