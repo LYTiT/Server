@@ -218,7 +218,9 @@ class Venue < ActiveRecord::Base
           geography).with_pg_search_rank.limit(10).to_a
         if country_spec_results.first == nil or country_spec_results.first.pg_search_rank < 0.5
           p "Returning All Results"
-          return (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
+          total_results = (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
+          p total_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+          return total_results
         else
           p "Returning Country Results"
           p country_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
