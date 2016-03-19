@@ -2027,11 +2027,10 @@ class Venue < ActiveRecord::Base
     ratings_hash = self.hist_rating_avgs
     key = "hour_#{current_hour}"
     count = ratings_hash[key]["count"]
-    previous_hist_rating = ratings_hash[key]["rating"]
-    count += 1
+    previous_hist_rating = ratings_hash[key]["rating"]    
     current_rating = rating || 0
-    updated_hist_rating = (previous_hist_rating + current_rating)/count.to_f
-    ratings_hash[key]["count"] = count
+    updated_hist_rating = (previous_hist_rating * count.to_f + current_rating) / (count.to_f + 1.0)
+    ratings_hash[key]["count"] = count + 1
     ratings_hash[key]["rating"] = updated_hist_rating
     self.update_columns(hist_rating_avgs: ratings_hash)
   end
