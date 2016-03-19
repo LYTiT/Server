@@ -16,7 +16,7 @@ class Venue < ActiveRecord::Base
         #:prefix => true,
       },  
     },
-    :ranked_by => "0.5*:trigram + :tsearch + 0.3*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
+    :ranked_by => "0.5*:trigram + :tsearch +:dmetaphone" #+ 0.3*Cast(venues.verified as integer)"#{}"(((:dmetaphone) + 1.5*(:trigram))*(:tsearch) + (:trigram))"    
 
   pg_search_scope :name_city_search, #name and/or associated meta data
     :against => :ts_name_city_vector,
@@ -29,7 +29,7 @@ class Venue < ActiveRecord::Base
         :tsvector_column => 'ts_name_city_vector',
       }  
     },
-    :ranked_by => ":trigram*5 +:tsearch*4 + 0.4*Cast(venues.verified as integer)"    
+    :ranked_by => "0.5*:trigram + :tsearch +:dmetaphone"
 
   pg_search_scope :name_country_search, #name and/or associated meta data
     :against => :ts_name_country_vector,
@@ -42,7 +42,7 @@ class Venue < ActiveRecord::Base
         :tsvector_column => 'ts_name_country_vector',
       }  
     },
-    :ranked_by => ":trigram*5 +:tsearch*4 + 0.4*Cast(venues.verified as integer)"   
+    :ranked_by => "0.5*:trigram + :tsearch +:dmetaphone"
 
 
   pg_search_scope :name_search_expd, #name and/or associated meta data
@@ -194,6 +194,51 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.search(query, proximity_box, view_box)
+    if proximity_box != nil      
+      search_box = proximity_box
+    elsif view_box != nil 
+      sw_point = Geokit::LatLng.new(view_box[:sw_lat], view_box[:sw_long])
+      ne_point =Geokit::LatLng.new(view_box[:ne_lat], view_box[:ne_lat])
+      search_box = Geokit::Bounds.new(sw_point, ne_point)
+    else
+      search_box = Geokit::Bounds.from_point_and_radius([40.741140, -73.981917], 20, :units => :kms)
+    end
+
+    query_parts = query.split    
+    #First search in proximity
+    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(10).to_a
+    if nearby_results.first == nil or nearby_results.first.pg_search_rank < 0.5
+      geography = '%'+query_parts.last.downcase+'%'        
+      #Nothing nearby, see if the user has specified a city at the end        
+      city_spec_results = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.0,
+        geography).with_pg_search_rank.limit(10).to_a
+      if city_spec_results.first == nil or city_spec_results.first.pg_search_rank < 0.5
+        #Nothing super relevant came back from city, check by country
+        country_spec_results = Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 0.0,
+          geography).with_pg_search_rank.limit(10).to_a
+        if country_spec_results.first == nil or country_spec_results.first.pg_search_rank < 0.5
+          p "Returning All Results"
+          return (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
+        else
+          p "Returning Country Results"
+          p country_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+          return country_spec_results
+        end
+      else
+        p "Returning City Results"
+        p city_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+        return city_spec_results
+      end
+    else
+      p "Returning Nearby Results"
+      p nearby_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+      return nearby_results
+    end
+  end
+
+
+
+  def Venue.search_2(query, proximity_box, view_box)
     #Venue.search(query, nil, nil).each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
     if proximity_box != nil      
       search_box = proximity_box
