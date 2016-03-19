@@ -25,7 +25,9 @@ namespace :lytit do
       start_time = Time.now
 
       puts "Pulling from Instagram"
-      vortexes = InstagramVortex.where("active = ?", true)
+      InstagramVortex.focus_cities_pull
+
+      vortexes = InstagramVortex.where("active = ? AND city NOT IN (?)", true, ["New York"])
       for vortex in vortexes
         puts "Entered vortex #{vortex.details}"
         vortex.update_columns(last_instagram_pull_time: Time.now)

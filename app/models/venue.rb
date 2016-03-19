@@ -209,7 +209,7 @@ class Venue < ActiveRecord::Base
     nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(10).to_a
     if nearby_results.first == nil or nearby_results.first.pg_search_rank < 0.5
       geography = '%'+query_parts.last.downcase+'%'        
-      #Nothing nearby, see if the user has specified a city at the end        
+      #Nothing nearby, see if the user has specified a city at the end
       city_spec_results = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.0,
         geography).with_pg_search_rank.limit(10).to_a
       if city_spec_results.first == nil or city_spec_results.first.pg_search_rank < 0.5
@@ -541,6 +541,10 @@ class Venue < ActiveRecord::Base
         self.phone_number = Venue.formatTelephone(auth_phone)
       end
       self.save
+    end
+
+    if self.address == nil && (auth_address != nil && auth_address != "")
+      self.update_columns(address: auth_address)
     end
 
     #Geo

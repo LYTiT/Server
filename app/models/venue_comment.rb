@@ -194,7 +194,6 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex, last_of_batch)
-		#begin
 		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis		
 		if origin_venue == nil
 			origin_venue = Venue.validate_venue(instagram_hash["location"]["name"], instagram_hash["location"]["latitude"], instagram_hash["location"]["longitude"], instagram_hash["location"]["id"], vortex)
@@ -227,6 +226,7 @@ class VenueComment < ActiveRecord::Base
 			image_3 = instagram_hash["images"]["standard_resolution"]["url"]
 
 			presence = VenueComment.find_by_instagram_id(instagram_id)
+			vc = nil
 
 			if instagram_hash["type"] == "video"
 				video_1 = instagram_hash["videos"]["low_bandwidth"]["url"] 
@@ -234,14 +234,10 @@ class VenueComment < ActiveRecord::Base
 				video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
 				if presence == nil
 					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3, :media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
-				else
-					vc = presence
 				end
 			else
 				if presence == nil
 					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
-				else
-					vc = presence
 				end
 			end
 
@@ -286,9 +282,6 @@ class VenueComment < ActiveRecord::Base
 			else
 				nil
 			end
-			#rescue
-			#	puts "Failed to convert instagram to Venue Comment"
-			#end
 		end
 	end
 

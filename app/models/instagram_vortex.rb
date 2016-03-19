@@ -22,6 +22,22 @@ class InstagramVortex < ActiveRecord::Base
                      
 	has_many :vortex_paths, :dependent => :destroy
 
+	def InstagramVortex.focus_cities_pull
+		#focus_cities = ["New York", "Los Angeles", "San Francisco"]
+		focus_cities = ["New York"]
+		for city in focus_cities
+			city_voritices = InstagramVortex.where("city = ? AND active IS TRUE", city)
+			for vortex in city_voritices
+		        puts "Entered vortex #{vortex.details}"
+		        vortex.update_columns(last_instagram_pull_time: Time.now)
+		        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
+		        new_instagrams.each do |instagram|
+		          VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex, true)
+		        end					
+			end
+		end
+	end
+
 	#circle-in
 	def move
 		#(109.0 * 1000) meters ~= 1 degree latitude
