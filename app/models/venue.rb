@@ -2190,7 +2190,7 @@ class Venue < ActiveRecord::Base
     vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
                 :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
     self.update_r_up_votes(vc_created_at)
-    if latest_rating_update_time < Time.now - 10.minutes
+    if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 10.minutes
       self.update_rating()
       self.update_columns(latest_rating_update_time: Time.now)
     end
