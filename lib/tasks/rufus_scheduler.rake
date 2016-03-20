@@ -16,7 +16,7 @@ namespace :lytit do
       Activity.feature_venue_cleanup
       VenueComment.cleanup_and_recalibration
       Venue.where("latest_posted_comment_time <= ?", Time.now - 24.hours).update_all(tag_1: nil, tag_2: nil, tag_3: nil, tag_4: nil, tag_5: nil)
-      Venue.cleanup_and_calibration
+      #Venue.cleanup_and_calibration
     end
 
     #Instagram Pulling and LYT Updating ------------------------------>
