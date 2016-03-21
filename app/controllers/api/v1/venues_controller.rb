@@ -168,7 +168,11 @@ class Api::V1::VenuesController < ApiBaseController
 					@comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
 						VenueComment.where("venue_id = ? AND created_at <= ?", @venue_id, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 					end
-					render 'pure_comments.json.jbuilder'
+					if params[:version] == "1.1.0"
+						render 'pure_comments_1.1.0_patch.json.jbuilder'
+					else
+						render 'pure_comments.json.jbuilder'
+					end
 				end
 			end
 		else
@@ -176,7 +180,11 @@ class Api::V1::VenuesController < ApiBaseController
 			#@comments = VenueComment.joins(:venue).where("venues.id in (#{params[:cluster_venue_ids]})").order("time_wrapper DESC").page(page).per(10)
 			@comments = VenueComment.where("venue_id IN (?)", venue_ids).order("time_wrapper desc").page(page).per(10)
 			@venue_id = nil
-			render 'pure_comments.json.jbuilder'
+			if params[:version] == "1.1.0"
+				render 'pure_comments_1.1.0_patch.json.jbuilder'
+			else
+				render 'pure_comments.json.jbuilder'
+			end
 		end
 	end
 
@@ -227,7 +235,11 @@ class Api::V1::VenuesController < ApiBaseController
 				VenueComment.where("venue_id = ? AND created_at <= ?", @venue.id, Time.now-10.minutes).order("time_wrapper DESC").limit(10).offset((offset_page-1)*10)
 			end
 			@venue_id = @venue.id
-			render 'pure_comments.json.jbuilder'
+			if params[:version] == "1.1.0"
+				render 'pure_comments_1.1.0_patch.json.jbuilder'
+			else
+				render 'pure_comments.json.jbuilder'
+			end
 		end
 
 	end	
