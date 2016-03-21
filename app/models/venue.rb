@@ -218,7 +218,7 @@ class Venue < ActiveRecord::Base
           geography).with_pg_search_rank.limit(5).to_a
         if country_spec_results.first == nil or country_spec_results.first.pg_search_rank < 0.5
           p "Returning All Results"
-          total_results = (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
+          total_results = (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}
           #p total_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
           return total_results
         else
@@ -267,7 +267,7 @@ class Venue < ActiveRecord::Base
         return direct_search
       else
         geography = '%'+query_parts.last.downcase+'%'        
-        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 2.0,
+        city_spec = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.44,
           geography).with_pg_search_rank.limit(10).to_a
         if city_spec.count > 0
           puts "City Lookup Result"
@@ -276,7 +276,7 @@ class Venue < ActiveRecord::Base
         else
           puts "Country Lookup Result"
           #country_spec
-          country_spec = Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 2.0,
+          country_spec = Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 0.44,
             geography).with_pg_search_rank.limit(10).to_a
           country_spec.each{|x| p"#{x.name} / #{x.pg_search_rank} / #{x.city} / #{x.country}"}
           return country_spec
