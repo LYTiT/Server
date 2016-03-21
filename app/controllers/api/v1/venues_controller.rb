@@ -428,7 +428,7 @@ class Api::V1::VenuesController < ApiBaseController
 		sw_long = params[:sw_longitude]
 
 		query = params[:q]
-		@venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(1)
+		@venues = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20)
 		render 'search.json.jbuilder'
 	end
 
