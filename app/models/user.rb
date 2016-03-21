@@ -149,6 +149,17 @@ class User < ActiveRecord::Base
   end
 =end
 
+  def top_favorite_venues
+    top_favorites = "SELECT
+      id,
+      venue_name,      
+      venue_details,
+      (interest_score * (SELECT popularity_rank FROM venues WHERE venue_id = favorite_venues.venue_id LIMIT 1)) AS adj_trending_score
+      FROM favorite_venues WHERE user_id = #{self.id} ORDER BY adj_trending_score DESC LIMIT 5"
+
+    results = ActiveRecord::Base.connection.execute(top_favorites).to_a
+  end
+
   #IV. Lists
 
   def aggregate_list_feed(max_id)
