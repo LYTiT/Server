@@ -22,7 +22,7 @@ class Venue < ActiveRecord::Base
     :against => :ts_name_city_vector,
     :using => {
       :tsearch => {
-        :normalization => 1,
+        :normalization => 2,
         :dictionary => 'simple',
         :any_word => true,
         :prefix => true,
@@ -35,7 +35,7 @@ class Venue < ActiveRecord::Base
     :against => :ts_name_country_vector,
     :using => {
       :tsearch => {
-        :normalization => 1,
+        :normalization => 2,
         :dictionary => 'simple',
         :any_word => true,
         :prefix => true,
