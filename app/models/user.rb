@@ -154,7 +154,7 @@ class User < ActiveRecord::Base
       id,
       venue_name,      
       venue_details,
-      (interest_score * (SELECT popularity_rank FROM venues WHERE venue_id = favorite_venues.venue_id LIMIT 1)) AS adj_trending_score
+      (interest_score * (SELECT popularity_rank FROM venues WHERE venue_id = favorite_venues.venue_id AND rating IS NOT NULL LIMIT 1)) AS adj_trending_score
       FROM favorite_venues WHERE user_id = #{self.id} ORDER BY adj_trending_score DESC LIMIT 5"
 
     results = ActiveRecord::Base.connection.execute(top_favorites).to_a
