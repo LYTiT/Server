@@ -206,34 +206,34 @@ class Venue < ActiveRecord::Base
 
     query_parts = query.split    
     #First search in proximity
-    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(10).to_a
+    nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(5).to_a
     if nearby_results.first == nil or nearby_results.first.pg_search_rank < 0.5
       geography = '%'+query_parts.last.downcase+'%'        
       #Nothing nearby, see if the user has specified a city at the end
       city_spec_results = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.0,
-        geography).with_pg_search_rank.limit(10).to_a
+        geography).with_pg_search_rank.limit(5).to_a
       if city_spec_results.first == nil or city_spec_results.first.pg_search_rank < 0.5
         #Nothing super relevant came back from city, check by country
         country_spec_results = Venue.name_country_search(query).where("pg_search.rank >= ? AND LOWER(country) LIKE ?", 0.0,
-          geography).with_pg_search_rank.limit(10).to_a
+          geography).with_pg_search_rank.limit(5).to_a
         if country_spec_results.first == nil or country_spec_results.first.pg_search_rank < 0.5
           p "Returning All Results"
           total_results = (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
-          p total_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+          #p total_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
           return total_results
         else
           p "Returning Country Results"
-          p country_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+          #p country_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
           return country_spec_results
         end
       else
         p "Returning City Results"
-        p city_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+        #p city_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
         return city_spec_results
       end
     else
       p "Returning Nearby Results"
-      p nearby_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
+      #p nearby_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
       return nearby_results
     end
   end
