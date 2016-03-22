@@ -1556,7 +1556,7 @@ class Venue < ActiveRecord::Base
         latest_post_hash = {}
         latest_post_hash["id"] = nil
         latest_post_hash["instagram_id"] = vc.id
-        latest_post_hash["created_at"] = DateTime.strptime("#{vc.created_time}",'%s'))
+        latest_post_hash["created_at"] = DateTime.strptime("#{vc.created_time}",'%s')
         latest_post_hash["content_origin"] = "instagram"
         latest_post_hash["thirdparty_username"] = vc.user.username
         latest_post_hash["media_type"] = vc.type
