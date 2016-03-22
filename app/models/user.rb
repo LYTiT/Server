@@ -150,7 +150,7 @@ class User < ActiveRecord::Base
 =end
 
   def top_favorite_venues
-    FavoriteVenue.where("user_id = ? AND interest_score * (SELECT popularity_rank FROM venues WHERE id = favorite_venues.venue_id) > 0", u_id).order("
+    FavoriteVenue.where("user_id = ? AND interest_score * (SELECT popularity_rank FROM venues WHERE id = favorite_venues.venue_id) > 0", self.id).order("
       interest_score * (SELECT popularity_rank FROM venues WHERE id = favorite_venues.venue_id) DESC").limit(5)
   end
 
