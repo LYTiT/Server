@@ -1194,7 +1194,7 @@ class Venue < ActiveRecord::Base
     client.venue(self.foursquare_id)
   end
 
-  def instgaram_venue
+  def instagram_venue
     Instagram.location_search(self.instagram_location_id)
   end
 
