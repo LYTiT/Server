@@ -150,14 +150,8 @@ class User < ActiveRecord::Base
 =end
 
   def top_favorite_venues
-    top_favorites = "SELECT
-      id,
-      venue_name,      
-      venue_details,
-      (interest_score * (SELECT popularity_rank FROM venues WHERE venue_id = favorite_venues.venue_id AND rating IS NOT NULL LIMIT 1)) AS adj_trending_score
-      FROM favorite_venues WHERE user_id = #{self.id} ORDER BY adj_trending_score DESC LIMIT 5"
-
-    results = ActiveRecord::Base.connection.execute(top_favorites).to_a
+    FavoriteVenue.where("user_id = ? AND interest_score * (SELECT popularity_rank FROM venues WHERE id = favorite_venues.venue_id) > 0", u_id).order("
+      interest_score * (SELECT popularity_rank FROM venues WHERE id = favorite_venues.venue_id) DESC").limit(5)
   end
 
   #IV. Lists

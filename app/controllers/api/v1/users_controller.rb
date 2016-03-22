@@ -405,8 +405,8 @@ class Api::V1::UsersController < ApiBaseController
 		end
 	end	
 
-	def get_top_favorite_venues		
-		@top_favorite_venues = FavoriteVenue.top_user_favorites(@user)
+	def get_top_favorite_venues
+		@top_favorite_venues = @user.top_favorite_venues
 	end
 
 	def get_favorite_venues
