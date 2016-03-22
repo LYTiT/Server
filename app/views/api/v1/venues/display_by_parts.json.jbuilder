@@ -13,6 +13,6 @@ json.cache! @venues, expires_in: 5.minutes, key: @view_cache_key do |json|
     json.instagram_location_id v.instagram_location_id
     json.event_id v.event_id
     json.is_live v.is_live
-    json.preview_image v.latest_post_hash["image_url_1"]
+    json.preview_image v.latest_post_details["image_url_1"]
   end
 end
