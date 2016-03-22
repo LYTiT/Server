@@ -14,5 +14,12 @@ json.cache! @venues, expires_in: 5.minutes, key: @view_cache_key  do |json|
 	  json.event_id v.event_id
 	  json.is_live v.is_live
 	  json.preview_image v.latest_post_details["image_url_1"]
+	  json.full_image v.latest_post_details["image_url_2"]
+	  json.full_video v.latest_post_details["video_url_2"]
+	  json.tag_1 v.tag_1
+	  json.tag_2 v.tag_2
+	  json.tag_3 v.tag_3
+	  json.tag_4 v.tag_4
+	  json.tag_5 v.tag_5
 	end
 end
