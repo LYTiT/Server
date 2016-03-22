@@ -3,6 +3,7 @@ json.comments(@comments) do |comment|
     json.instagram_id nil
     json.instagram_location_id nil
     json.media_type comment.media_type
+    json.media_dimensions comment.media_dimensions
     json.media_url nil
     json.image_url_1 comment.image_url_1
     json.image_url_2 comment.image_url_2
