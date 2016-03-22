@@ -1194,6 +1194,10 @@ class Venue < ActiveRecord::Base
     client.venue(self.foursquare_id)
   end
 
+  def instgaram_venue
+    Instagram.location_search(self.instagram_location_id)
+  end
+
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
