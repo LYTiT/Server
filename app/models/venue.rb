@@ -1529,6 +1529,8 @@ class Venue < ActiveRecord::Base
   def set_last_venue_comment_details(vc)
     if vc != nil
       if vc.class.name == "VenueComment"
+        self.update_columns(latest_post_details: vc.as_json)
+
         self.update_columns(venue_comment_id: vc.id)
         self.update_columns(venue_comment_instagram_id: vc.instagram_id)
         self.update_columns(venue_comment_created_at: vc.time_wrapper)
@@ -1551,6 +1553,21 @@ class Venue < ActiveRecord::Base
           video_url_2 = nil
           video_url_3 = nil
         end
+        latest_post_hash = {}
+        latest_post_hash["id"] = nil
+        latest_post_hash["instagram_id"] = vc.id
+        latest_post_hash["created_at"] = DateTime.strptime("#{vc.created_time}",'%s'))
+        latest_post_hash["content_origin"] = "instagram"
+        latest_post_hash["thirdparty_username"] = vc.user.username
+        latest_post_hash["media_type"] = vc.type
+        latest_post_hash["image_url_1"] = vc.images.try(:thumbnail).try(:url)
+        latest_post_hash["image_url_2"] = vc.images.try(:low_resolution).try(:url)
+        latest_post_hash["image_url_3"] = vc.images.try(:standard_resolution).try(:url)
+        latest_post_hash["video_url_1"] = video_url_1
+        latest_post_hash["video_url_2"] = video_url_2
+        latest_post_hash["video_url_3"] = video_url_3
+        self.update_columns(latest_post_details: latest_post_hash)
+
         self.update_columns(venue_comment_id: nil)
         self.update_columns(venue_comment_instagram_id: vc.id)
         self.update_columns(venue_comment_created_at: DateTime.strptime("#{vc.created_time}",'%s'))
