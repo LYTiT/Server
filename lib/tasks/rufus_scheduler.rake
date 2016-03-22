@@ -20,7 +20,7 @@ namespace :lytit do
     end
 
     #Instagram Pulling and LYT Updating ------------------------------>
-    $scheduler.every '10m' do
+    $scheduler.every '5m' do
       puts "Scheduler run at #{Time.now}"
       start_time = Time.now
 
