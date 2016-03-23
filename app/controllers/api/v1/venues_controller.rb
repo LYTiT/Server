@@ -555,7 +555,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_events
-		@events = Events.where("venueid = ?", params[:venue_id])
+		@events = Event.where("venue_id = ?", params[:venue_id])
 	end
 
 
