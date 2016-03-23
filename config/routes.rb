@@ -254,6 +254,7 @@ LytitServer::Application.routes.draw do
         post 'remove_from_favorites'
         post 'request_moment'
         post 'delete_moment_request'
+        get 'get_events'
       end
 
       controller :lytit_bar do
