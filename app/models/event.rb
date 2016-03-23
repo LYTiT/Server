@@ -10,7 +10,7 @@ class Event < ActiveRecord::Base
 	end
 
 	def Event.create_event_object(eventbrite_event)
-		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.find_by_id(eventbrite_event.id).any? == false
+		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.find_by_id(eventbrite_event.id).present? == false
 			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
 			clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
 			venue = Venue.fetch(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, nil, "United States", eventbrite_event.venue.address.postal_code, nil, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude)
