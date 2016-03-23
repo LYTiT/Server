@@ -11,8 +11,8 @@ class Event < ActiveRecord::Base
 
 	def Event.create_event_object(eventbrite_event)
 		if eventbrite_event !=nil and eventbrite_event.venue.name != nil 
-			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140)
-			clean_event_description = eventbrite_event.description.text.gsub("\n", "")
+			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
+			clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
 			venue = Venue.fetch(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, nil, "United States", eventbrite_event.venue.address.postal_code, nil, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude)
 			Event.create!(:name => clean_event_name, :description => clean_event_description, :start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, :source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name))
 		end

@@ -397,7 +397,9 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+    if vaddress != nil && result.address == nil
+      result.delay.calibrate_attributes(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
+    end
 
     return result 
   end
@@ -478,6 +480,10 @@ class Venue < ActiveRecord::Base
       venue.update_columns(instagram_vortex_id: origin_vortex.id)     
     end    
     venue.delay.set_time_zone_and_offset(origin_vortex)
+
+    if address != nil
+      venue.update_columns(verified: true)
+    end
 
     return venue    
   end
@@ -2130,26 +2136,27 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    if self.rating == nil or self.rating.round(1) == 0.0
+    if (self.rating == nil or self.rating.round(1) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
       visible = false
     end
 
-    if city == "New York" && (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map-15.0)
+=begin
+    if city == "New York" && (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
       visible = false
     else
       if city != "New York" && (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
         visible = false
       end
     end
+=end
 
     if visible == false
       self.update_columns(rating: nil)
       self.update_columns(r_up_votes: 1.0)
       self.update_columns(r_down_votes: 1.0)
       self.update_columns(color_rating: -1.0)
-      self.update_columns(trend_position: nil)
       self.update_columns(popularity_rank: 0.0)
-      self.lyt_spheres.delete_all
+      #self.lyt_spheres.delete_all
     end
 
     return visible
