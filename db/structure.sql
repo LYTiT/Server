@@ -791,7 +791,7 @@ CREATE TABLE events (
     source character varying(255),
     source_url text,
     eventbrite_id bigint,
-    cover_image_url character varying(255)
+    cover_image_url text
 );
 
 

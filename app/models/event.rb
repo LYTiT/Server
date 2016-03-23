@@ -16,7 +16,7 @@ class Event < ActiveRecord::Base
 			venue = Venue.fetch(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, nil, "United States", eventbrite_event.venue.address.postal_code, nil, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude)
 			new_event = Event.create!(:name => clean_event_name, :eventbrite_id => eventbrite_event.id, :description => clean_event_description, 
 				:start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, 
-				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.url)
+				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.try(:url))
 			venue.update_columns(event_id: new_event.id)
 		else
 			p "Event not created."
