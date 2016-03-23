@@ -789,7 +789,9 @@ CREATE TABLE events (
     updated_at timestamp without time zone,
     category character varying(255),
     source character varying(255),
-    source_url text
+    source_url text,
+    eventbrite_id bigint,
+    cover_image_url character varying(255)
 );
 
 
@@ -4373,4 +4375,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160317031738');
 INSERT INTO schema_migrations (version) VALUES ('20160318044218');
 
 INSERT INTO schema_migrations (version) VALUES ('20160322030648');
+
+INSERT INTO schema_migrations (version) VALUES ('20160323043452');
+
+INSERT INTO schema_migrations (version) VALUES ('20160323045637');
 
