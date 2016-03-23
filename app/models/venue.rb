@@ -1996,7 +1996,7 @@ class Venue < ActiveRecord::Base
     :hour_13=>{:rating=> 0, :count => 0}, :hour_14=>{:rating=> 0, :count => 0}, :hour_15=>{:rating=> 0, :count => 0},
     :hour_16=>{:rating=> 0, :count => 0}, :hour_17=>{:rating=> 0, :count => 0}, :hour_18=>{:rating=> 0, :count => 0},
     :hour_19=>{:rating=> 0, :count => 0}, :hour_20=>{:rating=> 0, :count => 0}, :hour_21=>{:rating=> 0, :count => 0},
-    :hour_22=>{:rating=> 0, :count => 0}, :hour_23=>{:rating=> 0, :count => 0}, :hour_0=>{:rating=> 0, :count => 0}}
+    :hour_22=>{:rating=> 0, :count => 0}, :hour_23=>{:rating=> 0, :count => 0}, :hour_0=>{:rating=> 0, :count => 0}}}
     Venue.update_all(hist_rating_avgs: clean_history)
     Venue.update_all(popularity_rank: 0.0)
   end
