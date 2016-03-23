@@ -1988,7 +1988,7 @@ class Venue < ActiveRecord::Base
     Venue.update_all(rating: nil)
     Venue.update_all(color_rating: -1.0)
     Venue.update_all(r_up_votes: 1.0)
-    clean_history = {{:hour_1=>{:rating=> 0, :count => 0}, 
+    clean_history = {:hour_1=>{:rating=> 0, :count => 0}, 
     :hour_2=>{:rating=> 0, :count => 0}, :hour_3=>{:rating=> 0, :count => 0}, :hour_4=>{:rating=> 0, :count => 0},
     :hour_5=>{:rating=> 0, :count => 0}, :hour_6=>{:rating=> 0, :count => 0},
     :hour_7=>{:rating=> 0, :count => 0}, :hour_8=>{:rating=> 0, :count => 0}, :hour_9=>{:rating=> 0, :count => 0},
@@ -1996,7 +1996,7 @@ class Venue < ActiveRecord::Base
     :hour_13=>{:rating=> 0, :count => 0}, :hour_14=>{:rating=> 0, :count => 0}, :hour_15=>{:rating=> 0, :count => 0},
     :hour_16=>{:rating=> 0, :count => 0}, :hour_17=>{:rating=> 0, :count => 0}, :hour_18=>{:rating=> 0, :count => 0},
     :hour_19=>{:rating=> 0, :count => 0}, :hour_20=>{:rating=> 0, :count => 0}, :hour_21=>{:rating=> 0, :count => 0},
-    :hour_22=>{:rating=> 0, :count => 0}, :hour_23=>{:rating=> 0, :count => 0}, :hour_0=>{:rating=> 0, :count => 0}}}
+    :hour_22=>{:rating=> 0, :count => 0}, :hour_23=>{:rating=> 0, :count => 0}, :hour_0=>{:rating=> 0, :count => 0}}
     Venue.update_all(hist_rating_avgs: clean_history)
     Venue.update_all(popularity_rank: 0.0)
   end
