@@ -2065,9 +2065,9 @@ class Venue < ActiveRecord::Base
   def update_rating(after_post=false)
     latest_posted_comment_time = latest_posted_comment_time || Time.now
     if after_post == true
-      new_r_up_vote_count = ((self.r_up_votes-1.0) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+      new_r_up_vote_count = ((self.r_up_votes) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     else
-      new_r_up_vote_count = ((self.r_up_votes-1.0) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
+      new_r_up_vote_count = ((self.r_up_votes) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     end
     self.update_columns(r_up_votes: new_r_up_vote_count)
 
@@ -2219,8 +2219,8 @@ class Venue < ActiveRecord::Base
   end
 
   def increment_rating(vc_created_at)
-    vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
-                :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
+    #vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
+    #            :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
     self.update_r_up_votes(vc_created_at)
     if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 10.minutes
       self.update_rating()
