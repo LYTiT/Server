@@ -2107,10 +2107,10 @@ class Venue < ActiveRecord::Base
       color_rating = new_rating.round_down(1)
 
       update_columns(rating: new_rating)
+      update_historical_avg_rating
 
       if a > 1.0
-        update_columns(color_rating: color_rating)
-        update_historical_avg_rating
+        update_columns(color_rating: color_rating)        
         update_popularity_rank
       else
         update_columns(color_rating: -1.0)
