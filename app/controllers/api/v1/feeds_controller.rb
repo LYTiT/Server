@@ -3,7 +3,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def create
 		is_open = params[:open] || true
-		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => is_open, :description => params[:list_description])
+		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => is_open, :description => params[:list_description], :preview_image_url => params[:preview_image_url], :cover_image_url => params[:cover_image_url])
 
 		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true, :interest_score => 1.0)
 
@@ -37,6 +37,14 @@ class Api::V1::FeedsController < ApiBaseController
 			if params[:feed_color] != nil
 				feed.update_columns(feed_color: params[:feed_color])
 				update_activities = true
+			end
+
+			if params[:preview_image_url] != nil
+				feed.update_columns(preview_image_url: preview_image_url)
+			end
+
+			if params[:cover_image_url] != nil
+				feed.update_columns(cover_image_url: cover_image_url)
 			end
 
 			if update_activities == true
