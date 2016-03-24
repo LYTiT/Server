@@ -40,11 +40,11 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 
 			if params[:preview_image_url] != nil
-				feed.update_columns(preview_image_url: preview_image_url)
+				feed.update_columns(preview_image_url: params[:preview_image_url])
 			end
 
 			if params[:cover_image_url] != nil
-				feed.update_columns(cover_image_url: cover_image_url)
+				feed.update_columns(cover_image_url: params[:cover_image_url])
 			end
 
 			if update_activities == true
