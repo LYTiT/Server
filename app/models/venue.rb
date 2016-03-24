@@ -2090,7 +2090,7 @@ class Venue < ActiveRecord::Base
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
-    a = new_r_up_vote_count >= 1.0 ? r_up_votes : 1.0
+    a = new_r_up_vote_count >= 1.0 ? new_r_up_vote_count : 1.0
     b = 1.0
 
     puts "A = #{a}, B = #{b}, Y = #{y}"
