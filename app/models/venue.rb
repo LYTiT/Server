@@ -2112,7 +2112,6 @@ class Venue < ActiveRecord::Base
         update_historical_avg_rating
         update_popularity_rank
       else
-        update_columns(rating: nil)
         update_columns(color_rating: -1.0)
         update_columns(popularity_rank: 0.0)
       end
@@ -2156,19 +2155,9 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
-    if (self.rating == nil or self.rating.round(1) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
+    if (self.rating == nil or self.rating.round(2) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
       visible = false
     end
-
-=begin
-    if city == "New York" && (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
-      visible = false
-    else
-      if city != "New York" && (Time.now - latest_posted_comment_time)/60.0 >= LytitConstants.threshold_to_venue_be_shown_on_map
-        visible = false
-      end
-    end
-=end
 
     if visible == false
       self.update_columns(rating: nil)
