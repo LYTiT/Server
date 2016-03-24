@@ -2176,6 +2176,7 @@ class Venue < ActiveRecord::Base
       self.update_columns(r_down_votes: 1.0)
       self.update_columns(color_rating: -1.0)
       self.update_columns(popularity_rank: 0.0)
+      self.update_columns(latest_posted_comment_time: nil)
       #self.lyt_spheres.delete_all
     end
 
