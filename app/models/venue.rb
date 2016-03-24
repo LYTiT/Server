@@ -2081,13 +2081,16 @@ class Venue < ActiveRecord::Base
   def update_rating(after_post=false)
     latest_posted_comment_time = latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
+    p "Old R Up Votes: #{old_r_up_vote_count}"
     if after_post == true
       new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     else
       puts "no vote accounted"
       new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     end
+    p "New R Up Votes: #{new_r_up_vote_count}"
     self.update_columns(r_up_votes: new_r_up_vote_count)
+    p "R up vote after update #{self.r_up_votes}"
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
