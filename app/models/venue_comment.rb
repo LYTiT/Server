@@ -266,9 +266,9 @@ class VenueComment < ActiveRecord::Base
 				#if venue is currently popular the probability of an assigned lytit vote is 100%, else 75% (that's the rand(3)).
 				#if a venue has popular hours but not open hours, we treat them as open hours. Thus assign lyt only if venue is popular.
 				if origin_venue.in_timespan?("popular_hours", created_time) == true 
-					origin_venue.increment_rating(created_time)							
+					origin_venue.update_rating(true)
 				elsif (origin_venue.in_timespan?("popular_hours", created_time) ? 1:0) + rand(4) > 0 && origin_venue.open_hours["NA"] == nil
-					origin_venue.increment_rating(created_time)
+					origin_venue.update_rating(true)
 				else
 					p "Comment is most likely not live. Vote not assigend."
 				end
@@ -352,7 +352,7 @@ class VenueComment < ActiveRecord::Base
 			#vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
 			#								:prime => 0.0, :raw_value => 1.0, :time_wrapper => instagram_created_time)
 			#origin_venue.update_r_up_votes(instagram_created_time)
-			origin_venue.delay.update_rating(true)
+			origin_venue.update_rating(true)
 			origin_venue.update_columns(latest_rating_update_time: Time.now)
 		end
 

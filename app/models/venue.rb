@@ -2234,7 +2234,7 @@ class Venue < ActiveRecord::Base
     #            :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
     #self.update_r_up_votes(vc_created_at)
     if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 10.minutes
-      self.update_rating()
+      self.update_rating(true)
       self.update_columns(latest_rating_update_time: Time.now)
     end
   end
