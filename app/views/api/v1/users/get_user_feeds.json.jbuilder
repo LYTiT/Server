@@ -14,4 +14,6 @@ json.array! @feeds do |feed|
 	json.list_description feed.description
 	json.subscribed feed.feed_users.where("user_id = ?", @viewer.id).first.try(:is_subscribed)
 	json.num_likes @num_likes
+	json.preview_image_url feed.preview_image_url
+	json.cover_image_url feed.cover_image_url
 end
