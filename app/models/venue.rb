@@ -2081,16 +2081,12 @@ class Venue < ActiveRecord::Base
   def update_rating(after_post=false)
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
-    p "Old R Up Votes: #{old_r_up_vote_count}"
     if after_post == true
       new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     else
-      puts "no vote accounted"
       new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     end
-    p "New R Up Votes: #{new_r_up_vote_count}"
     self.update_columns(r_up_votes: new_r_up_vote_count)
-    p "R up vote after update #{self.r_up_votes}"
 
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
 
@@ -2107,13 +2103,19 @@ class Venue < ActiveRecord::Base
       puts "rating before = #{self.rating}"
       puts "rating after = #{x}"
 
-      new_rating = eval(x).round(4)
-      color_rating = new_rating.round_down(1)
+      if a > 1.0
+        new_rating = eval(x).round(4)
+        color_rating = new_rating.round_down(1)
 
-      update_columns(rating: new_rating)
-      update_columns(color_rating: color_rating)
-      update_historical_avg_rating
-      update_popularity_rank
+        update_columns(rating: new_rating)
+        update_columns(color_rating: color_rating)
+        update_historical_avg_rating
+        update_popularity_rank
+      else
+        update_columns(rating: nil)
+        update_columns(color_rating: -1.0)
+        update_columns(popularity_rank: 0.0)
+      end
 
       update_columns(latest_rating_update_time: Time.now)
     else
