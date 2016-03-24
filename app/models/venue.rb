@@ -2004,8 +2004,7 @@ class Venue < ActiveRecord::Base
   def Venue.update_all_active_venue_ratings
     for venue in Venue.where("rating IS NOT NULL")
       if venue.is_visible? == true
-        venue.update_popularity_rank
-        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 10.minutes
+        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
           venue.update_rating()
         end
       end
@@ -2081,11 +2080,12 @@ class Venue < ActiveRecord::Base
 
   def update_rating(after_post=false)
     latest_posted_comment_time = latest_posted_comment_time || Time.now
+    old_r_up_vote_count = self.r_up_votes 
     if after_post == true
-      new_r_up_vote_count = ((self.r_up_votes) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+      new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
     else
       puts "no vote accounted"
-      new_r_up_vote_count = ((self.r_up_votes) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
+      new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now - latest_posted_comment_time.to_datetime)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     end
     self.update_columns(r_up_votes: new_r_up_vote_count)
 
@@ -2110,10 +2110,7 @@ class Venue < ActiveRecord::Base
       update_columns(rating: new_rating)
       update_columns(color_rating: color_rating)
       update_historical_avg_rating
-      #update the popularity rank as well if the last rating update was over 5 minutes ago
-      if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 5.minutes
-        update_popularity_rank
-      end
+      update_popularity_rank
 
       update_columns(latest_rating_update_time: Time.now)
     else
@@ -2239,7 +2236,7 @@ class Venue < ActiveRecord::Base
   def increment_rating(vc_created_at)
     #vote = LytitVote.create!(:value => 1, :venue_id => self.id, :user_id => nil, :venue_rating => self.rating ? self.rating : 0, 
     #            :prime => 0.0, :raw_value => 1.0, :time_wrapper => vc_created_at)
-    self.update_r_up_votes(vc_created_at)
+    #self.update_r_up_votes(vc_created_at)
     if latest_rating_update_time != nil and latest_rating_update_time < Time.now - 10.minutes
       self.update_rating()
       self.update_columns(latest_rating_update_time: Time.now)

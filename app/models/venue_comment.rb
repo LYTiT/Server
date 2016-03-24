@@ -295,7 +295,7 @@ class VenueComment < ActiveRecord::Base
 		#vote = LytitVote.create!(:value => 1, :venue_id => venue.id, :user_id => nil, :venue_rating => venue.rating ? venue.rating : 0, 
 		#						:prime => 0.0, :raw_value => 1.0, :time_wrapper => time_wrapper)
 
-		venue.update_r_up_votes(time_wrapper)
+		#venue.update_r_up_votes(time_wrapper)
 		venue.update_rating(true)
 		venue.update_columns(latest_rating_update_time: Time.now)
 	end
@@ -351,7 +351,7 @@ class VenueComment < ActiveRecord::Base
 		if vc.is_live? == true
 			#vote = LytitVote.create!(:value => 1, :venue_id => origin_venue.id, :user_id => nil, :venue_rating => origin_venue.rating ? origin_venue.rating : 0, 
 			#								:prime => 0.0, :raw_value => 1.0, :time_wrapper => instagram_created_time)
-			origin_venue.update_r_up_votes(instagram_created_time)
+			#origin_venue.update_r_up_votes(instagram_created_time)
 			origin_venue.delay.update_rating(true)
 			origin_venue.update_columns(latest_rating_update_time: Time.now)
 		end
