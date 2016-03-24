@@ -2146,7 +2146,7 @@ class Venue < ActiveRecord::Base
     key = "hour_#{current_hour}"
     historical_rating = self.hist_rating_avgs[key]["rating"]
     current_rating = rating || 0
-    k = 1.0
+    k = 0.8
     m = 0.01
     e = 0.2
     new_popularity_rank = (current_rating + (current_rating - historical_rating)*k) + new_page_view_count*m + event_happening?*e
