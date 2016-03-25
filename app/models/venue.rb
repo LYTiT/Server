@@ -353,8 +353,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  #Venue.search(query).limit(50).rotate(offset) if offset = Venue.search(query).limit(50).find_index{|b| b.name.size > 0 and b.name[0] == query.first}
-
   def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first    
     
@@ -402,6 +400,16 @@ class Venue < ActiveRecord::Base
     end
 
     return result 
+  end
+
+  def Venue.fetch_venue_for_event(name, address, city, country, latitude, longitude)
+=begin    
+    center_point = [latitude, longitude]
+    search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.05, :units => :kms)
+
+    name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).where("address =").first
+    Venue.where("")
+=end    
   end
 
   def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id, origin_vortex)
@@ -1218,7 +1226,7 @@ class Venue < ActiveRecord::Base
         center_point = [lat, long]
         search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.3, :units => :kms)
 
-        name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.7).first
+        name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
         if name_lookup == nil
           name_lookup = Venue.search(vname, search_box, nil).first
         end
@@ -2156,6 +2164,7 @@ class Venue < ActiveRecord::Base
 
   def is_visible?
     visible = true
+    latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     if (self.rating == nil or self.rating.round(2) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
       visible = false
     end
