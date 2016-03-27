@@ -1,5 +1,5 @@
-json.cache_collection! @venues, expires_in: 5.minutes, key: @view_cache_key do |v|
-
+json.cache! @venues, expires_in: 5.minutes, key: @view_cache_key do |json|
+  json.venues(@venues) do |v|
     json.id v.id
     json.name v.name
     json.address v.address
@@ -20,5 +20,5 @@ json.cache_collection! @venues, expires_in: 5.minutes, key: @view_cache_key do |
     json.tag_3 v.tag_3
     json.tag_4 v.tag_4
     json.tag_5 v.tag_5
-
+  end
 end
