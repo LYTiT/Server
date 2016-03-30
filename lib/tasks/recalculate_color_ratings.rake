@@ -10,8 +10,6 @@ namespace :lytit do
     puts "Scheduler run at #{Time.now}"
     start_time = Time.now
 
-    puts "Clearing clusters"
-    ClusterTracker.delete_all
 
     #Instagram data pull----------->
 
@@ -40,36 +38,8 @@ namespace :lytit do
     
 
     #LYT Updating------------------>
-    #bar = LytitBar.instance
-    #bar.recalculate_bar_position
-    #puts 'Bar updated'
+    Venue.update_all_active_venue_ratings
 
-    #venues = Venue.visible
-    spheres = LytSphere.uniq.pluck(:sphere)
-    #venues = Venue.where("id IN (?)", LytSphere.pluck(:venue_id)).to_a
-
-    #puts "Recaculating venue ratings..."
-    #for venue in venues
-    #    venue.update_rating()
-    #end
-
-    #for venue in venues
-    #  venue.update_rating()
-    #end
-
-    #puts "Done."
-
-    puts "Recalculating venue colors (on Lumen)"
-    
-    #used for determing which way top venues are trending
-    
-    spheres = LytSphere.uniq.pluck(:sphere)
-
-    for sphere in spheres
-      Venue.update_venue_ratings_in(sphere)
-    end
-
-    ClusterTracker.delete_all
 
     #reset_lytit_algo runs only in production so to clear 24 hour Venue Comments we use the work around below 
     if Time.now.hour == 23 && Time.now.min > 30
