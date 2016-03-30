@@ -1880,7 +1880,8 @@ CREATE TABLE venue_comments (
     meta_data_vector tsvector,
     media_dimensions character varying(255),
     num_views integer,
-    geo_views json DEFAULT '{}'::json NOT NULL
+    geo_views json DEFAULT '{}'::json NOT NULL,
+    adjusted_sort_position integer DEFAULT 0
 );
 
 
@@ -2120,7 +2121,8 @@ CREATE TABLE venues (
     ts_name_country_vector tsvector,
     popular_hours json DEFAULT '{}'::json NOT NULL,
     hist_rating_avgs json DEFAULT '{"hour_1":{"rating":0,"count":0},"hour_2":{"rating":0,"count":0},"hour_3":{"rating":0,"count":0},"hour_4":{"rating":0,"count":0},"hour_5":{"rating":0,"count":0},"hour_6":{"rating":0,"count":0},"hour_7":{"rating":0,"count":0},"hour_8":{"rating":0,"count":0},"hour_9":{"rating":0,"count":0},"hour_10":{"rating":0,"count":0},"hour_11":{"rating":0,"count":0},"hour_12":{"rating":0,"count":0},"hour_13":{"rating":0,"count":0},"hour_14":{"rating":0,"count":0},"hour_15":{"rating":0,"count":0},"hour_16":{"rating":0,"count":0},"hour_17":{"rating":0,"count":0},"hour_18":{"rating":0,"count":0},"hour_19":{"rating":0,"count":0},"hour_20":{"rating":0,"count":0},"hour_21":{"rating":0,"count":0},"hour_22":{"rating":0,"count":0},"hour_23":{"rating":0,"count":0},"hour_0":{"rating":0,"count":0}}'::json NOT NULL,
-    latest_post_details json DEFAULT '{}'::json NOT NULL
+    latest_post_details json DEFAULT '{}'::json NOT NULL,
+    page_offset integer DEFAULT 0
 );
 
 
@@ -4379,4 +4381,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160322030648');
 INSERT INTO schema_migrations (version) VALUES ('20160323043452');
 
 INSERT INTO schema_migrations (version) VALUES ('20160323045637');
+
+INSERT INTO schema_migrations (version) VALUES ('20160329211754');
+
+INSERT INTO schema_migrations (version) VALUES ('20160330002143');
 

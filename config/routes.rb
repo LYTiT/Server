@@ -182,9 +182,6 @@ LytitServer::Application.routes.draw do
         collection do
           get 'meta_fetch'
         end
-        collection do
-          get 'get_suggested_venues'
-        end
         post 'vote'
         collection do
           get 'meta_search'
@@ -246,7 +243,6 @@ LytitServer::Application.routes.draw do
           post 'post_new_question'
         end
         post 'send_new_question_comment'
-        get 'get_linked_user_lists'
         collection do
           post 'post_comment'
         end

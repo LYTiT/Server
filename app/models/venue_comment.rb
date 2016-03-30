@@ -181,6 +181,11 @@ class VenueComment < ActiveRecord::Base
 		self.convert_bulk_instagrams_to_vcs(instagrams.map!(&:to_hash), nil)		
 	end
 
+	def VenueComment.convert_new_social_media_to_vcs(instagram_hashes, tweets, origin_venue)
+		VenueComment.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
+		Tweet.bulk_conversion(tweets, origin_venue, nil, nil, nil, nil)
+	end
+
 	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
 		#instagram_hashes.each{|instagram_hash| VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil)}
 		num_instagrams = instagram_hashes.count
@@ -192,6 +197,7 @@ class VenueComment < ActiveRecord::Base
 			VenueComment.create_vc_from_instagram(instagram_hash, origin_venue, nil, last)
 		end
 	end
+
 
 	def self.create_vc_from_instagram(instagram_hash, origin_venue, vortex, last_of_batch)
 		#Vortex pulls do not have an associated venue, thus must determine on an instagram by instagram basis		
@@ -233,11 +239,11 @@ class VenueComment < ActiveRecord::Base
 				video_2 = instagram_hash["videos"]["low_resolution"]["url"]
 				video_3 = instagram_hash["videos"]["standard_resolution"]["url"]
 				if presence == nil
-					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3, :media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
+					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3, :media_type => "video", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username, :adjusted_sort_position => created_time.to_i) rescue nil
 				end
 			else
 				if presence == nil
-					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username) rescue nil
+					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username, :adjusted_sort_position => created_time.to_i) rescue nil
 				end
 			end
 
@@ -285,6 +291,50 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
+	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
+		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
+		if presence == nil
+			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
+				if origin_venue_id == nil	
+					#venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
+					venue = Venue.validate_venue(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
+				else
+					venue = Venue.find_by_id(origin_venue_id)
+				end
+				vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"], :adjusted_sort_position => Time.parse(instagram_params["created_at"]).to_i)
+				return vc
+			else
+				return nil
+			end
+		else
+			return presence
+		end
+	end
+
+	def self.convert_instagram_hashie_to_vc(instagram, origin_venue)
+		place_name = instagram.location.name
+		place_id = instagram.location.id
+		lat = instagram.location.latitude
+		long = instagram.location.longitude
+		image_1 = instagram.images.thumbnail.url rescue nil
+		image_2 = instagram.images.low_resolution.url rescue nil
+		image_3 = instagram.images.standard_resolution.url rescue nil
+
+		if instagram.type == "video"
+			video_1 = instagram.videos.low_bandwith.url rescue nil
+			video_2 = instagram.videos.low_resolution.url rescue nil
+			video_3 = instagram.videos.standard_resolution.url rescue nil
+			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username, :adjusted_sort_position => instagram.created_time.to_i)
+		else
+			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username, :adjusted_sort_position => instagram.created_time.to_i)
+		end
+
+		VenueComment.delay.post_vc_creation_calibration(origin_venue, vc, instagram)
+
+	end	
+
+
+
 	def post_lytit_vc_creation_calibration
 		if venue.latest_posted_comment_time == nil or venue.latest_posted_comment_time < created_at
 			venue.update_columns(latest_posted_comment_time: time_wrapper)
@@ -304,28 +354,6 @@ class VenueComment < ActiveRecord::Base
 		for instagram in instagrams
 			self.convert_instagram_hashie_to_vc(instagram, origin_venue)
 		end
-	end
-
-	def self.convert_instagram_hashie_to_vc(instagram, origin_venue)
-		place_name = instagram.location.name
-		place_id = instagram.location.id
-		lat = instagram.location.latitude
-		long = instagram.location.longitude
-		image_1 = instagram.images.thumbnail.url rescue nil
-		image_2 = instagram.images.low_resolution.url rescue nil
-		image_3 = instagram.images.standard_resolution.url rescue nil
-
-		if instagram.type == "video"
-			video_1 = instagram.videos.low_bandwith.url rescue nil
-			video_2 = instagram.videos.low_resolution.url rescue nil
-			video_3 = instagram.videos.standard_resolution.url rescue nil
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-		else
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username)
-		end
-
-		VenueComment.delay.post_vc_creation_calibration(origin_venue, vc, instagram)
-
 	end
 
 	def self.post_instagram_vc_creation_calibration(origin_venue, vc, instagram)
@@ -359,26 +387,6 @@ class VenueComment < ActiveRecord::Base
 		sphere = LytSphere.create_new_sphere(origin_venue)
 	end
 
-
-	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
-		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
-		if presence == nil
-			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
-				if origin_venue_id == nil	
-					#venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
-					venue = Venue.validate_venue(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
-				else
-					venue = Venue.find_by_id(origin_venue_id)
-				end
-				vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"])
-				return vc
-			else
-				return nil
-			end
-		else
-			return presence
-		end
-	end
 
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)
 		if venue != nil
@@ -645,6 +653,14 @@ class VenueComment < ActiveRecord::Base
 			VenueComment.where("id IN (?)", meta_vc_ids).order("time_wrapper DESC")
 		else
 			nil
+		end
+	end
+
+	def VenueComment.thirdparty_created_at(content)
+		if content["created_time"] != nil
+			DateTime.strptime(content["created_time"],'%s')
+		else
+			Time.parse(content[:created_at])
 		end
 	end
 

@@ -1,6 +1,7 @@
 class Api::V1::VenuesController < ApiBaseController
 
 	skip_before_filter :set_user, only: [:search, :index]
+	caches_action :refresh_map_view_by_parts
 
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
@@ -72,10 +73,10 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if params[:media_type] == "image"
 			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "image", :media_dimensions => params[:media_dimensions], :image_url_2 => "small-"+params[:image_url_3],
-				:image_url_3 => params[:image_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit") 
+				:image_url_3 => params[:image_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i) 
 		else
 			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions],
-				:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit")
+				:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i)
 		end
 
 		if vc
@@ -119,9 +120,6 @@ class Api::V1::VenuesController < ApiBaseController
 					end
 				end
 
-				#latest_venue_instagrams = Rails.cache.fetch(instagrams_cache_key, :expires_in => 10.minutes) do
-				#	@venue.get_instagrams(false)
-				#end
 				latest_instagrams_count = latest_venue_instagrams.length
 
 				@view_cache_key = "venue/#{venue_ids.first}/comments/page#{params[:page]}/view"
@@ -312,7 +310,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view
-		Venue.delay(:priority => -2).instagram_content_pull(params[:latitude], params[:longitude]) #this is to handle places not near a vortex
+		Venue.delay(:priority => -2).surrounding_area_instagram_pull(params[:latitude], params[:longitude]) #this is to handle places not near a vortex
 		cache_key = "lyt_map"
 		@view_cache_key = cache_key+"/view"
 		@venues = Rails.cache.fetch(cache_key, :expires_in => 5.minutes) do
@@ -412,12 +410,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'search.json.jbuilder'
 	end
 
-	def get_suggested_venues
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@suggestions = Venue.near_locations(params[:latitude], params[:longitude])
-		render 'get_suggested_venues.json.jbuilder'
-	end
-
 	def get_venue_contexts
 		@venue = Venue.find_by_id(params[:venue_id])			
 	end
@@ -488,13 +480,6 @@ class Api::V1::VenuesController < ApiBaseController
 		InstagramVortex.check_nearby_vortex_existence(params[:latitude], params[:longitude])
 		render json: { success: true }
 	end
-
-
-	def get_linked_user_lists
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@feeds = Venue.linked_user_lists(params[:venue_id], @user.id)
-	end
-
 
 	def add_to_favorites
 		venue = Venue.find_by_id(params[:venue_id])
