@@ -1,5 +1,5 @@
-json.cache! @venues do
-    json.array! @venues do |v|
+json.array! @venues do
+    json.cache! @venues do |v|
         json.id v.id
         json.name v.name
         json.address v.address
