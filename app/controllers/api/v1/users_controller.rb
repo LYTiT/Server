@@ -297,6 +297,10 @@ class Api::V1::UsersController < ApiBaseController
 		@feeds = Kaminari.paginate_array(@user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id = ?", @user.id).order("LOWER(name) asc")+@user.feeds.includes(:user, :feed_venues, :feed_users).where("feeds.user_id != ?", @user.id).order("LOWER(name) asc")).page(params[:page]).per(20)
 	end
 
+	def get_daily_posts
+		@comments = @user.venue_comments.order("id DESC")
+	end
+
 
 	def toggle_group_notification
 		status, message = @user.toggle_group_notification(params[:group_id], params[:enabled])
