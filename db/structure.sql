@@ -1879,9 +1879,10 @@ CREATE TABLE venue_comments (
     instagram_user_id bigint,
     meta_data_vector tsvector,
     media_dimensions character varying(255),
-    num_views integer,
     geo_views json DEFAULT '{}'::json NOT NULL,
-    adjusted_sort_position integer DEFAULT 0
+    adjusted_sort_position integer DEFAULT 0,
+    tweet json DEFAULT '{}'::json NOT NULL,
+    event json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4385,4 +4386,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160323045637');
 INSERT INTO schema_migrations (version) VALUES ('20160329211754');
 
 INSERT INTO schema_migrations (version) VALUES ('20160330002143');
+
+INSERT INTO schema_migrations (version) VALUES ('20160331043355');
 

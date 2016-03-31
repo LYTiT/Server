@@ -654,7 +654,7 @@ class Venue < ActiveRecord::Base
 
   def calibrate_after_lytit_post(vc)
     if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
-      self.update_columns(latest_posted_comment_time: time_wrapper)
+      self.update_columns(latest_posted_comment_time: vc.time_wrapper)
     end
     vc.extract_venue_comment_meta_data
     self.feeds.update_all("num_moments = num_moments+1")
@@ -665,7 +665,7 @@ class Venue < ActiveRecord::Base
     if Rails.cache.exist?("venue/#{vc.venue_id}/comments/page_1")
       #purge all cache and rebuild feed
       page = 1
-      while response == true and page < 5 do
+      while response == true do
         response = self.content_feed_page(page, true).any?
         page += 1
       end
