@@ -68,7 +68,7 @@ LytitServer::Application.routes.draw do
         get 'get_lytit_facebook_friends'
         get 'get_favorite_venues'
         get 'get_top_favorite_venues'  
-        get 'get_venue_comments'      
+        get 'get_daily_posts'      
       end
 
       resources :feeds, only: [:create] do

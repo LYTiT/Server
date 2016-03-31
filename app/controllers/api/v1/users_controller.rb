@@ -301,7 +301,6 @@ class Api::V1::UsersController < ApiBaseController
 		@comments = @user.venue_comments.order("id DESC")
 	end
 
-
 	def toggle_group_notification
 		status, message = @user.toggle_group_notification(params[:group_id], params[:enabled])
 		if status

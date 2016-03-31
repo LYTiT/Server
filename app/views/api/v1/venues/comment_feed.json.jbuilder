@@ -27,6 +27,7 @@ json.array! @comments do |comment|
 	elsif comment.user_id != nil
 		json.id comment.id
 	    json.media_type comment.media_type
+	    json.media_dimensions comment.media_dimensions
 	    json.image_url_1 comment.image_url_1
 	    json.image_url_2 comment.image_url_2
 	    json.image_url_3 comment.image_url_3
