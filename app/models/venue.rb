@@ -461,7 +461,6 @@ class Venue < ActiveRecord::Base
       self.update_columns(color_rating: -1.0)
       self.update_columns(popularity_rank: 0.0)
       self.update_columns(latest_posted_comment_time: nil)
-      #self.lyt_spheres.delete_all
     end
 
     return visible
@@ -558,12 +557,17 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # Content ======================================================================================
 #===============================================================================================
-  def content_feed_page(page_number)
+  def content_feed_page(page_number, warming_up=false)
     api_ping_timeout = 10.minutes
     page_count = 10
     current_position = Time.now.to_i
 
     vc_cache_key = "venue/#{self.id}/comments/page_#{page_number}"
+    
+    #used to purge old pages to construct new ones after a post
+    if warming_up == true
+      Rails.cache.delete(vc_cache_key)
+    end
 
     comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
       #Clear offset value if rebuilding feed.
@@ -646,6 +650,26 @@ class Venue < ActiveRecord::Base
     VenueComment.delay.convert_new_social_media_to_vcs(new_instagrams, new_tweets, self)
     new_tweets = new_tweets.map(&:to_hash)
     return ((new_instagrams+new_tweets).sort_by{|content| VenueComment.thirdparty_created_at(content)}).reverse!
+  end
+
+  def calibrate_after_lytit_post(vc)
+    if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
+      self.update_columns(latest_posted_comment_time: time_wrapper)
+    end
+    vc.extract_venue_comment_meta_data
+    self.feeds.update_all("num_moments = num_moments+1")
+    self.update_rating(true)
+    self.update_columns(latest_rating_update_time: Time.now)
+
+    #Append comment to venues cached feed if present by adding a negative page number.
+    if Rails.cache.exist?("venue/#{vc.venue_id}/comments/page_1")
+      #purge all cache and rebuild feed
+      page = 1
+      while response == true and page < 5 do
+        response = self.content_feed_page(page, true).any?
+        page += 1
+      end
+    end    
   end
 
 
@@ -1571,6 +1595,12 @@ class Venue < ActiveRecord::Base
 
   def instagram_ping(day_pull = true, hourly_pull = false)
     #Returns a hash unless an hourly pull (open first open on version 1.1.0) then returns native Instgram object.
+
+    #if no valid instagram location id we must set it.
+    if self.instagram_location_id == nil || self.instagram_location_id == 0
+      self.set_instagram_location_id(100)
+    end
+
     instagram_access_token_obj = InstagramAuthToken.where("is_valid IS TRUE").sample(1).first    
     if instagram_access_token_obj == nil
       client = Instagram.client

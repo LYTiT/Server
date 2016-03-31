@@ -79,13 +79,22 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if vc
-			vc.delay(:priority => -4).post_lytit_vc_creation_calibration		
+			venue.delay(:priority => -4).calibrate_after_lytit_post(vc)		
 			render json: vc
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
 
+
+	def get_comments_feed
+		page = params[:page_number].to_i
+		venue = Venue.find_by_id(params[:venue_id])
+		@comments = venue.content_feed_page(page)
+	end
+
+
+	#for version 1.1.0
 	def get_comments
 		num_elements_per_page = 10
 		page = params[:page].to_i
@@ -150,7 +159,7 @@ class Api::V1::VenuesController < ApiBaseController
 			else
 				render 'pure_comments.json.jbuilder'
 			end
-		end
+		end	
 	end
 
 	def get_comments_implicitly

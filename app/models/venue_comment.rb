@@ -153,26 +153,6 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def consider?
-		consider = 1
-		previous_comment = user.venue_comments.order("created_at desc limit 2")[1]
-
-		if previous_comment == nil
-			update_columns(consider: consider)
-			return consider
-		else
-			if (self.venue_id == previous_comment.venue_id) && ((self.created_at - previous_comment.created_at) >= (LumenConstants.posting_pause*60))
-				consider = 1
-			elsif self.venue_id != previous_comment.venue_id
-				consider = 1
-			else
-				consider = 0
-			end
-		end
-		update_columns(consider: consider)
-		return consider
-	end
-
 	def self.get_comments_for_cluster(venue_ids)
 		VenueComment.where("venue_id IN (?) AND (NOW() - created_at) <= INTERVAL '1 DAY'", venue_ids).includes(:venue).order("time_wrapper desc")
 	end
@@ -332,23 +312,6 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.delay.post_vc_creation_calibration(origin_venue, vc, instagram)
 
 	end	
-
-
-
-	def post_lytit_vc_creation_calibration
-		if venue.latest_posted_comment_time == nil or venue.latest_posted_comment_time < created_at
-			venue.update_columns(latest_posted_comment_time: time_wrapper)
-		end
-		self.extract_venue_comment_meta_data
-		venue.feeds.update_all("num_moments = num_moments+1")
-
-		#vote = LytitVote.create!(:value => 1, :venue_id => venue.id, :user_id => nil, :venue_rating => venue.rating ? venue.rating : 0, 
-		#						:prime => 0.0, :raw_value => 1.0, :time_wrapper => time_wrapper)
-
-		#venue.update_r_up_votes(time_wrapper)
-		venue.update_rating(true)
-		venue.update_columns(latest_rating_update_time: Time.now)
-	end
 
 	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)
 		for instagram in instagrams
