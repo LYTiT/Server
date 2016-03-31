@@ -392,7 +392,9 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if page == 1
 			cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
+			p "THE NEARBY CACHE KEY IS:::::::::::::::::::: #{cache_key}"
 			nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
+				p "INSIDE THE CACHE"
 				Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id DESC")
 			end
 			#this is a hack to prevent a nil page return which casause app to crash.
