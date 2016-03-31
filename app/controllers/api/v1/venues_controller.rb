@@ -327,47 +327,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render 'display.json.jbuilder'
 	end
 
-	def refresh_map_view_by_parts_2
-		cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
-		@view_cache_key = cache_key+"/view/page_"+params[:page]
-		if Rails.cache.read(@view_cache_key) ==
-			
-		else
-			lat = 40.741140
-			long = -73.981917
-			center_point=[lat, long]
-			page = params[:page].to_i
-
-			if page == 1
-				num_page_entries = 300
-			else
-				num_page_entries = 500
-			end
-
-			if page == 1
-				cache_key = "lyt_map_by_parts/[#{lat},#{long}]/near"
-				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-					Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id DESC").to_a
-					#Venue.in_bounds(proximity_box).where("color_rating > -1.0")
-				end
-				#this is a hack to prevent a nil page return which casause app to crash.
-				if nearby_venues.count == 0
-					nearby_venues << Venue.where("color_rating > -1.0").first
-				end
-				@venues = nearby_venues
-			else
-				cache_key = "lyt_map_by_parts/[#{lat},#{long}]/far/page_#{params[:page]}"
-				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-					Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
-					#Venue.where("((latitude <= #{proximity_box.sw.lat} OR latitude >= #{proximity_box.ne.lat}) OR (longitude <= #{proximity_box.sw.lng} OR longitude >= #{proximity_box.ne.lng})) AND (color_rating > -1.0)").order("city ASC").limit(num_page_entries).offset((page-2)*num_page_entries)
-				end
-				@venues = faraway_venues			
-			end
-			@view_cache_key = cache_key+"/view/page_"+params[:page]
-
-			render 'display_by_parts.json.jbuilder'
-	end
-
 	def refresh_map_view_by_parts
 		lat = params[:latitude] || 40.741140
 		long = params[:longitude] || -73.981917
