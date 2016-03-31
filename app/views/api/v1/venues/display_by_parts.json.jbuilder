@@ -1,5 +1,5 @@
-json.array! do
-    json.cache! @venues, expires_in: 5.minutes, key: "view_key_1" do |v|
+json.cache! expires_in: 5.minutes, key: "view_key_1" do
+    json.array! @venues do |v|
         json.id v.id
         json.name v.name
         json.address v.address
