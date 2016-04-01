@@ -90,11 +90,11 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_comments_feed
 		page = params[:page_number].to_i
 		if params[:venue_id]
-			venue = Venue.find_by_id(params[:venue_id])
+			@venue = Venue.find_by_id(params[:venue_id])
 		else
-			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
-		@comments = venue.content_feed_page(page)
+		@comments = @venue.content_feed_page(page)
 	end
 
 
