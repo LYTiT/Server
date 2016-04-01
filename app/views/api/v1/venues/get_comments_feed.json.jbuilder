@@ -1,4 +1,4 @@
-json.cache! @view_cache_key, :expires_in => 5.minutes do |json|
+json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 	json.comments(@comments) do |comment|
 		if comment.class.name == "Hash" and comment[:created_at] != nil
 			json.tweet_id comment[:id]

@@ -101,7 +101,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'get_comments_feed.json.jbuilder'
 		else
-			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 5.minutes)			
+			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)			
 			@comments = @venue.content_feed_page(page)
 			render 'get_comments_feed.json.jbuilder'
 		end
