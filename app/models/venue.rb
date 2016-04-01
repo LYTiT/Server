@@ -611,7 +611,7 @@ class Venue < ActiveRecord::Base
           end
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
-          p "------------------------------------- Page: #{page} / Offset: #{self.page_offset} / Page offset:  #{((page_number-self.page_offset)-1)*page_count}"
+          p "------------------------------------- Page: #{page_number} / Offset: #{self.page_offset} / Page offset:  #{((page_number-self.page_offset)-1)*page_count}"
           vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC").to_a
           if vcs.count > 0
             return vcs
