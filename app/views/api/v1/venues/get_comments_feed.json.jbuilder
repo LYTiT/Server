@@ -1,4 +1,4 @@
-json.array! @comments do |comment|
+json.comments(@comments) do |comment|
 	if comment.class.name == "Hash" and comment[:created_at] != nil
 		json.tweet_id comment[:id]
 		json.comment comment[:text]
