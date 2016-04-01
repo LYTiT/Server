@@ -327,6 +327,7 @@ class Api::V1::VenuesController < ApiBaseController
 					venues
 				end
 			end
+			p "------------------------------------ Number of venues: #{@venues.count} / Cache key: #{@view_cache_key}"
 			render 'display_by_parts.json.jbuilder'
 		end
 	end
