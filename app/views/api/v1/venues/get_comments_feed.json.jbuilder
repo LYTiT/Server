@@ -72,3 +72,5 @@ json.comments(@comments) do |comment|
 		json.cover_image_url comment.event["cover_image_url"]
 	end
 end
+
+json.venue_id @venue.id
