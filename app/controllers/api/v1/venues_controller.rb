@@ -89,7 +89,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_comments_feed
 		page = params[:page_number].to_i
-		venue = Venue.find_by_id(params[:venue_id])
+		if params[:venue_id]
+			venue = Venue.find_by_id(params[:venue_id])
+		else
+			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+		end
 		@comments = venue.content_feed_page(page)
 	end
 
@@ -296,7 +300,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def refresh_map_view_by_parts
 		@view_cache_key = "lyts/page_"+params[:page].to_s
-		if 1 == 1
+		if 1 != 1
 			p "Json view pulled from cache."
 			render 'display_by_parts.json.jbuilder'
 		else
