@@ -94,13 +94,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
-		comments = @venue.content_feed_page(page)
-		if comments == nil
-			render json: []
-		else
-			@comments = comments
-			render 'get_comments_feed.json.jbuilder'
-		end
+		@comments = @venue.content_feed_page(page)
 	end
 
 
