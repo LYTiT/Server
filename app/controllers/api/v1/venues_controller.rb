@@ -299,26 +299,15 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view_by_parts
-		@view_cache_key = "lyts/page_"+params[:page].to_s
-		if 1 != 1
-			p "Json view pulled from cache."
+		key = "#{params[:user_city]}-#{params[:page]}"
+		@view_cache_key  = Rails.cache.fetch(key, :expires_in => 5.minutes) do
+			"lyt_map/view/page_"+params[:page].to_s
+		end
+
+		if @view_cache_key != nil
 			render 'display_by_parts.json.jbuilder'
 		else
-			p "NO CACHE FOUND!"
-			lat = params[:latitude] || 40.741140
-			long = params[:longitude] || -73.981917
-			nearby_vortex = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first
-			if nearby_vortex != nil
-				center_point = [nearby_vortex.latitude, nearby_vortex.longitude]
-			else
-				if params[:version] == "1.1.0"
-					center_point = [40.741140, -73.981917]
-				else			
-					center_point = [lat.to_f.round(2), long.to_f.round(2)]
-				end
-			end
-			proximity_box = Geokit::Bounds.from_point_and_radius(center_point, 5, :units => :kms)
-
+			city_cache_key = "#{params[:user_city]}/lyt_map/page_#{params[:page]}"
 			page = params[:page].to_i
 			if page == 1
 				num_page_entries = 300
@@ -326,27 +315,14 @@ class Api::V1::VenuesController < ApiBaseController
 				num_page_entries = 500
 			end
 
-			if page == 1
-				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/near"
-				p "THE NEARBY CACHE KEY IS:::::::::::::::::::: #{cache_key}"
-				nearby_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-					Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id DESC")
+			@venues = Rails.cache.fetch(city_cache_key, :expires_in => 10.minutes) do
+				venues = Venue.close_to(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id desc").page(page).per(num_page_entries).to_a
+				if venues.length < 0 
+					Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id desc").page(page).per(num_page_entries)
+				else
+					venues
 				end
-				#this is a hack to prevent a nil page return which casause app to crash.
-				if nearby_venues.count == 0
-					nearby_venues << Venue.where("color_rating > -1.0").first
-				end
-				@venues = nearby_venues
-			else
-				cache_key = "lyt_map_by_parts/[#{center_point.first},#{center_point.last}]/far/page_#{params[:page]}"
-				faraway_venues = Rails.cache.fetch(cache_key, :expires_in => 10.minutes) do
-					Venue.far_from(center_point.first, center_point.last, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries)
-				end
-				@venues = faraway_venues			
 			end
-			@view_cache_key = "lyts/page_"+params[:page].to_s#cache_key+"/view/page_"+params[:page]
-		
-			render 'display_by_parts.json.jbuilder'
 		end
 	end
 
