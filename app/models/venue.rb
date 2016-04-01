@@ -628,7 +628,7 @@ class Venue < ActiveRecord::Base
     new_tweets = []
     new_instagrams = []
 
-    if self.last_instagram_pull_time < (Time.now - ping_timeouts)
+    if self.last_instagram_pull_time == nil or self.last_instagram_pull_time < (Time.now - ping_timeouts)
       begin
         Timeout::timeout(5) do
           new_instagrams = self.instagram_ping(false, false) || []
@@ -638,7 +638,7 @@ class Venue < ActiveRecord::Base
       end
     end
 
-    if self.last_twitter_pull_time < (Time.now - ping_timeouts)
+    if self.last_twitter_pull_time == nil or self.last_twitter_pull_time < (Time.now - ping_timeouts)
       begin
         Timeout::timeout(5) do
           new_tweets = self.twitter_ping || []
