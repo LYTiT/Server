@@ -88,7 +88,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 
 	def get_comments_feed
-		page = params[:page_number].to_i
+		page = params[:page].to_i
 		if params[:venue_id]
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
