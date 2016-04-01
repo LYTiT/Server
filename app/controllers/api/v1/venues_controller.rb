@@ -89,7 +89,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_comments_feed
 		page = params[:page].to_i
-		if params[:venue_id]
+		if params[:venue_id] != nil && params[:venue_id] != 0
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
@@ -310,7 +310,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'display_by_parts.json.jbuilder'
 		else
-			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)
+			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 5.minutes)
 			city_cache_key = "#{city}/lyt_map/page_#{params[:page]}"
 			page = params[:page].to_i
 			if page == 1
@@ -327,7 +327,6 @@ class Api::V1::VenuesController < ApiBaseController
 					venues
 				end
 			end
-			p "------------------------------------ Number of venues: #{@venues.count} / Cache key: #{@view_cache_key}"
 			render 'display_by_parts.json.jbuilder'
 		end
 	end
