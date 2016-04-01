@@ -157,4 +157,12 @@ class Tweet < ActiveRecord::Base
 		end  		
 	end
 
+  def Tweet.append_size_to_tweet_media_url(tweet_media_url, size)
+    if tweet_media_url != nil
+      tweet_media_url+":"+size
+    else
+      nil
+    end
+  end
+
 end

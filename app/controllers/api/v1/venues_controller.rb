@@ -284,39 +284,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
 	end
 
-	def mark_comment_as_viewed
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@comment = VenueComment.find_by_id(params[:post_id])
-
-		#consider is used for Lumen calculation. Initially it is set to 2 for comments with no views and then is
-		#updated to the true value (1 or 0) for a particular comment after a view (comments with no views aren't considered
-		#for Lumen calcuation by default)
-
-		if (@comment.is_viewed?(@user) == false) #and (@comment.user_id != @user.id)
-			@comment.update_views
-			poster = @comment.user
-			if poster != nil
-				poster.update_total_views
-				if poster.id != @user.id
-					@comment.calculate_adj_view
-					if @comment.consider? == 1 
-						poster.update_lumens_after_view(@comment)
-					end
-				end
-			end
-		end
-
-		if @comment.present?
-				comment_view = CommentView.new
-				comment_view.user = @user
-				comment_view.venue_comment = @comment
-				comment_view.save
-		else
-			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue / Post not found"] } }, :status => :not_found
-			return
-		end
-	end
-
 	def refresh_map_view
 		Venue.delay(:priority => -2).surrounding_area_instagram_pull(params[:latitude], params[:longitude]) #this is to handle places not near a vortex
 		cache_key = "lyt_map"
