@@ -299,15 +299,19 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view_by_parts
-		key = "#{params[:user_city]}-#{params[:page]}"
-		@view_cache_key  = Rails.cache.fetch(key, :expires_in => 5.minutes) do
-			"lyt_map/view/page_"+params[:page].to_s
+		if params[:user_city] != nil
+			city = params[:user_city]
+		else
+			city = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first.city rescue "New York"
 		end
 
-		if @view_cache_key != nil
+		@view_cache_key = "#{city}/lyt_map/view/page_"+params[:page].to_s
+
+		if Rails.cache.exist?(@view_cache_key) == true
 			render 'display_by_parts.json.jbuilder'
 		else
-			city_cache_key = "#{params[:user_city]}/lyt_map/page_#{params[:page]}"
+			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)
+			city_cache_key = "#{city}/lyt_map/page_#{params[:page]}"
 			page = params[:page].to_i
 			if page == 1
 				num_page_entries = 300
