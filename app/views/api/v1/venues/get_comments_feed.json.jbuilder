@@ -2,9 +2,9 @@ json.comments(@comments) do |comment|
 	if comment.class.name == "Hash" and comment[:created_at] != nil
 		json.tweet_id comment[:id]
 		json.comment comment[:text]
-		json.tweet_image_url_1 Tweet.append_size_to_tweet_media_url(comment[:media][:first].try([:media_url]), "small")
-		json.tweet_image_url_2 Tweet.append_size_to_tweet_media_url(comment[:media][:first].try([:media_url]), "medium")
-		json.tweet_image_url_3 Tweet.append_size_to_tweet_media_url(comment[:media][:first].try([:media_url]), "large")
+		json.tweet_image_url_1 Tweet.implicit_image_content_for_hash(comment, "small")
+		json.tweet_image_url_2 Tweet.implicit_image_content_for_hash(comment, "small")
+		json.tweet_image_url_3 Tweet.implicit_image_content_for_hash(comment, "small")
 		json.tweet_created_at comment[:created_at]
 		json.twitter_user_name comment[:user][:name]
 		json.twitter_user_avatar_url comment[:user][:profile_image_url]
