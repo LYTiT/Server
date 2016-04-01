@@ -96,7 +96,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 		comments = @venue.content_feed_page(page)
 		if comments == nil
-			render json: nil
+			render json: []
 		else
 			@comments = comments
 			render 'get_comments_feed.json.jbuilder'
