@@ -296,7 +296,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def refresh_map_view_by_parts
 		@view_cache_key = "lyts/page_"+params[:page].to_s
-		if Rails.cache.exist?(@view_cache_key)
+		if 1 == 1
 			p "Json view pulled from cache."
 			render 'display_by_parts.json.jbuilder'
 		else
