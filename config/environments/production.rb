@@ -93,5 +93,7 @@ LytitServer::Application.configure do
                      :socket_failure_delay => 0.2
                     }
 
+  config.action_controller.perform_caching = true                    
+
   config.action_mailer.default_url_options = { host: ENV['HOST_DOMAIN'] }
 end
