@@ -251,6 +251,7 @@ LytitServer::Application.routes.draw do
         post 'request_moment'
         post 'delete_moment_request'
         get 'get_events'
+        get 'get_comments_feed'
       end
 
       controller :lytit_bar do
