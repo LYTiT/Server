@@ -334,7 +334,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 			@venues = faraway_venues			
 		end
-		@view_cache_key = params[:page].to_s#cache_key+"/view/page_"+params[:page]
+		@view_cache_key = "lyts/page_"+params[:page].to_s#cache_key+"/view/page_"+params[:page]
 
 		
 		render 'display_by_parts.json.jbuilder'
