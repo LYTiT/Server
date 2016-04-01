@@ -1,4 +1,4 @@
-json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
+json.cache! @view_cache_key, :expires_in => 5.minutes do |json|
     json.array! @venues do |v|
         json.id v.id
         json.name v.name

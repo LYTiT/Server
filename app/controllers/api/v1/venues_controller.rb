@@ -95,7 +95,15 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
-		@comments = @venue.content_feed_page(page)
+
+		@view_cache_key = "venues/#{@venue.id}/view/page_#{page}"
+
+		if Rails.cache.exist?(@view_cache_key) == true
+			render 'display_by_parts.json.jbuilder'
+		else
+			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 5.minutes)			
+			@comments = @venue.content_feed_page(page)
+		end
 	end
 
 
