@@ -96,7 +96,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
-		@view_cache_key = "venues/#{@venue.id}/view/page_#{page}"
+		@view_cache_key = "venues/#{@venue.id}/comments/view/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'get_comments_feed.json.jbuilder'
