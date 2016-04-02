@@ -311,7 +311,7 @@ class Venue < ActiveRecord::Base
     if lat_long_lookup == nil
       center_point = [vlatitude, vlongitude]
       search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-      result = Venue.search(vname, search_box, nil).first
+      result = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
       if result == nil
         if vaddress == nil
           if vcity != nil #city search
@@ -401,7 +401,7 @@ class Venue < ActiveRecord::Base
     #First search in proximity
     nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(5).to_a
     if nearby_results.first == nil or nearby_results.first.pg_search_rank < 0.4
-      geography = '%'+query_parts.last.downcase+'%'        
+      geography = '%'+query_parts.last.downcase+'%'
       #Nothing nearby, see if the user has specified a city at the end
       city_spec_results = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.0,
         geography).with_pg_search_rank.limit(5).to_a
@@ -792,7 +792,7 @@ class Venue < ActiveRecord::Base
           if major_cities.include? origin_vortex.country == true && foursquare_venue.verified == false
             return nil
           else
-            new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, nil, origin_vortex.city, nil, nil, nil, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
+            new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, foursquare_venue.location.address, origin_vortex.city, foursquare_venue.location.state, origin_vortex.country, foursquare_venue.location.postalCode, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
             new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
             new_lytit_venue.update_columns(verified: true)
             new_lytit_venue.set_hours
