@@ -98,7 +98,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
-		if params[:from_search] == true
+		if params[:from_search] == "1"
 			@user.delay.update_interests(@venue)
 		end
 
@@ -429,32 +429,11 @@ class Api::V1::VenuesController < ApiBaseController
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
 	end
 
-	def get_surrounding_feed_for_user
-		lat = params[:latitude]
-		long = params[:longitude]
-		venue_ids = params[:venue_ids]
-
-		fresh_pull = params[:fresh_pull]
-
+	def get_live_recommendations_for_user
 		@user = User.find_by_authentication_token(params[:auth_token])
-
-		if fresh_pull == "0"
-			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 5.minutes) do
-				Venue.surrounding_feed(lat, long, venue_ids)
-			end
-		else
-			begin
-				Rails.cache.delete("surrounding_posts/#{@user.id}")
-			rescue
-				puts "No cache present to delete"
-			end
-			surrounding_posts = Rails.cache.fetch("surrounding_posts/#{@user.id}", :expires_in => 5.minutes) do
-				Venue.surrounding_feed(lat, long, venue_ids)
-			end
-		end
-		
-		@posts = Kaminari.paginate_array(surrounding_posts).page(params[:page]).per(10)
+		@venues = Venue.live_recommendation_for(@user, params[:latitdue], params[:longitude])
 	end
+
 
 	def check_vortex_proximity
 		InstagramVortex.check_nearby_vortex_existence(params[:latitude], params[:longitude])
