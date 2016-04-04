@@ -97,7 +97,10 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
-		@user.delay.update_interests(@venue)
+
+		if params[:from_search] == true
+			@user.delay.update_interests(@venue)
+		end
 
 		@view_cache_key = "venues/#{@venue.id}/comments/view/page_#{page}"
 
