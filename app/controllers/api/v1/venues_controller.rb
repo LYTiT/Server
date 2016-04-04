@@ -90,11 +90,14 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_comments_feed
 		page = params[:page].to_i
 		venue_id = params[:venue_id].to_i
+
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if venue_id != nil && venue_id != 0
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
+		@user.delay.update_interests(@venue)
 
 		@view_cache_key = "venues/#{@venue.id}/comments/view/page_#{page}"
 
