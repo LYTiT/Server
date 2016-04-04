@@ -67,6 +67,36 @@ class User < ActiveRecord::Base
     end
   end
 
+  def update_interests(source)
+    require 'fuzzystringmatch'
+    jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+    interests_hash = self.interests
+    interests_arr = self.interests.keys
+
+    if source.class.name == "Venue"
+      meta = source.categories.values.concat(source.categories.values).concat(source.descriptives.keys).concat(source.trending_tags.keys)
+      meta = meta.map{|i| i.downcase}.uniq!
+
+      for entry in meta
+          if interests_arr.length == 0
+            interests_hash[entry] = 1.0
+          end
+          
+          for interest in interests_arr
+            jarow_winkler_proximity = p jarow.getDistance(interest, entry)
+            if jarow_winkler_proximity > 0.9
+              interests_hash[interest] += 1.0
+            else
+              interests_hash[entry] = 1.0
+            end
+          end
+      end
+      self.update_columns(interests: interests_hash)
+    else
+    
+    end
+  end
+
   def notify_friends_of_joining(fb_friend_ids, fb_name, fb_id)
     if fb_friend_ids != ""
       friends = User.where("facebook_id IN (#{fb_friend_ids})")

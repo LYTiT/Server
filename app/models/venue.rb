@@ -106,18 +106,7 @@ class Venue < ActiveRecord::Base
                   :prefix => true
                 }  
               },
-              :ranked_by => ":dmetaphone"# + (0.25 * :trigram)"#":trigram"#
-
-  pg_search_scope :meta_search, #name and/or associated meta data
-    against: :meta_data_vector,
-    using: {
-      tsearch: {
-        dictionary: 'english',
-        #any_word: true,
-        #prefix: true,
-        tsvector_column: 'meta_data_vector'
-      }
-    }                
+              :ranked_by => ":dmetaphone"# + (0.25 * :trigram)"#":trigram"#              
 
   pg_search_scope :fuzzy_name_search, lambda{ |target_name, rigor|
     raise ArgumentError unless rigor <= 1.0
@@ -131,6 +120,28 @@ class Venue < ActiveRecord::Base
       }
     }
   }
+
+  pg_search_scope :meta_search, #name and/or associated meta data
+    against: :meta_data_vector,
+    using: {
+      tsearch: {
+        dictionary: 'english',
+        #any_word: true,
+        #prefix: true,
+        tsvector_column: 'meta_data_vector'
+      }
+    }
+
+  pg_search_scope :interest_search, #name and/or associated meta data
+    against: :descriptives_vector,
+    using: {
+      tsearch: {
+        dictionary: 'english',
+        any_word: true,
+        prefix: true,
+        tsvector_column: 'descriptives_vector'
+      }
+    }  
                 
 
   scope :close_to, -> (latitude, longitude, distance_in_meters = 2000) {
@@ -313,6 +324,7 @@ class Venue < ActiveRecord::Base
       search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
       result = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
       if result == nil
+        #handeling geographies
         if vaddress == nil
           if vcity != nil #city search
             search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
@@ -371,7 +383,7 @@ class Venue < ActiveRecord::Base
 
         name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
         if name_lookup == nil
-          name_lookup = Venue.search(vname, search_box, nil).first
+          name_lookup = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
         end
 
         if name_lookup != nil
@@ -444,6 +456,10 @@ class Venue < ActiveRecord::Base
         if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
           venue.update_rating()
         end
+      end
+
+      if venue.details_missing? == true
+        self.add_foursquare_details
       end
     end
   end
@@ -683,6 +699,61 @@ class Venue < ActiveRecord::Base
     {"address" => address, "city" => city, "state" => state, "country" => country, "postal_code" => postal_code, "latitude" => latitude, "longitude" => longitude}
   end
 
+  def add_foursquare_details
+    if self.foursquare_id == nil      
+      foursquare_venue = Venue.foursquare_venue_lookup(self.name, self.latitude, self.longitude, self.city)
+      if foursquare_venue != nil && foursquare_venue != "F2 ERROR"        
+        venue_foursquare_id = foursquare_venue.id
+        self.update_columns(foursquare_id: venue_foursquare_id)
+      else
+        puts "Encountered Error"
+        return nil
+      end
+    end
+    
+    client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
+    foursquare_venue_with_details = client.venue(foursquare_id) rescue "F2 ERROR"
+    set_categories_and_descriptives(foursquare_venue_with_details)
+    set_hours(foursquare_venue_with_details)
+
+    if self.address == nil
+      self.update_columns(address: foursquare_venue_with_details.location.address)
+      self.update_columns(postal_code: foursquare_venue_with_details.location.postalCode)
+      self.update_columns(state: foursquare_venue_with_details.location.state)
+    end
+  end
+
+  def set_categories_and_descriptives(foursquare_venue)
+    f2_categories = foursquare_venue.categories
+    f2_tags = foursquare_venue.tags
+    categories_hash = {}
+    descriptives_hash = {}
+    categories_string = ""
+    descriptives_string = ""
+
+    i = 2
+    for category in f2_categories
+      if category.primary == true
+        categories_hash["category_1"] = category.name
+        categories_string.concat(" "+category.name)
+      else
+        categories_hash["category_#{i}"] = category.name
+        categories_string.concat(category.name)
+      end
+      i += 1
+    end
+
+    for tag in f2_tags
+      descriptives_hash[tag] = 1.0
+      descriptives_string.concat(" "+tag)
+    end
+
+    self.update_columns(categories: categories_hash)
+    self.update_columns(categories_string: categories_string.strip)
+    self.update_columns(descriptives: descriptives_hash)    
+    self.update_columns(descriptives_string: descriptives_string.strip)
+  end
+
   def set_top_tags
     top_tags = self.meta_datas.order("relevance_score DESC").limit(5)
     self.update_columns(tag_1: top_tags[0].try(:meta))
@@ -796,7 +867,7 @@ class Venue < ActiveRecord::Base
             new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, foursquare_venue.location.address, origin_vortex.city, foursquare_venue.location.state, origin_vortex.country, foursquare_venue.location.postalCode, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
             new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
             new_lytit_venue.update_columns(verified: true)
-            new_lytit_venue.set_hours
+            new_lytit_venue.add_foursquare_details            
             InstagramLocationIdLookup.delay.create!(:venue_id => new_lytit_venue.id, :instagram_location_id => venue_instagram_location_id)
             return new_lytit_venue
           end
@@ -929,7 +1000,7 @@ class Venue < ActiveRecord::Base
 
   #A. Business/Popular Hours---------------------------------------------------------
   #----------------------------------------------------------------------------------
-  def set_hours
+  def set_hours(foursquare_venue_with_details=nil)
     venue_foursquare_id = self.foursquare_id
 
     if venue_foursquare_id == nil      
@@ -949,8 +1020,11 @@ class Venue < ActiveRecord::Base
     end
 
     if venue_foursquare_id != nil
-      client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-      foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue "F2 ERROR"
+      if foursquare_venue_with_details == nil
+        client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
+        foursquare_venue_with_details = client.venue(venue_foursquare_id) rescue "F2 ERROR"
+      end
+      
       if foursquare_venue_with_details == "F2 ERROR"
         puts "Encountered Error"
         return {}
@@ -961,6 +1035,10 @@ class Venue < ActiveRecord::Base
 
         self.set_open_hours(fq_open_hours)
         self.set_popular_hours(fq_popular_hours)
+
+        #we set the category and descriptives here to preserve
+        #api calls (foursquare venue is already pulled in)
+        self.set_categories_and_descriptives(foursquare_venue_with_details)
       else
         self.update_columns(open_hours: {"NA"=>"NA"})
         self.update_columns(popular_hours: {"NA"=>"NA"})
@@ -1380,6 +1458,14 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # Helpers ======================================================================================
 #===============================================================================================
+  def details_missing?
+    if (address == nil && state == nil) || (open_hours == {} && popular_hours == {}) || (categories == {} && descriptives == {})
+      true
+    else
+      false
+    end
+  end
+
   def cord_to_city
     query = self.latitude.to_s + "," + self.longitude.to_s
     result = Geocoder.search(query).first 

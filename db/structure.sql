@@ -96,6 +96,25 @@ COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial
 SET search_path = public, pg_catalog;
 
 --
+-- Name: fill_descriptives_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_descriptives_vector_for_venue() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+
+      begin               
+        new.descriptives_vector :=
+          setweight(to_tsvector('pg_catalog.english', coalesce(new.categories_string, '')), 'A') ||
+          setweight(to_tsvector('pg_catalog.english', coalesce(new.descriptives_string, '')), 'B')||
+          setweight(to_tsvector('pg_catalog.english', coalesce(new.trending_tags_string, '')), 'B');
+
+        return new;
+      end
+      $$;
+
+
+--
 -- Name: fill_meta_data_vector_for_venue(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1799,7 +1818,8 @@ CREATE TABLE users (
     num_lists integer DEFAULT 0,
     facebook_id bigint,
     facebook_name character varying(255),
-    num_bolts integer DEFAULT 0
+    num_bolts integer DEFAULT 0,
+    interests json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -2115,8 +2135,6 @@ CREATE TABLE venues (
     open_hours json DEFAULT '{}'::json NOT NULL,
     instagram_vortex_id integer,
     foursquare_id character varying(255),
-    ts_name_vector_expd tsvector,
-    metaphone_name_vector_expd tsvector,
     ts_name_vector tsvector,
     ts_name_city_vector tsvector,
     ts_name_country_vector tsvector,
@@ -2124,7 +2142,16 @@ CREATE TABLE venues (
     hist_rating_avgs json DEFAULT '{"hour_1":{"rating":0,"count":0},"hour_2":{"rating":0,"count":0},"hour_3":{"rating":0,"count":0},"hour_4":{"rating":0,"count":0},"hour_5":{"rating":0,"count":0},"hour_6":{"rating":0,"count":0},"hour_7":{"rating":0,"count":0},"hour_8":{"rating":0,"count":0},"hour_9":{"rating":0,"count":0},"hour_10":{"rating":0,"count":0},"hour_11":{"rating":0,"count":0},"hour_12":{"rating":0,"count":0},"hour_13":{"rating":0,"count":0},"hour_14":{"rating":0,"count":0},"hour_15":{"rating":0,"count":0},"hour_16":{"rating":0,"count":0},"hour_17":{"rating":0,"count":0},"hour_18":{"rating":0,"count":0},"hour_19":{"rating":0,"count":0},"hour_20":{"rating":0,"count":0},"hour_21":{"rating":0,"count":0},"hour_22":{"rating":0,"count":0},"hour_23":{"rating":0,"count":0},"hour_0":{"rating":0,"count":0}}'::json NOT NULL,
     latest_post_details json DEFAULT '{}'::json NOT NULL,
     page_offset integer DEFAULT 0,
-    latest_tweet json DEFAULT '{}'::json NOT NULL
+    latest_tweet json DEFAULT '{}'::json NOT NULL,
+    ts_name_vector_expd tsvector,
+    metaphone_name_vector_expd tsvector,
+    categories json DEFAULT '{}'::json NOT NULL,
+    categories_string text DEFAULT ''::text,
+    trending_tags json DEFAULT '{}'::json NOT NULL,
+    trending_tags_string text DEFAULT ''::text,
+    descriptives json DEFAULT '{}'::json NOT NULL,
+    descriptives_string text DEFAULT ''::text,
+    descriptives_vector tsvector
 );
 
 
@@ -3481,6 +3508,13 @@ CREATE INDEX index_venues_on_color_rating ON venues USING btree (color_rating);
 
 
 --
+-- Name: index_venues_on_descriptives_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_descriptives_vector ON venues USING gin (descriptives_vector);
+
+
+--
 -- Name: index_venues_on_instagram_location_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3611,6 +3645,13 @@ CREATE TRIGGER feeds_ts_name_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR
 --
 
 CREATE TRIGGER venues_comment_meta_data_trigger BEFORE INSERT OR UPDATE ON venue_comments FOR EACH ROW EXECUTE PROCEDURE fill_meta_data_vector_for_venue_comments();
+
+
+--
+-- Name: venues_descriptives_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER venues_descriptives_vector_trigger BEFORE INSERT OR UPDATE ON venues FOR EACH ROW EXECUTE PROCEDURE fill_descriptives_vector_for_venue();
 
 
 --
@@ -4391,4 +4432,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160330002143');
 INSERT INTO schema_migrations (version) VALUES ('20160331043355');
 
 INSERT INTO schema_migrations (version) VALUES ('20160401205010');
+
+INSERT INTO schema_migrations (version) VALUES ('20160402184207');
 
