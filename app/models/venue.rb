@@ -1508,6 +1508,20 @@ class Venue < ActiveRecord::Base
     end
   end  
 
+#===============================================================================================
+# Actions ======================================================================================
+#===============================================================================================
+def Venue.live_recommendation_for_(user, lat=40.741140, long=-73.981917)
+  top_user_interests = Hash[user.interests.sort_by { |k,v| -v }[0..4]].keys
+  interest_query = top_user_interests.join(" ")
+
+  search_box = Geokit::Bounds.from_point_and_radius([lat, long], 5, :units => :kms)
+  user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
+  user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
+
+  results = Venue.in_bounds(search_box).interest_search(interest_query).with_pg_search_rank.where("rating IS NOT NULL OR id IN (#{user_feed_venues})").order("rating DESC NULLS LAST")
+end  
+
 
 #===============================================================================================
 # Cleanups =====================================================================================
