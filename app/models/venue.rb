@@ -612,7 +612,7 @@ class Venue < ActiveRecord::Base
 
       super_content_count = self.venue_comments.where("adjusted_sort_position >= ?", current_position).count
 
-      if super_content_count > 0
+      if super_content_count > 0 && (page_offset == 0 || page_number*page_count <= page_offset)
         new_super_content_num_pages = super_content_count/page_count + (super_content_count%page_count != 0 ? 1:0)
         if new_super_content_num_pages > 1
           for i in 2..(new_super_content_num_pages)
