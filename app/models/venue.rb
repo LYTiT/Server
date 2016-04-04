@@ -459,7 +459,7 @@ class Venue < ActiveRecord::Base
       end
 
       if venue.details_missing? == true
-        self.add_foursquare_details
+        venue.add_foursquare_details
       end
     end
   end
