@@ -301,13 +301,13 @@ class Venue < ActiveRecord::Base
           central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
           if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
               search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 20, :units => :kms)
-              Venue.search(query, search_box, nil)
+              Venue.search(query, search_box, nil, true)
           else
               outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
-              Venue.search(query, nil, outer_region)
+              Venue.search(query, nil, outer_region, true)
           end
         else
-          Venue.search(query, nil, nil)
+          Venue.search(query, nil, nil, true)
         end
       end
     else
@@ -399,7 +399,7 @@ class Venue < ActiveRecord::Base
   end  
 
   #Main Venue database searching method
-  def Venue.search(query, proximity_box = nil, view_box = nil)
+  def Venue.search(query, proximity_box = nil, view_box = nil, top_5 = false)
     if proximity_box != nil      
       search_box = proximity_box
     elsif view_box != nil 
@@ -426,21 +426,37 @@ class Venue < ActiveRecord::Base
           p "Returning All Results"
           total_results = (nearby_results.concat(city_spec_results).concat(country_spec_results)).sort_by{|result| -result.pg_search_rank}.uniq
           #p total_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
-          return total_results
+          if top_5 == true
+            return total_results
+          else
+            return total_results.first
+          end
         else
           p "Returning Country Results"
           #p country_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
-          return country_spec_results
+          if top_5 == true
+            return country_spec_results
+          else
+            return country_spec_results.first
+          end
         end
       else
         p "Returning City Results"
         #p city_spec_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
-        return city_spec_results
+        if top_5 == true
+          return city_spec_results
+        else
+          return city_spec_results.first
+        end
       end
     else
       p "Returning Nearby Results"
       #p nearby_results.each{|result| p"#{result.name} (#{result.pg_search_rank})"}
-      return nearby_results
+      if top_5 == true
+        return nearby_results
+      else
+        return nearby_results.first
+      end
     end
   end
 
@@ -1513,7 +1529,7 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # Actions ======================================================================================
 #===============================================================================================
-def Venue.live_recommendation_for_(user, lat=40.741140, long=-73.981917)
+def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
   top_user_interests = Hash[user.interests.sort_by { |k,v| -v }[0..4]].keys
   interest_query = top_user_interests.join(" ")
 
@@ -1521,7 +1537,7 @@ def Venue.live_recommendation_for_(user, lat=40.741140, long=-73.981917)
   user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
   user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
 
-  results = Venue.in_bounds(search_box).interest_search(interest_query).with_pg_search_rank.where("rating IS NOT NULL OR id IN (#{user_feed_venues})").order("popularity_rank DESC NULLS LAST")
+  results = Venue.in_bounds(search_box).interest_search(interest_query).with_pg_search_rank.where("rating IS NOT NULL OR id IN (#{user_feed_venues})").order("popularity_rank DESC")
 end  
 
 
