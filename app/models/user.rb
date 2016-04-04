@@ -93,7 +93,7 @@ class User < ActiveRecord::Base
       end
       self.update_columns(interests: interests_hash)
     else
-    
+    #update from Lists interests
     end
   end
 
