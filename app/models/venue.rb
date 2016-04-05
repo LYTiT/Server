@@ -1865,7 +1865,13 @@ end
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   def Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long, origin_city)
     client = Foursquare2::Client.new(:client_id => '35G1RAZOOSCK2MNDOMFQ0QALTP1URVG5ZQ30IXS2ZACFNWN1', :client_secret => 'ZVMBHYP04JOT2KM0A1T2HWLFDIEO1FM3M0UGTT532MHOWPD0', :api_version => '20120610')
-    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => Venue.name_for_comparison(venue_name.downcase, origin_city), :radius => 250) rescue "F2 ERROR"
+    if venue_name.downcase.include?("park") || venue_name.downcase.include?("university")
+      search_radius = 1000
+    else
+      search_radius = 250
+    end
+
+    foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => Venue.name_for_comparison(venue_name.downcase, origin_city), :radius => search_radius) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
       foursquare_venue = foursquare_search_results.first.last.first
       if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(venue_name.downcase) == false)
