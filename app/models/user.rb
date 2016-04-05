@@ -77,21 +77,23 @@ class User < ActiveRecord::Base
       meta = source.categories.values.concat(source.categories.values).concat(source.descriptives.keys).concat(source.trending_tags.keys)
       meta = meta.map{|i| i.downcase}.uniq!
 
-      for entry in meta
-          if interests_arr.length == 0
-            interests_hash[entry] = 1.0
-          end
-          
-          for interest in interests_arr
-            jarow_winkler_proximity = p jarow.getDistance(interest, entry)
-            if jarow_winkler_proximity > 0.9
-              interests_hash[interest] += 1.0
-            else
+      if meta != nil
+        for entry in meta
+            if interests_arr.length == 0
               interests_hash[entry] = 1.0
             end
-          end
+            
+            for interest in interests_arr
+              jarow_winkler_proximity = p jarow.getDistance(interest, entry)
+              if jarow_winkler_proximity > 0.9
+                interests_hash[interest] += 1.0
+              else
+                interests_hash[entry] = 1.0
+              end
+            end
+        end
+        self.update_columns(interests: interests_hash)
       end
-      self.update_columns(interests: interests_hash)
     else
     #update from Lists interests
     end
