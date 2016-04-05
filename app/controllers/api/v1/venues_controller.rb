@@ -44,8 +44,17 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def request_moment
-		mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes)
+		mr = MomentRequest.where("venue_id = ? AND expiration >= ?", Time.now)
+		no_errors = false
 		if mr
+			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)		
+			no_errors = true
+		else
+			mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes)
+			no_errors = true
+		end
+
+		if no_errors
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Moment Request Failed"] } }, :status => :not_found
