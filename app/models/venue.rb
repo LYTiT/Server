@@ -596,12 +596,10 @@ class Venue < ActiveRecord::Base
     current_position = Time.now.to_i
 
     vc_cache_key = "venue/#{self.id}/comments/page_#{page_number}"
-    view_cache_key = "venues/#{self.id}/comments/view/page_#{page_number}"
     
     #used to purge old pages to construct new ones after a post
     if warming_up == true
       Rails.cache.delete(vc_cache_key)
-      Rails.cache.delete(view_cache_key)
     end
 
     comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do

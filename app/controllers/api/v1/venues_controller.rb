@@ -102,7 +102,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@user.delay.update_interests(@venue)
 		end
 
-		@view_cache_key = "venues/#{@venue.id}/comments/view/page_#{page}"
+		@view_cache_key = "venues/#{@venue.id}/#{@venue.latest_posted_comment_time.to_i}/comments/view/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'get_comments_feed.json.jbuilder'
