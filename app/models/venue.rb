@@ -399,7 +399,13 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.fetch_for_event(vname, lat, long, vaddress, vcity, vstate, vpostal_code, vcountry)
+    center_point = [lat, long]
+    search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.3, :units => :kms)
+    name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.85).first
     
+    if name_lookup == nil
+      Venue.create!(:name => vname, :address => vaddress, :ctiy => vcity, :state => vstate, :country => vcountry, :latitude => lat, :longitude => long, :verified => true)
+    end
   end
 
   #Main Venue database searching method

@@ -4,6 +4,16 @@ class Event < ActiveRecord::Base
 	has_many :event_announcements, :dependent => :destroy
 
 
+	def Event.focus_cities_pull
+		#focus_cities = ["New York", "Los Angeles", "San Francisco"]
+		Event.where("end_time < ?", Time.now - 2.hours).delete_all
+		focus_cities = ["New York"]
+
+		for city in focus_cities
+			Event.pull_city_events(city, "tomorrow")
+		end
+	end
+
 	def Event.pull_city_events(city, day)
 		city_events = Event.ping_eventbrite(city, nil, day)
 		city_events.each{|event| Event.create_event_object(event)}
@@ -13,6 +23,7 @@ class Event < ActiveRecord::Base
 		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.find_by_id(eventbrite_event.id).present? == false
 			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
 			clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
+			Venue.fetch_for_event(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, eventbrite_event.venue.address.region, eventbrite_event.venue.address.postal_code, "United States")
 			venue = Venue.fetch(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, nil, "United States", eventbrite_event.venue.address.postal_code, nil, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude)
 			new_event = Event.create!(:name => clean_event_name, :eventbrite_id => eventbrite_event.id, :description => clean_event_description, 
 				:start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, 

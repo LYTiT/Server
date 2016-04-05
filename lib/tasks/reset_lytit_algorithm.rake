@@ -2,7 +2,7 @@ namespace :lytit do
 
   desc "called by Heroku scheduler in order to reset variables and LYTiT bar position every day at 6am"
   task :reset_algorithm => :environment do
-    puts "Reseting LYTiT..."
+    puts "Reseting Lytit..."
 
     #LytitBar.instance.update_columns(position: 0)
     #puts 'bar position set to 0'
@@ -44,6 +44,8 @@ namespace :lytit do
     #VenueComment.cleanup_and_recalibration
     #Venue.cleanup_and_calibration
     FeedRecommendation.set_daily_spotlyt
+
+    Event.focus_cities_pull
 
     puts "done."
   end  
