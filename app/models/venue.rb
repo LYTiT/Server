@@ -844,6 +844,8 @@ class Venue < ActiveRecord::Base
   end
 
   def set_last_tweet_details(tweet)
+    self.update_columns(latest_post: tweet.to_json)    
+
     self.update_columns(lytit_tweet_id: tweet.id)
     self.update_columns(twitter_id: tweet.twitter_id)
     self.update_columns(tweet_text: tweet.tweet_text)
