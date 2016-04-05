@@ -359,7 +359,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.delay(:priority => -3).update_user_feeds
 	end
 
-	def nearby_moment_requests
+	def get_nearby_requests
 		@requests = MomentRequest.get_surrounding_request(params[:latitude], params[:longitude], @user.id)
 	end
 
