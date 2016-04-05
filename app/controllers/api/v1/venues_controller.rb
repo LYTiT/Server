@@ -47,7 +47,8 @@ class Api::V1::VenuesController < ApiBaseController
 		mr = MomentRequest.where("venue_id = ? AND expiration >= ?", Time.now)
 		no_errors = false
 		if mr
-			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)		
+			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)
+			mr.increment!(:num_requesters, 1)		
 			no_errors = true
 		else
 			mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes)
