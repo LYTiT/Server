@@ -2176,7 +2176,7 @@ CREATE TABLE venues (
     ts_name_country_vector tsvector,
     popular_hours json DEFAULT '{}'::json NOT NULL,
     hist_rating_avgs json DEFAULT '{"hour_1":{"rating":0,"count":0},"hour_2":{"rating":0,"count":0},"hour_3":{"rating":0,"count":0},"hour_4":{"rating":0,"count":0},"hour_5":{"rating":0,"count":0},"hour_6":{"rating":0,"count":0},"hour_7":{"rating":0,"count":0},"hour_8":{"rating":0,"count":0},"hour_9":{"rating":0,"count":0},"hour_10":{"rating":0,"count":0},"hour_11":{"rating":0,"count":0},"hour_12":{"rating":0,"count":0},"hour_13":{"rating":0,"count":0},"hour_14":{"rating":0,"count":0},"hour_15":{"rating":0,"count":0},"hour_16":{"rating":0,"count":0},"hour_17":{"rating":0,"count":0},"hour_18":{"rating":0,"count":0},"hour_19":{"rating":0,"count":0},"hour_20":{"rating":0,"count":0},"hour_21":{"rating":0,"count":0},"hour_22":{"rating":0,"count":0},"hour_23":{"rating":0,"count":0},"hour_0":{"rating":0,"count":0}}'::json NOT NULL,
-    latest_post_details json DEFAULT '{}'::json NOT NULL,
+    latest_post json DEFAULT '{}'::json NOT NULL,
     page_offset integer DEFAULT 0,
     latest_tweet json DEFAULT '{}'::json NOT NULL,
     ts_name_vector_expd tsvector,
@@ -2187,7 +2187,8 @@ CREATE TABLE venues (
     trending_tags_string text DEFAULT ''::text,
     descriptives json DEFAULT '{}'::json NOT NULL,
     descriptives_string text DEFAULT ''::text,
-    descriptives_vector tsvector
+    descriptives_vector tsvector,
+    event json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4489,4 +4490,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160402184207');
 INSERT INTO schema_migrations (version) VALUES ('20160405012924');
 
 INSERT INTO schema_migrations (version) VALUES ('20160405024037');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405042050');
 

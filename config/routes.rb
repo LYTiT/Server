@@ -69,7 +69,7 @@ LytitServer::Application.routes.draw do
         get 'get_favorite_venues'
         get 'get_top_favorite_venues'  
         get 'get_daily_posts'
-        get 'nearby_moment_requests'    
+        get 'get_nearby_requests'    
       end
 
       resources :feeds, only: [:create] do
