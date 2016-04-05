@@ -783,7 +783,12 @@ class Venue < ActiveRecord::Base
   def set_last_venue_comment_details(vc)
     if vc != nil
       if vc.class.name == "VenueComment"
-        self.update_columns(latest_post_details: vc.as_json)
+        vc_hash = {"id" => vc.id, "comment" => vc.comment, "media_type" => vc.media_type, "user_id" => vc.user_id, "venue_id" => vc.venued_id, "created_at" => vc.time_wrapper, "instagram_id" => vc.instagram_id,
+          "thirdparty_username" => vc.thirdparty_username, "image_url_1" => vc.image_url_1, "image_url_2" => vc.image_url_2, "image_url_3" => vc.image_url_3,"video_url_1" => vc.video_url_1, "video_url_2" => vc.video_url_2, 
+          "video_url_3" => vc.video_url_3, "media_dimensions" => vc.media_dimensions}
+
+
+        self.update_columns(last_post: vc_hash)
 
         self.update_columns(venue_comment_id: vc.id)
         self.update_columns(venue_comment_instagram_id: vc.instagram_id)
