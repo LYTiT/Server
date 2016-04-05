@@ -700,6 +700,7 @@ class Venue < ActiveRecord::Base
     if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
       #purge all cache and rebuild feed
       page = 1
+      response = true
       while response == true do
         response = self.content_feed_page(page, true).any?
         page += 1
