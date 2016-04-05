@@ -45,6 +45,8 @@ class User < ActiveRecord::Base
 
   has_many :reported_objects, :dependent => :destroy
 
+  has_many :moment_request_users, :dependent => :destroy
+
   belongs_to :role
 
   before_save :ensure_authentication_token
@@ -72,6 +74,10 @@ class User < ActiveRecord::Base
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )
     interests_hash = self.interests
     interests_arr = self.interests.keys
+
+    if source.details_missing?
+      source.add_foursquare_details
+    end
 
     if source.class.name == "Venue"
       meta = source.categories.values.concat(source.categories.values).concat(source.descriptives.keys).concat(source.trending_tags.keys)

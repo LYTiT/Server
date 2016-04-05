@@ -44,7 +44,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def request_moment
-		mr = MomentRequest.create!(:user_id => params[:user_id], :venue_id => params[:venue_id])
+		mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes)
 		if mr
 			render json: { success: true }
 		else
@@ -85,7 +85,6 @@ class Api::V1::VenuesController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
 		end
 	end
-
 
 	def get_comments_feed
 		page = params[:page].to_i

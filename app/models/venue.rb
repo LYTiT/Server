@@ -1476,7 +1476,7 @@ class Venue < ActiveRecord::Base
 # Helpers ======================================================================================
 #===============================================================================================
   def details_missing?
-    if (address == nil && state == nil) || (open_hours == {} && popular_hours == {}) || (categories == {} && descriptives == {})
+    if foursquare_id == nil || (address == nil && state == nil) || (open_hours == {} && popular_hours == {}) || (categories == {} && descriptives == {})
       true
     else
       false

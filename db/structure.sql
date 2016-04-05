@@ -1506,13 +1506,49 @@ ALTER SEQUENCE meta_data_id_seq OWNED BY meta_data.id;
 
 
 --
+-- Name: moment_request_users; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE moment_request_users (
+    id integer NOT NULL,
+    user_id integer,
+    moment_request_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: moment_request_users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE moment_request_users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: moment_request_users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE moment_request_users_id_seq OWNED BY moment_request_users.id;
+
+
+--
 -- Name: moment_requests; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
 CREATE TABLE moment_requests (
     id integer NOT NULL,
     venue_id integer,
-    user_id integer
+    user_id integer,
+    latitude double precision,
+    longitude double precision,
+    num_requesters integer DEFAULT 0,
+    expiration timestamp without time zone
 );
 
 
@@ -2421,6 +2457,13 @@ ALTER TABLE ONLY meta_data ALTER COLUMN id SET DEFAULT nextval('meta_data_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY moment_request_users ALTER COLUMN id SET DEFAULT nextval('moment_request_users_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY moment_requests ALTER COLUMN id SET DEFAULT nextval('moment_requests_id_seq'::regclass);
 
 
@@ -2766,6 +2809,14 @@ ALTER TABLE ONLY menu_sections
 
 ALTER TABLE ONLY meta_data
     ADD CONSTRAINT meta_data_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: moment_request_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY moment_request_users
+    ADD CONSTRAINT moment_request_users_pkey PRIMARY KEY (id);
 
 
 --
@@ -4434,4 +4485,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160331043355');
 INSERT INTO schema_migrations (version) VALUES ('20160401205010');
 
 INSERT INTO schema_migrations (version) VALUES ('20160402184207');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405012924');
+
+INSERT INTO schema_migrations (version) VALUES ('20160405024037');
 

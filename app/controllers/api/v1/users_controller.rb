@@ -360,8 +360,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def nearby_moment_requests
-		proximity_box = Geokit::Bounds.from_point_and_radius([params[:latitude], params[:longitude]], 0.15, :units => :kms)
-		@moment_request = MomentRequest.joins(:venues).in_bounds(proximity_box)
+		@requests = MomentRequest.get_surrounding_request(params[:latitude], params[:longitude], @user.id)
 	end
 
 	def get_nearby_venues
