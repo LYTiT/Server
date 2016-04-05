@@ -396,7 +396,11 @@ class Venue < ActiveRecord::Base
     else
       return nil
     end
-  end  
+  end
+
+  def Venue.fetch_for_event(vname, lat, long, vaddress, vcity, vstate, vpostal_code, vcountry)
+    
+  end
 
   #Main Venue database searching method
   def Venue.search(query, proximity_box = nil, view_box = nil, top_5 = false)

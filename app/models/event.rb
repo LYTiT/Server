@@ -23,7 +23,7 @@ class Event < ActiveRecord::Base
 		end
 	end
 
-	def Event.ping_eventbrite(city, query, day)
+	def Event.ping_eventbrite(city, query=nil, day="today")
 =begin		
 		eventbrite_categories = {"Music"=>{"id"=>103, "short_name"=>"Music"}, "Business & Professional"=>{"id"=>101, "short_name"=>"Business"}, "Food & Drink"=>{"id"=>110, "short_name"=>"Food & Drink"}, 
 			"Community & Culture"=>{"id"=>113, "short_name"=>"Community"}, "Performing & Visual Arts"=>{"id"=>105, "short_name"=>"Arts"}, "Film, Media & Entertainment"=>{"id"=>104, "short_name"=>"Film & Media"}, 
