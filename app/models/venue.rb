@@ -617,11 +617,11 @@ class Venue < ActiveRecord::Base
         if new_super_content_num_pages > 1
           for i in 2..(new_super_content_num_pages)
             vc_cache_key = "venue/#{self.id}/comments/page_#{i}"
-            Rails.cache.write(vc_cache_key, self.venue_comments.where("adjusted_sort_position >= ?", current_position).limit(page_count).offset((page_number-1)*page_count))
+            Rails.cache.write(vc_cache_key, self.venue_comments.where("adjusted_sort_position >= ?", current_position).limit(page_count).offset((page_number-1)*page_count).to_a)
           end
         end
         self.increment!(:page_offset, new_super_content_num_pages)
-        return self.venue_comments.where("adjusted_sort_position >= ?", current_position).order("adjusted_sort_position DESC").limit(page_count)
+        return self.venue_comments.where("adjusted_sort_position >= ?", current_position).order("adjusted_sort_position DESC").limit(page_count).to_a
       else
         if (self.last_instagram_pull_time == nil or self.last_twitter_pull_time == nil) or ((Time.now - api_ping_timeout) > self.last_instagram_pull_time or (Time.now - api_ping_timeout) > self.last_twitter_pull_time)
           new_social_media = self.live_social_media_search
@@ -637,18 +637,18 @@ class Venue < ActiveRecord::Base
             return new_social_media.page(1, page_count)
           else
             #No new social media content so we move to venue comments.
-            vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC").to_a
+            vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
-              return vcs
+              return vcs.to_a
             else
               nil
             end
           end
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
-          vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC").to_a
+          vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
-            return vcs
+            return vcs.to_a
           else
             nil
           end
@@ -697,7 +697,7 @@ class Venue < ActiveRecord::Base
     self.update_columns(latest_rating_update_time: Time.now)
 
     #Append comment to venues cached feed if present by adding a negative page number.
-    if Rails.cache.exist?("venue/#{vc.venue_id}/comments/page_1")
+    if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
       #purge all cache and rebuild feed
       page = 1
       while response == true do
