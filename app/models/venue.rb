@@ -621,7 +621,7 @@ class Venue < ActiveRecord::Base
           end
         end
         self.increment!(:page_offset, new_super_content_num_pages)
-        return self.venue_comments.where("adjusted_sort_position >= ?", current_position).order("adjusted_sort_position DESC").limit(page_count).to_a
+        self.venue_comments.where("adjusted_sort_position >= ?", current_position).order("adjusted_sort_position DESC").limit(page_count).to_a
       else
         if (self.last_instagram_pull_time == nil or self.last_twitter_pull_time == nil) or ((Time.now - api_ping_timeout) > self.last_instagram_pull_time or (Time.now - api_ping_timeout) > self.last_twitter_pull_time)
           new_social_media = self.live_social_media_search
@@ -634,12 +634,12 @@ class Venue < ActiveRecord::Base
               end
             end
             self.increment!(:page_offset, new_social_media_num_pages)
-            return new_social_media.page(1, page_count)
+            new_social_media.page(1, page_count)
           else
             #No new social media content so we move to venue comments.
             vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
-              return vcs.to_a
+              vcs.to_a
             else
               nil
             end
@@ -648,7 +648,7 @@ class Venue < ActiveRecord::Base
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
           vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
-            return vcs.to_a
+            vcs.to_a
           else
             nil
           end
