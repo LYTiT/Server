@@ -702,7 +702,7 @@ class Venue < ActiveRecord::Base
       page = 1
       response = true
       while response == true do
-        response = self.content_feed_page(page, true).any?
+        response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
         page += 1
       end
     end    
