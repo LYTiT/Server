@@ -12,9 +12,9 @@ json.cache! @view_cache_key, :expires_in => 5.minutes do |json|
         json.last_post_time v.last_post_time
         json.instagram_location_id v.instagram_location_id
         json.event_id v.event_id
-        json.preview_image v.latest_post_details["image_url_1"]
-        json.full_image v.latest_post_details["image_url_2"]
-        json.full_video v.latest_post_details["video_url_2"]
+        json.preview_image v.latest_post["image_url_1"]
+        json.full_image v.latest_post["image_url_2"]
+        json.full_video v.latest_post["video_url_2"]
         json.tag_1 v.tag_1
         json.tag_2 v.tag_2
         json.tag_3 v.tag_3

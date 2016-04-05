@@ -788,7 +788,7 @@ class Venue < ActiveRecord::Base
           "video_url_3" => vc.video_url_3, "media_dimensions" => vc.media_dimensions}
 
 
-        self.update_columns(last_post: vc_hash)
+        self.update_columns(latest_post: vc_hash)
 
         self.update_columns(venue_comment_id: vc.id)
         self.update_columns(venue_comment_instagram_id: vc.instagram_id)
@@ -825,7 +825,7 @@ class Venue < ActiveRecord::Base
         latest_post_hash["video_url_1"] = video_url_1
         latest_post_hash["video_url_2"] = video_url_2
         latest_post_hash["video_url_3"] = video_url_3
-        self.update_columns(latest_post_details: latest_post_hash)
+        self.update_columns(latest_post: latest_post_hash)
 
         self.update_columns(venue_comment_id: nil)
         self.update_columns(venue_comment_instagram_id: vc.id)
