@@ -9,7 +9,7 @@ class Tweet < ActiveRecord::Base
 
     
 	def partial
-		{:twitter_user => {:name =>, :handle => , :profile_image_url => , :twitter_id => }, :twitter_id => , :tweet_text => , :image_url_1 =>, :image_url_2 =>, :image_url_3 =>, :popularity_score =>, :created_at =>}
+		#{:twitter_user => {:name =>, :handle => , :profile_image_url => , :twitter_id => }, :twitter_id => , :tweet_text => , :image_url_1 =>, :image_url_2 =>, :image_url_3 =>, :popularity_score =>, :created_at =>}
 	end
 
 	def self.popularity_score_calculation(followers_count, retweet_count, favorite_count)
