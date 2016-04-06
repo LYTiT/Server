@@ -51,8 +51,7 @@ class Api::V1::VenuesController < ApiBaseController
 			mr.increment!(:num_requesters, 1)		
 			no_errors = true
 		else
-			mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes, :num_requesters => 1)
-			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)				
+			mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes, :num_requesters => 1)				
 			no_errors = true
 		end
 
