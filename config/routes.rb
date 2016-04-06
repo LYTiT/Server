@@ -255,6 +255,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_comments_feed'
         end
+        collection do
+          get 'get_selected_venues_for_user'
+        end
       end
 
       controller :lytit_bar do

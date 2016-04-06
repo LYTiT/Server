@@ -1,3 +1,3 @@
 Clearance.configure do |config|
-  config.mailer_sender = 'LYTiT <noreply@lytit.com>'
+  config.mailer_sender = 'Lytit <noreply@lytit.com>'
 end

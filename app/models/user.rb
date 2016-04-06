@@ -56,6 +56,10 @@ class User < ActiveRecord::Base
 
 
   #I.
+  def partial
+    {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name}
+  end
+
   def update_user_feeds
     update_interval = 15 #minutes
 

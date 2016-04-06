@@ -44,7 +44,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def request_moment
-		mr = MomentRequest.where("venue_id = ? AND expiration >= ?", Time.now)
+		mr = MomentRequest.where("venue_id = ? AND expiration >= ?", params[:venue_id], Time.now)
 		no_errors = false
 		if mr
 			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)
@@ -80,13 +80,8 @@ class Api::V1::VenuesController < ApiBaseController
 
 		user = User.find_by_authentication_token(params[:auth_token])
 
-		if params[:media_type] == "image"
-			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "image", :media_dimensions => params[:media_dimensions], :image_url_2 => "small-"+params[:image_url_3],
-				:image_url_3 => params[:image_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i) 
-		else
-			vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions],
-				:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i)
-		end
+		post = {:comment => params[:comment], :media_type => params[:media_type], :image_url_1 => params[:image_url_1], :image_url_2 => params[:image_url_2], :image_url_3 => params[:image_url_3], :video_url_1 => params[:video_url_1], :video_url_2 => params[:video_url_2], :video_url_3 => params[:video_url_3], :created_at => Time.now, :position_index => (Time.now+30.minutes).to_i}
+		vc = venue.add_new_post(user, new_post)
 
 		if vc
 			venue.delay(:priority => -4).calibrate_after_lytit_post(vc)		
@@ -287,32 +282,6 @@ class Api::V1::VenuesController < ApiBaseController
 
 	end
 
-	def get_surrounding_tweets
-		venue_ids = params[:cluster_venue_ids].split(',')
-		lat = params[:cluster_latitude]
-		long =  params[:cluster_longitude]
-		zoom_level = params[:zoom_level]
-		map_scale = params[:map_scale]
-		fresh_pull = params[:fresh_pull]
-
-		@user = User.find_by_authentication_token(params[:auth_token])
-
-		if fresh_pull == "0"
-			surrounding_tweets = Rails.cache.fetch("surrounding_tweets/#{@user.id}", :expires_in => 5.minutes) do
-				Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
-			end
-		else
-			begin
-				Rails.cache.delete("surrounding_tweets/#{@user.id}")
-			rescue
-				puts "No cache present to delete"
-			end
-			surrounding_tweets = Venue.surrounding_twitter_tweets(lat, long, params[:cluster_venue_ids])
-		end
-		
-		@tweets = Kaminari.paginate_array(surrounding_tweets).page(params[:page]).per(10)
-	end
-
 	def refresh_map_view
 		Venue.delay(:priority => -2).surrounding_area_instagram_pull(params[:latitude], params[:longitude]) #this is to handle places not near a vortex
 		cache_key = "lyt_map"
@@ -438,7 +407,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
 	end
 
-	def get_live_recommendations_for_user
+	def get_selected_venues_for_user
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venues = Venue.live_recommendation_for(@user, params[:latitdue], params[:longitude])
 	end

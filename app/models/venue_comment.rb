@@ -130,19 +130,6 @@ class VenueComment < ActiveRecord::Base
 		total
 	end
 
-	#determines weight of venue comment for Lumen calculation
-	def weight
-		type = self.media_type
-
-		if type == "text"
-			LumenConstants.text_media_weight
-		elsif type == "image"
-			LumenConstants.image_media_weight
-		else
-			LumenConstants.video_media_weight
-		end
-
-	end
 
 	def set_offset_created_at
 		#note that offset time will still be stored in UTC, disregard the timezone
@@ -164,6 +151,12 @@ class VenueComment < ActiveRecord::Base
 	def VenueComment.convert_new_social_media_to_vcs(instagram_hashes, tweets, origin_venue)
 		VenueComment.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
 		Tweet.bulk_conversion(tweets, origin_venue, nil, nil, nil, nil)
+	end
+
+	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)
+		for instagram in instagrams
+			self.convert_instagram_hashie_to_vc(instagram, origin_venue)
+		end
 	end
 
 	def self.convert_bulk_instagrams_to_vcs(instagram_hashes, origin_venue)
@@ -214,6 +207,9 @@ class VenueComment < ActiveRecord::Base
 			presence = VenueComment.find_by_instagram_id(instagram_id)
 			vc = nil
 
+			origin_venue_partial = origin_venue.partial
+			instagram_partial = VenueComment.create_instagram_partial(instagram_hash)
+
 			if instagram_hash["type"] == "video"
 				video_1 = instagram_hash["videos"]["low_bandwidth"]["url"] 
 				video_2 = instagram_hash["videos"]["low_resolution"]["url"]
@@ -225,7 +221,7 @@ class VenueComment < ActiveRecord::Base
 				if presence == nil
 					vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => created_time, :instagram_id => instagram_id, :thirdparty_username => username, :adjusted_sort_position => created_time.to_i) rescue nil
 				end
-			end
+			end			
 
 			if vc != nil
 				#Venue method
@@ -313,12 +309,6 @@ class VenueComment < ActiveRecord::Base
 
 	end	
 
-	def self.bulk_convert_instagram_hashie_to_vc(instagrams, origin_venue)
-		for instagram in instagrams
-			self.convert_instagram_hashie_to_vc(instagram, origin_venue)
-		end
-	end
-
 	def self.post_instagram_vc_creation_calibration(origin_venue, vc, instagram)
 		instagram_created_time = DateTime.strptime("#{instagram.created_time}",'%s')
 
@@ -349,6 +339,12 @@ class VenueComment < ActiveRecord::Base
 
 		sphere = LytSphere.create_new_sphere(origin_venue)
 	end
+
+	def VenueComment.create_instagram_partial(instagram_hash)
+		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], :instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], :image_url_1 => instagram_hash["images"]["thumbnail"]["url"], :image_url_2 => instagram_hash["images"]["low_resolution"]["url"], :image_url_3 => instagram_hash["images"]["standard_resolution"]["url"], :video_url_1 => instagram_hash["videos"].try(["low_bandwidth"]).try(["url"]), :video_url_2 => instagram_hash["videos"].try(["low_resolution"]).try(["url"]), :video_url_3 => instagram_hash["videos"].try(["standard_resolution"]).try(["url"]), :created_at => DateTime.strptime(instagram_hash["created_time"],'%s')}
+	end
+
+
 
 
 	def extract_instagram_meta_data(instagram_tags, instagram_captions)

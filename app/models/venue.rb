@@ -404,7 +404,7 @@ class Venue < ActiveRecord::Base
     name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.85).first
     
     if name_lookup == nil
-      Venue.create!(:name => vname, :address => vaddress, :ctiy => vcity, :state => vstate, :country => vcountry, :latitude => lat, :longitude => long, :verified => true)
+      Venue.create!(:name => vname, :address => vaddress, :city => vcity, :state => vstate, :country => vcountry, :latitude => lat, :longitude => long, :verified => true)
     end
   end
 
@@ -600,6 +600,16 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # Content ======================================================================================
 #===============================================================================================
+  def add_new_post(user, post)
+    user_partial = user.partial
+    venue_partial = self.partial
+
+    vc = VenueComment.create!(:venue_id => self.id, :venue => venue_partial, :user_id => user.id, :user => user_partial, :lytit_post => post, :type => "lytit_post")
+
+     #vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions],
+        #:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i)
+  end
+
   def content_feed_page(page_number, warming_up=false)
     api_ping_timeout = 10.minutes
     page_count = 10
@@ -1498,6 +1508,10 @@ class Venue < ActiveRecord::Base
     else
       false
     end
+  end
+
+  def partial
+    {:id => self.id, :name => self.name, :address => self.address, :city => self.city, :state => self.state, :country => self.country, :latitude => self.latitude, :longitude => self.longitude}
   end
 
   def cord_to_city
