@@ -798,7 +798,7 @@ class Venue < ActiveRecord::Base
     end
     tags_string.strip!
 
-    self.update_columns(trending_tags: top_tags)
+    self.update_columns(trending_tags: tags_hash)
     self.update_columns(trending_tags_string: tags_string)
 =begin
     self.update_columns(tag_1: top_tags[0].try(:meta))
