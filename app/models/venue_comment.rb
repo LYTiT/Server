@@ -198,12 +198,12 @@ class VenueComment < ActiveRecord::Base
 				end
 			end
 
-			presence = VenueComment.find_by_instagram_id(instagram_id)
+			presence = VenueComment.find_by_instagram_id(instagram_hash["id"])
 			vc = nil			
 
 			if presence == nil
 				vc = VenueComment.create!(:type => "instagram", :venue_id => origin_venue.id, :venue => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :adjusted_sort_position => created_time.to_i)
-			end			
+			end
 
 			if vc != nil
 				#Venue method
