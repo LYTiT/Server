@@ -1,8 +1,8 @@
 json.comments(@comments) do |comment|
   json.venue_id comment.venue_id
-  json.venue_name comment["venue"]["name"]
-  json.latitude comment["venue"]["latitude"]
-  json.longitude comment["venue"]["longitude"]
+  json.venue_name comment.venue_details["name"]
+  json.latitude comment.venue_details["latitude"]
+  json.longitude comment.venue_details["longitude"]
 
   if comment.type == "lytit_post"
     json.content_origin "lytit"
