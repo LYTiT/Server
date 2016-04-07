@@ -330,7 +330,7 @@ class VenueComment < ActiveRecord::Base
 		else
 
 		end
-		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], :instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], :image_url_1 => instagram_hash["images"]["thumbnail"]["url"], :image_url_2 => instagram_hash["images"]["low_resolution"]["url"], :image_url_3 => instagram_hash["images"]["standard_resolution"]["url"], :video_url_1 => video_url_1, :video_url_2 => instagram_hash["videos"]["low_resolution"]["url"], :video_url_3 => video_url_3, :created_at => DateTime.strptime(instagram_hash["created_time"],'%s')}
+		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], :instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], :image_url_1 => instagram_hash["images"]["thumbnail"]["url"], :image_url_2 => instagram_hash["images"]["low_resolution"]["url"], :image_url_3 => instagram_hash["images"]["standard_resolution"]["url"], :video_url_1 => video_url_1, :video_url_2 => video_url_2, :video_url_3 => video_url_3, :created_at => DateTime.strptime(instagram_hash["created_time"],'%s')}
 	end
 
 
