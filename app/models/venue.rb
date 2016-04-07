@@ -796,7 +796,7 @@ class Venue < ActiveRecord::Base
       tags_string+=top_tags[i].try(:meta)+" "
       i += 1
     end
-    top_tags.strip!
+    tags_string.strip!
 
     self.update_columns(trending_tags: top_tags)
     self.update_columns(trending_tags_string: tags_string)

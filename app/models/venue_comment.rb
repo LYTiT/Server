@@ -319,7 +319,7 @@ class VenueComment < ActiveRecord::Base
 			video_url_1 = instagram_hash["videos"]["low_bandwidth"]["url"]
 			video_url_2 = instagram_hash["videos"]["low_resolution"]["url"]
 			video_url_3 = instagram_hash["videos"]["standard_resolution"]["url"]
-			media_dimensions = instagram_hash["videos"]["standard_resolution"]["width"]+"x"+instagram_hash["images"]["standard_resolution"]["height"]
+			media_dimensions = instagram_hash["videos"]["standard_resolution"]["width"].to_s+"x"+instagram_hash["images"]["standard_resolution"]["height"].to_s
 		else
 			video_url_1 = nil
 			video_url_2 = nil
