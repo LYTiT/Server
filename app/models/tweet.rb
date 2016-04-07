@@ -9,7 +9,7 @@ class Tweet < ActiveRecord::Base
 
     
 	def partial
-		#{:twitter_user => {:name =>, :handle => , :profile_image_url => , :twitter_id => }, :twitter_id => , :tweet_text => , :image_url_1 =>, :image_url_2 =>, :image_url_3 =>, :popularity_score =>, :created_at =>}
+		{:twitter_user => {:name => self.author_name, :handle => self.handle, :profile_image_url => self.author_avatar, :twitter_id => self.author_id}, :id => self.id, :twitter_id => self.twitter_id, :tweet_text => self.tweet_text, :image_url_1 => self.image_url_1, :image_url_2 => self.image_url_2, :image_url_3 => self.image_url_3, :popularity_score => self.popularity_score, :created_at => self.timestamp}
 	end
 
 	def self.popularity_score_calculation(followers_count, retweet_count, favorite_count)
@@ -26,8 +26,10 @@ class Tweet < ActiveRecord::Base
 		if v != nil
 			#raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v.id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))}
 			for raw_tweet in raw_tweets
-				new_tweet = Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v.id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))
-				VenueComment.create!(:venue_id => v.id, :comment => " ", :tweet => new_tweet)
+				if Tweet.find_by_twitter_id(raw_tweet.id) == nil
+					new_tweet = Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v.id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))
+					VenueComment.create!(:type => "tweet", :venue_id => v.id, :venue => v.partial, :tweet => new_tweet.partial, :adjusted_sort_position => new_tweet.timestamp.to_i)
+				end
 			end
 
 			tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", v.id).order("timestamp DESC").order("popularity_score DESC").first

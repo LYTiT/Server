@@ -601,13 +601,7 @@ class Venue < ActiveRecord::Base
 # Content ======================================================================================
 #===============================================================================================
   def add_new_post(user, post)
-    user_partial = user.partial
-    venue_partial = self.partial
-
-    vc = VenueComment.create!(:venue_id => self.id, :venue => venue_partial, :user_id => user.id, :user => user_partial, :lytit_post => post, :type => "lytit_post")
-
-     #vc = VenueComment.create!(:venue_id => venue.id, :user_id => user.id, :thirdparty_username => user.name, :media_type => "video", :media_dimensions => params[:media_dimensions],
-        #:video_url_3 => params[:video_url_3], :comment => params[:comment], :time_wrapper => Time.now, :content_origin => "lytit", :adjusted_sort_position => (Time.now+30.minutes).to_i)
+    vc = VenueComment.create!(:type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue => venue.partial, :user_id => user.id, :user => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
   end
 
   def content_feed_page(page_number, warming_up=false)

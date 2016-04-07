@@ -1556,7 +1556,9 @@ CREATE TABLE moment_requests (
     latitude double precision,
     longitude double precision,
     num_requesters integer DEFAULT 0,
-    expiration timestamp without time zone
+    expiration timestamp without time zone,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
 );
 
 
@@ -4507,4 +4509,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160405024037');
 INSERT INTO schema_migrations (version) VALUES ('20160405042050');
 
 INSERT INTO schema_migrations (version) VALUES ('20160406042726');
+
+INSERT INTO schema_migrations (version) VALUES ('20160407014404');
 

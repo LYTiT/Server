@@ -3,6 +3,9 @@ class Event < ActiveRecord::Base
 	has_many :event_organizers, :dependent => :destroy
 	has_many :event_announcements, :dependent => :destroy
 
+	def partial
+		self.to_json
+	end
 
 	def Event.focus_cities_pull
 		#focus_cities = ["New York", "Los Angeles", "San Francisco"]
@@ -27,6 +30,7 @@ class Event < ActiveRecord::Base
 			new_event = Event.create!(:name => clean_event_name, :eventbrite_id => eventbrite_event.id, :description => clean_event_description, 
 				:start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, 
 				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.try(:url))
+			VenueComment.create!(:type => "event", :venue_id => venue.id, :venue => venue.partial, :event => new_event.partial, :adjusted_sort_position => (new_event.start_time+1.hour).to_i)
 			venue.update_columns(event_id: new_event.id)
 		else
 			p "Event not created."
