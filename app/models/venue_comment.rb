@@ -261,7 +261,7 @@ class VenueComment < ActiveRecord::Base
 					venue = Venue.find_by_id(origin_venue_id)
 				end
 
-				vc = VenueCommet.create!(:entry_type => "instagram", :venue_id => venue.id, :venue_details => venue.partial, :instagram => {:instagram_user => {:name => instagram_params["thirdparty_username"], 
+				vc = VenueComment.create!(:entry_type => "instagram", :venue_id => venue.id, :venue_details => venue.partial, :instagram => {:instagram_user => {:name => instagram_params["thirdparty_username"], 
 					:profile_image_url => instagram_params["thirdparty_user_profile_image_url"], :instagram_id => instagram_params["thirdparty_user_id"]}, :instagram_id => instagram_params["instagram_id"], 
 					:media_type => instagram_params["media_type"], :media_dimensions => instagram_params["media_dimensions"], :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], 
 					:image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 =>  instagram_params["video_url_3"],

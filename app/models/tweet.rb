@@ -34,7 +34,7 @@ class Tweet < ActiveRecord::Base
 			tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", v.id).order("timestamp DESC").first
 			if tweet != nil
 				#v.set_last_tweet_details(tweet)
-				latest_tweet_vc = VenueComment.where("tweet_details ->> 'id' = '#{tweet.id}'")
+				latest_tweet_vc = VenueComment.where("tweet ->> 'id' = '#{tweet.id}'")
 				v.update_featured_comment(latest_tweet_vc)
 			end
 		else
@@ -52,7 +52,7 @@ class Tweet < ActiveRecord::Base
 				:timestamp => raw_tweet_params["tweet_created_at"], :venue_id => venue.id, :popularity_score => 0)
 			VenueComment.create!(:entry_type => "tweet", :venue_id => venue.id, :venue_details => venue.partial, :tweet => new_tweet.partial, :adjusted_sort_position => new_tweet.timestamp.to_i)
 		else
-			VenueComment.where("tweet_details ->> 'id' = '#{presence.id}'")
+			VenueComment.where("tweet ->> 'id' = '#{presence.id}'")
 		end
 	end
 
