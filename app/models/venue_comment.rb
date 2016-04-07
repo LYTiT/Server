@@ -324,7 +324,7 @@ class VenueComment < ActiveRecord::Base
 			video_url_1 = nil
 			video_url_2 = nil
 			video_url_3 = nil
-			media_dimensions = instagram_hash["images"]["standard_resolution"]["width"]+"x"+instagram_hash["images"]["standard_resolution"]["height"]
+			media_dimensions = instagram_hash["images"]["standard_resolution"]["width"].to_s+"x"+instagram_hash["images"]["standard_resolution"]["height"].to_s
 		end
 		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], 
 			:instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], 
