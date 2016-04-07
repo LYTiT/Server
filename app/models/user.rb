@@ -73,6 +73,11 @@ class User < ActiveRecord::Base
     end
   end
 
+  def list_news_feed
+    user_list_ids = "SELECT id FROM feed_users WHERE user_id = #{self.id}"
+    Activity.where("feed_id IN (#{user_list_ids})").order("adjusted_sort_position DESC")
+  end
+
   def update_interests(source)
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )

@@ -70,6 +70,14 @@ class Feed < ActiveRecord::Base
 
 	belongs_to :user
 
+	def partial 
+		{:name => self.name, :id => self.id, :color => self.color, :preview_image_url => self.preview_image_url, :cover_image_url => self.cover_image_url, :creator_id => self.user_id}
+	end
+
+	def activity_feed
+		self.activities.order("adjusted_sort_position DESC")
+	end
+
 	def Feed.lookup(query)
 		like_query = query.downcase+'%'
 		direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) LIKE ('#{like_query}')"

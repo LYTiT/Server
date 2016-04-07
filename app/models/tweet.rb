@@ -21,7 +21,6 @@ class Tweet < ActiveRecord::Base
 	tweet_popularity_score = 1.0 / (Math::E ** (-alpha_factor.to_f * followers_count.to_f ** beta_factor) + 1.0) + retweet_count.to_f ** (1.0 / gamma_factor)      
 	end
 
-
 	def self.bulk_conversion(raw_tweets, v, cluster_lat, cluster_long, zoom_level, map_scale)
 		if v != nil
 			#raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v.id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))}
@@ -32,12 +31,28 @@ class Tweet < ActiveRecord::Base
 				end
 			end
 
-			tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", v.id).order("timestamp DESC").order("popularity_score DESC").first
+			tweet = Tweet.where("venue_id = ? AND (NOW() - created_at) <= INTERVAL '1 DAY'", v.id).order("timestamp DESC").first
 			if tweet != nil
-				v.set_last_tweet_details(tweet)
+				#v.set_last_tweet_details(tweet)
+				latest_tweet_vc = VenueComment.where("tweet_details ->> 'id' = '#{tweet.id}'")
+				origin_venue.update_featured_comment(latest_tweet_vc)
 			end
 		else
 		  raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => true, :associated_zoomlevel => zoom_level, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))}                                    
+		end
+	end
+
+	def Tweet.convert_raw_tweet_params(raw_tweet_params, v_id)
+		presence = Tweet.find_by_twitter_id(raw_tweet_params["tweet_id"])
+		if Tweet.find_by_twitter_id(raw_tweet_params["tweet_id"]) == nil
+			venue = Venue.find_by_id(v_id)
+			new_tweet = Tweet.create!(:twitter_id => raw_tweet_params["tweet_id"], :tweet_text => raw_tweet_params["comment"], :image_url_1 => raw_tweet_params["tweet_image_url_1"], 
+				:image_url_2 => raw_tweet_params["tweet_image_url_2"], :image_url_3 => raw_tweet_params["tweet_image_url_3"], :author_id => raw_tweet_params["twitter_user_id"], 
+				:handle => raw_tweet_params["twitter_handle"], :author_name => raw_tweet_params["twitter_user_name"], :author_avatar => raw_tweet_params["twitter_user_avatar_url"], 
+				:timestamp => raw_tweet_params["tweet_created_at"], :venue_id => venue.id, :popularity_score => 0)
+			VenueComment.create!(:entry_type => "tweet", :venue_id => venue.id, :venue_details => venue.partial, :tweet => new_tweet.partial, :adjusted_sort_position => new_tweet.timestamp.to_i)
+		else
+			VenueComment.where("tweet_details ->> 'id' = '#{presence.id}'")
 		end
 	end
 

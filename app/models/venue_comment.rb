@@ -241,7 +241,8 @@ class VenueComment < ActiveRecord::Base
 				#to prevent a redundent set_instagram_location_id opperation we assign a last instagram pull time.
 
 				if last_of_batch == true
-					origin_venue.set_last_venue_comment_details(vc)
+					#origin_venue.set_last_venue_comment_details(vc)
+					origin_venue.update_featured_comment(vc)
 				end
 			else
 				nil
@@ -249,7 +250,7 @@ class VenueComment < ActiveRecord::Base
 		end
 	end
 
-	def self.convert_instagram_details_to_vc(instagram_params, origin_venue_id)
+	def self.convert_raw_instagram_params_to_vc(instagram_params, origin_venue_id)
 		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
 		if presence == nil
 			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
@@ -259,7 +260,13 @@ class VenueComment < ActiveRecord::Base
 				else
 					venue = Venue.find_by_id(origin_venue_id)
 				end
-				vc = VenueComment.create!(:venue_id => venue.id, :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], :image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 => instagram_params["video_url_3"], :media_type => instagram_params["media_type"], :content_origin => "instagram", :time_wrapper => instagram_params["created_at"], :instagram_id => instagram_params["instagram_id"], :thirdparty_username => instagram_params["thirdparty_username"], :adjusted_sort_position => Time.parse(instagram_params["created_at"]).to_i)
+
+				vc = VenueCommet.create!(:entry_type => "instagram", :venue_id => venue.id, :venue_details => venue.partial, :instagram => {:instagram_user => {:name => instagram_params["thirdparty_username"], 
+					:profile_image_url => instagram_params["thirdparty_user_profile_image_url"], :instagram_id => instagram_params["thirdparty_user_id"]}, :instagram_id => instagram_params["instagram_id"], 
+					:media_type => instagram_params["media_type"], :media_dimensions => instagram_params["media_dimensions"], :image_url_1 => instagram_params["image_url_1"], :image_url_2 => instagram_params["image_url_2"], 
+					:image_url_3 => instagram_params["image_url_3"], :video_url_1 => instagram_params["video_url_1"], :video_url_2 => instagram_params["video_url_2"], :video_url_3 =>  instagram_params["video_url_3"],
+					:created_at => Time.parse(instagram_params["created_at"])}, :adjusted_sort_position => Time.parse(instagram_params["created_at"]).to_i)
+				
 				return vc
 			else
 				return nil
@@ -270,26 +277,11 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def self.convert_instagram_hashie_to_vc(instagram, origin_venue)
-		place_name = instagram.location.name
-		place_id = instagram.location.id
-		lat = instagram.location.latitude
-		long = instagram.location.longitude
-		image_1 = instagram.images.thumbnail.url rescue nil
-		image_2 = instagram.images.low_resolution.url rescue nil
-		image_3 = instagram.images.standard_resolution.url rescue nil
-
-		if instagram.type == "video"
-			video_1 = instagram.videos.low_bandwith.url rescue nil
-			video_2 = instagram.videos.low_resolution.url rescue nil
-			video_3 = instagram.videos.standard_resolution.url rescue nil
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :video_url_1 => video_1, :video_url_2 => video_2, :video_url_3 => video_3,:media_type => "video", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username, :adjusted_sort_position => instagram.created_time.to_i)
-		else
-			vc = VenueComment.create!(:venue_id => origin_venue.id, :image_url_1 => image_1, :image_url_2 => image_2, :image_url_3 => image_3, :media_type => "image", :content_origin => "instagram", :time_wrapper => DateTime.strptime("#{instagram.created_time}",'%s'), :instagram_id => instagram.id, :thirdparty_username => instagram.user.username, :adjusted_sort_position => instagram.created_time.to_i)
-		end
-
+		instagram_hash = instagram.to_hash
+		vc = VenueComment.create!(:entry_type => "instagram", :venue_id => origin_venue.id, :venue_details => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :adjusted_sort_position => created_time.to_i)
 		VenueComment.delay.post_vc_creation_calibration(origin_venue, vc, instagram)
-
 	end	
+
 
 	def self.post_instagram_vc_creation_calibration(origin_venue, vc, instagram)
 		instagram_created_time = DateTime.strptime("#{instagram.created_time}",'%s')
@@ -327,10 +319,18 @@ class VenueComment < ActiveRecord::Base
 			video_url_1 = instagram_hash["videos"]["low_bandwidth"]["url"]
 			video_url_2 = instagram_hash["videos"]["low_resolution"]["url"]
 			video_url_3 = instagram_hash["videos"]["standard_resolution"]["url"]
+			media_dimensions = instagram_hash["videos"]["standard_resolution"]["width"]+"x"+instagram_hash["images"]["standard_resolution"]["height"]
 		else
-
+			video_url_1 = nil
+			video_url_2 = nil
+			video_url_3 = nil
+			media_dimensions = instagram_hash["images"]["standard_resolution"]["width"]+"x"+instagram_hash["images"]["standard_resolution"]["height"]
 		end
-		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], :instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], :image_url_1 => instagram_hash["images"]["thumbnail"]["url"], :image_url_2 => instagram_hash["images"]["low_resolution"]["url"], :image_url_3 => instagram_hash["images"]["standard_resolution"]["url"], :video_url_1 => video_url_1, :video_url_2 => video_url_2, :video_url_3 => video_url_3, :created_at => DateTime.strptime(instagram_hash["created_time"],'%s')}
+		partial = {:instagram_user => {:name => instagram_hash["user"]["username"], :profile_image_url => instagram_hash["user"]["profile_picture"], 
+			:instagram_id => instagram_hash["user"]["id"]}, :instagram_id => instagram_hash["id"], :media_type => instagram_hash["type"], 
+			:media_dimensions => media_dimensions, :image_url_1 => instagram_hash["images"]["thumbnail"]["url"], 
+			:image_url_2 => instagram_hash["images"]["low_resolution"]["url"], :image_url_3 => instagram_hash["images"]["standard_resolution"]["url"], 
+			:video_url_1 => video_url_1, :video_url_2 => video_url_2, :video_url_3 => video_url_3, :created_at => DateTime.strptime(instagram_hash["created_time"],'%s')}
 	end
 
 

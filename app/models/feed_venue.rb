@@ -34,15 +34,9 @@ class FeedVenue < ActiveRecord::Base
 				user_facebook_id = self.user.facebook_id
 				user_facebook_name = self.user.facebook_name
 			end		
-			
-			a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "added_venue", :feed_venue_id => self.id, 
-				:user_id => self.user_id, :user_name => user_name, :user_phone => user_phone_number, :user_facebook_id => user_facebook_id, :user_facebook_name => user_facebook_name,
-				:venue_id => venue_id, :venue_name => venue.name, 
-				:venue_instagram_location_id => venue.instagram_location_id, :venue_latitude => venue.latitude,
-				:venue_longitude => venue.longitude, :venue_address => venue.address, :venue_city => venue.city,
-				:venue_state => venue.state, :venue_country => venue.country, :venue_added_note => self.description,
-				:adjusted_sort_position => (self.created_at).to_i)
 
+			a = Activity.create!(:activity_type => "added_venue", :feed_id => feed.id, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
+				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, :adjusted_sort_position => (self.created_at).to_i)
 
 			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 			feed_members = feed.feed_users

@@ -787,12 +787,96 @@ class Venue < ActiveRecord::Base
 
   def set_top_tags
     top_tags = self.meta_datas.order("relevance_score DESC").limit(5)
+    tags_hash = {}
+    tags_string = ""
+
+    i = 0
+    for tag in top_tags
+      tags_hash["tag_#{i+1}"] = top_tags[i].try(:meta)
+      tags_string+=top_tags[i].try(:meta)+" "
+      i += 1
+    end
+    top_tags.strip!
+
+    self.update_columns(trending_tags: top_tags)
+    self.update_columns(trending_tags_string: tags_string)
+=begin
     self.update_columns(tag_1: top_tags[0].try(:meta))
     self.update_columns(tag_2: top_tags[1].try(:meta))
     self.update_columns(tag_3: top_tags[2].try(:meta))
     self.update_columns(tag_4: top_tags[3].try(:meta))
     self.update_columns(tag_5: top_tags[4].try(:meta))
+=end
   end  
+
+  def update_featured_comment(vc)
+    trending_tags = self.trending_tags
+    self_partial = self.partial
+    self_partial["trending_tags"] = trending_tags
+
+    if vc.entry_type == "tweet"
+      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
+      if venue_featured_activity == nil
+        Activity.create!(:activity_type => "featured_venue_tweet", :venue_id => self.id, :venue_details => self_partial, 
+          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.tweet[:created_at].to_i)
+      else
+        if vc.tweet[:created_at].to_i > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
+          Activity.update_columns(venue_comment_details: vc.to_json)
+          Activity.update_columns(adjusted_sort_position: vc.tweet[:created_at].to_i)
+        end
+      end      
+    else
+      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_post").first
+      vc_created_at = vc.lytit_post["created_at"] or vc.instagram["created_at"]
+      if venue_featured_activity == nil        
+        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self_partial, 
+          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc_created_at.to_i)
+      else
+        if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
+          Activity.update_columns(venue_comment_details: vc.to_json)
+          Activity.update_columns(adjusted_sort_position: vc_created_at)
+        end
+      end
+    end
+  end
+
+
+
+#depricated------
+  def set_latest_post(vc)
+    if vc != nil
+      trending_tags = self.trending_tags
+      self_partial = self.partial
+      self_partial["trending_tags"] = trending_tags
+      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_post").first
+      if venue_featured_activity == nil
+        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self_partial, 
+          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.time_wrapper)
+      else
+        if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
+          Activity.update_columns(venue_comment_details: vc.to_json)
+          Activity.update_columns(adjusted_sort_position: vc.time_wrapper)
+        end
+      end
+    end
+  end
+
+  def set_latest_tweet(tweet)
+    if tweet != nil
+      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
+      if venue_featured_activity == nil
+        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self.partial, :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.time_wrapper)
+      else
+        if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
+          Activity.update_columns(venue_comment_details: vc.to_json)
+          Activity.update_columns(adjusted_sort_position: vc.time_wrapper)
+        end
+      end
+
+    end
+  end
+
+
 
   def set_last_venue_comment_details(vc)
     if vc != nil
@@ -802,7 +886,7 @@ class Venue < ActiveRecord::Base
           "video_url_3" => vc.video_url_3, "media_dimensions" => vc.media_dimensions}
 
 
-        self.update_columns(latest_post: vc_hash)
+        self.update_columns(latest_post: vc.partial)
 
         self.update_columns(venue_comment_id: vc.id)
         self.update_columns(venue_comment_instagram_id: vc.instagram_id)
@@ -869,6 +953,7 @@ class Venue < ActiveRecord::Base
     self.update_columns(tweet_author_avatar_url: tweet.author_name)
     self.update_columns(tweet_handle: tweet.handle)
   end  
+#
 
   def last_post_time
     if latest_posted_comment_time != nil

@@ -4,6 +4,7 @@ class ActivityComment < ActiveRecord::Base
 
 	after_create :new_chat_notification
 
+
 	def new_chat_notification
 		conversation_participant_ids = "SELECT user_id FROM activity_comments WHERE activity_id = #{self.activity_id}"
 		activity_feed_ids = "SELECT feed_id FROM activity_feeds where activity_id = #{self.activity_id}"

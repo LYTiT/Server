@@ -64,9 +64,14 @@ class Activity < ActiveRecord::Base
 	end
 
 #Feed Shares--------->
-	def self.new_list_share(instagram_details, vc_id, origin_venue_id, u_id, f_ids, comment)
+	def self.new_list_share(vc_details, vc_id, origin_venue_id, u_id, f_ids, comment)
 		if vc_id == nil
-			vc = VenueComment.convert_instagram_details_to_vc(instagram_details, origin_venue_id)
+			if vc_details["instagram_id"] != nil
+				vc = VenueComment.convert_raw_instagram_params_to_vc(vc_details, origin_venue_id)
+			else
+				vc = Tweet.convert_raw_tweet_params(vc_details, origin_venue_id)
+			end
+		
 		else
 			vc = VenueComment.find_by_id(vc_id)
 		end
@@ -74,6 +79,10 @@ class Activity < ActiveRecord::Base
 		if vc != nil
 			user = User.find_by_id(u_id)
 			feed = Feed.find_by_id(f_ids.first)
+			new_activity = Activity.create!(:activity_type => "shared_#{vc.entry_type}", :feed_id => f_ids.first, :feed_details => feed.partial, :num_lists => f_ids.count,
+			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_details => vc.partial, :adjusted_sort_position => Time.now.to_i)
+
+=begin
 			new_activity = Activity.create!(:activity_type => "shared_moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
 				:user_facebook_name => user.facebook_name, :user_phone => user.phone_number, :venue_comment_id => vc.id, :feed_creator_id => feed.user_id,
 				:venue_comment_created_at => vc.time_wrapper, :media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, 
@@ -84,9 +93,10 @@ class Activity < ActiveRecord::Base
 				:venue_longitude => vc.venue.longitude, :venue_address => vc.venue.address, :venue_city => vc.venue.city,
 				:venue_state => vc.venue.state, :venue_country => vc.venue.country,
 				:adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
+=end								
 			
 			if comment != nil && comment != ""
-				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :comment => comment)
+				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :user_details => user.partial, :comment => comment)
 				new_activity.update_comment_parameters(Time.now, u_id)
 			end	
 
@@ -197,9 +207,16 @@ class Activity < ActiveRecord::Base
 	def self.new_list_topic(u_id, topic_message, f_ids)
 		feed = Feed.find_by_id(f_ids.first)
 		user = User.find_by_id(u_id)
+
+		new_activity = Activity.create!(:activity_type => "new_topic", :feed_id => feed.id, :feed_detail => feed.partial, :user_id => user.id, :user_details => user.partial,
+			:topic_details => {:message => topic_message}, :adjusted_sort_position => Time.now.to_i)
+
+=begin
 		new_activity = Activity.create!(:user_id => u_id, :user_name => user.name, :user_phone => user.phone_number, :user_facebook_id => user.facebook_id, 
 			:user_facebook_name => user.facebook_name, :activity_type => "new_topic", :adjusted_sort_position => Time.now.to_i, :message => topic_message, 
 			:feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
+=end			
+
 		ActivityFeed.bulk_creation(new_activity.id, f_ids)
 		feed_ids = "SELECT feed_id FROM activity_feeds WHERE activity_id = #{new_activity.id}"
 		u_ids = FeedUser.where("feed_id IN (#{feed_ids})").pluck(:user_id)

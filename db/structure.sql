@@ -469,14 +469,13 @@ CREATE TABLE activities (
     user_facebook_id bigint,
     user_facebook_name character varying(255),
     lytit_tweet_id integer,
-    venue_comment json DEFAULT '{}'::json NOT NULL,
+    venue_comment_details json DEFAULT '{}'::json NOT NULL,
     event json DEFAULT '{}'::json NOT NULL,
-    venue json DEFAULT '{}'::json NOT NULL,
-    feed json DEFAULT '{}'::json NOT NULL,
-    "user" json DEFAULT '{}'::json NOT NULL,
+    venue_details json DEFAULT '{}'::json NOT NULL,
+    feed_details json DEFAULT '{}'::json NOT NULL,
+    user_details json DEFAULT '{}'::json NOT NULL,
     feed_user json DEFAULT '{}'::json NOT NULL,
-    feed_venue json DEFAULT '{}'::json NOT NULL,
-    type character varying(255)
+    feed_venue json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -509,7 +508,8 @@ CREATE TABLE activity_comments (
     user_id integer,
     comment text,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    user_details json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4513,4 +4513,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160406042726');
 INSERT INTO schema_migrations (version) VALUES ('20160407014404');
 
 INSERT INTO schema_migrations (version) VALUES ('20160407030606');
+
+INSERT INTO schema_migrations (version) VALUES ('20160407032951');
 

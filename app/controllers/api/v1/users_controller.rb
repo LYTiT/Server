@@ -392,10 +392,6 @@ class Api::V1::UsersController < ApiBaseController
 		@venues = @user.live_list_venues
 	end
 
-	def checkout
-		@user.checkout_user_from_venue
-		render json: { success: true }
-	end
 	#-------------------------------------------------->
 
 	def report

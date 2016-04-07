@@ -195,7 +195,7 @@ class Api::V1::FeedsController < ApiBaseController
 			render 'feed_activity.json.jbuilder'
 		end
 =end				
-
+=begin
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@feed = Feed.find_by_id(params[:feed_id])
 		page = params[:page].to_i
@@ -219,7 +219,11 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 
 			render 'feed_activity.json.jbuilder'			
-		end			
+		end
+=end	
+		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
+		@feed = Feed.find_by_id(params[:feed_id])
+		@activities = @feed.activity_feed.page(params[:page]).per(10)
 	end
 
 	def get_activity_object
