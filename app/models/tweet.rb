@@ -52,7 +52,7 @@ class Tweet < ActiveRecord::Base
 				:timestamp => raw_tweet_params["tweet_created_at"], :venue_id => venue.id, :popularity_score => 0)
 			VenueComment.create!(:entry_type => "tweet", :venue_id => venue.id, :venue_details => venue.partial, :tweet => new_tweet.partial, :adjusted_sort_position => new_tweet.timestamp.to_i)
 		else
-			VenueComment.where("tweet ->> 'id' = '#{presence.id}'")
+			VenueComment.where("tweet ->> 'id' = '#{presence.id}'").first
 		end
 	end
 
