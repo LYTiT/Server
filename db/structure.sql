@@ -1951,9 +1951,9 @@ CREATE TABLE venue_comments (
     event json DEFAULT '{}'::json NOT NULL,
     lytit_post json DEFAULT '{}'::json NOT NULL,
     instagram json DEFAULT '{}'::json NOT NULL,
-    "user" json DEFAULT '{}'::json NOT NULL,
-    venue json DEFAULT '{}'::json NOT NULL,
-    type character varying(255)
+    user_details json DEFAULT '{}'::json NOT NULL,
+    venue_details json DEFAULT '{}'::json NOT NULL,
+    entry_type character varying(255)
 );
 
 
@@ -4511,4 +4511,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160405042050');
 INSERT INTO schema_migrations (version) VALUES ('20160406042726');
 
 INSERT INTO schema_migrations (version) VALUES ('20160407014404');
+
+INSERT INTO schema_migrations (version) VALUES ('20160407030606');
 

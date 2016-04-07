@@ -27,8 +27,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.thirdparty_username comment["user"]["username"]
 		elsif comment.type == "lytit_post"
 			json.content_origin "lytit"
-			json.user_id comment.user["id"]
-			json.user_name comment.user["name"]
+			json.user_id comment.user_details["id"]
+			json.user_name comment.user_details["name"]
 			json.id comment.lytit_post["id"]
 		    json.media_type comment.lytit_post["media_type"]
 		    json.media_dimensions comment.lytit_post["media_dimensions"]
