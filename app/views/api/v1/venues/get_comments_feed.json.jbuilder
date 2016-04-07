@@ -25,7 +25,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.created_at DateTime.strptime(comment["created_time"],'%s')
 		    json.content_origin "instagram"
 		    json.thirdparty_username comment["user"]["username"]
-		elsif comment.type = "lytit_post"
+		elsif comment.type == "lytit_post"
 			json.content_origin "lytit"
 			json.user_id comment.user["id"]
 			json.user_name comment.user["name"]
@@ -39,7 +39,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.video_url_2 comment.lytit_post["video_url_2"]
 		    json.video_url_3 comment.lytit_post["video_url_3"]
 		    json.created_at comment.lytit_post["created_at"]		    
-		elsif comment.type = "instagram"
+		elsif comment.type == "instagram"
 			json.content_origin "instagram"
 			json.id comment.id
 		    json.instagram_id comment.instagram["instagram_id"]
@@ -55,7 +55,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.thirdparty_username comment.instagram["instagram_user"]["name"]
 		    json.thirdparty_user_id comment.instagram["instagram_user"]["instagram_id"]
 		    json.thirdparty_user_profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
-		elsif comment.type = "tweet"
+		elsif comment.type == "tweet"
 			json.id comment.id
 			json.lytit_tweet_id comment.tweet["id"]
 			json.tweet_id comment.tweet["twitter_id"]
