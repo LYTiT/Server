@@ -404,7 +404,9 @@ class Venue < ActiveRecord::Base
     name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.85).first
     
     if name_lookup == nil
-      Venue.create!(:name => vname, :address => vaddress, :city => vcity, :state => vstate, :country => vcountry, :latitude => lat, :longitude => long, :verified => true)
+      venue = Venue.create!(:name => vname, :address => vaddress, :city => vcity, :state => vstate, :country => vcountry, :latitude => lat, :longitude => long, :verified => true)
+    else
+      venue = name_lookup
     end
   end
 
