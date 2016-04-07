@@ -817,24 +817,24 @@ class Venue < ActiveRecord::Base
     if vc.entry_type == "tweet"
       venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
       if venue_featured_activity == nil
-        Activity.create!(:activity_type => "featured_venue_tweet", :venue_id => self.id, :venue_details => self_partial, 
+        venue_featured_activity = Activity.create!(:activity_type => "featured_venue_tweet", :venue_id => self.id, :venue_details => self_partial, 
           :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.tweet[:created_at].to_i)
       else
         if vc.tweet[:created_at].to_i > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
-          Activity.update_columns(venue_comment_details: vc.to_json)
-          Activity.update_columns(adjusted_sort_position: vc.tweet[:created_at].to_i)
+          venue_featured_activity.update_columns(venue_comment_details: vc.to_json)
+          venue_featured_activity.update_columns(adjusted_sort_position: vc.tweet[:created_at].to_i)
         end
       end      
     else
       venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_post").first
       vc_created_at = vc.lytit_post["created_at"] or vc.instagram["created_at"]
       if venue_featured_activity == nil        
-        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self_partial, 
+        venue_featured_activity = Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self_partial, 
           :venue_comment_details => vc.to_json, :adjusted_sort_position => vc_created_at.to_i)
       else
         if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
-          Activity.update_columns(venue_comment_details: vc.to_json)
-          Activity.update_columns(adjusted_sort_position: vc_created_at)
+          venue_featured_activity.update_columns(venue_comment_details: vc.to_json)
+          venue_featured_activity.update_columns(adjusted_sort_position: vc_created_at)
         end
       end
     end
