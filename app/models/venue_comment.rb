@@ -209,7 +209,7 @@ class VenueComment < ActiveRecord::Base
 				#Venue method
 				if origin_venue.latest_posted_comment_time == nil or origin_venue.latest_posted_comment_time < created_time
 					origin_venue.update_columns(latest_posted_comment_time: created_time)
-					origin_venue.update_columns(last_instagram_post: instagram_id)
+					origin_venue.update_columns(last_instagram_post: vc["instagram"]["instagram_id"])
 				end
 
 				if (origin_venue.last_instagram_pull_time != nil and origin_venue.last_instagram_pull_time < created_time) || vortex != nil
