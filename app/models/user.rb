@@ -86,18 +86,19 @@ class User < ActiveRecord::Base
     source_foursquare_tags = source.descriptives.keys
     source_trending_tags = source.trending_tags.values
 
-    User.increment_interest_by_origin(source, true, source_categories, interests_hash)
-    User.increment_interest_by_origin(source, false, source_foursquare_tags, interests_hash)
-    User.increment_interest_by_origin(source, false, source_trending_tags, interests_hash)
+    self.increment_interest_by_origin(source, true, source_categories)
+    self.increment_interest_by_origin(source, false, source_foursquare_tags)
+    self.increment_interest_by_origin(source, false, source_trending_tags)
   end
 
-  def User.increment_interest_by_origin(source, meta_is_category, meta, interests_hash)
+  def increment_interest_by_origin(source, meta_is_category, meta)
     #source type = Searched Venue, Favorite Venue, List
     #meta oring = categories, foursquare_tags, trending_tags
 
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-    interests_arr = interests_hash.keys
+    interests_hash = self.interests
+    interests_arr = self.interests.keys
 
     if source.class.name == "Venue"
       id_tracker = "venue_ids"
@@ -111,7 +112,7 @@ class User < ActiveRecord::Base
       weights = {:new => 0.6, :repeat => 0.3}
     end
 
-    meta_is_category == true
+    if meta_is_category == true
       multiplier = 2
     else
       multiplier = 1
@@ -119,31 +120,36 @@ class User < ActiveRecord::Base
 
     if meta.count > 0
       for entry in meta
-        for interest in interests_arr
-          jarow_winkler_proximity = p jarow.getDistance(interest, entry)
-          if jarow_winkler_proximity > 0.9
-            #interest already present need to increment score.
-            interests_hash["interest"]["score"] = old_score
-            interests_hash["interest"][id_tracker] = venue_ids_arr
+        if interests_arr.count > 0
+          for interest in interests_arr
+            jarow_winkler_proximity = p jarow.getDistance(interest, entry)
+            if jarow_winkler_proximity > 0.9
+              #interest already present need to increment score.
+              old_score = interests_hash[interest]["score"]
+              venue_ids_arr = interests_hash[interest][id_tracker]
 
-            if old_venue_ids_arr.include? source.id
-              #venue has been previously searched for.
-              new_score = old_score + weights[:repeat]*multiplier
-              interests_hash["interest"]["score"] = new_score
+              if venue_ids_arr.include? source.id
+                #venue has been previously searched for.
+                new_score = old_score + weights[:repeat]*multiplier
+                interests_hash[interest]["score"] = new_score
+              else
+                #venue has just been search for the first time.
+                new_score = old_score + weights[:new]*multiplier
+                interests_hash[interest]["score"] = new_score
+                new_venue_ids_arr = venue_ids_arr + [source.id]
+                interests_hash[interest][id_tracker] = new_venue_ids_arr
+              end
             else
-              #venue has just been search for the first time.
-              new_score = old_score + weights[:new]*multiplier
-              interests_hash["interest"]["score"] = new_score
-              new_venue_ids_arr = venue_ids_arr + source.id
-              interests_hash["interest"][id_tracker] = new_venue_ids_arr
+              #new interest, need to add it to the user's interests.
+              interests_hash[entry.downcase] = {"score" => weights[:new]*multiplier, "venue_ids" => [source.id]}
             end
-          else
-            #new interest, need to add it to the user's interests.
-            interests_hash[category] = {"score" => weight[:new], "venue_ids" => [source.id]}
           end
+        else
+          interests_hash[entry.downcase] = {"score" => weights[:new]*multiplier, "venue_ids" => [source.id]}
         end
       end
-    end    
+    end 
+    self.update_columns(interests: interests_hash)
   end
 
   def notify_friends_of_joining(fb_friend_ids, fb_name, fb_id)
