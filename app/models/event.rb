@@ -26,7 +26,7 @@ class Event < ActiveRecord::Base
 		venue = Venue.fetch_for_event(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, eventbrite_event.venue.address.region, eventbrite_event.venue.address.postal_code, eventbrite_event.venue.address.country.to_full_country_name)
 		clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
 		clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
-		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.eventbrite_dupe_check_for(eventbrite_id, clean_event_name, venue.id) == true			
+		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.eventbrite_dupe_check_for(eventbrite_event, clean_event_name, venue.id) == true			
 			new_event = Event.create!(:name => clean_event_name, :eventbrite_id => eventbrite_event.id, :description => clean_event_description, 
 				:start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, 
 				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.try(:url))
