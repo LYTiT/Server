@@ -1,64 +1,91 @@
 json.activity(@activities) do |activity|
-  json.feed_id activity.feed_id
-  json.feed_name activity.feed_name
-  json.feed_color activity.feed_color
-  json.list_creator_id  activity.feed_creator_id
-
   json.id activity.id
-  json.activity_type activity.activity_type
-  json.user_id activity.user_id
-  json.user_name activity.user_name
-  json.fb_id activity.user_facebook_id
-  json.fb_name activity.user_facebook_name
-  json.user_phone activity.user_phone
   json.created_at activity.created_at
+  json.activity_type activity.activity_type
+
+  json.feed_id activity.feed_id
+  json.feed_name activity.feed_details["name"]
+  json.feed_color activity.feed_details["preview_image_url"]
+  json.feed_cover_image_url activity.feed_details["cover_image_url"]
+  json.feed_thumbnail_image_url activity.feed_details["color"]
+  json.list_creator_id  activity.feed_details["creator_id"]
+  json.num_activity_lists activity.num_lists
+
+  json.user_id activity.user_id
+  json.user_name activity.user_details["name"]
+  json.fb_id activity.user_details["facebook_id"]
+  json.fb_name activity.user_details["facebook_name"] 
+
   json.num_chat_participants activity.num_participants
   json.latest_chat_time activity.latest_comment_time
-
-  json.tag_1 activity.tag_1
-  json.tag_2 activity.tag_2
-  json.tag_3 activity.tag_3
-  json.tag_4 activity.tag_4
-  json.tag_5 activity.tag_5
   
   json.venue_id activity.venue_id
-  json.venue_name activity.venue_name
-  json.address activity.venue_address
-  json.city activity.venue_city
-  json.country activity.venue_country
-  json.latitude activity.venue_latitude
-  json.longitude activity.venue_longitude
-  json.color_rating activity.venue.try(:color_rating)
-  json.instagram_location_id activity.venue_instagram_location_id
+  json.venue_name activity.venue_details["name"]
+  json.address activity.venue_details["address"]
+  json.city activity.venue_details["city"]
+  json.country activity.venue_details["country"]
+  json.latitude activity.venue_details["latitude"]
+  json.longitude activity.venue_details["longitude"]
+  json.added_note activity.feed_venue_details["added_note"]
 
-  json.added_note activity.venue_added_note
+  json.tag_1 activity.venue_details["trending_tags"].try(["tag_1"])
+  json.tag_2 activity.venue_details["trending_tags"].try(["tag_2"])
+  json.tag_3 activity.venue_details["trending_tags"].try(["tag_3"])
+  json.tag_4 activity.venue_details["trending_tags"].try(["tag_4"])
+  json.tag_5 activity.venue_details["trending_tags"].try(["tag_5"])
 
-  json.venue_comment_id activity.venue_comment_id
-  json.venue_comment_created_at activity.venue_comment_created_at
-  json.media_type activity.media_type
-  json.image_url_1 activity.image_url_1
-  json.image_url_2 activity.image_url_2
-  json.image_url_3 activity.image_url_3
-  json.video_url_1 activity.video_url_1
-  json.video_url_2 activity.video_url_2
-  json.video_url_3 activity.video_url_3
-  json.content_origin activity.venue_comment_content_origin
-  json.thirdparty_username activity.venue_comment_thirdparty_username
+  json.topic activity.topic_details["message"]
 
-  json.lytit_tweet_id activity.lytit_tweet_id
-  json.tweet_id activity.twitter_id
-  json.tweet_created_at activity.tweet_created_at
-  json.comment activity.tweet_text
-  json.twitter_user_name activity.tweet_author_name
-  json.twitter_user_id activity.tweet_author_id
-  json.twitter_user_avatar_url activity.tweet_author_avatar_url
-  json.twitter_handle activity.tweet_handle
-  json.tweet_image_url_1 activity.image_url_1
-  json.tweet_image_url_2 activity.image_url_2
-  json.tweet_image_url_3 activity.image_url_3
+  if venue_comment.entry_type == "lytit_post"
+    json.venue_comment_id activity.venue_comment_id
+    json.venue_comment_created_at activity.venue_comment["id"]
+    json.content_origin activity.venue_comment["entry_type"]
+    json.media_dimensions activity.venue_comment["lytit_post"]["media_dimensions"]
+    json.media_type activity.venue_comment["lytit_post"]["media_type"]
+    json.image_url_1 activity.venue_comment["lytit_post"]["image_url_1"]
+    json.image_url_2 activity.venue_comment["lytit_post"]["image_url_2"]
+    json.image_url_3 activity.venue_comment["lytit_post"]["image_url_3"]
+    json.video_url_1 activity.venue_comment["lytit_post"]["video_url_1"]
+    json.video_url_2 activity.venue_comment["lytit_post"]["video_url_2"]
+    json.video_url_3 activity.venue_comment["lytit_post"]["video_url_3"]
+    json.user_id activity.venue_comment["lytit_post"]["user"]["id"]
+    json.user_name activity.venue_comment["lytit_post"]["user"]["name"]
+  elsif venue_comment.entry_type == "instagram"
+    json.venue_comment_id activity.venue_comment_id
+    json.venue_comment_created_at activity.venue_comment["id"]
+    json.content_origin activity.venue_comment["entry_type"]
+    json.media_dimensions activity.venue_comment["instagram"]["media_dimensions"]
+    json.media_type activity.venue_comment["instagram"]["media_type"]
+    json.image_url_1 activity.venue_comment["instagram"]["image_url_1"]
+    json.image_url_2 activity.venue_comment["instagram"]["image_url_2"]
+    json.image_url_3 activity.venue_comment["instagram"]["image_url_3"]
+    json.video_url_1 activity.venue_comment["instagram"]["video_url_1"]
+    json.video_url_2 activity.venue_comment["instagram"]["video_url_2"]
+    json.video_url_3 activity.venue_comment["instagram"]["video_url_3"]
+    json.thirdparty_username
+  elsif venue_comment.entry_type == "tweet"
+    json.id activity.venue_comment["id"]
+    json.lytit_tweet_id activity.venue_comment["tweet"]["id"]
+    json.tweet_id activity.venue_comment["tweet"]["twitter_id"]
+    json.comment activity.venue_comment["tweet"]["tweet_text"]
+    json.tweet_image_url_1 activity.venue_comment["tweet"]["image_url_1"]
+    json.tweet_image_url_2 activity.venue_comment["tweet"]["image_url_2"]
+    json.tweet_image_url_3 activity.venue_comment["tweet"]["image_url_3"]
+    json.tweet_created_at activity.venue_comment["tweet"]["created_at"]
+    json.twitter_user_name activity.venue_comment["tweet"]["twitter_user"]["name"]
+    json.twitter_user_avatar_url activity.venue_comment["tweet"]["twitter_user"]["profile_image_url"]
+    json.twitter_user_id activity.venue_comment["tweet"]["twitter_user"]["twitter_id"]
+    json.twitter_handle activity.venue_comment["tweet"]["twitter_user"]["handle"]
+  else
+    json.event_id activity.event["id"]
+    json.event_name activity.event["name"]
+    json.event_description activity.event["description"]
+    json.event_start_time activity.event["start_time"].to_i
+    json.event_end_time activity.event["end_time"].to_i
+    json.event_source_url activity.event["source_url"]
+    json.event_cover_image_url activity.event["cover_image_url"]  
+  end
 
   json.num_likes activity.num_likes
-  json.has_liked @user.likes.where("activity_id = ?", activity.id).first.present?
-  json.topic activity.message
-  json.num_activity_lists activity.num_lists
+  json.has_liked @user.likes.where("activity_id = ?", activity.id).first.present?  
 end

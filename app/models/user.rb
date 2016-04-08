@@ -202,7 +202,15 @@ class User < ActiveRecord::Base
   end
 
   #IV. Lists
+  def aggregate_list_feed
+    user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
+    user_feed_venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
+    featured_venue_ids = "SELECT id FROM venues WHERE id IN (#{user_feed_venue_ids}) ORDER BY popularity_rank DESC LIMIT 10"
+    featured_activity_ids = "SELECT id FROM activities WHERE venue_id IN (#{featured_venue_ids}) AND (activity_type = 'featured_venue_post' OR activity_type = 'featured_venue_tweet')"
+    feed = Activity.where("id IN (#{featured_activity_ids}) OR (feed_id IN (#{user_feed_ids}) AND id NOT IN (#{featured_activity_ids}))")
+  end
 
+=begin
   def aggregate_list_feed(max_id)
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
     if max_id != nil && max_id != 0
@@ -212,6 +220,7 @@ class User < ActiveRecord::Base
     end
     Activity.where("id IN (#{activity_ids}) AND adjusted_sort_position IS NOT NULL AND created_at >= ?", Time.now-1.day).includes(:venue).order("adjusted_sort_position DESC")
   end
+=end 
 
   def live_list_venues
     user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{self.id}"
