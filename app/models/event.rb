@@ -48,9 +48,9 @@ class Event < ActiveRecord::Base
 		if Event.find_by_eventbrite_id(eventbrite_event.id).present? == false
 			venue_time_lookup = Event.where("venue_id = ? AND start_time = ? AND end_time = ?", v_id, eventbrite_event.start.utc.to_datetime, eventbrite_event.end.utc.to_datetime).first
 			if venue_time_lookup == nil
-				false
-			else
 				true
+			else
+				false
 			end
 		else
 			false
