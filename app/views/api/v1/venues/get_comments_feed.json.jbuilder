@@ -4,8 +4,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 			json.tweet_id comment[:id]
 			json.comment comment[:text]
 			json.tweet_image_url_1 Tweet.implicit_image_content_for_hash(comment, "small")
-			json.tweet_image_url_2 Tweet.implicit_image_content_for_hash(comment, "small")
-			json.tweet_image_url_3 Tweet.implicit_image_content_for_hash(comment, "small")
+			json.tweet_image_url_2 Tweet.implicit_image_content_for_hash(comment, "medium")
+			json.tweet_image_url_3 Tweet.implicit_image_content_for_hash(comment, "large")
 			json.tweet_created_at comment[:created_at]
 			json.twitter_user_name comment[:user][:name]
 			json.twitter_user_avatar_url comment[:user][:profile_image_url]
@@ -71,13 +71,13 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 			json.twitter_user_id comment.tweet["twitter_user"]["twitter_id"]
 			json.twitter_handle comment.tweet["twitter_user"]["handle"]
 		else
-			json.id comment.event["id"]
-			json.name comment.event["name"]
-			json.description comment.event["description"]
-			json.start_time comment.event["start_time"].to_i
-			json.end_time comment.event["end_time"].to_i
-			json.source_url comment.event["source_url"]
-			json.cover_image_url comment.event["cover_image_url"]
+			json.event_id comment.event["id"]
+			json.event_name comment.event["name"]
+			json.event_description comment.event["description"]
+			json.event_start_time comment.event["start_time"].to_i
+			json.event_end_time comment.event["end_time"].to_i
+			json.event_source_url comment.event["source_url"]
+			json.event_cover_image_url comment.event["cover_image_url"]
 		end
 	end
 
