@@ -81,6 +81,3 @@ json.comments(@comments) do |comment|
     end
 end
 
-json.venue_id @venue.id
-json.venue_foursuqare_id @venue.foursquare_id
-
