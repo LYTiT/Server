@@ -74,8 +74,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 			json.event_id comment.event["id"]
 			json.event_name comment.event["name"]
 			json.event_description comment.event["description"]
-			json.event_start_time comment.event["start_time"].to_i
-			json.event_end_time comment.event["end_time"].to_i
+			json.event_start_time comment.event["start_time"]
+			json.event_end_time comment.event["end_time"]
 			json.event_source_url comment.event["source_url"]
 			json.event_cover_image_url comment.event["cover_image_url"]
 		end
