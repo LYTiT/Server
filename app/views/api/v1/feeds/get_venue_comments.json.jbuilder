@@ -1,4 +1,9 @@
 json.comments(@comments) do |comment|
+    json.venue_id comment.venue_details["id"]
+    json.venue_name comment.venue_details["name"]
+    json.latitude comment.venue_details["latitdue"]
+    json.longitude comment.venue_details["longitude"]
+
     if comment.class.name == "Hash" and comment[:created_at] != nil
         json.tweet_id comment[:id]
         json.comment comment[:text]
