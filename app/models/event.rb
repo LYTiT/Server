@@ -23,10 +23,10 @@ class Event < ActiveRecord::Base
 	end
 
 	def Event.create_event_object(eventbrite_event)
-		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.find_by_id(eventbrite_event.id).present? == false
-			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
-			clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil			
-			venue = Venue.fetch_for_event(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, eventbrite_event.venue.address.region, eventbrite_event.venue.address.postal_code, eventbrite_event.venue.address.country.to_full_country_name)
+		venue = Venue.fetch_for_event(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, eventbrite_event.venue.address.region, eventbrite_event.venue.address.postal_code, eventbrite_event.venue.address.country.to_full_country_name)
+		clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
+		clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
+		if (eventbrite_event != nil and eventbrite_event.venue.name != nil) && Event.eventbrite_dupe_check_for(eventbrite_id, clean_event_name, venue.id) == true			
 			new_event = Event.create!(:name => clean_event_name, :eventbrite_id => eventbrite_event.id, :description => clean_event_description, 
 				:start_time => eventbrite_event.start.utc.to_datetime, :end_time => eventbrite_event.end.utc.to_datetime, :source_url => eventbrite_event.url, 
 				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.try(:url))
@@ -35,6 +35,22 @@ class Event < ActiveRecord::Base
 		else
 			p "Event not created."
 		end
+	end
+
+	def Event.eventbrite_dupe_check_for(eventbrite_event, v_id)
+		require 'fuzzystringmatch'
+    	jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+		if Event.find_by_eventbrite_id(eventbrite_event.id).present? == false
+			venue_time_lookup = Event.where("venue_id = ? AND start_time = ? AND end_time = ?", v_id, eventbrite_event.start.utc.to_datetime, eventbrite_event.end.utc.to_datetime)    	
+			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue venue_time_lookup.name
+			if p jarow.getDistance(clean_event_name, venue_time_lookup.name) > 0.85
+				false
+			else
+				true
+			end
+		else
+			false
+		end 
 	end
 
 	def Event.ping_eventbrite(city, query=nil, day="today")
