@@ -603,7 +603,7 @@ class Venue < ActiveRecord::Base
 # Content ======================================================================================
 #===============================================================================================
   def add_new_post(user, post)
-    vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => venue.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
+    vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => self.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
   end
 
   def content_feed_page(page_number, warming_up=false)
