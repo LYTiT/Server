@@ -25,6 +25,9 @@ class Event < ActiveRecord::Base
 	def Event.create_event_object(eventbrite_event)
 		if (eventbrite_event.venue.name.to_s.titleize != nil && eventbrite_event.venue.name.to_s.titleize != "") && (eventbrite_event.venue.latitude.to_f != 0.0 && eventbrite_event.venue.longitude.to_f != 0.0)
 			venue = Venue.fetch_for_event(eventbrite_event.venue.name.to_s.titleize, eventbrite_event.venue.latitude, eventbrite_event.venue.longitude, eventbrite_event.venue.address.address_1, eventbrite_event.venue.address.city, eventbrite_event.venue.address.region, eventbrite_event.venue.address.postal_code, eventbrite_event.venue.address.country.to_full_country_name)
+		else			
+			p "Event not created."
+			return nil
 		end
 		clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue nil
 		clean_event_description = eventbrite_event.description.text.gsub("\n", "") rescue nil
