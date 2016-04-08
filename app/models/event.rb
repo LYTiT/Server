@@ -46,9 +46,8 @@ class Event < ActiveRecord::Base
 		require 'fuzzystringmatch'
     	jarow = FuzzyStringMatch::JaroWinkler.create( :native )
 		if Event.find_by_eventbrite_id(eventbrite_event.id).present? == false
-			venue_time_lookup = Event.where("venue_id = ? AND start_time = ? AND end_time = ?", v_id, eventbrite_event.start.utc.to_datetime, eventbrite_event.end.utc.to_datetime)    	
-			clean_event_name = eventbrite_event.name.text.gsub("\n", "").first(140) rescue venue_time_lookup.name
-			if p jarow.getDistance(clean_event_name, venue_time_lookup.name) > 0.85
+			venue_time_lookup = Event.where("venue_id = ? AND start_time = ? AND end_time = ?", v_id, eventbrite_event.start.utc.to_datetime, eventbrite_event.end.utc.to_datetime).first
+			if venue_time_lookup == nil
 				false
 			else
 				true
