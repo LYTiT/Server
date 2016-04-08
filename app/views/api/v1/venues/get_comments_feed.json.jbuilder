@@ -71,6 +71,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 			json.twitter_user_id comment.tweet["twitter_user"]["twitter_id"]
 			json.twitter_handle comment.tweet["twitter_user"]["handle"]
 		else
+			json.id comment.id
 			json.event_id comment.event["id"]
 			json.event_name comment.event["name"]
 			json.event_description comment.event["description"]
