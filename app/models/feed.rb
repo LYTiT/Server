@@ -71,7 +71,7 @@ class Feed < ActiveRecord::Base
 	belongs_to :user
 
 	def partial 
-		{:name => self.name, :id => self.id, :color => self.color, :preview_image_url => self.preview_image_url, :cover_image_url => self.cover_image_url, :creator_id => self.user_id}
+		{:name => self.name, :id => self.id, :color => self.feed_color, :preview_image_url => self.preview_image_url, :cover_image_url => self.cover_image_url, :creator_id => self.user_id}
 	end
 
 	def activity_feed
