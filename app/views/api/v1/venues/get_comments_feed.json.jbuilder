@@ -25,6 +25,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.created_at DateTime.strptime(comment["created_time"],'%s')
 		    json.content_origin "instagram"
 		    json.thirdparty_username comment["user"]["username"]
+		    json.thirdparty_user_id comment["user"]["id"]
+		    json.thirdparty_user_profile_image_url comment["user"]["profile_picture"]
 		elsif comment.entry_type == "lytit_post"
 			json.content_origin "lytit"
 			json.user_id comment.user_details["id"]
