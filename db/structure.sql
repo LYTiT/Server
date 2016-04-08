@@ -474,7 +474,7 @@ CREATE TABLE activities (
     venue_details json DEFAULT '{}'::json NOT NULL,
     feed_details json DEFAULT '{}'::json NOT NULL,
     user_details json DEFAULT '{}'::json NOT NULL,
-    feed_user json DEFAULT '{}'::json NOT NULL,
+    feed_user_details json DEFAULT '{}'::json NOT NULL,
     feed_venue_details json DEFAULT '{}'::json NOT NULL
 );
 
