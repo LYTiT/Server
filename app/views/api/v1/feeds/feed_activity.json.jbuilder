@@ -77,6 +77,7 @@ json.activity(@activities) do |activity|
     json.twitter_user_id activity.venue_comment_details["tweet"]["twitter_user"]["twitter_id"]
     json.twitter_handle activity.venue_comment_details["tweet"]["twitter_user"]["handle"]
   else
+    json.venue_comment_id activity.venue_comment_details["id"]
     json.event_id activity.venue_comment_details["event"]["id"]
     json.event_name activity.venue_comment_details["event"]["name"]
     json.event_description activity.venue_comment_details["event"]["description"]
