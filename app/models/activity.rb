@@ -80,7 +80,7 @@ class Activity < ActiveRecord::Base
 			user = User.find_by_id(u_id)
 			feed = Feed.find_by_id(f_ids.first)
 			new_activity = Activity.create!(:activity_type => "shared_#{vc.entry_type}", :feed_id => f_ids.first, :feed_details => feed.partial, :num_lists => f_ids.count,
-			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_details => vc.partial, :adjusted_sort_position => Time.now.to_i)
+			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_details => vc.to_json, :adjusted_sort_position => Time.now.to_i)
 
 =begin
 			new_activity = Activity.create!(:activity_type => "shared_moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
