@@ -208,7 +208,7 @@ class Activity < ActiveRecord::Base
 		feed = Feed.find_by_id(f_ids.first)
 		user = User.find_by_id(u_id)
 
-		new_activity = Activity.create!(:activity_type => "new_topic", :feed_id => feed.id, :feed_detail => feed.partial, :user_id => user.id, :user_details => user.partial,
+		new_activity = Activity.create!(:activity_type => "new_topic", :feed_id => feed.id, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
 			:topic_details => {:message => topic_message}, :adjusted_sort_position => Time.now.to_i)
 
 =begin
