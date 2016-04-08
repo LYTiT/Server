@@ -475,7 +475,7 @@ CREATE TABLE activities (
     feed_details json DEFAULT '{}'::json NOT NULL,
     user_details json DEFAULT '{}'::json NOT NULL,
     feed_user json DEFAULT '{}'::json NOT NULL,
-    feed_venue json DEFAULT '{}'::json NOT NULL
+    feed_venue_details json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4515,4 +4515,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160407014404');
 INSERT INTO schema_migrations (version) VALUES ('20160407030606');
 
 INSERT INTO schema_migrations (version) VALUES ('20160407032951');
+
+INSERT INTO schema_migrations (version) VALUES ('20160407060435');
 
