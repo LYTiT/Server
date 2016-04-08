@@ -113,9 +113,9 @@ class User < ActiveRecord::Base
     end
 
     if meta_is_category == true
-      multiplier = 2
+      multiplier = 2.0
     else
-      multiplier = 1
+      multiplier = 1.0
     end
 
     if meta.count > 0
