@@ -82,4 +82,5 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 	end
 
 	json.venue_id @venue.id
+	json.venue_foursuqare_id @venue.foursquare_id
 end
