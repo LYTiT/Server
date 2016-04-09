@@ -242,6 +242,7 @@ class VenueComment < ActiveRecord::Base
 
 				if last_of_batch == true
 					#origin_venue.set_last_venue_comment_details(vc)
+					origin_venue.update_columns(last_instagram_id: vc.instagram["instagram_id"])
 					origin_venue.update_featured_comment(vc)
 				end
 			else

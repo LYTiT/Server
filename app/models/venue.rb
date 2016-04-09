@@ -1768,7 +1768,7 @@ end
       self.update_columns(last_instagram_pull_time: Time.now)
     #Else make a hybrid call of Instagrams no older than a day but since the last Instagram that was pulled for the Venue.  
     else
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_post, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
@@ -1870,9 +1870,9 @@ end
       query = self.name
     end
 
-    last_tweet_id = nil
+    self.last_tweet_id = nil
     if last_tweet_id != nil
-      new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{last_tweet_id}").take(20).collect.to_a
+      new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{self.last_tweet_id}").take(20).collect.to_a
     else
       new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km").take(20).collect.to_a
     end

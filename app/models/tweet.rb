@@ -36,6 +36,7 @@ class Tweet < ActiveRecord::Base
 				#v.set_last_tweet_details(tweet)
 				latest_tweet_vc = VenueComment.where("tweet ->> 'id' = '#{tweet.id}'").first
 				v.update_featured_comment(latest_tweet_vc)
+				v.update_columns(last_tweet_id: latest_tweet_vc.tweet["twitter_id"])
 			end
 		else
 		  raw_tweets.each{|raw_tweet| Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet.text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => true, :associated_zoomlevel => zoom_level, :latitude => cluster_lat, :longitude => cluster_long, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))}                                    
