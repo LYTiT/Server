@@ -12,10 +12,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: venue
 	end
 
-	def get_menue
-		@venue = Venue.find(params[:id])
-	end
-
 	def delete_comment
 		vc = VenueComment.find_by_id(params[:id])
 		vc.destroy

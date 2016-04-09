@@ -1641,7 +1641,8 @@ class Venue < ActiveRecord::Base
 # Actions ======================================================================================
 #===============================================================================================
 def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
-  top_user_interests = Hash[user.interests.sort_by { |k,v| -v }[0..4]].keys
+  top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
+
   interest_query = top_user_interests.join(" ")
 
   search_box = Geokit::Bounds.from_point_and_radius([lat, long], 5, :units => :kms)
@@ -1650,12 +1651,36 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 
   results = Venue.in_bounds(search_box).interest_search(interest_query).with_pg_search_rank.where("rating IS NOT NULL OR id IN (#{user_feed_venues})").order("popularity_rank DESC").limit(30)
 
-  if results.count == 0
+  if results.length == 0
     results = Venue.in_bounds(search_box).where("rating IS NOT NULL OR id IN (#{user_feed_venues})").order("popularity_rank DESC").limit(30)    
   end
 
   return results
-end  
+end
+
+def recommendation_reason_for(user)
+  require 'fuzzystringmatch'
+  jarow = FuzzyStringMatch::JaroWinkler.create( :native )  
+  user_interests = user.interests.keys
+  venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
+  interest_match = Venue.interest_search("user_interests").where("id = ?", self.id).first == nil
+
+  if interest_match == true
+    for interest in user_interests
+      if Venue.interest_search(interest).where("id = ?", self.id).first != nil
+        if user.interests[interest]["venue_ids"] != nil
+          return "Like Venue Search"
+        elsif user.interests[interest]["favorite_venue_ids"] != nil
+          return "Like Favorite"
+        else
+          return "Like List"
+        end
+      end
+    end
+  else
+    return "In List"
+  end
+end
 
 
 #===============================================================================================
