@@ -14,7 +14,7 @@ class Tweet < ActiveRecord::Base
 
 	def Tweet.set_daiy_tweet_id
 		lower_tweet_id_daily_bound = Tweet.where("timestamp > ?", Time.now - 24.hours).order("timestamp ASC").first.twitter_id
-		LytitConstants.where("constant_name = ?", "daily_tweet_id").first.update_columns(constant_value: lower_tweet_id_daily_bound)
+		LytitConstants.where("constant_name = ?", "daily_tweet_id").first.update_columns(constant_value: lower_tweet_id_daily_bound.to_f)
 	end
 
 	def self.popularity_score_calculation(followers_count, retweet_count, favorite_count)

@@ -1870,7 +1870,7 @@ end
       query = self.name
     end
 
-    min_tweet_id = [LytitConstants.daily_tweet_id, ( self.last_tweet_id || (LytitConstants.daily_tweet_id+1) )].min
+    min_tweet_id = [LytitConstants.daily_tweet_id.to_i, ( self.last_tweet_id || (LytitConstants.daily_tweet_id.to_i+1) )].min
 
     new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{min_tweet_id}").take(20).collect.to_a
     self.update_columns(last_twitter_pull_time: Time.now)
