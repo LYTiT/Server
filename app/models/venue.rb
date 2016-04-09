@@ -511,11 +511,15 @@ class Venue < ActiveRecord::Base
     return visible
   end
 
-  def update_rating(after_post=false)
+  def update_rating(after_post=false, lytit_post=false)
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
     if after_post == true
-      new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+      if lytit_post == true
+        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+6.0
+      else
+        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+      end
     else
       new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
     end
@@ -604,6 +608,8 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
   def add_new_post(user, post)
     vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => self.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
+    self.update_columns(latest_posted_comment_time: Time.now)
+    self.delay.update_rating(after_post=false, lytit_post=false)
   end
 
   def content_feed_page(page_number, warming_up=false)
@@ -703,11 +709,11 @@ class Venue < ActiveRecord::Base
 
   def calibrate_after_lytit_post(vc)
     if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
-      self.update_columns(latest_posted_comment_time: vc.time_wrapper)
+      self.update_columns(latest_posted_comment_time: vc.created_at)
     end
     vc.extract_venue_comment_meta_data
     self.feeds.update_all("num_moments = num_moments+1")
-    self.update_rating(true)
+    self.update_rating(true, true)
     self.update_columns(latest_rating_update_time: Time.now)
 
     #Append comment to venues cached feed if present by adding a negative page number.
@@ -1870,7 +1876,7 @@ end
       query = self.name
     end
 
-    min_tweet_id = [LytitConstants.daily_tweet_id.to_i, ( self.last_tweet_id || (LytitConstants.daily_tweet_id.to_i+1) )].min
+    min_tweet_id = [LytitConstants.daily_tweet_id, ( self.last_tweet_id || (LytitConstants.daily_tweet_id+1) )].min
 
     new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{min_tweet_id}").take(20).collect.to_a
     self.update_columns(last_twitter_pull_time: Time.now)

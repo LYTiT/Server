@@ -361,7 +361,7 @@ class VenueComment < ActiveRecord::Base
 	end
 
 	def extract_venue_comment_meta_data
-		text = self.comment.split rescue []
+		text = self.lytit_post["comment"].split rescue []
 		junk_words = ["the", "their", "there", "yes", "you", "are", "when", "why", "what", "lets", "this", "got", "put", "such", "much", "ask", "with", "where", "each", "all", "from", "bad", "not", "for", "our", "finally"]
 =begin	
 		junk_words_2 = ["a", "about", "above", "above", "across", "after", "afterwards", "again", "against", "all", "almost", "alone", "along", "already", "also","although","always","am","among", "amongst", "amoungst", "amount",  
