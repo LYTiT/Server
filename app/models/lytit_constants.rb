@@ -10,6 +10,8 @@ class LytitConstants < ActiveRecord::Base
   RATING_LOSS_L_DEF = 10
 
   THRESHOLD_TO_BE_SHOWN_ON_MAP_DEF = 210 # 3.5 hours
+
+  DAILY_TWEET_ID_DEF = 718637908656320512
   #-------------------------------------
 
   def self.google_place_factor
@@ -34,5 +36,9 @@ class LytitConstants < ActiveRecord::Base
 
   def self.threshold_to_venue_be_shown_on_map
   	LytitConstants.where(:constant_name => 'threshold_to_venue_be_shown_on_map').first.try(:constant_value) || THRESHOLD_TO_BE_SHOWN_ON_MAP_DEF
+  end
+
+  def self.threshold_to_venue_be_shown_on_map
+    LytitConstants.where(:constant_name => 'daily_tweet_id').first.try(:constant_value) || DAILY_TWEET_ID_DEF
   end
 end
