@@ -38,7 +38,7 @@ class LytitConstants < ActiveRecord::Base
   	LytitConstants.where(:constant_name => 'threshold_to_venue_be_shown_on_map').first.try(:constant_value) || THRESHOLD_TO_BE_SHOWN_ON_MAP_DEF
   end
 
-  def self.threshold_to_venue_be_shown_on_map
+  def self.daily_tweet_id
     LytitConstants.where(:constant_name => 'daily_tweet_id').first.try(:constant_value) || DAILY_TWEET_ID_DEF
   end
 end
