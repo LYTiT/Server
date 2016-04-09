@@ -8,7 +8,7 @@ json.array! @venues do |v|
 	json.country v.country
 	json.color_rating v.color_rating
 	
-	json.selection_reason v.recommendation_reason_for(@user)
+	json.rec_reason v.recommendation_reason_for(@user)
 
 	if v.venue_comment_details["entry_type"] == "lytit_post"
 		json.image_url_1 v.venue_comment_details["lytit_post"]["image_url_1"]

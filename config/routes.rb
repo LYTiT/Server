@@ -69,7 +69,8 @@ LytitServer::Application.routes.draw do
         get 'get_favorite_venues'
         get 'get_top_favorite_venues'  
         get 'get_daily_posts'
-        get 'get_nearby_requests'    
+        get 'get_nearby_requests'
+        get 'get_happening_venue_recs'
       end
 
       resources :feeds, only: [:create] do
@@ -254,9 +255,6 @@ LytitServer::Application.routes.draw do
         get 'get_events'
         collection do
           get 'get_comments_feed'
-        end
-        collection do
-          get 'get_selected_venues_for_user'
         end
       end
 
