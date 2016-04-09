@@ -16,7 +16,8 @@ json.cache! @view_cache_key, :expires_in => 5.minutes do |json|
             json.preview_image v.venue_comment_details["lytit_post"]["image_url_1"]
             json.full_image v.venue_comment_details["lytit_post"]["image_url_2"]
             json.full_video v.venue_comment_details["lytit_post"]["video_url_2"]
-        else
+        end
+        if v.venue_comment_details["entry_type"] == "instagram"
             json.preview_image v.venue_comment_details["instagram"]["image_url_1"]
             json.full_image v.venue_comment_details["instagram"]["image_url_2"]
             json.full_video v.venue_comment_details["instagram"]["video_url_2"]        
