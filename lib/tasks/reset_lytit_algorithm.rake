@@ -46,6 +46,7 @@ namespace :lytit do
     FeedRecommendation.set_daily_spotlyt
 
     Event.focus_cities_pull
+    Tweet.set_daiy_tweet_id
 
     puts "done."
   end  

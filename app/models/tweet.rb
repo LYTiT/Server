@@ -12,6 +12,11 @@ class Tweet < ActiveRecord::Base
 		{:twitter_user => {:name => self.author_name, :handle => self.handle, :profile_image_url => self.author_avatar, :twitter_id => self.author_id}, :id => self.id, :twitter_id => self.twitter_id, :tweet_text => self.tweet_text, :image_url_1 => self.image_url_1, :image_url_2 => self.image_url_2, :image_url_3 => self.image_url_3, :popularity_score => self.popularity_score, :created_at => self.timestamp}
 	end
 
+	def Tweet.set_daiy_tweet_id
+		lower_tweet_id_daily_bound = Tweet.where("timestamp > ?", Time.now - 24.hours).order("timestamp ASC").first.twitter_id
+		LytitConstants.where("constant_name = ?", "daily_tweet_id").first.update_columns(constant_value: lower_tweet_id_daily_bound)
+	end
+
 	def self.popularity_score_calculation(followers_count, retweet_count, favorite_count)
 	#we calculate the 'importance' of a tweet through a combination of retweet count as well as tweet user follower count considerations: [1/(e^(-alpha_factor * follower_count ^(beta_factor)) + 1) + retweet_count^(1/gamma_factor)]
 	alpha_factor = 0.1
