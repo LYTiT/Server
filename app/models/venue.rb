@@ -839,123 +839,9 @@ class Venue < ActiveRecord::Base
           venue_featured_activity.update_columns(adjusted_sort_position: vc_created_at)
         end
       end
-    end
+      self.update_columns(venue_comment_details: vc.to_json)
+    end    
   end
-
-
-
-#depricated------
-  def set_latest_post(vc)
-    if vc != nil
-      trending_tags = self.trending_tags
-      self_partial = self.partial
-      self_partial["trending_tags"] = trending_tags
-      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_post").first
-      if venue_featured_activity == nil
-        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self_partial, 
-          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.time_wrapper)
-      else
-        if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
-          Activity.update_columns(venue_comment_details: vc.to_json)
-          Activity.update_columns(adjusted_sort_position: vc.time_wrapper)
-        end
-      end
-    end
-  end
-
-  def set_latest_tweet(tweet)
-    if tweet != nil
-      venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
-      if venue_featured_activity == nil
-        Activity.create!(:activity_type => "featured_venue_post", :venue_id => self.id, :venue_details => self.partial, :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.time_wrapper)
-      else
-        if vc.adjusted_sort_position > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
-          Activity.update_columns(venue_comment_details: vc.to_json)
-          Activity.update_columns(adjusted_sort_position: vc.time_wrapper)
-        end
-      end
-
-    end
-  end
-
-
-
-  def set_last_venue_comment_details(vc)
-    if vc != nil
-      if vc.class.name == "VenueComment"
-        vc_hash = {"id" => vc.id, "comment" => vc.comment, "media_type" => vc.media_type, "user_id" => vc.user_id, "venue_id" => vc.venue_id, "created_at" => vc.time_wrapper, "instagram_id" => vc.instagram_id,
-          "thirdparty_username" => vc.thirdparty_username, "image_url_1" => vc.image_url_1, "image_url_2" => vc.image_url_2, "image_url_3" => vc.image_url_3,"video_url_1" => vc.video_url_1, "video_url_2" => vc.video_url_2, 
-          "video_url_3" => vc.video_url_3, "media_dimensions" => vc.media_dimensions}
-
-
-        self.update_columns(latest_post: vc.partial)
-
-        self.update_columns(venue_comment_id: vc.id)
-        self.update_columns(venue_comment_instagram_id: vc.instagram_id)
-        self.update_columns(venue_comment_created_at: vc.time_wrapper)
-        self.update_columns(venue_comment_content_origin: vc.content_origin)
-        self.update_columns(venue_comment_thirdparty_username: vc.thirdparty_username)
-        self.update_columns(media_type: vc.media_type)
-        self.update_columns(image_url_1: vc.image_url_1)
-        self.update_columns(image_url_2: vc.image_url_2)
-        self.update_columns(image_url_3: vc.image_url_3)
-        self.update_columns(video_url_1: vc.video_url_1)
-        self.update_columns(video_url_2: vc.video_url_2)
-        self.update_columns(video_url_3: vc.video_url_3)
-      else
-        if vc.type == "video"
-          video_url_1 = vc.videos.try(:low_bandwith).try(:url)
-          video_url_2 = vc.videos.try(:low_resolution).try(:url)
-          video_url_3 = vc.videos.try(:standard_resolution).try(:url)
-        else
-          video_url_1 = nil
-          video_url_2 = nil
-          video_url_3 = nil
-        end
-        latest_post_hash = {}
-        latest_post_hash["id"] = nil
-        latest_post_hash["instagram_id"] = vc.id
-        latest_post_hash["created_at"] = DateTime.strptime("#{vc.created_time}",'%s')
-        latest_post_hash["content_origin"] = "instagram"
-        latest_post_hash["thirdparty_username"] = vc.user.username
-        latest_post_hash["media_type"] = vc.type
-        latest_post_hash["image_url_1"] = vc.images.try(:thumbnail).try(:url)
-        latest_post_hash["image_url_2"] = vc.images.try(:low_resolution).try(:url)
-        latest_post_hash["image_url_3"] = vc.images.try(:standard_resolution).try(:url)
-        latest_post_hash["video_url_1"] = video_url_1
-        latest_post_hash["video_url_2"] = video_url_2
-        latest_post_hash["video_url_3"] = video_url_3
-        self.update_columns(latest_post: latest_post_hash)
-
-        self.update_columns(venue_comment_id: nil)
-        self.update_columns(venue_comment_instagram_id: vc.id)
-        self.update_columns(venue_comment_created_at: DateTime.strptime("#{vc.created_time}",'%s'))
-        self.update_columns(venue_comment_content_origin: "instagram")
-        self.update_columns(venue_comment_thirdparty_username: vc.user.username)
-        self.update_columns(media_type: vc.type)
-        self.update_columns(image_url_1: vc.images.try(:thumbnail).try(:url))
-        self.update_columns(image_url_2: vc.images.try(:low_resolution).try(:url))
-        self.update_columns(image_url_3: vc.images.try(:standard_resolution).try(:url))
-        self.update_columns(video_url_1: video_url_1)
-        self.update_columns(video_url_2: video_url_2)
-        self.update_columns(video_url_3: video_url_3)
-      end
-    end
-  end
-
-  def set_last_tweet_details(tweet)
-    self.update_columns(latest_post: tweet.to_json)    
-
-    self.update_columns(lytit_tweet_id: tweet.id)
-    self.update_columns(twitter_id: tweet.twitter_id)
-    self.update_columns(tweet_text: tweet.tweet_text)
-    self.update_columns(tweet_created_at: tweet.timestamp)
-    self.update_columns(tweet_author_name: tweet.author_name)
-    self.update_columns(tweet_author_id: tweet.author_id)
-    self.update_columns(tweet_author_avatar_url: tweet.author_name)
-    self.update_columns(tweet_handle: tweet.handle)
-  end  
-#
 
   def last_post_time
     if latest_posted_comment_time != nil
@@ -1667,16 +1553,16 @@ def recommendation_reason_for(user)
     for interest in user_interests
       if Venue.interest_search(interest).where("id = ?", self.id).first != nil
         if user.interests[interest]["venue_ids"] != nil
-          return "Like Venue Search"
+          return "Similar to venues searched for"
         elsif user.interests[interest]["favorite_venue_ids"] != nil
-          return "Like Favorite"
+          return "Based on your favorites"
         else
-          return "Like List"
+          return "Based on your List interests"
         end
       end
     end
   else
-    return "In List"
+    return "One of your List's venues"
   end
 end
 

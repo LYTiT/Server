@@ -406,6 +406,7 @@ class Api::V1::VenuesController < ApiBaseController
 	def get_selected_venues_for_user
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venues = Venue.live_recommendation_for(@user, params[:latitdue], params[:longitude])
+		render "venue_selection_for_user.json.jbuilder"
 	end
 
 
