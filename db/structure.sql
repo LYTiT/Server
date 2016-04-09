@@ -1350,7 +1350,8 @@ CREATE TABLE lytit_constants (
     constant_name character varying(255),
     constant_value double precision,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    big_value bigint
 );
 
 
@@ -4526,4 +4527,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160408213113');
 INSERT INTO schema_migrations (version) VALUES ('20160409031341');
 
 INSERT INTO schema_migrations (version) VALUES ('20160409050957');
+
+INSERT INTO schema_migrations (version) VALUES ('20160409062352');
 

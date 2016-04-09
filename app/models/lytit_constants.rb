@@ -39,6 +39,6 @@ class LytitConstants < ActiveRecord::Base
   end
 
   def self.daily_tweet_id
-    LytitConstants.where(:constant_name => 'daily_tweet_id').first.try(:constant_value) || DAILY_TWEET_ID_DEF
+    LytitConstants.where(:constant_name => 'daily_tweet_id').first.try(:big_value) || DAILY_TWEET_ID_DEF
   end
 end
