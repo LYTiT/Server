@@ -3,7 +3,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def create
 		is_open = params[:open] || true
-		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => is_open, :description => params[:list_description], :preview_image_url => params[:preview_image_url], :cover_image_url => params[:cover_image_url])
+		is_private = params[:private] || true
+		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => is_open, :description => params[:list_description], :preview_image_url => params[:preview_image_url], :cover_image_url => params[:cover_image_url], :is_private => is_private)
 
 		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true, :interest_score => 1.0)
 
@@ -45,6 +46,10 @@ class Api::V1::FeedsController < ApiBaseController
 
 			if params[:cover_image_url] != nil
 				feed.update_columns(cover_image_url: params[:cover_image_url])
+			end
+
+			if params[:is_private] != nil
+				feed.update_columns(is_private: (params[:is_private].to_i == 1))
 			end
 
 			if update_activities == true
@@ -97,6 +102,33 @@ class Api::V1::FeedsController < ApiBaseController
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User did not leave List'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def request_to_join
+		mr = FeedJoinRequest.create!(:user_id => params[:user_id], :feed_id => params[:feed_id], :note => params[:note])
+		if request
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request did not go through'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def accept_join_request
+		request = FeedJoinRequest.find_by_id(params[:request_id])
+		if request.accepted(true)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request acceptance did not go through'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def reject_join_request
+		request = FeedJoinRequest.find_by_id(params[:request_id])
+		if request.accepted(false)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request rejection did not go through'] } }, status: :unprocessable_entity
 		end
 	end
 

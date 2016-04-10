@@ -403,12 +403,6 @@ class Api::V1::VenuesController < ApiBaseController
 		@meta = MetaData.where("venue_id IN (?)", venue_ids).order("relevance_score DESC LIMIT 5")
 	end
 
-	def get_selected_venues_for_user
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@venues = Venue.live_recommendation_for(@user, params[:latitdue], params[:longitude])
-		render "venue_selection_for_user.json.jbuilder"
-	end
-
 
 	def check_vortex_proximity
 		InstagramVortex.check_nearby_vortex_existence(params[:latitude], params[:longitude])

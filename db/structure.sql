@@ -949,6 +949,40 @@ ALTER SEQUENCE feed_invitations_id_seq OWNED BY feed_invitations.id;
 
 
 --
+-- Name: feed_join_requests; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE feed_join_requests (
+    id integer NOT NULL,
+    user_id integer,
+    feed_id integer,
+    granted boolean,
+    note character varying(255),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: feed_join_requests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE feed_join_requests_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: feed_join_requests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE feed_join_requests_id_seq OWNED BY feed_join_requests.id;
+
+
+--
 -- Name: feed_recommendations; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1080,7 +1114,8 @@ CREATE TABLE feeds (
     ts_categories_vector tsvector,
     ts_meta_vector tsvector,
     preview_image_url character varying(255),
-    cover_image_url character varying(255)
+    cover_image_url character varying(255),
+    is_private boolean DEFAULT false
 );
 
 
@@ -2365,6 +2400,13 @@ ALTER TABLE ONLY feed_invitations ALTER COLUMN id SET DEFAULT nextval('feed_invi
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY feed_join_requests ALTER COLUMN id SET DEFAULT nextval('feed_join_requests_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY feed_recommendations ALTER COLUMN id SET DEFAULT nextval('feed_recommendations_id_seq'::regclass);
 
 
@@ -2701,6 +2743,14 @@ ALTER TABLE ONLY activities
 
 ALTER TABLE ONLY feed_invitations
     ADD CONSTRAINT feed_invitations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: feed_join_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY feed_join_requests
+    ADD CONSTRAINT feed_join_requests_pkey PRIMARY KEY (id);
 
 
 --
@@ -4529,4 +4579,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160409031341');
 INSERT INTO schema_migrations (version) VALUES ('20160409050957');
 
 INSERT INTO schema_migrations (version) VALUES ('20160409062352');
+
+INSERT INTO schema_migrations (version) VALUES ('20160409192838');
 
