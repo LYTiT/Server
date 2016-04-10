@@ -610,6 +610,7 @@ class Venue < ActiveRecord::Base
     vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => self.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
     self.update_columns(latest_posted_comment_time: Time.now)
     self.delay.update_rating(after_post=false, lytit_post=false)
+    return vc
   end
 
   def content_feed_page(page_number, warming_up=false)

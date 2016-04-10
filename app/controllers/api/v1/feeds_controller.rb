@@ -144,6 +144,10 @@ class Api::V1::FeedsController < ApiBaseController
 		@feed_venues = FeedVenue.where("feed_venues.feed_id = ?", params[:id]).includes(:venue, :user, :activity).order("venues.name ASC").page(params[:page]).per(15)
 	end
 
+	def get_recommended_venue
+		@user = User.find_by_authentication_token(params[:auth_token])
+	end
+
 	def add_venue
 		params[:first_feed]
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
