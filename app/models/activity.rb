@@ -256,7 +256,7 @@ class Activity < ActiveRecord::Base
 		    :feed_name => activity_feed_of_member.name,
 		    :feed_color => activity_feed_of_member.feed_color,
 		    :num_activity_lists => num_lists,
-		    :topic => self.message
+		    :topic => self.topic_details["message"]
 		}
 
 
@@ -294,6 +294,9 @@ class Activity < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
+
+
+	
 =begin
 #featured_list_venue
 	def Activity.create_featured_list_venue_activities(featured_venue_entries, feed_id, feed_name, feed_color)

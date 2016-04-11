@@ -130,6 +130,7 @@ LytitServer::Application.routes.draw do
           get 'get_daily_spotlyts'
         end
         post 'populate_initial_feed'
+        get 'get_recommended_venue'
       end
 
       resources :support_issues do
@@ -255,6 +256,9 @@ LytitServer::Application.routes.draw do
         get 'get_events'
         collection do
           get 'get_comments_feed'
+        end
+        collection do
+          get 'get_featured_lytit_venue'
         end
       end
 

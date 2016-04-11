@@ -14,4 +14,5 @@ json.subscribed @feed.feed_users.where("user_id = ?", @user.id).first.try(:is_su
 json.private_list @feed.is_private?
 json.preview_image_url @feed.preview_image_url
 json.cover_image_url @feed.cover_image_url
+json.has_requested_to_join @user_has_requested_to_join
 

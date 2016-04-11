@@ -1902,7 +1902,9 @@ CREATE TABLE users (
     facebook_id bigint,
     facebook_name character varying(255),
     num_bolts integer DEFAULT 0,
-    interests json DEFAULT '{}'::json NOT NULL
+    interests json DEFAULT '{}'::json NOT NULL,
+    description text,
+    profile_picture_url text
 );
 
 
@@ -4581,4 +4583,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160409050957');
 INSERT INTO schema_migrations (version) VALUES ('20160409062352');
 
 INSERT INTO schema_migrations (version) VALUES ('20160409192838');
+
+INSERT INTO schema_migrations (version) VALUES ('20160411035147');
 

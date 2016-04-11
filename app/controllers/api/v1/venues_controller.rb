@@ -345,7 +345,13 @@ class Api::V1::VenuesController < ApiBaseController
 
 		query = params[:q]
 
-		@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+		if Venue.query_is_meta?(query) == true
+			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, true)
+			@is_meta = true
+		else
+			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, true)
+			@is_meta = false
+		end
 
 		render 'search.json.jbuilder'
 	end
@@ -437,6 +443,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def get_events
 		@events = Event.where("venue_id = ?", params[:venue_id])
+	end
+
+	def get_featured_lytit_venue
+		featured_venue_id = 0
+		@venue = Venue.find_by_id(featured_venue_id)
 	end
 
 

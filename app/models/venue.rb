@@ -291,20 +291,26 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 
   #Used when querying with Apple Maps data
-  def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+  def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, is_meta_search=false)
     if query != nil && query != ""
-      if query.first =="/"  
-        query[0] = ""
-        meta_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).meta_search(query).limit(20)
+      central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
+      if is_meta_search == true        
+        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100 
+          #searching around user since screen is near users location.
+          search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 10, :units => :kms)
+          surrounding_meta_results = Venue.in_bounds(search_box).interest_search(query).limit(20)
+        else
+          #searching in view
+          in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).interest_search(query).limit(20)
+        end
       else
-        if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)
-          central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
-          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100            
+        if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)          
+          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
               search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 20, :units => :kms)
-              Venue.search(query, search_box, nil, true)
+              surrounding_search = Venue.search(query, search_box, nil, true)
           else
               outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
-              Venue.search(query, nil, outer_region, true)
+              inview_search = Venue.search(query, nil, outer_region, true)
           end
         else
           Venue.search(query, nil, nil, true)
@@ -313,6 +319,12 @@ class Venue < ActiveRecord::Base
     else
       []
     end
+  end
+
+  def Venue.search_in_view?(position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long)
+    central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
+    if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
+
   end
 
   #General User location search query
@@ -365,6 +377,23 @@ class Venue < ActiveRecord::Base
     end
 
     return result 
+  end
+
+  def Venue.query_is_meta?(query)
+    query = query.downcase.tr(" ", "_")
+    if query.last == "s" && query.last(3) != "ies"
+      query = query.first(query.length-1)
+    elsif query.last(3) == "ies"
+      query = query.first(query.length-3)+"y"
+    else
+      query
+    end
+
+    common_meta_queries = " restaurant bar cafe pub park amusement_park museum pool arena stadium club mountain gym dog cat zoo cocktail 
+    pizza sushi bagel pasta beer japanese_restaurant chinese_restaurant french_restaurant indian_restaurant american_restaurant 
+    food drink speakeasy "
+
+    common_meta_queries.include? query.downcase
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)

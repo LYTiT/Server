@@ -334,74 +334,12 @@ class Feed < ActiveRecord::Base
 		Tweet.where("venue_id IN (#{venue_ids})").order("timestamp DESC")
 	end
 
-=begin
-	def featured_venues
-	    venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
-
-	    first_4_featured_results = "SELECT 
-	      id,
-	      name, 
-	      latitude,
-	      longitude,
-	      address,
-	      city,
-	      state,
-	      country,
-	      color_rating,
-	      instagram_location_id, 
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1) AS tag_1,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS tag_2,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS tag_3,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS tag_4,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS tag_5,
-	      (SELECT id FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_id,
-	      (SELECT time_wrapper FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_created_at,
-	      (SELECT media_type FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS media_type,
-	      (SELECT thirdparty_username FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_thirdparty_username,
-	      (SELECT content_origin FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS venue_comment_content_origin,
-	      (SELECT image_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_1,
-	      (SELECT image_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_2,
-	      (SELECT image_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3,
-	      (SELECT video_url_1 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_1,
-	      (SELECT video_url_2 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_2,
-	      (SELECT video_url_3 FROM venue_comments WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS video_url_3    
-	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 4"
-
-	    last_2_featured_results = "SELECT 
-	      id,
-	      name, 
-	      latitude,
-	      longitude,
-	      address,
-	      city,
-	      state,
-	      country,
-	      color_rating,
-	      instagram_location_id, 
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1) AS tag_1,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 1) AS tag_2,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 2) AS tag_3,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 3) AS tag_4,
-	      (SELECT meta FROM meta_data WHERE venue_id = venues.id ORDER BY relevance_score DESC LIMIT 1 OFFSET 4) AS tag_5,
-	      (SELECT id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_id,
-	      (SELECT twitter_id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS twitter_id,
-	      (SELECT tweet_text FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_text,
-	      (SELECT author_id FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_author_id,
-	      (SELECT author_name FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_author_name,
-	      (SELECT author_avatar FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_author_avatar,
-	      (SELECT created_at FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_created_at,
-	      (SELECT handle FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS tweet_handle,
-	      (SELECT image_url_1 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_1,
-	      (SELECT image_url_2 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_2,
-	      (SELECT image_url_3 FROM tweets WHERE venue_id = venues.id ORDER BY id DESC LIMIT 1) AS image_url_3
-	      FROM venues WHERE (id IN (#{venue_ids}) AND rating IS NOT NULL) GROUP BY id ORDER BY rating DESC LIMIT 2 OFFSET 4"
-
-	    results = ActiveRecord::Base.connection.execute(first_4_featured_results).to_a + ActiveRecord::Base.connection.execute(last_2_featured_results).to_a
-	    #Activity.delay.create_featured_list_venue_activities(results, self.id, self.name, self.feed_color)
-	    return results.shuffle		
-
+	def recommended_venue_for_user(lat, long)
+		user_location = [lat, long]
+		search_box = Geokit::Bounds.from_point_and_radius(user_location, 1, :units => :kms)
+		self.venues.in_bounds(search_box).where("rating IS NOT NULL").order("popularity_rank DESC").first
 	end
-=end
+
 
 	def featured_venues
 		self.venues.where("(NOW() - latest_posted_comment_time) <= INTERVAL '1 HOUR'").order("rating DESC LIMIT 10").shuffle

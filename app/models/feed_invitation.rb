@@ -46,7 +46,7 @@ class FeedInvitation < ActiveRecord::Base
 		  :payload => payload,
 		  :gcm => invitee.gcm_token.present?,
 		  :apns => invitee.push_token.present?,
-		  :response => notification_payload,
+		  :response => nil,
 		  :user_id => invitee.id,
 		  :read => false,
 		  :message => type,
@@ -54,11 +54,5 @@ class FeedInvitation < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
-
-	def notification_payload
-	  	nil
-	end
-
-
 
 end

@@ -117,6 +117,8 @@ class Api::V1::FeedsController < ApiBaseController
 	def accept_join_request
 		request = FeedJoinRequest.find_by_id(params[:request_id])
 		if request.accepted(true)
+			fu = FeedUser.create != (:feed_id => request.feed_id, :user_id => request.user_id, :creator => false)
+			Feed.delay(:priority => -1).new_member_calibration(request.feed_id, request.user_id)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request acceptance did not go through'] } }, status: :unprocessable_entity
@@ -145,7 +147,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_recommended_venue
-		@user = User.find_by_authentication_token(params[:auth_token])
+		feed = Feed.find_by_id(params[:feed_id])
+		@venue =  feed.recommended_venue_for_user(lat, long)	
 	end
 
 	def add_venue
@@ -207,6 +210,11 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
+		if params[:user_is_member] == false
+			@user_has_requested_to_join = FeedJoinRequest.find_by_user_id_and_feed_id(@user.id, params[:feed_id]).present?
+		else
+			@user_has_requested_to_join = nil
+		end
 		@feed = Feed.find_by_id(params[:feed_id])		
 	end
 

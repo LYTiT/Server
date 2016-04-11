@@ -12,4 +12,5 @@ json.array! @venues do |v|
   json.phone_number v.phone_number
   json.color_rating v.color_rating
   json.time_zone_offset v.time_zone_offset
+  json.is_meta_search @is_meta
 end
