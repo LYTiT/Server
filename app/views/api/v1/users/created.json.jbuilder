@@ -1,5 +1,7 @@
 json.id @user.id
 json.name @user.name
+json.profile_picture_url @user.profile_picture_url
+json.description @user.description
 json.fb_id @user.facebook_id
 json.fb_name @user.facebook_name
 json.num_likes @user.num_likes
