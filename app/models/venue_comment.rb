@@ -56,6 +56,14 @@ class VenueComment < ActiveRecord::Base
 		end		
 	end
 
+	def add_fake_geo_views
+		fake_geo_views_hash = {:US => rand(0..100), :France => rand(0..100), :China => rand(0..100), :Australia => rand(0..100)}
+		self.update_columns(geo_views: fake_geo_views_hash)
+		total_views = 0
+		fake_geo_views_hash.each{|k, v| total_views += v}
+		self.update_columns(views: total_views)
+	end
+
 	def deincrement_feed_moment_counts
 		begin
 			self.venue.feeds.update_all("num_moments = num_moments-1")
