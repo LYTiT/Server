@@ -661,6 +661,7 @@ class Venue < ActiveRecord::Base
         if new_super_content_num_pages > 1
           for i in 2..(new_super_content_num_pages)
             vc_cache_key = "venue/#{self.id}/comments/page_#{i}"
+            p "Writing new Super Content to cache."
             Rails.cache.write(vc_cache_key, self.venue_comments.where("adjusted_sort_position >= ?", current_position).limit(page_count).offset((page_number-1)*page_count).to_a)
           end
         end
@@ -674,7 +675,8 @@ class Venue < ActiveRecord::Base
             if new_social_media_num_pages > 1
               for i in 2..(new_social_media_num_pages)
                 vc_cache_key = "venue/#{self.id}/comments/page_#{i+self.page_offset}"
-                Rails.cache.write(vc_cache_key, new_social_media.page(i, page_count))
+                p "Writing new Social Media content to cache."
+                Rails.cache.write(vc_cache_key, new_social_media.page(i, page_count), :expires_in => 10.minutes)
               end
             end
             self.increment!(:page_offset, new_social_media_num_pages)
