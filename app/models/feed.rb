@@ -68,6 +68,8 @@ class Feed < ActiveRecord::Base
 	has_many :activities, :dependent => :destroy
 	has_many :reported_objects, :dependent => :destroy
 
+	has_many :feed_join_requests, :dependent => :destroy
+
 	belongs_to :user
 
 	def partial 

@@ -7,6 +7,8 @@ class FeedJoinRequest < ActiveRecord::Base
 	def accepted(response)
 		if response == true
 			self.update_columns(granted: true)
+			FeedUser.create!(:feed_id => self.feed_id, :user_id => self.user_id, :creator => false)
+			Feed.delay(:priority => -1).new_member_calibration(self.feed_id, self.user_id)
 			response_notification(true)
 		else
 			self.update_columns(granted: false)

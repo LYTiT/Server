@@ -116,9 +116,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def accept_join_request
 		request = FeedJoinRequest.find_by_id(params[:request_id])
-		if request.accepted(true)
-			fu = FeedUser.create != (:feed_id => request.feed_id, :user_id => request.user_id, :creator => false)
-			Feed.delay(:priority => -1).new_member_calibration(request.feed_id, request.user_id)
+		if request
+			request.delay(:priority => -1).accepted(true)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request acceptance did not go through'] } }, status: :unprocessable_entity
@@ -127,7 +126,8 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def reject_join_request
 		request = FeedJoinRequest.find_by_id(params[:request_id])
-		if request.accepted(false)
+		if request
+			request.accepted(false)
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Request rejection did not go through'] } }, status: :unprocessable_entity
