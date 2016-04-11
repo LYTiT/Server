@@ -25,4 +25,14 @@ class Api::V1::VenueCommentsController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Report did not got through'] } }, status: :unprocessable_entity
 		end
 	end
+
+	def delete_post
+		vc = VenueComment.find_by_id(params[:venue_comment_id])
+		if params[:user_id] == vc.user_id
+			vc.destroy
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User can only delete his/her posts.'] } }, status: :unprocessable_entity
+		end
+	end
 end

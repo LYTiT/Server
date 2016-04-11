@@ -155,6 +155,7 @@ LytitServer::Application.routes.draw do
 
       resources :venue_comments do
         get 'get_venue_comment'
+        post 'delete_post'
       end
 
       post '/register_push_token' => 'users#register_push_token'

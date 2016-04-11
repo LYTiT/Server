@@ -12,12 +12,6 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: venue
 	end
 
-	def delete_comment
-		vc = VenueComment.find_by_id(params[:id])
-		vc.destroy
-		render json: { success: true }
-	end
-
 	def report_comment
 		if FlaggedComment.where("user_id = ? AND venue_comment_id = ? AND message = ?", @user.id, params[:comment_id], params[:message]).any? == false
 			venue_comment = VenueComment.find(params[:comment_id])
