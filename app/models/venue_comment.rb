@@ -58,6 +58,8 @@ class VenueComment < ActiveRecord::Base
 		else			
 			geo_views_hash[country] = {"total_views" => 1, "cities" => {city => 1}}
 		end
+
+		self.increment!(:views, 1)
 	end
 
 	def add_fake_geo_views(num_cycles=20)
