@@ -36,7 +36,7 @@ class MomentRequest < ActiveRecord::Base
 
 		if vc.entry_type == "lytit_post"
 			payload = {
-				:object_id => vc.id
+				:object_id => vc.id,
 				:type => 'moment_request_response_notification',
 				:content_origin => "lytit",
 				:user_id => vc.user_details["id"],
@@ -63,7 +63,7 @@ class MomentRequest < ActiveRecord::Base
 
 		if vc.entry_type == "instagram"
 			payload = {
-				:object_id => vc.id
+				:object_id => vc.id,
 				:type => 'moment_request_response_notification',
 				:content_origin => "instagram",
 				:instagram_id => vc.instagram["instagram_id"],
