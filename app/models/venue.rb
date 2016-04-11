@@ -674,14 +674,14 @@ class Venue < ActiveRecord::Base
             if new_social_media_num_pages > 1
               for i in 2..(new_social_media_num_pages)
                 vc_cache_key = "venue/#{self.id}/comments/page_#{i+self.page_offset}"
-                Rails.cache.write(vc_cache_key, new_social_media.page(i, page_count))
+                Rails.cache.write(vc_cache_key, new_social_media.page(i, page_count), :expires_in => 10)
               end
             end
             self.increment!(:page_offset, new_social_media_num_pages)
             new_social_media.page(1, page_count)
           else
             #No new social media content so we move to venue comments.
-            vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+            vcs = self.venue_comments.where("adjusted_sort_position < ? AND created_at <= ?", current_position, Time.now-10.minutes).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
             else
