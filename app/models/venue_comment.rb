@@ -257,6 +257,12 @@ class VenueComment < ActiveRecord::Base
 					#origin_venue.set_last_venue_comment_details(vc)
 					origin_venue.update_columns(last_instagram_id: vc.instagram["instagram_id"])
 					origin_venue.update_featured_comment(vc)
+
+					if origin_venue.moment_request_details != {}
+						if MomentRequest.fulfilled_by_post(origin_venue.moment_request_details["created_at"], "instagram")
+							MomentRequest.find_by_id(origin_venue.moment_request_details["id"]).notify_requesters_of_response
+						end
+					end
 				end
 			else
 				nil
@@ -624,21 +630,6 @@ class VenueComment < ActiveRecord::Base
 		else
 			Time.parse(content[:created_at])
 		end
-	end
-
-	def self.twitter_test(query, radius)
-		client = Twitter::REST::Client.new do |config|
-		  config.consumer_key        = '286I5Eu8LD64ApZyIZyftpXW2'
-		  config.consumer_secret     = '4bdQzIWp18JuHGcKJkTKSl4Oq440ETA636ox7f5oT0eqnSKxBv'
-		  config.access_token        = '2846465294-QPuUihpQp5FjOPlKAYanUBgRXhe3EWAUJMqLw0q'
-		  config.access_token_secret = 'mjYo0LoUnbKT4XYhyNfgH4n0xlr2GCoxBZzYyTPfuPGwk'
-		end
-		
-		client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(3).collect do |tweet|
-		  "#{tweet.user.screen_name}: #{tweet.text} / #{tweet.created_at} //// #{tweet.user.profile_image_url}"
-		end
-
-		return client.search(query, result_type: "recent", geo_code: "40.733482,-73.992367,#{radius}").take(5).collect
 	end
 			
 end

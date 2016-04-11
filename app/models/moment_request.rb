@@ -14,7 +14,7 @@ class MomentRequest < ActiveRecord::Base
 		MomentRequest.in_bounds(search_box).where("expiration <= ? AND user_id != ?", Time.now, u_id).includes(:venue)
 	end
 
-	def MomentRequest.fulfilled_by_post(request_time, post_origin="lytit_post") 
+	def MomentRequest.fulfilled_by_post(request_time, post_origin="lytit_post")
 		if post_origin == "lytit_post"
 			if request_time != nil and request_time >= Time.now - 1.hour
 				return true

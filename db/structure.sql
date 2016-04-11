@@ -2244,7 +2244,8 @@ CREATE TABLE venues (
     descriptives_vector tsvector,
     event_details json DEFAULT '{}'::json NOT NULL,
     last_tweet_id bigint,
-    last_instagram_id character varying(255)
+    last_instagram_id character varying(255),
+    moment_request_details json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4585,4 +4586,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160409062352');
 INSERT INTO schema_migrations (version) VALUES ('20160409192838');
 
 INSERT INTO schema_migrations (version) VALUES ('20160411035147');
+
+INSERT INTO schema_migrations (version) VALUES ('20160411205229');
 

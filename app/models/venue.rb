@@ -632,7 +632,7 @@ class Venue < ActiveRecord::Base
   def add_new_post(user, post)
     vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => self.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
     self.update_columns(latest_posted_comment_time: Time.now)
-    self.delay.update_rating(after_post=false, lytit_post=false)
+    self.delay(:priority => -4).calibrate_after_lytit_post(vc)
     return vc
   end
 
@@ -740,6 +740,8 @@ class Venue < ActiveRecord::Base
     self.update_rating(true, true)
     self.update_columns(latest_rating_update_time: Time.now)
 
+    self.update_rating(true, true)
+
     #Append comment to venues cached feed if present by adding a negative page number.
     if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
       #purge all cache and rebuild feed
@@ -749,7 +751,13 @@ class Venue < ActiveRecord::Base
         response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
         page += 1
       end
-    end    
+    end
+
+    if self.moment_request_details != {}
+      if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
+        MomentRequest.find_by_id(self.moment_request_details["id"]).notify_requesters_of_response
+      end
+    end
   end
 
 

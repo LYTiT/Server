@@ -74,7 +74,6 @@ class Api::V1::VenuesController < ApiBaseController
 		vc = venue.add_new_post(user, post)
 
 		if vc
-			venue.delay(:priority => -4).calibrate_after_lytit_post(vc)		
 			render json: vc
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: vc.errors.full_messages } }, status: :unprocessable_entity
