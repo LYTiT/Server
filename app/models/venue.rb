@@ -756,6 +756,7 @@ class Venue < ActiveRecord::Base
     if self.moment_request_details != {}
       if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
         MomentRequest.find_by_id(self.moment_request_details["id"]).notify_requesters_of_response
+        self.update_columns(moment_request_details: {})
       end
     end
   end

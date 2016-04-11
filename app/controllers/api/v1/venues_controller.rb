@@ -38,7 +38,8 @@ class Api::V1::VenuesController < ApiBaseController
 		no_errors = false
 		if mr
 			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)
-			mr.increment!(:num_requesters, 1)		
+			mr.increment!(:num_requesters, 1)
+			self.update_columns(moment_request_details: mr.to_json)	
 			no_errors = true
 		else
 			mr = MomentRequest.create(:venue_id => params[:venue_id], :user_id => params[:user_id], :latitude => params[:latitude], :longitude => params[:longitude], :expiration => Time.now+30.minutes, :num_requesters => 1)				
