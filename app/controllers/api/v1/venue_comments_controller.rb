@@ -9,11 +9,13 @@ class Api::V1::VenueCommentsController < ApiBaseController
 		vc = VenueComment.find_by_id(params[:venue_comment_id])	
 		if vc 
 			User.find_by_id(params[:user_id]).increment!(:num_bolts, 1)
-			#view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])
-			vc.increment_geo_views(country, city)
+			if CommentView.find_by_venue_comment_id_and_user_id(params[:venue_comment_id], params[:user_id]) != nil and vc.user_id != params[:user_id]
+				view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])
+				vc.increment_geo_views(country, city)
+			end
 			render json: { success: true }
 		else
-			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['View registered'] } }, status: :unprocessable_entity
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['View not registered'] } }, status: :unprocessable_entity
 		end
 	end
 
