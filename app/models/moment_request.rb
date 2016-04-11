@@ -29,13 +29,53 @@ class MomentRequest < ActiveRecord::Base
 			end
 		end
 	end
-
+=begin
 	def notify_requesters_of_response(vc)
 		requesters_ids = "SELECT user_id FROM moment_request_users WHERE request_id = #{self.id}"
 		requesters = User.where("id IN (#{requesters_ids})") 
-=begin
+
 		for requester in requesters
 			if requester != nil
+
+
+
+			if vc.entry_type == "lytit_post"
+				
+				:content_origin "lytit",
+				:user_id vc.user_details["id"],
+				:user_name vc.user_details["name"],
+				:id vc.lytit_post["id"],
+			    :media_type vc.lytit_post["media_type"],
+			    :media_dimensions vc.lytit_post["media_dimensions"],
+			    :image_url_1 vc.lytit_post["image_url_1"],
+			    :image_url_2 vc.lytit_post["image_url_2"],
+			    :image_url_3 vc.lytit_post["image_url_3"],
+			    :video_url_1 vc.lytit_post["video_url_1"],
+			    :video_url_2 vc.lytit_post["video_url_2"],
+			    :video_url_3 vc.lytit_post["video_url_3"],
+			    :created_at vc.lytit_post["created_at"]	
+			end
+
+			if vc.entry_type == "instagram"
+				json.content_origin "instagram"
+				json.id comment.id
+			    json.instagram_id comment.instagram["instagram_id"]
+			    json.media_type comment.instagram["media_type"]
+			    json.media_dimensions comment.instagram["media_dimensions"]
+			    json.image_url_1 comment.instagram["image_url_1"]
+			    json.image_url_2 comment.instagram["image_url_2"]
+			    json.image_url_3 comment.instagram["image_url_3"]
+			    json.video_url_1 comment.instagram["video_url_1"]
+			    json.video_url_2 comment.instagram["video_url_2"]
+			    json.video_url_3 comment.instagram["video_url_3"]
+			    json.created_at comment.instagram["created_at"]		    
+			    json.thirdparty_username comment.instagram["instagram_user"]["name"]
+			    json.thirdparty_user_id comment.instagram["instagram_user"]["instagram_id"]
+			    json.thirdparty_user_profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
+			end
+
+
+
 				payload = {
 				    :object_id => self.id, 
 				    :type => 'moment_request_response_notification',
@@ -74,7 +114,7 @@ class MomentRequest < ActiveRecord::Base
 			end
 		end
 	end
-=end
+
 	def store_new_notification(payload, notification_usre, type)
 		notification = {
 		  :payload => payload,
@@ -88,5 +128,5 @@ class MomentRequest < ActiveRecord::Base
 		}
 		Notification.create(notification)
 	end
-
+=end
 end
