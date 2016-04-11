@@ -148,7 +148,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_recommended_venue
 		feed = Feed.find_by_id(params[:feed_id])
-		@venue =  feed.recommended_venue_for_user(lat, long)	
+		@venue = feed.recommended_venue_for_user(params[:latitude], params[:longitude])	
 	end
 
 	def add_venue

@@ -43,25 +43,30 @@ class VenueComment < ActiveRecord::Base
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
 	end
 
-	def increment_geo_views(geography)
-		geo_views_hash = geo_views
-		geo_entry = geo_views_hash[geography]
-		if geo_entry != nil
-			geo_entry += 1
-			geo_views_hash[geography] = geo_entry
-			self.update_columns(geo_views: geo_views_hash)
-		else
-			geo_views_hash[geography] = 1
-			self.update_columns(geo_views: geo_views_hash)
-		end		
+	def increment_geo_views(country, city)
+		geo_views_hash = self.geo_views
+		viewing_country = geo_views_hash[country]
+
+		if viewing_country != nil
+			viewing_city = geo_views_hash[country]["cities"][city]
+			if viewing_city != nil
+				geo_views_hash[country]["cities"][city] += 1
+			else
+				geo_views_hash[country]["cities"].merge!(city => 1)
+			end			
+			geo_views_hash[country]["total_views"] += 1
+		else			
+			geo_views_hash[country] = {"total_views" => 1, "cities" => {city => 1}}
+		end
 	end
 
-	def add_fake_geo_views
-		fake_geo_views_hash = {:US => rand(0..100), :France => rand(0..100), :China => rand(0..100), :Australia => rand(0..100)}
-		self.update_columns(geo_views: fake_geo_views_hash)
-		total_views = 0
-		fake_geo_views_hash.each{|k, v| total_views += v}
-		self.update_columns(views: total_views)
+	def add_fake_geo_views(num_cycles=20)
+		geos = [["United States", "New York"], ["United States", "Los Angeles"], ["United States", "Chicago"], ["United States", "Dallas"], ["China", "Beijing"], ["France", "Paris"], ["Germany", "Berlin"], ["Brazil", "Rio De Janeiro"]]
+
+		for i in 0...num_cycles
+			selection = geos[rand(geos.count)]
+			increment_geo_views(selection.first, selection.last)
+		end
 	end
 
 	def deincrement_feed_moment_counts
