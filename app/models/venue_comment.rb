@@ -59,6 +59,7 @@ class VenueComment < ActiveRecord::Base
 			geo_views_hash[country] = {"total_views" => 1, "cities" => {city => 1}}
 		end
 
+		self.update_columns(geo_views: geo_views_hash)
 		self.increment!(:views, 1)
 	end
 
