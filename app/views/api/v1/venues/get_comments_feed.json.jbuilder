@@ -6,7 +6,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 			json.tweet_image_url_1 Tweet.implicit_image_content_for_hash(comment, "small")
 			json.tweet_image_url_2 Tweet.implicit_image_content_for_hash(comment, "medium")
 			json.tweet_image_url_3 Tweet.implicit_image_content_for_hash(comment, "large")
-			json.tweet_created_at comment[:created_at]
+			json.tweet_created_at comment[:created_at].to_datetime
 			json.twitter_user_name comment[:user][:name]
 			json.twitter_user_avatar_url comment[:user][:profile_image_url]
 			json.twitter_user_id comment[:user][:id]

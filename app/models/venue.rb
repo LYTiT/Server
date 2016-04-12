@@ -383,9 +383,9 @@ class Venue < ActiveRecord::Base
       query
     end
 
-    common_meta_queries = " restaurant bar cafe pub park amusement_park museum pool arena stadium club mountain gym dog cat zoo cocktail 
+    common_meta_queries = "restaurant bar cafe pub park amusement_park museum pool arena stadium club mountain gym dog cat zoo cocktail 
     pizza sushi bagel pasta beer japanese_restaurant chinese_restaurant french_restaurant indian_restaurant american_restaurant 
-    food drink speakeasy "
+    food drink speakeasy discotheque"
 
     common_meta_queries.include? query.downcase
   end
