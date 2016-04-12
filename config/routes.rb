@@ -131,6 +131,7 @@ LytitServer::Application.routes.draw do
         end
         post 'populate_initial_feed'
         get 'get_recommended_venue'
+        post 'request_to_join'
       end
 
       resources :support_issues do
