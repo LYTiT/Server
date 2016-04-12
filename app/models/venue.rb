@@ -1596,9 +1596,9 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
-  user_interests = user.interests.keys
+  top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
   venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
-  interest_match = Venue.interest_search(user_interests).where("id = ?", self.id).first == nil
+  interest_match = Venue.interest_search(user_interests.join(" ")).where("id = ?", self.id).first != nil
 
   if interest_match == true
     for interest in user_interests
