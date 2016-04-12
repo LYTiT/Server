@@ -11,7 +11,7 @@ json.has_added @feed.feed_users.where("user_id = ?", @user.id).first.present?
 json.feed_color @feed.feed_color
 json.list_description @feed.description
 json.subscribed @feed.feed_users.where("user_id = ?", @user.id).first.try(:is_subscribed)
-json.is_private @feed.is_private?
+json.is_private @feed.is_private
 json.preview_image_url @feed.preview_image_url
 json.cover_image_url @feed.cover_image_url
 json.has_requested_to_join @join_request_exists
