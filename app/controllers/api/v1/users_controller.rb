@@ -362,8 +362,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_happening_venue_recs
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@venues = Venue.live_recommendation_for(@user, params[:latitdue], params[:longitude])
+		user = User.find_by_authentication_token(params[:auth_token])
+		@venues = Venue.live_recommendation_for(user, params[:latitdue], params[:longitude])
 	end
 
 	#-------------------------------------------------->
