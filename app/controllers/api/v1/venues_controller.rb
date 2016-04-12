@@ -95,7 +95,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
-		if params[:from_search] == "1"
+		if params[:from_search] == "1" && page == 1
 			@user.delay.update_interests(@venue)
 		end
 
