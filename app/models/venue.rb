@@ -1598,7 +1598,7 @@ end
 def recommendation_reason_for(user)
   user_interests = user.interests.keys
   venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
-  interest_match = Venue.interest_search("user_interests").where("id = ?", self.id).first == nil
+  interest_match = Venue.interest_search(user_interests).where("id = ?", self.id).first == nil
 
   if interest_match == true
     for interest in user_interests
