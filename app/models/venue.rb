@@ -450,7 +450,7 @@ class Venue < ActiveRecord::Base
     nearby_results = Venue.in_bounds(search_box).name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(5).to_a
     if nearby_results.first == nil or nearby_results.first.pg_search_rank < 0.4
         direct_name_results = Venue.name_search(query).where("pg_search.rank >= ?", 0.0).with_pg_search_rank.limit(5).to_a
-        if direct_name_results.first == nil or direct_name_results.first.pg_search_rank < 0.4
+        if direct_name_results.first == nil or direct_name_results.first.pg_search_rank < 0.3
           geography = '%'+query_parts.last.downcase+'%'
           #Nothing nearby, see if the user has specified a city at the end
           city_spec_results = Venue.name_city_search(query).where("pg_search.rank >= ? AND LOWER(city) LIKE ?", 0.0,
