@@ -49,7 +49,7 @@ class Api::V1::FeedsController < ApiBaseController
 			end
 
 			if params[:is_private] != nil
-				feed.update_columns(is_private: (params[:is_private].to_i == 1))
+				feed.update_columns(is_private: params[:is_private])
 			end
 
 			if update_activities == true
