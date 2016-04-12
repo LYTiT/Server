@@ -34,7 +34,7 @@ class FeedJoinRequest < ActiveRecord::Base
 			}
 		
 			type = "List Join Request"
-			notification = self.store_new_invitation_notification(payload, list_admin, type)
+			notification = self.store_new_notification(payload, list_admin, type)
 			payload[:notification_id] = notification.id
 			
 			alert = "#{self.user.name} requested to join your #{feed.name} List"

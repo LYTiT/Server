@@ -1601,7 +1601,7 @@ def recommendation_reason_for(user)
   interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
 
   if interest_match == true
-    for interest in user_interests
+    for interest in top_user_interests
       if Venue.interest_search(interest).where("id = ?", self.id).first != nil
         if user.interests[interest]["venue_ids"] != nil
           return "Similar to venues searched for"
