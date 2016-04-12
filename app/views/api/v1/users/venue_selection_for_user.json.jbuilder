@@ -1,4 +1,4 @@
-json.venues(@venues) do |v|
+json.array! @venues do |v|
     json.id v.id
     json.name v.name
     json.address v.address
