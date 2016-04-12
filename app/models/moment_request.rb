@@ -11,7 +11,7 @@ class MomentRequest < ActiveRecord::Base
 
 	def MomentRequest.get_surrounding_request(lat, long, u_id)
 		search_box = Geokit::Bounds.from_point_and_radius([lat, long], 0.2, :units => :kms)
-		MomentRequest.in_bounds(search_box).where("expiration <= ? AND user_id != ?", Time.now, u_id).includes(:venue)
+		MomentRequest.in_bounds(search_box).where("expiration >= ? AND user_id != ?", Time.now, u_id).includes(:venue)
 	end
 
 	def MomentRequest.fulfilled_by_post(request_time, post_origin="lytit_post")
