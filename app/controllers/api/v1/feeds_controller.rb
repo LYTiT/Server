@@ -3,7 +3,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def create
 		is_open = params[:open] || true
-		is_private = params[:private] || true
+		is_private = params[:is_private] || true
 		feed = Feed.create!(:name => params[:name].strip, :user_id => params[:user_id], :feed_color => params[:feed_color], :open => is_open, :description => params[:list_description], :preview_image_url => params[:preview_image_url], :cover_image_url => params[:cover_image_url], :is_private => is_private)
 
 		feed_user = FeedUser.create!(:feed_id => feed.id, :user_id => params[:user_id], :creator => true, :interest_score => 1.0)
@@ -211,9 +211,9 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:user_is_member].to_i == 0
-			@user_has_requested_to_join = FeedJoinRequest.find_by_user_id_and_feed_id(@user.id, params[:feed_id]).present?
+			@join_request_exists = FeedJoinRequest.find_by_user_id_and_feed_id(@user.id, params[:feed_id]).present?
 		else
-			@user_has_requested_to_join = nil
+			@join_request_exists = nil
 		end
 		@feed = Feed.find_by_id(params[:feed_id])		
 	end

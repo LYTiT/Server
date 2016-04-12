@@ -21,7 +21,7 @@ class FeedUser < ActiveRecord::Base
 	def new_user_notification_and_activity
 		if user != nil
 
-			a = Activity.create!(:activity_type => "new_member", :feed_id => feed.is, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
+			a = Activity.create!(:activity_type => "new_member", :feed_id => feed.id, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
 				:feed_user_details => {:id => self.id}, :adjusted_sort_position => (self.created_at).to_i)
 =begin
 			a = Activity.create!(:feed_id => feed_id, :feed_name => feed.name, :feed_color => feed.feed_color, :activity_type => "new_member", :feed_creator_id => feed.user_id, 
