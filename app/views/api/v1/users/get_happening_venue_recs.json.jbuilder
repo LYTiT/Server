@@ -33,6 +33,7 @@ json.array! @venues do |v|
 		json.full_video nil
 	end
 
+	json.rec_reason v.recommendation_reason_for(@user)
 	json.tag_1 v.trending_tags["tag_1"]
 	json.tag_2 v.trending_tags["tag_2"]
 	json.tag_3 v.trending_tags["tag_3"]
