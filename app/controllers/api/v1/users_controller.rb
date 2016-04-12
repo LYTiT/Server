@@ -332,6 +332,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_nearby_requests
+		@user = User.find_by_authentication_token(params[:auth_token])
 		@requests = MomentRequest.get_surrounding_request(params[:latitude], params[:longitude], @user.id)
 	end
 
