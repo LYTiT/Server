@@ -297,7 +297,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'display_by_parts.json.jbuilder'
 		else
-			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 5.minutes)
+			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)
 			city_cache_key = "#{city}/lyt_map/page_#{params[:page]}"
 			page = params[:page].to_i
 			if page == 1
