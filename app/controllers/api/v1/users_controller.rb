@@ -363,8 +363,8 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_happening_venue_recs
 		user = User.find_by_authentication_token(params[:auth_token])
-		@venues = Venue.where("color_rating > 0").limit(15)
-		#@venues = Venue.live_recommendation_for(user, params[:latitdue], params[:longitude])
+		#@venues = Venue.where("color_rating > 0").limit(15)
+		@venues = Venue.live_recommendation_for(user, params[:latitdue], params[:longitude])
 	end
 
 	#-------------------------------------------------->
