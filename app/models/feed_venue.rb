@@ -36,7 +36,8 @@ class FeedVenue < ActiveRecord::Base
 			end		
 
 			a = Activity.create!(:activity_type => "added_venue", :feed_id => feed.id, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
-				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, :adjusted_sort_position => (self.created_at).to_i)
+				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
+				:adjusted_sort_position => (self.created_at).to_i, :feed_venue_id => self.id)
 
 			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 			feed_members = feed.feed_users
