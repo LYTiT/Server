@@ -1613,7 +1613,7 @@ def recommendation_reason_for(user)
       end
     end
   else
-    return "One of your List's venues"
+    return "Part of #{user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first.name}"
   end
 end
 
