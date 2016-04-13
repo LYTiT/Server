@@ -107,13 +107,13 @@ class MomentRequest < ActiveRecord::Base
 		end
 	end
 
-	def store_new_notification(payload, notification_usre, type)
+	def store_new_notification(payload, notification_user, type)
 		notification = {
 		  :payload => payload,
-		  :gcm => notification_usre.gcm_token.present?,
-		  :apns => notification_usre.push_token.present?,
+		  :gcm => notification_user.gcm_token.present?,
+		  :apns => notification_user.push_token.present?,
 		  :response => nil,
-		  :user_id => notification_usre.id,
+		  :user_id => notification_user.id,
 		  :read => false,
 		  :message => type,
 		  :deleted => false

@@ -144,25 +144,7 @@ class Activity < ActiveRecord::Base
 
 		    :num_activity_lists => num_lists,
 
-		    :media_type => venue_comment.try(:media_type),
-=begin
-		    :image_url_1 => venue_comment.try(:image_url_1),
-		    :image_url_2 => venue_comment.try(:image_url_2),
-		    :image_url_3 => venue_comment.try(:image_url_3),
-		    :video_url_1 => venue_comment.try(:video_url_1),
-		    :video_url_2 => venue_comment.try(:video_url_2),
-		    :video_url_3 => venue_comment.try(:video_url_3),
-		    :thirdparty_username => venue_comment.try(:thirdparty_username),
-
-		    :venue_id => venue_id,
-  			:venue_name => venue.try(:name),
-  			:city => venue.try(:city),
-  			:country => venue.try(:country),
-		  	:latitude => venue.try(:latitude),
-  			:longitude => venue.try(:longitude),
-  			:color_rating => venue.try(:color_rating),
-  			:instagram_location_id => venue.try(:instagram_location_id)
-=end  			
+		    :media_type => venue_comment.try(:media_type),	
 		}
 
 

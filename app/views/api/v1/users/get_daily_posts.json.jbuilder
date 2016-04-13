@@ -19,5 +19,4 @@ json.comments(@comments) do |comment|
     json.content_origin 'lytit'
     json.geo_views comment.geo_views
     json.num_views comment.views
-    json.num_bolts comment.views
 end
