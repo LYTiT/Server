@@ -15,27 +15,7 @@ class FeedVenue < ActiveRecord::Base
 
 	def new_venue_notification_and_activity
 		if feed != nil
-			if user == nil
-				user = feed.user
-				if user != nil
-					user_name = feed.user.name
-					user_phone_number = feed.user.phone_number
-					user_facebook_id = feed.user.facebook_id
-					user_facebook_name = feed.user.facebook_name
-				else
-					user_name = nil
-					user_phone_number = nil
-					user_facebook_id = nil
-					user_facebook_name = nil
-				end
-			else
-				user_name = self.user.name
-				user_phone_number = self.user.phone_number
-				user_facebook_id = self.user.facebook_id
-				user_facebook_name = self.user.facebook_name
-			end		
-
-			a = Activity.create!(:activity_type => "added_venue", :feed_id => feed.id, :feed_details => feed.partial, :user_id => user.id, :user_details => user.partial,
+			a = Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => feed.partial, :user_id => self.user_id, :user_details => user.partial,
 				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
 				:adjusted_sort_position => (self.created_at).to_i, :feed_venue_id => self.id)
 
