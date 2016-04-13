@@ -1,23 +1,18 @@
 json.array! @feed_venues do |feed_venue|
-  json.venue_id feed_venue.venue.id  
+  json.venue_id feed_venue.venue_details["id"]
   json.activity_id feed_venue.id
-  json.name feed_venue.venue.name
-  json.formatted_address feed_venue.venue.formatted_address
-  json.address feed_venue.venue.address
-  json.city feed_venue.venue.city
-  json.state feed_venue.venue.state
-  json.country feed_venue.venue.country
-  json.postal_code feed_venue.venue.postal_code
-  json.latitude feed_venue.venue.latitude
-  json.longitude feed_venue.venue.longitude
-  json.phone_number feed_venue.venue.phone_number
-  json.color_rating feed_venue.venue.color_rating
-  json.time_zone_offset feed_venue.venue.time_zone_offset
+  json.name feed_venue.venue_details["name"]
+  json.address feed_venue.venue_details["address"]
+  json.city feed_venue.venue_details["city"]
+  json.state feed_venue.venue_details[state"]
+  json.country feed_venue.venue_details["country"]
+  json.postal_code feed_venue.venue_details["postal_code"]
+  json.latitude feed_venue.venue_details["latitude"]
+  json.longitude feed_venue.venue_details["longitude"]
 
-  json.added_by_user feed_venue.user.try(:name)
-  json.num_likes feed_venue.activity.try(:num_likes)
-  json.feed_venue_id feed_venue.id
-  json.added_note feed_venue.description
+  json.added_by_user feed_venue.user["name"]
+  json.feed_venue_id feed_venue.feed_venue["id"]
+  json.added_note feed_venue.feed_venue["added_note"]
 
-  json.did_like @user.likes.where("activity_id = ?", feed_venue.activity.try(:id)).first.present?
+  json.did_like @user.likes.where("activity_id = ?", feed_venue.id).first.present?
 end

@@ -141,9 +141,10 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_venues
 		@user = User.where("id = ?", params[:user_id]).includes(:likes).first
-		#@feed = Feed.find_by_id(params[:id])
+		@feed = Feed.find_by_id(params[:id])
 		#@added_venue_activities = Activity.where("feed_id = ? AND activity_type = ?", params[:id], "added_venue").includes(:user, :venue, :feed_venue).page(params[:page]).per(15)
-		@feed_venues = FeedVenue.where("feed_venues.feed_id = ?", params[:id]).includes(:venue, :user, :activity).order("venues.name ASC").page(params[:page]).per(15)
+		@feed_venues = @feed.activities.where("activity_type = ?", "added_venue").order("venue_details ->> 'name' ASC").page(params[:page]).per(15)
+		#FeedVenue.where("feed_venues.feed_id = ?", params[:id]).includes(:venue, :user, :activity).order("venues.name ASC").page(params[:page]).per(15)
 	end
 
 	def get_recommended_venue
