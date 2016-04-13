@@ -5,9 +5,9 @@ class Api::V1::VenuesController < ApiBaseController
 	def show
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@venue = Venue.find(params[:id])		
-		venue = @venue.as_json(include: :venue_messages)
+		#venue = @venue.as_json(include: :venue_messages)
 
-		venue[:compare_type] = @venue.type
+		#venue[:compare_type] = @venue.type
 
 		render json: venue
 	end
