@@ -263,7 +263,7 @@ class VenueComment < ActiveRecord::Base
 
 					if origin_venue.moment_request_details != {}
 						if MomentRequest.fulfilled_by_post(origin_venue.moment_request_details["created_at"], "instagram")
-							MomentRequest.find_by_id(origin_venue.moment_request_details["id"]).notify_requesters_of_response
+							MomentRequest.find_by_id(origin_venue.moment_request_details["id"]).notify_requesters_of_response(vc)
 							origin_venue.update_columns(moment_request_details: {})
 						end
 					end
