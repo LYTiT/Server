@@ -1825,7 +1825,11 @@ end
     #Else make a hybrid call of Instagrams no older than a day but since the last Instagram that was pulled for the Venue.  
     else
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
-      instagrams = instagrams.take instagrams.size-1
+      if instagrams.length > 0
+        instagrams = instagrams.take instagrams.length-1
+      else
+        instagrams = []
+      end
       self.update_columns(last_instagram_pull_time: Time.now)
     end
 
