@@ -1618,6 +1618,7 @@ def recommendation_reason_for(user)
           end
         end
       end
+    end
   end
 end
 
