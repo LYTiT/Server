@@ -10,9 +10,9 @@ json.array! @feed_venues do |feed_venue|
   json.latitude feed_venue.venue_details["latitude"]
   json.longitude feed_venue.venue_details["longitude"]
 
-  json.added_by_user feed_venue.user["name"]
-  json.feed_venue_id feed_venue.feed_venue["id"]
-  json.added_note feed_venue.feed_venue["added_note"]
+  json.added_by_user feed_venue.user_details["name"]
+  json.feed_venue_id feed_venue.feed_venue_details["id"]
+  json.added_note feed_venue.feed_venue_details["added_note"]
 
   json.did_like @user.likes.where("activity_id = ?", feed_venue.id).first.present?
 end
