@@ -93,7 +93,7 @@ class MomentRequest < ActiveRecord::Base
 		for requester in requesters
 			if requester != nil
 				type = "Moment Request Response"
-				notification = self.store_new_invitation_notification(payload, requester, type)
+				notification = self.store_new_notification(payload, requester, type)
 				payload[:notification_id] = notification.id
 				
 				alert = "Someone responded to your request at #{self.venue.name}"
