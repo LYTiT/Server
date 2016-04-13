@@ -1597,24 +1597,27 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
-  top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
-  venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
-  interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
+  user_list_name = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first.name
 
-  if interest_match == true
-    for interest in top_user_interests
-      if Venue.interest_search(interest).where("id = ?", self.id).first != nil
-        if user.interests[interest]["venue_ids"] != nil
-          return "Similar to venues searched for"
-        elsif user.interests[interest]["favorite_venue_ids"] != nil
-          return "Based on your favorites"
-        else
-          return "Based on your List interests"
+  if user_list_name != nil
+    return "Part of #{user_list_name}"
+  else
+    top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
+    venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
+    interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
+
+    if interest_match == true
+      for interest in top_user_interests
+        if Venue.interest_search(interest).where("id = ?", self.id).first != nil
+          if user.interests[interest]["venue_ids"] != nil
+            return "Similar to venues searched for"
+          elsif user.interests[interest]["favorite_venue_ids"] != nil
+            return "Based on your favorites"
+          else
+            return "Based on your List interests"
+          end
         end
       end
-    end
-  else
-    return "Part of #{user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first.name}"
   end
 end
 
