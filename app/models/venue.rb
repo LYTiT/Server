@@ -1932,7 +1932,11 @@ end
     new_venue_tweets = client.search(query+" -rt", result_type: "recent", geocode: "#{latitude},#{longitude},#{radius}km", since_id: "#{min_tweet_id}").take(20).collect.to_a
     self.update_columns(last_twitter_pull_time: Time.now)
 
-    new_venue_tweets.take new_venue_tweets.size-1
+    if new_tweets.length > 0
+      new_venue_tweets.take new_venue_tweets.length-1
+    else
+      []
+    end
   end
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
