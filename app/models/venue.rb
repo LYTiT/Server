@@ -1600,7 +1600,7 @@ def recommendation_reason_for(user)
   user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
 
   if user_list != nil
-    return "Part of #{user_list_name.name}"
+    return "Part of #{user_list.name}"
   else
     top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
     venue_meta = self.categories.values+self.descriptives.keys+self.trending_tags.values
