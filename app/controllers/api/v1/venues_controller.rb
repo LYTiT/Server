@@ -292,7 +292,13 @@ class Api::V1::VenuesController < ApiBaseController
 			city = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first.city rescue "New York"
 		end
 
-		@view_cache_key = "#{city}/lyt_map/view/page_"+params[:page].to_s
+		if Time.now.min >= 10
+			time_key = Time.now.min - Time.now.min%10
+		else
+			time_key = 0
+		end
+
+		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_"+params[:page].to_s
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'display_by_parts.json.jbuilder'
