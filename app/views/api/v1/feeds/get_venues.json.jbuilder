@@ -4,7 +4,7 @@ json.array! @feed_venues do |feed_venue|
   json.name feed_venue.venue_details["name"]
   json.address feed_venue.venue_details["address"]
   json.city feed_venue.venue_details["city"]
-  json.state feed_venue.venue_details[state"]
+  json.state feed_venue.venue_details["state"]
   json.country feed_venue.venue_details["country"]
   json.postal_code feed_venue.venue_details["postal_code"]
   json.latitude feed_venue.venue_details["latitude"]
