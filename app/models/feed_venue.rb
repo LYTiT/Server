@@ -81,4 +81,11 @@ class FeedVenue < ActiveRecord::Base
 	  	nil
 	end
 
+	def adjust_activity
+		activity = self.activity
+		activity.update_columns(feed_details: self.feed.partial) rescue nil
+		activity.update_columns(venue_details: self.venue.partial) rescue nil
+		activity.update_columns(user_details: self.user.partial) rescue nil
+	end
+
 end
