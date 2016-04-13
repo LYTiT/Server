@@ -7,6 +7,6 @@ json.array! @requests do |request|
   json.latitude request.latitude
   json.longitude request.longitude
   json.num_requesters request.num_requesters
-  json.timestamp request.created_at
-  json.typ "moment_request_notification"
+  json.created_at request.created_at
+  json.type "moment_request_notification"
 end
