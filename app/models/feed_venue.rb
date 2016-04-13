@@ -82,8 +82,8 @@ class FeedVenue < ActiveRecord::Base
 	end
 
 	def adjust_activity
-		activity = self.activity || Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => self.feed.partial, :user_id => self.user_id, :user_details => self.user.partial,
-				:venue_id => self.venue.id, :venue_details => self.venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
+		activity = self.activity || Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => self.feed.try(:partial), :user_id => self.user_id, :user_details => self.user.try(:partial),
+				:venue_id => self.venue.id, :venue_details => self.venue.try(:partial), :feed_venue_details => {:id => self.id, :added_note => self.description}, 
 				:adjusted_sort_position => (self.created_at).to_i, :feed_venue_id => self.id)
 		activity.update_columns(feed_details: self.feed.partial) rescue nil
 		activity.update_columns(venue_details: self.venue.partial) rescue nil
