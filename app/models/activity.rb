@@ -138,6 +138,8 @@ class Activity < ActiveRecord::Base
 		    :fb_id => user.facebook_id,
       		:fb_name => user.facebook_name,
 
+      		:content_origin => self.venue_comment_details["entry_type"],
+
 		    :feed_id => activity_feed_of_member.id,
 		    :feed_name => activity_feed_of_member.name,
 		    :feed_color => activity_feed_of_member.feed_color,
