@@ -31,7 +31,7 @@ class MomentRequest < ActiveRecord::Base
 	end
 
 	def notify_requesters_of_response(vc)
-		requesters_ids = "SELECT user_id FROM moment_request_users WHERE request_id = #{self.id}"
+		requesters_ids = "SELECT user_id FROM moment_request_users WHERE moment_request_id = #{self.id}"
 		requesters = User.where("id IN (#{requesters_ids})") 
 
 		if vc.entry_type == "lytit_post"
