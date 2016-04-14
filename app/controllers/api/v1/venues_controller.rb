@@ -337,7 +337,7 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 
 				if page > 1 or venues.length == 0 
-					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
+					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
 				else
 					return venues
 				end
