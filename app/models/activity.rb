@@ -122,7 +122,15 @@ class Activity < ActiveRecord::Base
 	end
 
 	def send_new_feed_share_notification(member, activity_feed_of_member)
-		media_type = venue_comment.instagram["media_type"] || venue_comment.lytit_post["media_type"] 
+		if self.venue_comment_details["entry_type"] == "instagram"
+			media_type = self.venue_comment_details["instagram"]["media_type"]
+		elsif self.venue_comment_details["entry_type"] == "lytit_post"
+			media_type = self.venue_comment.venue_comment_details["lytit_post"]"media_type"] 
+		else
+			media_type = nil
+		end
+			
+		end
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
