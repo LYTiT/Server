@@ -313,11 +313,14 @@ class Api::V1::VenuesController < ApiBaseController
 		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true
+			p "#{page} ------- DIRECT VIEW RENDER"
 			render 'display_by_parts.json.jbuilder'
 		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
+			p "#{page} ^^^^^^^ RENDERING PREVIOUS SEGMENT VIEW"
 			@view_cache_key = "#{city}/lyt_map/view/#{previous_time_key}/page_#{page}"		
 			render 'display_by_parts.json.jbuilder'
 		else
+			p "#{page} $$$$$$$ RECACHING"
 			Rails.cache.write(@view_cache_key, time_key, :expires_in => 10.minutes)
 			city_cache_key = "#{city}/lyt_map/page_#{page}"
 
@@ -332,7 +335,7 @@ class Api::V1::VenuesController < ApiBaseController
 				if page == 1
 					venues = Venue.close_to(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				end
-		
+
 				if page > 1 or venues.length == 0 
 					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				else
