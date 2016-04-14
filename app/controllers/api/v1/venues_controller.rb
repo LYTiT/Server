@@ -314,11 +314,11 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			p "#{page} ------- DIRECT VIEW RENDER"
-			render 'display_by_parts.json.jbuilder'
+			#render 'display_by_parts.json.jbuilder'
 		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
 			p "#{page} ^^^^^^^ RENDERING PREVIOUS SEGMENT VIEW"
 			@view_cache_key = "#{city}/lyt_map/view/#{previous_time_key}/page_#{page}"
-			render 'display_by_parts.json.jbuilder'
+			#render 'display_by_parts.json.jbuilder'
 		else
 			p "#{page} $$$$$$$ RECACHING"
 			Rails.cache.write(@view_cache_key, time_key, :expires_in => 10.minutes)
@@ -342,8 +342,9 @@ class Api::V1::VenuesController < ApiBaseController
 					return venues
 				end
 			end
-			render 'display_by_parts.json.jbuilder'
 		end
+
+		#render 'display_by_parts.json.jbuilder'
 	end
 
 	def search
