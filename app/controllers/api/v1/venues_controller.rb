@@ -337,13 +337,16 @@ class Api::V1::VenuesController < ApiBaseController
 				end
 
 				if page == 1 and venues.length == 0
-					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
+					venues =  Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				elsif page > 1
-					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
+					venues = Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a
 				else
-					return venues
-				end				
+					nil
+				end
+
+				return venues		
 			end
+			
 		end
 
 		#render 'display_by_parts.json.jbuilder'
