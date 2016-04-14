@@ -905,9 +905,9 @@ class Venue < ActiveRecord::Base
           venue_featured_activity.update_columns(adjusted_sort_position: vc_created_at)
         end
       end
-      self.update_columns(venue_comment_details: vc.to_json)
-      self.update_columns(venue_comment_id: vc.id)
-    end    
+      self.update_columns(venue_comment_details: vc.to_json)      
+    end
+    self.update_columns(venue_comment_id: vc.id)
   end
 
   def last_post_time
