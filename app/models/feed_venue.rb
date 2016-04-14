@@ -43,6 +43,10 @@ class FeedVenue < ActiveRecord::Base
 		    :feed_color => feed.feed_color,
 		    :venue_id => venue_id,
 		    :venue_name => venue.name,
+		    :venue_city => venue.city,
+		    :venue_address => venue.address,
+		    :latitude => venue.longitude,
+		    :longitude => venue.latitude,
 		    :added_note => description,
 		    :list_creator_id => feed.user_id,
 		    :activity_id => self.activity.id
