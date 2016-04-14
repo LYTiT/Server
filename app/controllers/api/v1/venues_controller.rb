@@ -317,7 +317,7 @@ class Api::V1::VenuesController < ApiBaseController
 			render 'display_by_parts.json.jbuilder'
 		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
 			p "#{page} ^^^^^^^ RENDERING PREVIOUS SEGMENT VIEW"
-			@view_cache_key = "#{city}/lyt_map/view/#{previous_time_key}/page_#{page}"		
+			@view_cache_key = "#{city}/lyt_map/view/#{previous_time_key}/page_#{page}"
 			render 'display_by_parts.json.jbuilder'
 		else
 			p "#{page} $$$$$$$ RECACHING"
