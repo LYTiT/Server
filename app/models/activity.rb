@@ -130,7 +130,6 @@ class Activity < ActiveRecord::Base
 			media_type = nil
 		end
 			
-		end
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
