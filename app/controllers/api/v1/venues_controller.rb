@@ -319,11 +319,13 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 
 			@venues = Rails.cache.fetch(city_cache_key, :expires_in => 10.minutes) do
-				venues = Venue.close_to(params[:latitude], params[:longitude], 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
+				lat = params[:latitude]
+				long = params[:longitude]
+				venues = Venue.close_to(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				if venues.length == 0 
-					Venue.far_from(params[:latitude], params[:longitude], 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
+					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				else
-					venues
+					return venues
 				end
 			end
 			render 'display_by_parts.json.jbuilder'

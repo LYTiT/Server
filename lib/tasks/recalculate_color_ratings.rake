@@ -53,6 +53,8 @@ namespace :lytit do
 
     end_time = Time.now
 
+    Tweet.set_daiy_tweet_id
+    
     puts "Done. Time Taken: #{end_time - start_time}s"
 
   end
