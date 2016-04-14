@@ -344,9 +344,9 @@ class Api::V1::VenuesController < ApiBaseController
 					nil
 				end
 
-				return venues		
+				venues		
 			end
-			
+
 		end
 
 		#render 'display_by_parts.json.jbuilder'
