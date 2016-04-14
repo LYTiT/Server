@@ -661,6 +661,11 @@ class Venue < ActiveRecord::Base
     comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
       #Clear offset value if rebuilding feed.
       if page_number == 1 && self.page_offset > 0
+        i = 2
+        #delete first 10 cached pages if present (unlikely to be more)
+        for i in [2..20] 
+          Rails.cache.delete("venue/#{self.id}/comments/page_#{i}")
+        end
         self.update_columns(page_offset: 0)
       end
 
@@ -693,7 +698,7 @@ class Venue < ActiveRecord::Base
             new_social_media.page(1, page_count) #array pagination method
           else
             #No new social media content so we move to venue comments.
-            vcs = self.venue_comments.where("adjusted_sort_position < ? AND created_at <= ?", current_position, Time.now-10.minutes).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+            vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
             else
@@ -702,7 +707,7 @@ class Venue < ActiveRecord::Base
           end
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
-          vcs = self.venue_comments.where("adjusted_sort_position < ? AND created_at <= ?", current_position, Time.now-10.minutes).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+          vcs = self.venue_comments.where("adjusted_sort_position < ?", current_position).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
             vcs.to_a
           else
@@ -755,15 +760,7 @@ class Venue < ActiveRecord::Base
     self.update_rating(true, true)
 
     #Append comment to venues cached feed if present by adding a negative page number.
-    if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
-      #purge all cache and rebuild feed
-      page = 1
-      response = true
-      while response == true do
-        response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
-        page += 1
-      end
-    end
+    self.rebuild_cached_vc_feed
 
     if self.moment_request_details != {}
       if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
@@ -772,6 +769,18 @@ class Venue < ActiveRecord::Base
         self.update_columns(moment_request_details: {})
       end
     end
+  end
+
+  def rebuild_cached_vc_feed
+    if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
+      #purge all cache and rebuild feed
+      page = 1
+      response = true
+      while response == true do
+        response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
+        page += 1
+      end
+    end    
   end
 
 
