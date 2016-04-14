@@ -663,7 +663,7 @@ class Venue < ActiveRecord::Base
       if page_number == 1 && self.page_offset > 0
         max_vc_id = self.venue_comments.order("adjusted_sort_position DESC").first.id
         self.update_columns(venue_comment_id: max_vc_id)
-        
+
         if self.page_offset > 0
           i = 2
           #delete first 10 cached pages if present (unlikely to be more)
@@ -906,6 +906,7 @@ class Venue < ActiveRecord::Base
         end
       end
       self.update_columns(venue_comment_details: vc.to_json)
+      self.update_columns(venue_comment_id: vc.id)
     end    
   end
 
