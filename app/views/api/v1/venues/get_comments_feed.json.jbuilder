@@ -20,7 +20,7 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    if comment["type"] == "video"
 			    json.video_url_1 comment["videos"]["low_bandwidth"]["url"] 
 			    json.video_url_2 comment["videos"]["low_resolution"]["url"]
-			    json.video_url_3 comment["images"]["standard_resolution"]["url"]
+			    json.video_url_3 comment["videos"]["standard_resolution"]["url"]
 			end
 		    json.created_at DateTime.strptime(comment["created_time"],'%s')
 		    json.content_origin "instagram"
