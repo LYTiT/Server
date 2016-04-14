@@ -122,6 +122,7 @@ class Activity < ActiveRecord::Base
 	end
 
 	def send_new_feed_share_notification(member, activity_feed_of_member)
+		media_type = venue_comment.instagram["media_type"] || venue_comment.lytit_post["media_type"] 
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
@@ -139,14 +140,13 @@ class Activity < ActiveRecord::Base
       		:fb_name => user.facebook_name,
 
       		:content_origin => self.venue_comment_details["entry_type"],
+      		:media_type => media_type,
 
 		    :feed_id => activity_feed_of_member.id,
 		    :feed_name => activity_feed_of_member.name,
 		    :feed_color => activity_feed_of_member.feed_color,
 
-		    :num_activity_lists => num_lists,
-
-		    :media_type => venue_comment.try(:media_type),	
+		    :num_activity_lists => num_lists		    	
 		}
 
 

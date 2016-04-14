@@ -1,7 +1,7 @@
 json.id @feed.id
 json.name @feed.name
 json.open @feed.open
-json.creator @feed.user
+json.creator @feed.user.try(:partial)
 json.list_creator_fb_name @feed.user.try(:facebook_name)
 json.list_creator_fb_id @feed.user.try(:facebook_id)
 json.num_venues @feed.num_venues
