@@ -292,6 +292,10 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def refresh_map_view_by_parts
+		page = params[:page].to_i
+		lat = params[:latitude]
+		long = params[:longitude]
+
 		if params[:user_city] != nil
 			city = params[:user_city]
 		else
@@ -300,18 +304,23 @@ class Api::V1::VenuesController < ApiBaseController
 
 		if Time.now.min >= 10
 			time_key = Time.now.min - Time.now.min%10
+			previous_time_key = time_key -1
 		else
 			time_key = 0
+			previous_time_key = 50
 		end
 
-		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_"+params[:page].to_s
+		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			render 'display_by_parts.json.jbuilder'
+		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
+			@view_cache_key = "#{city}/lyt_map/view/#{previous_time_key}/page_#{page}"			
+			render 'display_by_parts.json.jbuilder'
 		else
-			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)
-			city_cache_key = "#{city}/lyt_map/page_#{params[:page]}"
-			page = params[:page].to_i
+			Rails.cache.write(@view_cache_key, time_key, :expires_in => 10.minutes)
+			city_cache_key = "#{city}/lyt_map/page_#{page}"
+
 			if page == 1
 				num_page_entries = 300
 			else
@@ -319,8 +328,6 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 
 			@venues = Rails.cache.fetch(city_cache_key, :expires_in => 10.minutes) do
-				lat = params[:latitude]
-				long = params[:longitude]
 				venues = Venue.close_to(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
 				if venues.length == 0 
 					return Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("id DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a
