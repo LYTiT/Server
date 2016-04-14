@@ -1590,7 +1590,7 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
   results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)
 
   if results.length == 0
-    results = Venue.order("popularity_rank DESC").in_bounds(search_box).where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)  
+    results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)  
   end
 
   return results
