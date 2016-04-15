@@ -50,6 +50,7 @@ json.activity(@activities) do |activity|
     json.video_url_3 activity.venue_comment_details["lytit_post"]["video_url_3"]
     json.user_id activity.venue_comment_details["lytit_post"]["user_details"]["id"]
     json.user_name activity.venue_comment_details["lytit_post"]["user_details"]["name"]
+    json.raction activity.venue_comment_details["lytit_post"]["reaction"]
   elsif venue_comment_details["entry_type"] == "instagram"
     json.venue_comment_id activity.venue_comment_id
     json.venue_comment_created_at activity.venue_comment_details["id"]

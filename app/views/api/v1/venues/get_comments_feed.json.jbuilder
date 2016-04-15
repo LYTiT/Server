@@ -40,7 +40,8 @@ json.cache! @view_cache_key do |json|
 		    json.video_url_1 comment.lytit_post["video_url_1"]
 		    json.video_url_2 comment.lytit_post["video_url_2"]
 		    json.video_url_3 comment.lytit_post["video_url_3"]
-		    json.created_at comment.lytit_post["created_at"]		    
+		    json.created_at comment.lytit_post["created_at"]		
+		    json.reaction comment.lytit_post["reaction"]    
 		elsif comment.entry_type == "instagram"
 			json.content_origin "instagram"
 			json.id comment.id
