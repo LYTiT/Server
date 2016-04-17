@@ -61,21 +61,20 @@ class PostPass < ActiveRecord::Base
 				end
 			end
 		end
+	end
 
-		def store_new_notification(payload, notification_user, type)
+	def store_new_notification(payload, notification_user, type)
 		notification = {
-		  :payload => payload,
-		  :gcm => notification_user.gcm_token.present?,
-		  :apns => notification_user.push_token.present?,
-		  :response => nil,
-		  :user_id => notification_user.id,
-		  :read => false,
-		  :message => type,
-		  :deleted => false
+			:payload => payload,
+			:gcm => notification_user.gcm_token.present?,
+			:apns => notification_user.push_token.present?,
+			:response => nil,
+			:user_id => notification_user.id,
+			:read => false,
+			:message => type,
+			:deleted => false
 		}
 		Notification.create(notification)
-		end  
-
-	end
+	end  
 
 end
