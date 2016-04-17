@@ -270,6 +270,9 @@ class Venue < ActiveRecord::Base
     if address != nil
       venue.update_columns(verified: true)
     end
+    
+    venue.update_columns(lonlat_geometry: "POINT(#{venue.longitude} #{venue.latitude})")
+    venue.update_columns(lonlat_geography: "POINT(#{venue.longitude} #{venue.latitude})")
 
     return venue    
   end
