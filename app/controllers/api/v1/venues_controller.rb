@@ -296,6 +296,9 @@ class Api::V1::VenuesController < ApiBaseController
 		lat = params[:latitude]
 		long = params[:longitude]
 
+		@user = User.find_by_authentication_token
+		@user.update_location(lat, long) if page == 1 
+
 		if params[:user_city] != nil
 			city = params[:user_city]
 		else

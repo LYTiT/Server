@@ -15,9 +15,6 @@ class Venue < ActiveRecord::Base
   has_many :venue_ratings, :dependent => :destroy
   has_many :venue_comments, :dependent => :destroy
   has_many :tweets, :dependent => :destroy
-  has_many :venue_messages, :dependent => :destroy
-  has_many :menu_sections, :dependent => :destroy, :inverse_of => :venue
-  has_many :menu_section_items, :through => :menu_sections
   has_many :lyt_spheres, :dependent => :destroy
   has_many :lytit_votes, :dependent => :destroy
   has_many :meta_datas, :dependent => :destroy
@@ -25,13 +22,11 @@ class Venue < ActiveRecord::Base
   has_many :feed_venues
   has_many :feeds, through: :feed_venues
   has_many :activities, :dependent => :destroy
-  has_many :activities, :dependent => :destroy
   has_many :events, :dependent => :destroy
 
   has_many :favorite_venues, :dependent => :destroy
   has_many :moment_requests, :dependent => :destroy
 
-  belongs_to :user
 
   #accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }  
 
@@ -289,12 +284,11 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.closest_to(lat, long, count=10)
-    nearest_venue_ids = "SELECT id FROM venues ORDER BY lonlat_geometry <-> st_point(#{long},#{lat}) LIMIT #{count}"
-    Venue.where("id IN (#{nearest_venue_ids})")
+  def Venue.nearest_neighbors(lat, long, count=10)
+    Venue.all.order("lonlat_geometry <-> st_point(#{long},#{lat})").limit(count)
   end
 
-  def nearest_neighbors(count=10)
+  def nearest_neighbors_raw_with_distance(count=10)
     sql = "SELECT id, name, lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude}) AS distance FROM venues ORDER BY distance LIMIT #{count}"
     ActiveRecord::Base.connection.execute(sql)
   end
@@ -383,6 +377,7 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.query_is_meta?(query)
+    #singularize and swap spaces for underscores
     query = query.downcase.tr(" ", "_")
     if query.last == "s" && query.last(3) != "ies"
       query = query.first(query.length-1)
@@ -392,11 +387,7 @@ class Venue < ActiveRecord::Base
       query
     end
 
-    common_meta_queries = "restaurant bar cafe pub park amusement_park museum pool arena stadium club mountain gym dog cat zoo cocktail 
-    pizza sushi bagel pasta beer japanese_restaurant chinese_restaurant french_restaurant indian_restaurant american_restaurant 
-    food drink speakeasy discotheque"
-
-    common_meta_queries.include? query.downcase
+    VENUE_META_CATEGORIES.include? query
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
@@ -1452,21 +1443,6 @@ class Venue < ActiveRecord::Base
     if auth_longitude != nil and self.longitude != auth_longitude
       self.longitude = auth_longitude
     end      
-
-    #LSphere
-    if self.l_sphere == nil
-      if self.latitude < 0 && self.longitude >= 0
-        quadrant = "a"
-      elsif self.latitude < 0 && self.longitude < 0
-        quadrant = "b"
-      elsif self.latitude >= 0 && self.longitude < 0
-        quadrant = "c"
-      else
-        quadrant = "d"
-      end
-      self.l_sphere = quadrant+(self.latitude.round(1).abs).to_s+(self.longitude.round(1).abs).to_s
-      self.save
-    end
 
     #Timezones
     if self.time_zone == nil #Add timezone of venue if not present

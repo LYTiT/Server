@@ -61,6 +61,18 @@ class User < ActiveRecord::Base
     {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name}
   end
 
+  def update_location(lat, long)
+    self.update_columns(latitude: lat)
+    self.update_columns(longitude: long)
+    point = "POINT(#{long} #{lat})"
+    self.update_columns(lonlat_geometry: point)
+    self.update_columns(lonlat_geography: point)
+  end
+
+  def nearest_neighbors(count=10)
+    User.all.order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
+  end  
+
   def update_user_feeds
     update_interval = 15 #minutes
 

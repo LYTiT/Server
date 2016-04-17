@@ -1891,7 +1891,9 @@ CREATE TABLE users (
     description text,
     profile_picture_url text,
     latitude double precision,
-    longitude double precision
+    longitude double precision,
+    lonlat_geometry geometry(Point),
+    lonlat_geography geography(Point,4326)
 );
 
 
@@ -3513,6 +3515,20 @@ CREATE INDEX index_users_on_email ON users USING btree (email);
 
 
 --
+-- Name: index_users_on_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_lonlat_geography ON users USING gist (lonlat_geography);
+
+
+--
+-- Name: index_users_on_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_users_on_lonlat_geometry ON users USING gist (lonlat_geometry);
+
+
+--
 -- Name: index_users_on_remember_token; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4610,4 +4626,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160416042909');
 INSERT INTO schema_migrations (version) VALUES ('20160416214140');
 
 INSERT INTO schema_migrations (version) VALUES ('20160417031410');
+
+INSERT INTO schema_migrations (version) VALUES ('20160417191546');
 
