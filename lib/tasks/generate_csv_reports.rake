@@ -4,8 +4,8 @@ namespace :lytit do
   task :generate_reports => :environment do
     puts "Generating CSVs..."
 
-    VotesCsv.instance.write_csv
-    VenuesCsv.instance.write_csv
+    #VotesCsv.instance.write_csv
+    #VenuesCsv.instance.write_csv
     
     puts "done."
   end

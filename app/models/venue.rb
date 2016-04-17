@@ -1,5 +1,6 @@
 class Venue < ActiveRecord::Base
   include PgSearch
+  Geokit::default_units = :kms
 
   acts_as_mappable :default_units => :kms,
                      :default_formula => :sphere,
@@ -32,7 +33,7 @@ class Venue < ActiveRecord::Base
 
   belongs_to :user
 
-  accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }  
+  #accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }  
 
 
 
@@ -108,6 +109,7 @@ class Venue < ActiveRecord::Base
               },
               :ranked_by => ":dmetaphone"# + (0.25 * :trigram)"#":trigram"#              
 
+
   pg_search_scope :fuzzy_name_search, lambda{ |target_name, rigor|
     raise ArgumentError unless rigor <= 1.0
     {
@@ -146,31 +148,19 @@ class Venue < ActiveRecord::Base
 
   scope :close_to, -> (latitude, longitude, distance_in_meters = 2000) {
     where(%{
-      ST_DWithin(
-        ST_GeographyFromText(
-          'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
-        ),
-        ST_GeographyFromText('SRID=4326;POINT(%f %f)'),
-        %d
-      )
+      ST_DWithin( venues.lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(%f %f)'), %d )
     } % [longitude, latitude, distance_in_meters])
   }
 
   scope :far_from, -> (latitude, longitude, distance_in_meters = 2000) {
     where(%{
-      NOT ST_DWithin(
-        ST_GeographyFromText(
-          'SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')'
-        ),
-        ST_GeographyFromText('SRID=4326;POINT(%f %f)'),
-        %d
-      )
+      NOT ST_DWithin( venues.lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(%f %f)'), %d )
     } % [longitude, latitude, distance_in_meters])
   }
 
   scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
     where(%{
-        ST_GeographyFromText('SRID=4326;POINT(' || venues.longitude || ' ' || venues.latitude || ')') @ ST_MakeEnvelope(%f, %f, %f, %f, 4326) 
+        venues.lonlat_geometry @ ST_MakeEnvelope(%f, %f, %f, %f, 4326) 
         } % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
   }
 
@@ -289,6 +279,22 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # SEARCH =======================================================================================
 #===============================================================================================
+  def Venue.fill_spatial_columns
+    for venue in Venue.all 
+      venue.update_columns(lonlat_geometry: "POINT(#{venue.longitude} #{venue.latitude})")
+      venue.update_columns(lonlat_geography: "POINT(#{venue.longitude} #{venue.latitude})")
+    end
+  end
+
+  def Venue.closest_to(lat, long, count=10)
+    nearest_venue_ids = "SELECT id FROM venues ORDER BY lonlat_geometry <-> st_point(#{long},#{lat}) LIMIT #{count}"
+    Venue.where("id IN (#{nearest_venue_ids})")
+  end
+
+  def nearest_neighbors(count=10)
+    sql = "SELECT id, name, lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude}) AS distance FROM venues ORDER BY distance LIMIT #{count}"
+    ActiveRecord::Base.connection.execute(sql)
+  end
 
   #Used when querying with Apple Maps data
   def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, is_meta_search=false)

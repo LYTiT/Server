@@ -9,90 +9,6 @@ SET standard_conforming_strings = on;
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA public;
-
-
---
--- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
-
-
---
--- Name: hstore; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS hstore WITH SCHEMA public;
-
-
---
--- Name: EXTENSION hstore; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION hstore IS 'data type for storing sets of (key, value) pairs';
-
-
---
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
-
-
---
--- Name: pg_trgm; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_trgm WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_trgm; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION pg_trgm IS 'text similarity measurement and index searching based on trigrams';
-
-
---
--- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
-
-
---
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
-
-
 SET search_path = public, pg_catalog;
 
 --
@@ -1115,7 +1031,8 @@ CREATE TABLE feeds (
     ts_meta_vector tsvector,
     preview_image_url character varying(255),
     cover_image_url character varying(255),
-    is_private boolean DEFAULT false
+    is_private boolean DEFAULT false,
+    list_category_id integer
 );
 
 
@@ -1313,6 +1230,40 @@ CREATE SEQUENCE likes_id_seq
 --
 
 ALTER SEQUENCE likes_id_seq OWNED BY likes.id;
+
+
+--
+-- Name: list_categories; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE list_categories (
+    id integer NOT NULL,
+    name character varying(255),
+    tags json DEFAULT '{}'::json NOT NULL,
+    num_lists integer DEFAULT 0,
+    thumbnail_image_url text,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: list_categories_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE list_categories_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: list_categories_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE list_categories_id_seq OWNED BY list_categories.id;
 
 
 --
@@ -1652,6 +1603,40 @@ ALTER SEQUENCE pg_search_documents_id_seq OWNED BY pg_search_documents.id;
 
 
 --
+-- Name: post_passes; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE post_passes (
+    id integer NOT NULL,
+    user_id integer,
+    venue_comment_id integer,
+    passed_on boolean,
+    reported boolean DEFAULT false,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: post_passes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE post_passes_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: post_passes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE post_passes_id_seq OWNED BY post_passes.id;
+
+
+--
 -- Name: reported_objects; Type: TABLE; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -1904,7 +1889,9 @@ CREATE TABLE users (
     num_bolts integer DEFAULT 0,
     interests json DEFAULT '{}'::json NOT NULL,
     description text,
-    profile_picture_url text
+    profile_picture_url text,
+    latitude double precision,
+    longitude double precision
 );
 
 
@@ -2171,18 +2158,11 @@ CREATE TABLE venues (
     fetched_at timestamp without time zone,
     r_up_votes double precision DEFAULT 1.0,
     r_down_votes double precision DEFAULT 1.0,
-    menu_link character varying(255),
     color_rating double precision DEFAULT (-1.0),
-    key bigint,
     time_zone character varying(255),
-    l_sphere character varying(255),
     latest_posted_comment_time timestamp without time zone,
-    is_address boolean DEFAULT false,
-    has_been_voted_at boolean DEFAULT false,
     popularity_rank double precision DEFAULT 0.0,
-    popularity_percentile double precision,
     page_views double precision DEFAULT 0,
-    user_id integer,
     instagram_location_id integer,
     last_instagram_pull_time timestamp without time zone,
     verified boolean DEFAULT true,
@@ -2194,33 +2174,7 @@ CREATE TABLE venues (
     last_twitter_pull_time timestamp without time zone,
     meta_data_vector tsvector,
     event_id integer,
-    is_live boolean DEFAULT false,
-    tag_1 character varying(255),
-    tag_2 character varying(255),
-    tag_3 character varying(255),
-    tag_4 character varying(255),
-    tag_5 character varying(255),
     venue_comment_id integer,
-    venue_comment_created_at timestamp without time zone,
-    venue_comment_content_origin character varying(255),
-    venue_comment_thirdparty_username character varying(255),
-    media_type character varying(255),
-    image_url_1 character varying(255),
-    image_url_2 character varying(255),
-    image_url_3 character varying(255),
-    video_url_1 character varying(255),
-    video_url_2 character varying(255),
-    video_url_3 character varying(255),
-    lytit_tweet_id integer,
-    twitter_id bigint,
-    tweet_text text,
-    tweet_created_at timestamp without time zone,
-    tweet_author_name character varying(255),
-    tweet_author_id character varying(255),
-    tweet_author_avatar_url character varying(255),
-    tweet_handle character varying(255),
-    venue_comment_instagram_id character varying(255),
-    venue_comment_instagram_user_id bigint,
     metaphone_name_vector tsvector,
     open_hours json DEFAULT '{}'::json NOT NULL,
     instagram_vortex_id integer,
@@ -2245,7 +2199,9 @@ CREATE TABLE venues (
     event_details json DEFAULT '{}'::json NOT NULL,
     last_tweet_id bigint,
     last_instagram_id character varying(255),
-    moment_request_details json DEFAULT '{}'::json NOT NULL
+    moment_request_details json DEFAULT '{}'::json NOT NULL,
+    lonlat_geometry geometry(Point),
+    lonlat_geography geography(Point,4326)
 );
 
 
@@ -2473,6 +2429,13 @@ ALTER TABLE ONLY likes ALTER COLUMN id SET DEFAULT nextval('likes_id_seq'::regcl
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY list_categories ALTER COLUMN id SET DEFAULT nextval('list_categories_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY lyt_spheres ALTER COLUMN id SET DEFAULT nextval('lyt_spheres_id_seq'::regclass);
 
 
@@ -2537,6 +2500,13 @@ ALTER TABLE ONLY moment_requests ALTER COLUMN id SET DEFAULT nextval('moment_req
 --
 
 ALTER TABLE ONLY pg_search_documents ALTER COLUMN id SET DEFAULT nextval('pg_search_documents_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY post_passes ALTER COLUMN id SET DEFAULT nextval('post_passes_id_seq'::regclass);
 
 
 --
@@ -2829,6 +2799,14 @@ ALTER TABLE ONLY likes
 
 
 --
+-- Name: list_categories_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY list_categories
+    ADD CONSTRAINT list_categories_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: lyt_spheres_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -2906,6 +2884,14 @@ ALTER TABLE ONLY moment_requests
 
 ALTER TABLE ONLY pg_search_documents
     ADD CONSTRAINT pg_search_documents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: post_passes_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY post_passes
+    ADD CONSTRAINT post_passes_pkey PRIMARY KEY (id);
 
 
 --
@@ -3443,6 +3429,20 @@ CREATE INDEX index_pg_search_documents_on_searchable_id_and_searchable_type ON p
 
 
 --
+-- Name: index_post_passes_on_created_at; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_post_passes_on_created_at ON post_passes USING btree (created_at);
+
+
+--
+-- Name: index_post_passes_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_post_passes_on_user_id ON post_passes USING btree (user_id);
+
+
+--
 -- Name: index_support_issues_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3660,6 +3660,20 @@ CREATE INDEX index_venues_on_longitude ON venues USING btree (longitude);
 
 
 --
+-- Name: index_venues_on_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_lonlat_geography ON venues USING gist (lonlat_geography);
+
+
+--
+-- Name: index_venues_on_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_lonlat_geometry ON venues USING gist (lonlat_geometry);
+
+
+--
 -- Name: index_venues_on_meta_data_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3831,7 +3845,7 @@ CREATE TRIGGER venues_ts_name_vector_trigger BEFORE INSERT OR UPDATE ON venues F
 -- PostgreSQL database dump complete
 --
 
-SET search_path TO "$user",public;
+SET search_path TO "$user", public, postgis;
 
 INSERT INTO schema_migrations (version) VALUES ('20140324170210');
 
@@ -4588,4 +4602,12 @@ INSERT INTO schema_migrations (version) VALUES ('20160409192838');
 INSERT INTO schema_migrations (version) VALUES ('20160411035147');
 
 INSERT INTO schema_migrations (version) VALUES ('20160411205229');
+
+INSERT INTO schema_migrations (version) VALUES ('20160416025159');
+
+INSERT INTO schema_migrations (version) VALUES ('20160416042909');
+
+INSERT INTO schema_migrations (version) VALUES ('20160416214140');
+
+INSERT INTO schema_migrations (version) VALUES ('20160417031410');
 

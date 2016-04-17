@@ -380,7 +380,7 @@ class Api::V1::VenuesController < ApiBaseController
 			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, true)
 			@is_meta = true
 		else
-			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, true)
+			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, false)
 			@is_meta = false
 		end
 

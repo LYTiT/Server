@@ -10,8 +10,8 @@ RailsAdmin.config do |config|
   end
 
   config.excluded_models << "ExportedDataCsv"
-  config.excluded_models << "VenuesCsv"
-  config.excluded_models << "VotesCsv"
+  #config.excluded_models << "VenuesCsv"
+  #config.excluded_models << "VotesCsv"
   config.excluded_models << "LytitBar"
 
   config.model 'User' do
@@ -28,7 +28,7 @@ RailsAdmin.config do |config|
       end
     end
   end
-
+=begin
   config.model 'Venue' do
     edit do
       field :menu_section_items do
@@ -37,7 +37,7 @@ RailsAdmin.config do |config|
       include_all_fields
     end
   end
-=begin
+
   config.model 'MenuSection' do
     nested do
       configure :menu_section_items do
@@ -47,10 +47,11 @@ RailsAdmin.config do |config|
       end
     end
   end
-=end
+
   config.model 'MenuSectionItem' do
     visible false
   end
+=end  
 
   config.main_app_name { ['My App', 'Admin'] }
 end
