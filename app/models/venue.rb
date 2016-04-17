@@ -190,7 +190,7 @@ class Venue < ActiveRecord::Base
     
     if city == nil
       #closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).where("city is not NULL").order("distance ASC").first
-      closest_venue = Venue.nearest_neighbors(lat, long, 1).first
+      closest_venue = Venue.nearest_neighbors(latitude, longitude, 1).first
       if closest_venue != nil && closest_venue.distance_to([latitude, longitude]) <= 10
         city = closest_venue.city
         country = closest_venue.country
