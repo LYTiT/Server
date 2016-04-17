@@ -446,7 +446,7 @@ class Api::V1::VenuesController < ApiBaseController
 		lat = params[:latitude]
 		long = params[:longitude]
 		InstagramVortex.check_nearby_vortex_existence(lat, long)		
-		@user.update_location(lat, long) if page == 1 
+		@user.update_location(lat, long)
 		render json: { success: true }
 	end
 
