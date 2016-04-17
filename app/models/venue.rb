@@ -189,8 +189,9 @@ class Venue < ActiveRecord::Base
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
     if city == nil
-      closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).where("city is not NULL").order("distance ASC").first
-      if closest_venue != nil
+      #closest_venue = Venue.within(10, :units => :kms, :origin => [latitude, longitude]).where("city is not NULL").order("distance ASC").first
+      closest_venue = Venue.nearest_neighbors(lat, long, 1).first
+      if closest_venue != nil && closest_venue.distance_to([latitude, longitude]) <= 10
         city = closest_venue.city
         country = closest_venue.country
       else
@@ -367,17 +368,7 @@ class Venue < ActiveRecord::Base
   end
 
   def Venue.query_is_meta?(query)
-    #singularize and swap spaces for underscores
-    query = query.downcase.tr(" ", "_")
-    if query.last == "s" && query.last(3) != "ies"
-      query = query.first(query.length-1)
-    elsif query.last(3) == "ies"
-      query = query.first(query.length-3)+"y"
-    else
-      query
-    end
-
-    VENUE_META_CATEGORIES.include? query
+    VENUE_META_CATEGORIES.include? query.downcase.tr(" ", "_").singularize
   end
 
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
@@ -1360,15 +1351,19 @@ class Venue < ActiveRecord::Base
       self.update_columns(time_zone_offset: origin_vortex.time_zone_offset)
       #Set nearest instagram vortex id if a vortex within 10kms present
       radius  = 10000
-      nearest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [self.latitude, self.longitude]).order('distance ASC').first
-      self.update_columns(instagram_vortex_id: nearest_vortex.id)
+      #nearest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [self.latitude, self.longitude]).order('distance ASC').first
+      search_box = Geokit::Bounds.from_point_and_radius([lat,long], radius.to_i, :units => :kms)
+      closest_vortex = InstagramVortex.in_bounds(search_box).order("id ASC").first
+      self.update_columns(instagram_vortex_id: closest_vortex.id)
     end
   end
 
   def Venue.fill_in_time_zone_offsets
     radius  = 10000
     for venue in Venue.all.where("time_zone_offset IS NULL")
-      closest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [venue.latitude, venue.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
+      search_box = Geokit::Bounds.from_point_and_radius([lat,long], radius.to_i, :units => :kms)
+      closest_vortex = InstagramVortex.in_bounds(search_box).order("id ASC").first
+      #closest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [venue.latitude, venue.longitude]).where("time_zone_offset IS NOT NULL").order('distance ASC').first
       venue.update_columns(time_zone_offset: closest_vortex.time_zone_offset)
     end
   end
@@ -1391,7 +1386,7 @@ class Venue < ActiveRecord::Base
       p "Vortex: #{vortex.city}"
       vortex.set_timezone_offsets
       radius = 10
-      vortex_venues = Venue.within(radius.to_i, :units => :kms, :origin => [vortex.latitude, vortex.longitude])
+      vortex_venues = Venue.close_to(vortex.latitude, vortex.longitude, radius*1000
       vortex_venues.update_all(instagram_vortex_id: vortex.id)
       vortex_venues.update_all(time_zone: vortex.time_zone)
       vortex_venues.update_all(time_zone_offset: vortex.time_zone_offset)
@@ -1855,8 +1850,8 @@ end
   def self.surrounding_area_instagram_pull(lat, long)
     if lat != nil && long != nil
       
-      surrounding_lyts_radius = 10000 * 1/1000
-      if not Venue.within(surrounding_lyts_radius.to_f, :units => :kms, :origin => [lat, long]).where("rating > 0").any? #Venue.within(Venue.meters_to_miles(surrounding_lyts_radius.to_i), :origin => [lat, long]).where("rating > 0").any?
+      surrounding_lyts_radius = 10000
+      if not Venue.close_to(lat, long, surrounding_lyts_radius).where("color_rating > -1.0").any?
         new_instagrams = Instagram.media_search(lat, long, :distance => 5000, :count => 100, :min_timestamp => (Time.now-24.hours).to_time.to_i)
 
         #If more than 70 Instagram in area over the past day we do a vortex proximity check to see if one needs to be dropped

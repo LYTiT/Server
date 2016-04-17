@@ -230,8 +230,9 @@ class InstagramVortex < ActiveRecord::Base
 
 	def self.check_nearby_vortex_existence(lat, long)
 		if lat != nil and long != nil
-			nearby_vortex_radius = 20000 * 1/1000
-			nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :units => :kms, :origin => [lat, long]).first #InstagramVortex.within(Venue.meters_to_miles(nearby_vortex_radius.to_i), :origin => [lat, long]).first
+			search_box = Geokit::Bounds.from_point_and_radius([lat,long], 20, :units => :kms)
+			nearby_vortex = InstagramVortex.in_bounds(search_box).order("id ASC").first
+			#nearby_vortex = InstagramVortex.within(nearby_vortex_radius.to_i, :units => :kms, :origin => [lat, long]).first
 			if nearby_vortex == nil
 				begin
 					user_city = Venue.reverse_geo_city_lookup(lat, long)

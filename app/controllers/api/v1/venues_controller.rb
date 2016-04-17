@@ -299,7 +299,9 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:user_city] != nil
 			city = params[:user_city]
 		else
-			city = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first.city rescue "New York"
+			search_box = Geokit::Bounds.from_point_and_radius([lat,long], 20, :units => :kms)
+			city = InstagramVortex.in_bounds(search_box).order("id ASC").first.city rescue "New York"
+			#city = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first.city rescue "New York"
 		end
 
 		if Time.now.min >= 10
