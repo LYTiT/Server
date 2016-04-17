@@ -25,7 +25,7 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def send_new_post_pass_notification
-  		vc = self.venue_comment
+		vc = self.venue_comment
 		vc_user = vc.user
 		if vc.views == 1 || (vc.views%5 == 0 && vc.views <= 20) || (vc.views%10 && vc.views > 20)
 			payload = {

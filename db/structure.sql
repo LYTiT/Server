@@ -1889,7 +1889,7 @@ CREATE TABLE users (
     num_bolts integer DEFAULT 0,
     interests json DEFAULT '{}'::json NOT NULL,
     description text,
-    profile_picture_url text,
+    profile_image_url text,
     latitude double precision,
     longitude double precision,
     lonlat_geometry geometry(Point),
@@ -4628,4 +4628,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160416214140');
 INSERT INTO schema_migrations (version) VALUES ('20160417031410');
 
 INSERT INTO schema_migrations (version) VALUES ('20160417191546');
+
+INSERT INTO schema_migrations (version) VALUES ('20160417233907');
 
