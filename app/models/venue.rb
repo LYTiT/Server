@@ -233,16 +233,6 @@ class Venue < ActiveRecord::Base
       venue.phone_number = Venue.formatTelephone(phone)
     end
 
-    if venue.latitude < 0 && venue.longitude >= 0
-      quadrant = "a"
-    elsif venue.latitude < 0 && venue.longitude < 0
-      quadrant = "b"
-    elsif venue.latitude >= 0 && venue.longitude < 0
-      quadrant = "c"
-    else
-      quadrant = "d"
-    end
-    venue.l_sphere = quadrant+(venue.latitude.round(1).abs).to_s+(venue.longitude.round(1).abs).to_s
     venue.save
 
     if address != nil && name != nil
