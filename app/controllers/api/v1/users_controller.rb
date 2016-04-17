@@ -88,6 +88,13 @@ class Api::V1::UsersController < ApiBaseController
 			@user.country_code = params[:country_code].to_s
 		end
 
+		if params[:profile_image_url] != nil
+			@user.profile_image_url = params[:profile_image_url]
+		end
+
+		if params[:profile_description] != nil
+			@user.profile_image_url = params[:profile_description]
+		end
 
 		if @user.save		
 			@user.delay(:priority => -1).update_list_activity_user_details
