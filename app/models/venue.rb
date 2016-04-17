@@ -1352,7 +1352,7 @@ class Venue < ActiveRecord::Base
       #Set nearest instagram vortex id if a vortex within 10kms present
       radius  = 10000
       #nearest_vortex = InstagramVortex.within(radius.to_i, :units => :kms, :origin => [self.latitude, self.longitude]).order('distance ASC').first
-      search_box = Geokit::Bounds.from_point_and_radius([lat,long], radius.to_i, :units => :kms)
+      search_box = Geokit::Bounds.from_point_and_radius([self.latitude, self.longitude], radius.to_i, :units => :kms)
       closest_vortex = InstagramVortex.in_bounds(search_box).order("id ASC").first
       self.update_columns(instagram_vortex_id: closest_vortex.id)
     end
