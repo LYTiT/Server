@@ -1385,8 +1385,8 @@ class Venue < ActiveRecord::Base
     for vortex in InstagramVortex.all
       p "Vortex: #{vortex.city}"
       vortex.set_timezone_offsets
-      radius = 10
-      vortex_venues = Venue.close_to(vortex.latitude, vortex.longitude, radius*1000
+      radius = 10#km
+      vortex_venues = Venue.close_to(vortex.latitude, vortex.longitude, radius*1000)
       vortex_venues.update_all(instagram_vortex_id: vortex.id)
       vortex_venues.update_all(time_zone: vortex.time_zone)
       vortex_venues.update_all(time_zone_offset: vortex.time_zone_offset)

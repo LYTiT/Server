@@ -10,7 +10,8 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def select_next_users
-		"SELECT user_id FROM post_passes WHERE"
+		previous_post_pass_user_ids = "SELECT user_id FROM post_passes WHERE venue_comment_id = #{self.venue_comment_id}"
+		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids})")
 	end
 
 end
