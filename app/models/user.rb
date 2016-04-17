@@ -70,7 +70,7 @@ class User < ActiveRecord::Base
   end
 
   def nearest_neighbors(count=10)
-    User.all.order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
+    User.where("lonlat_geometry IS NOT NULL").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
   end  
 
   def update_user_feeds
