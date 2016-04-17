@@ -1,3 +1,4 @@
+=begin
 class VenuesCsv < ExportedDataCsv
 
   protected
@@ -76,3 +77,4 @@ class VenuesCsv < ExportedDataCsv
     now.hour >= 6 ? now.at_beginning_of_day + 6.hours : now.yesterday.at_beginning_of_day + 6.hours
   end
 end
+=end
