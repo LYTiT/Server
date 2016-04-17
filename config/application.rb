@@ -4,6 +4,14 @@ require 'rails/all'
 
 require 'active_record/connection_adapters/postgis_adapter'
 
+module ActiveRecord
+  class Base
+    def self.establish_connection(spec = ENV["DATABASE_URL"].try(:gsub, "postgres", "postgis"))
+      super(spec)
+    end
+  end
+end
+
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(:default, Rails.env)
