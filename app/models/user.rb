@@ -5,8 +5,8 @@ class User < ActiveRecord::Base
 
   validates_uniqueness_of :name, :case_sensitive => false
   validates :name, presence: true, format: { with: /\A(^@?(\w){1,40}$)\Z/i}
-  validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
-  validates :venues, absence: true, if: Proc.new {|user| user.role.try(:name) != "Venue Manager"}
+  #validates :venues, presence: true, if: Proc.new {|user| user.role.try(:name) == "Venue Manager"}
+  #validates :venues, absence: true, if: Proc.new {|user| user.role.try(:name) != "Venue Manager"}
   validates :email, presence: true, format: { with: /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\Z/i }
   validates_length_of :password, :minimum => 8, unless: :skip_password_validation?
 
