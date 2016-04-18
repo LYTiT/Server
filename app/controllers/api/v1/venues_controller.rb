@@ -488,8 +488,8 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def get_surrounding_venues
-		lat = params[:longitude]
-		long = params[:latitude]
+		lat = params[:latitude]
+		long = params[:longitude]
 		@venues = Venue.nearest_neighbors(lat, long, 0.45, 5)
 		render 'search.json.jbuilder'
 	end
