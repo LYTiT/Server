@@ -175,7 +175,7 @@ class Feed < ActiveRecord::Base
 
 	def comments
 		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
-		comments = VenueComment.where("venue_id IN (#{venue_ids})").includes(:venue).order("time_wrapper DESC")
+		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND adjusted_sort_position > 0").order("adjusted_sort_position DESC")
 	end
 
 	def activity_of_the_day
