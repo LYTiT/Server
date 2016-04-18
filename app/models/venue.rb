@@ -691,7 +691,7 @@ class Venue < ActiveRecord::Base
             new_social_media.page(1, page_count) #array pagination method
           else
             #No new social media content so we move to venue comments.
-            vcs = self.venue_comments.where("adjusted_sort_position > 0 AND adjusted_sort_position < ? AND id <= ?", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+            vcs = self.venue_comments.where("adjusted_sort_position > ? AND adjusted_sort_position < ? AND id <= ?", (Time.now-1.day).to_i, current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
             else
@@ -700,7 +700,7 @@ class Venue < ActiveRecord::Base
           end
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
-          vcs = self.venue_comments.where("adjusted_sort_position > 0 AND adjusted_sort_position < ? AND id <= ?", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+          vcs = self.venue_comments.where("adjusted_sort_position > ? AND adjusted_sort_position < ? AND id <= ?", (Time.now-1.day).to_i, current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
             vcs.to_a
           else

@@ -61,7 +61,7 @@ class User < ActiveRecord::Base
   end
 
   def can_post?
-    violations.key("Reported Post") != nil
+    if violations.key("Reported Post") != nil
       (Time.now - violations.key("Reported Post")) > 1.day
     else
       true
