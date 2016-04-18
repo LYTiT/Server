@@ -236,11 +236,13 @@ class Venue < ActiveRecord::Base
 
     venue.save
 
+=begin
     if address != nil && name != nil
       if address.gsub(" ","").gsub(",", "") == name.gsub(" ","").gsub(",", "")
         venue.is_address = true
       end
     end
+=end    
 
     if instagram_location_id != nil
       venue.update_columns(instagram_location_id: instagram_location_id)  
