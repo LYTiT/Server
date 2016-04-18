@@ -1,7 +1,6 @@
 class VenuesCsv < ExportedDataCsv
-=begin
   protected
-
+=begin
   def filename
     'venues_report_'
   end
