@@ -1,51 +1,37 @@
 class Feed < ActiveRecord::Base
 	include PgSearch
 
-=begin
-  	pg_search_scope :search,
-  		:using => {
-    		:tsearch => {
-    			:any_word => true, 
-    			:ignoring => :accents,
-    			:prefix => true
-    		}
-    	}, 
-  		:against => {
-    		:name => 'A',
-    		:description => 'B'
-    	}
-=end
-  pg_search_scope :basic_search, #name and/or associated meta data
-    against: :search_vector,
-    using: {
-      tsearch: {
-        dictionary: 'english',
-        any_word: true,
-        prefix: true,
-        tsvector_column: 'search_vector'
-      }
-    }  
+	pg_search_scope :basic_search, #name and/or associated meta data
+	against: :search_vector,
+	using: {
+	  tsearch: {
+	    dictionary: 'english',
+	    any_word: true,
+	    prefix: true,
+	    tsvector_column: 'search_vector'
+	  }
+	}  
 
 
-  pg_search_scope :robust_search,
-                  :against => {
-                  	:ts_name_vector => 'A', 
-                  	:ts_description_vector => 'B',
-                  	:ts_categories_vector => 'B',
-                  	:ts_meta_vector => 'C'
-                  	},
-                  :using => {
-                    :tsearch => { 
-                    	dictionary: 'english',
-                    	any_word: true,
-                    	prefix: true, 
-                    },
-                    :trigram => {
-                    	any_word: true,
-                    	prefix: true, 
-                    	:only => [:ts_name_vector]
-                    }
-                  }      
+	pg_search_scope :robust_search,
+	              :against => {
+	              	:ts_name_vector => 'A', 
+	              	:ts_description_vector => 'B',
+	              	:ts_categories_vector => 'B',
+	              	:ts_meta_vector => 'C'
+	              	},
+	              :using => {
+	                :tsearch => { 
+	                	dictionary: 'english',
+	                	any_word: true,
+	                	prefix: true, 
+	                },
+	                :trigram => {
+	                	any_word: true,
+	                	prefix: true, 
+	                	:only => [:ts_name_vector]
+	                }
+	              }      
 
 
 

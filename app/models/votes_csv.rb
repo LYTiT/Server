@@ -1,6 +1,5 @@
-=begin
 class VotesCsv < ExportedDataCsv
-
+=begin
   protected
 
   def filename
@@ -31,5 +30,5 @@ class VotesCsv < ExportedDataCsv
     now = Time.now
     now.hour >= 6 ? now.at_beginning_of_day + 6.hours : now.yesterday.at_beginning_of_day + 6.hours
   end
-end
 =end
+end

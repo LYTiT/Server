@@ -4,6 +4,13 @@ class PostPass < ActiveRecord::Base
 
 	after_create :send_new_post_pass_notification
 
+	def PostPass.initiate(vc)
+		first_users = self.select_next_users
+		for first_user in  first_users
+			PostPass.create!(:user_id => first_user.id, :venue_comment_id => self.venue_comment_id)
+		end
+	end
+
 	def pass_on
 		self.update_columns(passed_on: true)
 		next_users = self.select_next_users
