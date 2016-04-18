@@ -296,6 +296,10 @@ class Api::V1::VenuesController < ApiBaseController
 		lat = params[:latitude]
 		long = params[:longitude]
 
+		if page == 1
+			@user.update_location(lat, long)
+		end
+
 		if params[:user_city] != nil
 			city = params[:user_city]
 		else
@@ -447,8 +451,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		lat = params[:latitude]
 		long = params[:longitude]
-		InstagramVortex.check_nearby_vortex_existence(lat, long)		
-		@user.update_location(lat, long)
+		InstagramVortex.check_nearby_vortex_existence(lat, long)
 		render json: { success: true }
 	end
 
