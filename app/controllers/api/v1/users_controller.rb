@@ -376,6 +376,7 @@ class Api::V1::UsersController < ApiBaseController
 		@venues = Venue.live_recommendation_for(@user, params[:latitude], params[:longitude])
 	end
 
+
 	#-------------------------------------------------->
 
 	def report

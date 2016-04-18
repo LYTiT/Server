@@ -277,8 +277,13 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.nearest_neighbors(lat, long, count=10)
-    Venue.all.order("lonlat_geometry <-> st_point(#{long},#{lat})").limit(count)
+  def Venue.nearest_neighbors(lat, long, bound_radius=nil, count=10)
+    if bound_radius
+      bounds = Geokit::Bounds.from_point_and_radius([lat, long], bound_radius)
+      Venue.all.order("lonlat_geometry <-> st_point(#{long},#{lat})").in_bounds(bounds).limit(count)
+    else
+      Venue.all.order("lonlat_geometry <-> st_point(#{long},#{lat})").limit(count)
+    end
   end
 
   def nearest_neighbors_raw_with_distance(count=10)

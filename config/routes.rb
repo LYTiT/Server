@@ -262,6 +262,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_featured_lytit_venue'
         end
+        collection do
+          get 'get_surrounding_venues'
+        end
       end
 
       controller :lytit_bar do
