@@ -15,7 +15,21 @@ class ReportedObject < ActiveRecord::Base
 				venue_comment.update_columns(adjusted_sort_position: -1)
 				previous_violations = user.violations				
 				user.update_columns(violations: {"#{Time.now}" => type}.merge!(previous_violations))
-				#send notification
+
+
+				user_support_issue = user.support_issue
+				if user_support_issue != nil				
+					support_issue = user_support_issue
+					support_issue_id = user_support_issue.id
+				else
+					support_issue = SupportIssue.create!(:user_id => @user.id)
+					support_issue_id = new_support_issue.id
+				end
+
+				message = "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]}. As a result, your posting
+				privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses 
+				may result in suspension of your Lytit usage rights."
+				sm = SupportMessage.create!(:message => message, :support_issue_id => support_issue_id, :user_id => user.id)
 			end
 		end
 	end
