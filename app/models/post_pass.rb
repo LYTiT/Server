@@ -41,7 +41,7 @@ class PostPass < ActiveRecord::Base
 		payload = {
 			:object_id => self.id,       
 			:type => 'post_pass_notification',
-			:id => vc.id,
+			:venue_comment_id => vc.id,
 			:media_type => vc.lytit_post["media_type"],
 			:media_dimensions => vc.lytit_post["media_dimensions"],
 			:image_url_1 => vc.lytit_post["image_url_1"],
