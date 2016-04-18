@@ -8,7 +8,7 @@ class PostPass < ActiveRecord::Base
 		self.update_columns(passed_on: true)
 		next_users = self.select_next_users
 		for next_user in next_users
-			PostPass.new!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
+			PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
 		end
 	end
 
@@ -20,6 +20,7 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def report
+		ReportedObject.create!(:reporter_id => user_id, :venue_comment_id => venue_comment_id, :type => "Reported Post", :user_id => venue_comment.user_id)
 	end
 
 	def select_next_users

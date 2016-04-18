@@ -1893,7 +1893,8 @@ CREATE TABLE users (
     latitude double precision,
     longitude double precision,
     lonlat_geometry geometry(Point),
-    lonlat_geography geography(Point,4326)
+    lonlat_geography geography(Point,4326),
+    violations json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -1981,7 +1982,9 @@ CREATE TABLE venue_comments (
     instagram json DEFAULT '{}'::json NOT NULL,
     user_details json DEFAULT '{}'::json NOT NULL,
     venue_details json DEFAULT '{}'::json NOT NULL,
-    entry_type character varying(255)
+    entry_type character varying(255),
+    visible boolean DEFAULT true,
+    active boolean DEFAULT true
 );
 
 
@@ -4630,4 +4633,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160417031410');
 INSERT INTO schema_migrations (version) VALUES ('20160417191546');
 
 INSERT INTO schema_migrations (version) VALUES ('20160417233907');
+
+INSERT INTO schema_migrations (version) VALUES ('20160418180605');
 

@@ -20,4 +20,5 @@ json.comments(@comments) do |comment|
     json.geo_views comment.geo_views
     json.num_views comment.views
     json.reaction comment.lytit_post["reaction"]
+    json.is_active comment.active
 end

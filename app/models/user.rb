@@ -60,6 +60,14 @@ class User < ActiveRecord::Base
     {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name}
   end
 
+  def can_post?
+    violations.key("Reported Post") != nil
+      (Time.now - violations.key("Reported Post")) > 1.day
+    else
+      true
+    end
+  end
+
   def update_location(lat, long)
     self.update_columns(latitude: lat)
     self.update_columns(longitude: long)

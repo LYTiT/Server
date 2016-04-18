@@ -12,6 +12,7 @@ json.email @user.email
 json.authentication_token @user.authentication_token
 json.aws_auth S3Detail.new(@user.email_with_id).encrypt rescue ''
 json.registered @user.registered
+json.can_post @user.can_post?
 json.instagram_user_name @user.instagram_auth_tokens.first.try(:instagram_user_name)
 json.instagram_user_id @user.instagram_auth_tokens.first.try(:instagram_user_id)
 json.instagram_token_expired @user.instagram_auth_tokens.first.try(:is_valid)
