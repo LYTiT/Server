@@ -150,13 +150,12 @@ class Feed < ActiveRecord::Base
 	end
 
 	def update_underlying_venues
-		#instagram_refresh_rate = 15 #minutes
-		#stale_venues = self.venues.where("last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes)
-		#for stale_venue in stale_venues			
-		#	stale_venue.update_comments rescue nil
-		#	stale_venue.update_tweets(false) rescue nil			
-		#end
-		#self.update_columns(latest_update_time: Time.now)
+		instagram_refresh_rate = 15 #minutes
+		stale_venues = self.venues.where("last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes)
+		for stale_venue in stale_venues		
+			stale_venue.rebuild_cached_vc_feed
+		end
+		self.update_columns(latest_update_time: Time.now)
 	end
 
 	def comments

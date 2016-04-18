@@ -630,6 +630,41 @@ class Venue < ActiveRecord::Base
     PostPass.initiate(vc)
     return vc
   end
+  
+  def calibrate_after_lytit_post(vc)
+    if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
+      self.update_columns(latest_posted_comment_time: vc.created_at)
+    end
+    vc.extract_venue_comment_meta_data
+    self.feeds.update_all("num_moments = num_moments+1")
+    self.update_rating(true, true)
+    self.update_columns(latest_rating_update_time: Time.now)
+
+    self.update_rating(true, true)
+
+    #Append comment to venues cached feed if present by adding a negative page number.
+    self.rebuild_cached_vc_feed
+
+    if self.moment_request_details != {}
+      if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
+        mr = MomentRequest.find_by_id(self.moment_request_details["id"])
+        mr.notify_requesters_of_response(vc)
+        self.update_columns(moment_request_details: {})
+      end
+    end
+  end
+
+  def rebuild_cached_vc_feed
+    if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
+      #purge all cache and rebuild feed
+      page = 1
+      response = true
+      while response == true do
+        response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
+        page += 1
+      end
+    end    
+  end  
 
   def content_feed_page(page_number, warming_up=false)
     api_ping_timeout = 10.minutes
@@ -738,40 +773,6 @@ class Venue < ActiveRecord::Base
     return ((new_instagrams+new_tweets).sort_by{|content| VenueComment.thirdparty_created_at(content)}).reverse!
   end
 
-  def calibrate_after_lytit_post(vc)
-    if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
-      self.update_columns(latest_posted_comment_time: vc.created_at)
-    end
-    vc.extract_venue_comment_meta_data
-    self.feeds.update_all("num_moments = num_moments+1")
-    self.update_rating(true, true)
-    self.update_columns(latest_rating_update_time: Time.now)
-
-    self.update_rating(true, true)
-
-    #Append comment to venues cached feed if present by adding a negative page number.
-    self.rebuild_cached_vc_feed
-
-    if self.moment_request_details != {}
-      if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
-        mr = MomentRequest.find_by_id(self.moment_request_details["id"])
-        mr.notify_requesters_of_response(vc)
-        self.update_columns(moment_request_details: {})
-      end
-    end
-  end
-
-  def rebuild_cached_vc_feed
-    if Rails.cache.exist?("venue/#{self.id}/comments/page_1")
-      #purge all cache and rebuild feed
-      page = 1
-      response = true
-      while response == true do
-        response = (self.content_feed_page(page, true) != nil and self.content_feed_page(page, true).first != nil)
-        page += 1
-      end
-    end    
-  end
 
 
 #===============================================================================================

@@ -93,6 +93,15 @@ class User < ActiveRecord::Base
     end
   end
 
+  def update_favorite_venues
+    instagram_refresh_rate = 15 #minutes
+    favorite_venue_ids = "SELECT venue_id FROM favorite_venues WHERE user_id = #{self.id}"
+    favorite_stale_venues = Venue.where("id IN (#{favorite_venues_ids}) AND last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes).limit(5)
+    for stale_venue in favorite_stale_venues
+      stale_venue.rebuild_cached_vc_feed
+    end
+  end
+
   def list_news_feed
     user_list_ids = "SELECT id FROM feed_users WHERE user_id = #{self.id}"
     Activity.where("feed_id IN (#{user_list_ids})").order("adjusted_sort_position DESC")

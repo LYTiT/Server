@@ -291,6 +291,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_startup_details
 		@user = User.find_by_id(params[:user_id])
+		@user.delay(:priority => -3).update_user_feeds
 		render 'get_startup_details.json.jbuilder'
 	end
 
@@ -319,8 +320,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_aggregate_activity
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
-		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
-		@user.delay(:priority => -3).update_user_feeds
+		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)		
 	end
 
 	def get_list_feed
