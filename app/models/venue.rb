@@ -28,10 +28,6 @@ class Venue < ActiveRecord::Base
   has_many :moment_requests, :dependent => :destroy
 
 
-  #accepts_nested_attributes_for :venue_messages, allow_destroy: true, reject_if: proc { |attributes| attributes['message'].blank? or attributes['position'].blank? }  
-
-
-
   pg_search_scope :name_search, #name and/or associated meta data
     :against => [:ts_name_vector, :metaphone_name_vector],
     :using => {
@@ -896,7 +892,7 @@ class Venue < ActiveRecord::Base
       end
       self.update_columns(venue_comment_details: vc.to_json)      
     end
-    self.update_columns(venue_comment_id: vc.id)
+    
   end
 
   def last_post_time
