@@ -1,4 +1,4 @@
-class Api::V1::NotificationsController < ApiBaseController
+class Api::V1::PostPassesController < ApiBaseController
 	
 	def pass_on
 		pp = PostPass.find_by_id(param[:post_pass_id])	

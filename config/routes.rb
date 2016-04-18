@@ -159,6 +159,12 @@ LytitServer::Application.routes.draw do
         post 'delete_post'
       end
 
+      resources :post_passes do
+        post 'pass_off'
+        post 'terminate'
+        post 'report'
+      end
+
       post '/register_push_token' => 'users#register_push_token'
       post '/register_gcm_token' => 'users#register_gcm_token'
       post '/change_password' => 'users#change_password'
