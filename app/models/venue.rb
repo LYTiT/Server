@@ -817,11 +817,18 @@ class Venue < ActiveRecord::Base
     tags = instagram_hash["tags"]
 
     #check spelling
-    spell_checker = Gingerice::Parser.new
-    caption = spell_checker.parse(caption)["result"]
+    begin
+      spell_checker = Gingerice::Parser.new
+      caption = spell_checker.parse(caption)["result"]
+    rescue
+      p "Spell checker failed to start"
+    end
 
     #remove occurances of the venue name and city (their occurnace carries little value)
-
+    #as well as some other stop words.
+    stop_words = "nyc, brooklyn, queens, manhattan, like, follow, instagram, twitter"
+    c
+    caption.gu
 
     #extract nouns
     text_tagger = EngTagger.new

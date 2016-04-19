@@ -7,7 +7,7 @@ class CommentView < ActiveRecord::Base
   validates :user, presence: true
   validates_uniqueness_of :user_id, :scope => :venue_comment_id, message: "has all ready viewed this post"
 
-  after_create :send_new_views_notification
+  #after_create :send_new_views_notification
 
   def send_new_views_notification
   	vc = self.venue_comment
@@ -16,7 +16,7 @@ class CommentView < ActiveRecord::Base
       payload = {
         :object_id => self.id,       
         :type => 'moment_views_notification',
-        :id => vc.id,
+        :venue_comment_id => vc.id,
         :media_type => vc.lytit_post["media_type"],
         :media_dimensions => vc.lytit_post["media_dimensions"],
         :image_url_1 => vc.lytit_post["image_url_1"],

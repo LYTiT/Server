@@ -12,6 +12,7 @@ class Api::V1::VenueCommentsController < ApiBaseController
 			if CommentView.find_by_venue_comment_id_and_user_id(params[:venue_comment_id], params[:user_id]) == nil and (vc.user_id != params[:user_id])
 				view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])
 				vc.increment_geo_views(country, city)
+				vc.send_new_views_notification
 			end
 			render json: { success: true }
 		else
