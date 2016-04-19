@@ -630,7 +630,7 @@ class Venue < ActiveRecord::Base
     PostPass.initiate(vc)
     return vc
   end
-  
+
   def calibrate_after_lytit_post(vc)
     if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
       self.update_columns(latest_posted_comment_time: vc.created_at)
@@ -710,6 +710,7 @@ class Venue < ActiveRecord::Base
       else
         if (self.last_instagram_pull_time == nil or self.last_twitter_pull_time == nil) or ((Time.now - api_ping_timeout) > self.last_instagram_pull_time or (Time.now - api_ping_timeout) > self.last_twitter_pull_time)
           new_social_media = self.live_social_media_search
+          p "Pinged social networks-new content count: #{new_social_media.count}"
           new_social_media_num_pages = new_social_media.count/page_count + (new_social_media.count%page_count != 0 ? 1:0)
           if new_social_media_num_pages > 0
             if new_social_media_num_pages > 1
@@ -723,6 +724,7 @@ class Venue < ActiveRecord::Base
             new_social_media.page(1, page_count) #array pagination method
           else
             #No new social media content so we move to venue comments.
+            p "No new social media, returning Venue Comments"
             vcs = self.venue_comments.where("adjusted_sort_position > ? AND adjusted_sort_position < ? AND id <= ?", (Time.now-1.day).to_i, current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
@@ -732,6 +734,7 @@ class Venue < ActiveRecord::Base
           end
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
+          p "Straight to Venue Comments"
           vcs = self.venue_comments.where("adjusted_sort_position > ? AND adjusted_sort_position < ? AND id <= ?", (Time.now-1.day).to_i, current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
             vcs.to_a
