@@ -21,7 +21,7 @@ class FeedJoinRequest < ActiveRecord::Base
 		if list_admin != nil
 			payload = {
 			    :object_id => self.id, 
-			    :type => 'join_request_notification', 
+			    :type => 'list_access_request_notification', 
 			    :user_id => self.user_id,
 			    :user_name => self.user.name,
 			   	:fb_id => self.user.facebook_id,
@@ -50,17 +50,16 @@ class FeedJoinRequest < ActiveRecord::Base
 		requester = self.user
 
 		if response == true
-			notification_type = 'request_accepted_notification'
 			alert = "Your request to join the #{feed.name} List was approved by its admin"
 		else
-			notification_type = 'request_rejected_notification'
 			alert = "Your request to join the #{feed.name} List was rejected by its admin"
 		end
 
 		if requester != nil
 			payload = {
 			    :object_id => self.id, 
-			    :type => notification_type, 
+			    :type => 'list_access_request_accepted', 
+			    :list_acces_request_accepted => response,
 			    :feed_id => self.feed_id,
 			    :feed_name => self.feed.name,
 			    :feed_color => self.feed.feed_color,
