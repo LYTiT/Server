@@ -5,9 +5,10 @@ class PostPass < ActiveRecord::Base
 	after_create :send_new_post_pass_notification
 
 	def PostPass.initiate(vc)
-		first_users = self.select_next_users
-		for first_user in  first_users
-			PostPass.create!(:user_id => first_user.id, :venue_comment_id => self.venue_comment_id)
+		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE")
+
+		for receiver in first_revceivers
+			PostPass.create!(:user_id => receiver.id, :venue_comment_id => self.venue_comment_id)
 		end
 	end
 
