@@ -61,7 +61,7 @@ elsif @activity.venue_comment_details["entry_type"] == "instagram"
   json.video_url_1 @activity.venue_comment_details["instagram"]["video_url_1"]
   json.video_url_2 @activity.venue_comment_details["instagram"]["video_url_2"]
   json.video_url_3 @activity.venue_comment_details["instagram"]["video_url_3"]
-  json.thirdparty_username @activity.venue_comment_details["instagram_user"]["name"]
+  json.thirdparty_username @activity.venue_comment_details["instagram"]["instagram_user"]["name"]
 elsif @activity.venue_comment_details["entry_type"] == "tweet"
   json.venue_comment_id @activity.venue_comment_details["id"]
   json.lytit_tweet_id @activity.venue_comment_details["tweet"]["id"]
