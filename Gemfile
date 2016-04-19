@@ -60,6 +60,7 @@ gem 'foursquare2'
 gem 'eventful_api'
 gem 'multi_json'
 gem 'eventbrite'
+gem 'gingerice'
 
 # design
 gem 'sass-rails'
