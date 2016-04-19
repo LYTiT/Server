@@ -681,8 +681,6 @@ class Venue < ActiveRecord::Base
     comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
       #Clear offset value if rebuilding feed.
       if page_number == 1 && self.page_offset > 0
-        max_vc_id = self.venue_comments.order("adjusted_sort_position DESC").first.try(:id) || -1
-        self.update_columns(venue_comment_id: max_vc_id)
 
         if self.page_offset > 0
           i = 2
@@ -692,6 +690,11 @@ class Venue < ActiveRecord::Base
           end
           self.update_columns(page_offset: 0)
         end
+      end
+
+      if page_number == 1
+        max_vc_id = self.venue_comments.order("adjusted_sort_position DESC").first.try(:id) || -1
+        self.update_columns(venue_comment_id: max_vc_id)
       end
 
       super_content_count = self.venue_comments.where("adjusted_sort_position >= ?", current_position).count
