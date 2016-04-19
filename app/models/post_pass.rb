@@ -22,7 +22,7 @@ class PostPass < ActiveRecord::Base
 
 	def terminate
 		self.update_columns(passed_on: false)
-		if PostPass.where("venue_comment_id = ? AND active IS TRUE", self.venue_comment_id).count == 0
+		if PostPass.where("venue_comment_id = ? AND passed_on IS TRUE OR passed_on IS NULL", self.venue_comment_id).count == 0
 			venue_comment.update_columns(active: false)
 		end
 	end
