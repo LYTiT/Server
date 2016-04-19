@@ -38,6 +38,7 @@ class PostPass < ActiveRecord::Base
 
 	def send_new_post_pass_notification
 		vc = self.venue_comment
+		post_pass_lifespan = 30*60 #seconds (30mins)
 		
 		payload = {
 			:object_id => self.id,       
@@ -61,7 +62,8 @@ class PostPass < ActiveRecord::Base
 			:longitude => vc.venue_details["longitude"],
 			:content_origin => 'lytit',
 			:geo_views => vc.geo_views,
-			:num_views => vc.views
+			:num_views => vc.views,
+			:surprise_response_time => post_pass_lifespan
 		}
 
 		type = "post_pass/#{vc.id}/#{self.id}"
