@@ -1,7 +1,7 @@
 class Api::V1::PostPassesController < ApiBaseController
 	
 	def pass_on
-		pp = PostPass.find_by_id(param[:post_pass_id])	
+		pp = PostPass.find_by_id(params[:post_pass_id])	
 		if pp
 			pp.pass_on
 			render json: { success: true }	
@@ -11,7 +11,7 @@ class Api::V1::PostPassesController < ApiBaseController
 	end
 
 	def terminate
-		pp = PostPass.find_by_id(param[:post_pass_id])	
+		pp = PostPass.find_by_id(params[:post_pass_id])	
 		if pp
 			pp.terminate
 			render json: { success: true }	
@@ -21,7 +21,7 @@ class Api::V1::PostPassesController < ApiBaseController
 	end
 
 	def report 
-		pp = PostPass.find_by_id(param[:post_pass_id])	
+		pp = PostPass.find_by_id(params[:post_pass_id])	
 		if pp
 			pp.report
 			render json: { success: true }	

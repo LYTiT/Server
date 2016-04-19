@@ -819,7 +819,7 @@ class Venue < ActiveRecord::Base
     categories_string = ""
     descriptives_string = ""
 
-    i = 2
+    i = 1
     for category in f2_categories
       if category.primary == true
         categories_hash["category_1"] = category.name
