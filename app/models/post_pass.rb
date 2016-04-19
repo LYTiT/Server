@@ -33,7 +33,7 @@ class PostPass < ActiveRecord::Base
 
 	def select_next_users
 		previous_post_pass_user_ids = "SELECT user_id FROM post_passes WHERE venue_comment_id = #{self.venue_comment_id}"
-		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids}) AND id != #{vc.user_id} AND active IS TRUE")
+		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids}) AND id != #{self.venue_comment.user_id} AND active IS TRUE")
 	end
 
 	def send_new_post_pass_notification
