@@ -40,7 +40,7 @@ class CommentView < ActiveRecord::Base
       notification = self.store_new_notification(payload, vc_user, type)
       payload[:notification_id] = notification.id
 
-      if vc.views.count == 1
+      if vc.views == 1
         preview = "Your post at #{vc.venue_details["name"]} has reached a person!}"
       elsif vc.views <= 20
         preview = "+5 more people reached!"
