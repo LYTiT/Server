@@ -233,9 +233,11 @@ class VenueComment < ActiveRecord::Base
 				end
 
 				#Further instagram related methods
-				instagram_tags = instagram_hash["tags"]
-				instagram_captions = i.to_hash["caption"]["text"].split rescue nil
-				vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+				#instagram_tags = instagram_hash["tags"]
+				#instagram_captions = instagram_hash["caption"]["text"].split rescue nil
+				#vc.delay.extract_instagram_meta_data(instagram_tags, instagram_captions)
+
+				origin_venue.delay.update_descriptives_from_instagram(instagram_hash)
 
 				#Feed related methods
 				#origin_venue.feeds.update_all(new_media_present: true)

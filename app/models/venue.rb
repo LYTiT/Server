@@ -811,6 +811,21 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def update_descriptives_from_instagram(instagram_hash) 
+    caption = instagram_hash["caption"]["text"].gsub!(/\B[@#]\S+\b/, '').strip rescue nil
+    tags = instagram_hash["tags"]
+
+    #check spelling
+    spell_checker = Gingerice::Parser.new
+    caption = spell_checker.parse(caption)["result"]
+    #extract nouns
+    text_tagger = EngTagger.new
+    caption_nouns = text_tagger.get_nouns(text_tagger.add_tags(caption)).keys
+    singularized = []
+    caption_nouns.each{|noun| singularized << noun.singularize}
+    
+  end
+
   def set_categories_and_descriptives(foursquare_venue)
     f2_categories = foursquare_venue.categories
     f2_tags = foursquare_venue.tags

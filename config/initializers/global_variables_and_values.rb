@@ -15,3 +15,5 @@ VENUE_META_CATEGORIES =
 	speakeasy stadium sushi 
 	zoo 
 	"
+
+META_STOP_WORDS = [""]	

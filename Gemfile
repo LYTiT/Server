@@ -60,7 +60,14 @@ gem 'foursquare2'
 gem 'eventful_api'
 gem 'multi_json'
 gem 'eventbrite'
-gem 'gingerice'
+
+#language processing
+gem 'gingerice' #spell checker
+gem 'graph-rank' #text trend rank
+gem 'engtagger' #part of speach determiner
+
+gem 'highscore'
+gem 'fast-stemmer'
 
 # design
 gem 'sass-rails'
