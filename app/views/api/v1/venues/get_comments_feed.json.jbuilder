@@ -32,6 +32,7 @@ json.cache! @view_cache_key do |json|
 			json.id comment.id
 			json.user_id comment.user_details["id"]
 			json.user_name comment.user_details["name"]
+			json.profile_image_url comment.user_details["profile_image_url"]
 		    json.media_type comment.lytit_post["media_type"]
 		    json.media_dimensions comment.lytit_post["media_dimensions"]
 		    json.image_url_1 comment.lytit_post["image_url_1"]
