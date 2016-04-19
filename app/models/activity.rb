@@ -129,6 +129,12 @@ class Activity < ActiveRecord::Base
 		else
 			media_type = nil
 		end
+
+		if self.venue_comment_details["entry_type"] == "tweet"
+			content_origin = "twitter"
+		else
+			content_origin = self.venue_comment_details["entry_type"]
+		end
 			
 		payload = {
 		    :object_id => self.id, 
@@ -146,7 +152,7 @@ class Activity < ActiveRecord::Base
 		    :fb_id => user.facebook_id,
       		:fb_name => user.facebook_name,
 
-      		:content_origin => self.venue_comment_details["entry_type"],
+      		:content_origin => content_origin,
       		:media_type => media_type,
 
 		    :feed_id => activity_feed_of_member.id,
