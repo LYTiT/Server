@@ -295,7 +295,7 @@ class Venue < ActiveRecord::Base
         if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100 
           #searching around user since screen is near users location.
           search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 10, :units => :kms)
-          surrounding_meta_results = Venue.in_bounds(search_box).where("rating IS NOT NULL").interest_search(query).limit(20)
+          surrounding_meta_results = Venue.in_bounds(search_box).where("color_rating > -1.0").interest_search(query).limit(20)
         else
           #searching in view
           in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("rating IS NOT NULL").interest_search(query).limit(20)
