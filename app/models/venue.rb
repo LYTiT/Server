@@ -812,6 +812,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_descriptives_from_instagram(instagram_hash) 
+=begin  
     caption = instagram_hash["caption"]["text"].gsub!(/\B[@#]\S+\b/, '').strip rescue nil
     tags = instagram_hash["tags"]
 
@@ -827,7 +828,7 @@ class Venue < ActiveRecord::Base
     caption_nouns = text_tagger.get_nouns(text_tagger.add_tags(caption)).keys
     singularized = []
     caption_nouns.each{|noun| singularized << noun.singularize}
-
+=end
   end
 
   def set_categories_and_descriptives(foursquare_venue)

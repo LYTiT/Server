@@ -40,6 +40,14 @@ class CommentView < ActiveRecord::Base
       notification = self.store_new_notification(payload, vc_user, type)
       payload[:notification_id] = notification.id
 
+      if vc.views.count == 1
+        preview = "Your post at #{vc.venue_details["name"]} has reached a person!}"
+      elsif vc.views <= 20
+        preview = "+5 more people reached!"
+      else
+        preview = "+10 more people reached!"
+      end
+
       if vc_user.push_token && vc_user.active == true
         count = Notification.where(user_id: vc_user.id, read: false, deleted: false).count
         APNS.send_notification(vc_user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
