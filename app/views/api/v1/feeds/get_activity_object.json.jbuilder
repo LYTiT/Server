@@ -77,13 +77,15 @@ elsif @activity.venue_comment_details["entry_type"] == "tweet"
   json.twitter_user_id @activity.venue_comment_details["tweet"]["twitter_user"]["twitter_id"]
   json.twitter_handle @activity.venue_comment_details["tweet"]["twitter_user"]["handle"]
 else
-  json.event_id @activity.venue_comment_details["event"]["id"]
-  json.event_name @activity.venue_comment_details["event"]["name"]
-  json.event_description @activity.venue_comment_details["event"]["description"]
-  json.event_start_time @activity.venue_comment_details["event"]["start_time"]
-  json.event_end_time @activity.venue_comment_details["event"]["end_time"]
-  json.event_source_url @activity.venue_comment_details["event"]["source_url"]
-  json.event_cover_image_url @activity.venue_comment_details["event"]["cover_image_url"]  
+  if @activity.venue_comment_details["entry_type"] == "event"
+    json.event_id @activity.venue_comment_details["event"]["id"]
+    json.event_name @activity.venue_comment_details["event"]["name"]
+    json.event_description @activity.venue_comment_details["event"]["description"]
+    json.event_start_time @activity.venue_comment_details["event"]["start_time"]
+    json.event_end_time @activity.venue_comment_details["event"]["end_time"]
+    json.event_source_url @activity.venue_comment_details["event"]["source_url"]
+    json.event_cover_image_url @activity.venue_comment_details["event"]["cover_image_url"]
+  end
 end
 
 json.num_likes @activity.num_likes
