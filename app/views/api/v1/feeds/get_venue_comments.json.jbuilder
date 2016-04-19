@@ -33,9 +33,9 @@ json.comments(@comments) do |comment|
         json.thirdparty_user_profile_image_url comment["user"]["profile_picture"]
     elsif comment.entry_type == "lytit_post"
         json.content_origin "lytit"
+        json.id comment.id
         json.user_id comment.user_details["id"]
         json.user_name comment.user_details["name"]
-        json.id comment.lytit_post["id"]
         json.media_type comment.lytit_post["media_type"]
         json.media_dimensions comment.lytit_post["media_dimensions"]
         json.image_url_1 comment.lytit_post["image_url_1"]
@@ -63,6 +63,7 @@ json.comments(@comments) do |comment|
         json.thirdparty_user_id comment.instagram["instagram_user"]["instagram_id"]
         json.thirdparty_user_profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
     elsif comment.entry_type == "tweet"
+        json.content_origin "twitter"
         json.id comment.id
         json.lytit_tweet_id comment.tweet["id"]
         json.tweet_id comment.tweet["twitter_id"]

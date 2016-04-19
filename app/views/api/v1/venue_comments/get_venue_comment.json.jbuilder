@@ -32,9 +32,9 @@ elsif @venue_comment.class.name == "Hash" and comment["created_time"] != nil
     json.thirdparty_user_profile_image_url comment["user"]["profile_picture"]
 elsif @venue_comment.entry_type == "lytit_post"
     json.content_origin "lytit"
+    json.id @venue_comment.id
     json.user_id @venue_comment.user_details["id"]
     json.user_name @venue_comment.user_details["name"]
-    json.id @venue_comment.lytit_post["id"]
     json.media_type @venue_comment.lytit_post["media_type"]
     json.media_dimensions @venue_comment.lytit_post["media_dimensions"]
     json.image_url_1 @venue_comment.lytit_post["image_url_1"]
@@ -61,6 +61,7 @@ elsif @venue_comment.entry_type == "instagram"
     json.thirdparty_user_id @venue_comment.instagram["instagram_user"]["instagram_id"]
     json.thirdparty_user_profile_image_url @venue_comment.instagram["instagram_user"]["profile_image_url"]
 elsif @venue_comment.entry_type == "tweet"
+    json.content_origin "twitter"
     json.id @venue_comment.id
     json.lytit_tweet_id @venue_comment.tweet["id"]
     json.tweet_id @venue_comment.tweet["twitter_id"]
