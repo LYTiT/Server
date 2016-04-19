@@ -70,8 +70,7 @@ class Activity < ActiveRecord::Base
 				vc = VenueComment.convert_raw_instagram_params_to_vc(vc_details, origin_venue_id)
 			else
 				vc = Tweet.convert_raw_tweet_params(vc_details, origin_venue_id)
-			end
-		
+			end	
 		else
 			vc = VenueComment.find_by_id(vc_id)
 		end

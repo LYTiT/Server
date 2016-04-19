@@ -161,7 +161,7 @@ LytitServer::Application.routes.draw do
       end
 
       resources :post_passes do
-        post 'pass_off'
+        post 'pass_on'
         post 'terminate'
         post 'report'
       end
