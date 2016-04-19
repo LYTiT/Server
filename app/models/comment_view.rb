@@ -42,7 +42,7 @@ class CommentView < ActiveRecord::Base
 
       if vc.views == 1
         preview = "Your post at #{vc.venue_details["name"]} has reached a person!}"
-      elsif vc.views <= 20
+      elsif vc.views > 1 && vc.views <= 20
         preview = "+5 more people reached!"
       else
         preview = "+10 more people reached!"

@@ -1813,7 +1813,7 @@ end
     #Returns a hash unless an hourly pull (open first open on version 1.1.0) then returns native Instgram object.
 
     #if no valid instagram location id we must set it.
-    if self.instagram_location_id == nil || self.instagram_location_id == 0
+    if (self.instagram_location_id == nil || self.instagram_location_id == 0) && last_instagram_pull_time <= Time.now - 24.hours
       self.set_instagram_location_id(100)
     end
 
