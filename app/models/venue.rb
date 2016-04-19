@@ -818,12 +818,16 @@ class Venue < ActiveRecord::Base
     #check spelling
     spell_checker = Gingerice::Parser.new
     caption = spell_checker.parse(caption)["result"]
+
+    #remove occurances of the venue name and city (their occurnace carries little value)
+
+
     #extract nouns
     text_tagger = EngTagger.new
     caption_nouns = text_tagger.get_nouns(text_tagger.add_tags(caption)).keys
     singularized = []
     caption_nouns.each{|noun| singularized << noun.singularize}
-    
+
   end
 
   def set_categories_and_descriptives(foursquare_venue)
