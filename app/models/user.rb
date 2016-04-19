@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
 
   #I.
   def partial
-    {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name}
+    {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name, :profile_image_url => self.profile_image_url}
   end
 
   def can_post?

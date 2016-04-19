@@ -5,7 +5,7 @@ class PostPass < ActiveRecord::Base
 	after_create :send_new_post_pass_notification
 
 	def PostPass.initiate(vc)
-		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE")
+		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE AND id != #{vc.user_id}")
 
 		for receiver in first_revceivers
 			PostPass.create!(:user_id => receiver.id, :venue_comment_id => vc.id)
@@ -33,7 +33,7 @@ class PostPass < ActiveRecord::Base
 
 	def select_next_users
 		previous_post_pass_user_ids = "SELECT user_id FROM post_passes WHERE venue_comment_id = #{self.venue_comment_id}"
-		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids}) AND active IS TRUE")
+		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids}) AND id != #{vc.user_id} AND active IS TRUE")
 	end
 
 	def send_new_post_pass_notification
@@ -43,8 +43,12 @@ class PostPass < ActiveRecord::Base
 			:object_id => self.id,       
 			:type => 'post_pass_notification',
 			:venue_comment_id => vc.id,
+			:user_id => vc.user_id,
+			:user_name => vc.user_details["name"],
+			:profile_image_url => vc.user_details["profile_image_url"],
 			:media_type => vc.lytit_post["media_type"],
 			:media_dimensions => vc.lytit_post["media_dimensions"],
+			:reaction => vc.lytit_post["reaction"],
 			:image_url_1 => vc.lytit_post["image_url_1"],
 			:image_url_2 => vc.lytit_post["image_url_2"],
 			:image_url_3 => vc.lytit_post["image_url_3"],
