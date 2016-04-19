@@ -8,7 +8,7 @@ class PostPass < ActiveRecord::Base
 		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE")
 
 		for receiver in first_revceivers
-			PostPass.create!(:user_id => receiver.id, :venue_comment_id => self.venue_comment_id)
+			PostPass.create!(:user_id => receiver.id, :venue_comment_id => vc.id)
 		end
 	end
 
