@@ -78,6 +78,7 @@ class User < ActiveRecord::Base
 
   def nearest_neighbors(count=10)
     User.where("lonlat_geometry IS NOT NULL").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
+    #User.where("lonlat_geometry IS NOT NULL AND (lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})) * 100000 >= 400").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
   end  
 
   def update_user_feeds
@@ -194,7 +195,7 @@ class User < ActiveRecord::Base
     payload = {
       :object_id => new_user.id,
       :user_id => new_user.id,
-      :type => "facebook_friend",
+      :type => "facebook_friend_notification",
       :user_name => new_user.name,
       :fb_id => new_user_fb_id,
       :fb_name => new_user_fb_name
