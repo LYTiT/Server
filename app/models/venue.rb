@@ -907,10 +907,10 @@ class Venue < ActiveRecord::Base
     key_word_relevance_half_life = 120 #minutes
     if descriptives_hash.length > 0
       for descriptive in descriptives_hash
-        previous_weight = descriptive["weight"].to_f
-        new_weight = previous_weight * 2 ** ((-(Time.now - descriptive["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)
-        descriptive["weight"] = new_weight
-        descriptive["updated_at"] = Time.now
+        previous_weight = descriptive.last["weight"].to_f
+        new_weight = previous_weight * 2 ** ((-(Time.now - descriptive.last["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)
+        descriptives_hash[descriptive.first]["weight"] = new_weight
+        descriptives_hash[descriptive.first]["updated_at"] = Time.now
       end
     end
   end
