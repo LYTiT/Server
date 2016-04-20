@@ -121,9 +121,12 @@ class User < ActiveRecord::Base
     self.increment_interest_by_origin(source, false, source_trending_tags)
   end
 
+
+
+
   def increment_interest_by_origin(source, meta_is_category, meta)
     #source type = Searched Venue, Favorite Venue, List
-    #meta oring = categories, foursquare_tags, trending_tags
+    #meta origin = categories, foursquare_tags, trending_tags
 
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )

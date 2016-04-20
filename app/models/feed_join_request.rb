@@ -58,7 +58,7 @@ class FeedJoinRequest < ActiveRecord::Base
 		if requester != nil
 			payload = {
 			    :object_id => self.id, 
-			    :type => 'list_access_request_accepted', 
+			    :type => 'list_access_response_notification', 
 			    :list_acces_request_accepted => response,
 			    :feed_id => self.feed_id,
 			    :feed_name => self.feed.name,
