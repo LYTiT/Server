@@ -921,13 +921,15 @@ class Venue < ActiveRecord::Base
 
   def set_top_tags
     calibrate_descriptive_weights
-    top_descriptives = self.descriptives
+    top_descriptives = Hash[self.descriptives.to_a[0..4]]
 
     tags_hash = {}
-    i = 0
-    for descriptive in top_descriptives
-      tags_hash["tag_#{i+1}"] = descriptive
-      i += 1
+    i = 1
+    top_descriptives.each do |descriptive, details|
+      if details["updated_at"].to_datetime > Time.now-2.hours
+        tags_hash["tag_#{i}"] = descriptive
+        i += 1
+      end
     end
 
     self.update_columns(trending_tags: tags_hash)

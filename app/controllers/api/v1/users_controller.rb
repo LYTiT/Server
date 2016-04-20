@@ -93,7 +93,7 @@ class Api::V1::UsersController < ApiBaseController
 		end
 
 		if params[:profile_description] != nil
-			@user.profile_image_url = params[:profile_description]
+			@user.profile_description = params[:profile_description]
 		end
 
 		if @user.save		
