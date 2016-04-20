@@ -44,7 +44,7 @@ class CommentView < ActiveRecord::Base
       payload[:notification_id] = notification.id
 
       if vc.views == 1
-        preview = "Your post at #{vc.venue_details["name"]} has reached a person!}"
+        preview = "Your post at #{vc.venue_details["name"]} has reached a person!"
       elsif vc.views > 1 && vc.views <= 20
         preview = "+5 more people reached!"
       else

@@ -843,37 +843,39 @@ class Venue < ActiveRecord::Base
       descriptive_string.gsub(self.city.downcase, "").try(:strip)
       descriptive_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
 
-      #extract nouns
-      text_tagger = EngTagger.new
-      descriptive_nouns = text_tagger.get_nouns(text_tagger.add_tags(descriptive_string)).keys
-      singularized = []
-      descriptive_nouns.each{|noun| singularized << noun.singularize}
+      if descriptive_string != nil
+        #extract nouns
+        text_tagger = EngTagger.new
+        descriptive_nouns = text_tagger.get_nouns(text_tagger.add_tags(descriptive_string)).keys
+        singularized = []
+        descriptive_nouns.each{|noun| singularized << noun.singularize}
 
-      #Trending words analysis
-      breakdown = Highscore::Content.new singularized.join(" ")
-      breakdown.configure do
-        set :long_words_threshold, 15
-        set :short_words_threshold, 3
-        set :ignore_case, true
-      end
-
-      top_key_words = breakdown.keywords.top(10)
-
-      descriptives_hash = self.descriptives
-      key_word_relevance_half_life = 120 #minutes
-      for key_word in top_key_words
-        if descriptives_hash[key_word.text] != nil
-          previous_weight = descriptives_hash[key_word.text]["weight"]
-          new_weight = previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)+key_word.weight
-          descriptives_hash[key_word.text]["weight"] = new_weight
-          descriptives_hash[key_word.text]["updated_at"] = Time.now
-        else
-          descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}  
+        #Trending words analysis
+        breakdown = Highscore::Content.new singularized.join(" ")
+        breakdown.configure do
+          set :long_words_threshold, 15
+          set :short_words_threshold, 3
+          set :ignore_case, true
         end
-      end
 
-      self.update_columns(descriptives: descriptives_hash)
-      self.update_columns(descriptives_string: descriptives_hash.keys.join(" ").strip)
+        top_key_words = breakdown.keywords.top(10)
+
+        descriptives_hash = self.descriptives
+        key_word_relevance_half_life = 120 #minutes
+        for key_word in top_key_words
+          if descriptives_hash[key_word.text] != nil
+            previous_weight = descriptives_hash[key_word.text]["weight"]
+            new_weight = previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)+key_word.weight
+            descriptives_hash[key_word.text]["weight"] = new_weight
+            descriptives_hash[key_word.text]["updated_at"] = Time.now
+          else
+            descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}  
+          end
+        end
+
+        self.update_columns(descriptives: descriptives_hash)
+        self.update_columns(descriptives_string: descriptives_hash.keys.join(" ").strip)
+      end
     end
   end
 
