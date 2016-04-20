@@ -635,7 +635,8 @@ class Venue < ActiveRecord::Base
     if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
       self.update_columns(latest_posted_comment_time: vc.created_at)
     end
-    vc.extract_venue_comment_meta_data
+    
+    self.update_descriptives(vc.lytit_post["comment"])
     self.feeds.update_all("num_moments = num_moments+1")
     self.update_rating(true, true)
     self.update_columns(latest_rating_update_time: Time.now)
@@ -916,6 +917,7 @@ class Venue < ActiveRecord::Base
 
 
   def set_top_tags
+    calibrate_descriptive_weights
     top_descriptives = Hash[self.descriptives.sort_by { |k,v| -v["weight"] }[0..4]].keys
 
     tags_hash = {}
