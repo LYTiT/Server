@@ -262,6 +262,7 @@ class VenueComment < ActiveRecord::Base
 					#origin_venue.set_last_venue_comment_details(vc)
 					origin_venue.update_columns(last_instagram_id: vc.instagram["instagram_id"])
 					origin_venue.update_featured_comment(vc)
+					origin_venue.set_top_tags
 
 					if origin_venue.moment_request_details != {}
 						if MomentRequest.fulfilled_by_post(origin_venue.moment_request_details["created_at"], "instagram")

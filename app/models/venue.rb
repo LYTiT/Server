@@ -848,7 +848,7 @@ class Venue < ActiveRecord::Base
   def update_descriptives(descriptive_string)
     descriptive_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
-    if descriptive_string != nil
+    if descriptive_string != nil && descriptives_string != ""
       begin
         spell_checker = Gingerice::Parser.new
         descriptive_string = spell_checker.parse(descriptive_string)["result"]
@@ -863,7 +863,7 @@ class Venue < ActiveRecord::Base
       descriptive_string.gsub(self.city.downcase, "").try(:strip)
       descriptive_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
 
-      if descriptive_string != nil
+      if descriptive_string != nil && descriptives_string != ""
         #extract nouns
         text_tagger = EngTagger.new
         descriptive_nouns = text_tagger.get_nouns(text_tagger.add_tags(descriptive_string)).keys
@@ -916,27 +916,18 @@ class Venue < ActiveRecord::Base
 
 
   def set_top_tags
-    top_tags = self.meta_datas.order("relevance_score DESC").limit(5)
+    top_descriptives = Hash[self.descriptives.sort_by { |k,v| -v["weight"] }[0..4]].keys
+
     tags_hash = {}
     tags_string = ""
 
     i = 0
-    for tag in top_tags
-      tags_hash["tag_#{i+1}"] = top_tags[i].try(:meta)
-      tags_string+=top_tags[i].try(:meta)+" "
+    for descriptive in top_descriptives
+      tags_hash["tag_#{i+1}"] = descriptive
       i += 1
     end
-    tags_string.strip!
 
     self.update_columns(trending_tags: tags_hash)
-    self.update_columns(trending_tags_string: tags_string)
-=begin
-    self.update_columns(tag_1: top_tags[0].try(:meta))
-    self.update_columns(tag_2: top_tags[1].try(:meta))
-    self.update_columns(tag_3: top_tags[2].try(:meta))
-    self.update_columns(tag_4: top_tags[3].try(:meta))
-    self.update_columns(tag_5: top_tags[4].try(:meta))
-=end
   end  
 
   def update_featured_comment(vc)
