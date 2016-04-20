@@ -79,20 +79,7 @@ class Activity < ActiveRecord::Base
 			user = User.find_by_id(u_id)
 			feed = Feed.find_by_id(f_ids.first)
 			new_activity = Activity.create!(:activity_type => "shared_#{vc.entry_type}", :feed_id => f_ids.first, :feed_details => feed.partial, :num_lists => f_ids.count,
-			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_id => vc.id, :venue_comment_details => vc.to_json, :adjusted_sort_position => Time.now.to_i)
-
-=begin
-			new_activity = Activity.create!(:activity_type => "shared_moment", :user_id => u_id, :user_name => user.name, :user_facebook_id => user.facebook_id, 
-				:user_facebook_name => user.facebook_name, :user_phone => user.phone_number, :venue_comment_id => vc.id, :feed_creator_id => feed.user_id,
-				:venue_comment_created_at => vc.time_wrapper, :media_type => vc.media_type, :venue_comment_content_origin => vc.content_origin, 
-				:venue_comment_thirdparty_username => vc.thirdparty_username, 
-				:image_url_1 => vc.image_url_1, :image_url_2 => vc.image_url_2, :image_url_3 => vc.image_url_3, 
-				:video_url_1 => vc.video_url_1, :video_url_2 => vc.video_url_2, :video_url_3 => vc.video_url_3, :venue_id => vc.venue_id,
-				:venue_name => vc.venue.name, :venue_instagram_location_id => vc.venue.instagram_location_id, :venue_latitude => vc.venue.latitude,
-				:venue_longitude => vc.venue.longitude, :venue_address => vc.venue.address, :venue_city => vc.venue.city,
-				:venue_state => vc.venue.state, :venue_country => vc.venue.country,
-				:adjusted_sort_position => Time.now.to_i, :feed_id => f_ids.first, :feed_name => feed.name, :feed_color => feed.feed_color, :num_lists => f_ids.count)
-=end								
+			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_id => vc.id, :venue_comment_details => vc.to_json, :adjusted_sort_position => Time.now.to_i)								
 			
 			if comment != nil && comment != ""
 				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :user_details => user.partial, :comment => comment)

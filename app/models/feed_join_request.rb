@@ -61,7 +61,7 @@ class FeedJoinRequest < ActiveRecord::Base
 			    :type => 'list_access_response_notification', 
 			    :list_access_request_accepted => response,
 			    :feed_creator => self.feed.user.try(:name),
-			    :feed_creator_id => self.feed.user.try(:name),
+			    :list_creator_id => self.feed.user.try(:name),
 			    :list_creator_fb_id => self.feed.user.try(:facebook_id),
 			    :list_creator_fb_name => self.feed.user.try(:facebook_name,
 			    :list_description => self.feed.description,
