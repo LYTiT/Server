@@ -927,9 +927,11 @@ class Venue < ActiveRecord::Base
     i = 1
     top_descriptives.each do |descriptive, details|
       if details["updated_at"].to_datetime > Time.now-2.hours
-        tags_hash["tag_#{i}"] = descriptive
-        i += 1
+        tags_hash["tag_#{i}"] = descriptive        
+      else
+        tags_hash["tag_#{i}"] = nil
       end
+      i += 1
     end
 
     self.update_columns(trending_tags: tags_hash)
