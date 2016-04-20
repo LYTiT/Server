@@ -842,7 +842,7 @@ class Venue < ActiveRecord::Base
     self.update_columns(categories_string: categories_hash.keys.join(" ").strip)
 
     f2_tags = foursquare_venue.tags
-    update_descriptives(f2.tags.join(" ").split)
+    update_descriptives(f2_tags.join(" ").split)
   end
 
   def update_descriptives(descriptive_string)
@@ -903,9 +903,13 @@ class Venue < ActiveRecord::Base
 
   def calibrate_descriptive_weights
     descriptives_hash = self.descriptives
+    key_word_relevance_half_life = 120 #minutes
     if descriptives_hash.length > 0
       for descriptive in descriptives_hash
-
+        previous_weight = descriptive["weight"].to_f
+        new_weight = previous_weight * 2 ** ((-(Time.now - descriptive["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)
+        descriptive["weight"] = new_weight
+        descriptive["updated_at"] = Time.now
       end
     end
   end
