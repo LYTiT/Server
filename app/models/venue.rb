@@ -812,18 +812,38 @@ class Venue < ActiveRecord::Base
   end
 
   def update_descriptives_from_instagram(instagram_hash) 
-    caption = instagram_hash["caption"]["text"] rescue nil
+    caption = instagram_hash["caption"]["text"] rescue ""
     tags = instagram_hash["tags"]
 
-    if caption != nil
-      update_descriptives(caption)
+    if caption.length > 0 or tags.length > 0
+      update_descriptives(caption+" "+tags)
     end
 
-    if tags != nil
-      update_descriptives(tags.join(" "))
-    end
   end
 
+  def set_categories_and_descriptives(foursquare_venue)
+    f2_categories = foursquare_venue.categories
+    categories_hash = {}
+    categories_string = ""
+
+    i = 1
+    for category in f2_categories
+      if category.primary == true
+        categories_hash["category_1"] = category.name
+        categories_string.concat(" "+category.name)
+      else
+        categories_hash["category_#{i}"] = category.name
+        categories_string.concat(category.name)
+      end
+      i += 1
+    end
+
+    self.update_columns(categories: categories_hash)
+    self.update_columns(categories_string: category_hash.keys.join(" ").strip)
+
+    f2_tags = foursquare_venue.tags
+    update_descriptives(f2.tags.join(" ").split)
+  end
 
   def update_descriptives(descriptive_string)
     descriptive_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
@@ -879,36 +899,15 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def set_categories_and_descriptives(foursquare_venue)
-    f2_categories = foursquare_venue.categories
-    f2_tags = foursquare_venue.tags
-    categories_hash = {}
-    descriptives_hash = {}
-    categories_string = ""
-    descriptives_string = ""
+  def calibrate_descriptive_weights
+    descriptives_hash = self.descriptives
+    if descriptives_hash.length > 0
+      for descriptive in descriptives_hash
 
-    i = 1
-    for category in f2_categories
-      if category.primary == true
-        categories_hash["category_1"] = category.name
-        categories_string.concat(" "+category.name)
-      else
-        categories_hash["category_#{i}"] = category.name
-        categories_string.concat(category.name)
       end
-      i += 1
     end
-
-    for tag in f2_tags
-      descriptives_hash[tag] = 1.0
-      descriptives_string.concat(" "+tag)
-    end
-
-    self.update_columns(categories: categories_hash)
-    self.update_columns(categories_string: categories_string.strip)
-    self.update_columns(descriptives: descriptives_hash)    
-    self.update_columns(descriptives_string: descriptives_string.strip)
   end
+
 
   def set_top_tags
     top_tags = self.meta_datas.order("relevance_score DESC").limit(5)
