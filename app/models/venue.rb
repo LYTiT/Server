@@ -913,7 +913,7 @@ class Venue < ActiveRecord::Base
         descriptives_hash[descriptive.first]["updated_at"] = Time.now
       end
     end
-    self.update_columns(descriptives: descriptives_hash.sort_by { |k,v| -v["weight"] })
+    self.update_columns(descriptives: Hash[descriptives_hash.sort_by { |k,v| -v["weight"] }])
   end
 
   def set_top_tags
