@@ -109,6 +109,7 @@ class User < ActiveRecord::Base
   end
 
   def update_interests(source)
+=begin    
     interests_hash = self.interests
     interests_arr = self.interests.keys
 
@@ -119,6 +120,7 @@ class User < ActiveRecord::Base
     self.increment_interest_by_origin(source, true, source_categories)
     self.increment_interest_by_origin(source, false, source_foursquare_tags)
     self.increment_interest_by_origin(source, false, source_trending_tags)
+=end    
   end
 
   def update_user_venue_categories(source)
