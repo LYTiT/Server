@@ -124,6 +124,7 @@ class User < ActiveRecord::Base
   end
 
   def update_user_venue_categories(source)
+    interests_hash = self.interests
     interest_categories_hash = self.interests["venue_categories"]
     
     source.categories.each do |label, category|
@@ -146,8 +147,9 @@ class User < ActiveRecord::Base
         interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
       end
     end
-
-    self.update_columns(interests: interest_categories_hash)
+    interests_hash["venue_categories"] = interest_categories_hash
+    
+    self.update_columns(interests: interests_hash)
   end
 
 

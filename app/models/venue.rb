@@ -626,12 +626,12 @@ class Venue < ActiveRecord::Base
   def add_new_post(user, post)
     vc = VenueComment.create!(:entry_type => "lytit_post", :lytit_post => post, :venue_id => self.id, :venue_details => self.partial, :user_id => user.id, :user_details => user.partial, :adjusted_sort_position => (Time.now+15.minutes).to_i)
     self.update_columns(latest_posted_comment_time: Time.now)
-    self.delay(:priority => -4).calibrate_after_lytit_post(vc)
-    PostPass.initiate(vc)
+    self.delay(:priority => -4).calibrate_after_lytit_post(vc)    
     return vc
   end
 
   def calibrate_after_lytit_post(vc)
+    PostPass.initiate(vc)
     if self.latest_posted_comment_time == nil or self.latest_posted_comment_time < vc.created_at
       self.update_columns(latest_posted_comment_time: vc.created_at)
     end
