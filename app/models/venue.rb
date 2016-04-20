@@ -819,9 +819,9 @@ class Venue < ActiveRecord::Base
       update_descriptives(caption)
     end
 
-    #if tags != nil
-    #  update_descriptives(tags)
-    #end
+    if tags != nil
+      update_descriptives(tags.join(" "))
+    end
   end
 
 
