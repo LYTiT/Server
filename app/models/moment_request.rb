@@ -78,7 +78,7 @@ class MomentRequest < ActiveRecord::Base
 				:created_at => vc.instagram["created_at"],		    
 				:thirdparty_username => vc.instagram["instagram_user"]["name"],
 				:thirdparty_user_id => vc.instagram["instagram_user"]["instagram_id"],
-				:thirdparty_user_profile_image_url => vc.instagram["instagram_user"]["profile_image_url"],
+				:profile_image_url => vc.instagram["instagram_user"]["profile_image_url"],
 			
 				:venue_id => self.venue_id,
 				:venue_name => self.venue.name,

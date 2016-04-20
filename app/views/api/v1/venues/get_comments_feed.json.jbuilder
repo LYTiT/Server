@@ -26,7 +26,7 @@ json.cache! @view_cache_key do |json|
 		    json.content_origin "instagram"
 		    json.thirdparty_username comment["user"]["username"]
 		    json.thirdparty_user_id comment["user"]["id"]
-		    json.thirdparty_user_profile_image_url comment["user"]["profile_picture"]
+		    json.profile_image_url comment["user"]["profile_picture"]
 		elsif comment.entry_type == "lytit_post"
 			json.content_origin "lytit"
 			json.id comment.id
@@ -58,7 +58,7 @@ json.cache! @view_cache_key do |json|
 		    json.created_at comment.instagram["created_at"]		    
 		    json.thirdparty_username comment.instagram["instagram_user"]["name"]
 		    json.thirdparty_user_id comment.instagram["instagram_user"]["instagram_id"]
-		    json.thirdparty_user_profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
+		    json.profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
 		elsif comment.entry_type == "tweet"
 			json.content_origin "twitter"
 			json.id comment.id
