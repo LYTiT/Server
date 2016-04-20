@@ -121,6 +121,15 @@ class User < ActiveRecord::Base
     self.increment_interest_by_origin(source, false, source_trending_tags)
   end
 
+  def update_user_venue_categories(source)
+    interest_categories_hash = self.interests["venue_categories"]
+    if interest_categories_hash.length > 0
+    
+    else
+
+    end
+  end
+
 
 
 

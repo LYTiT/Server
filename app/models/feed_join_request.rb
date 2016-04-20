@@ -63,7 +63,7 @@ class FeedJoinRequest < ActiveRecord::Base
 			    :feed_creator => self.feed.user.try(:name),
 			    :list_creator_id => self.feed.user.try(:name),
 			    :list_creator_fb_id => self.feed.user.try(:facebook_id),
-			    :list_creator_fb_name => self.feed.user.try(:facebook_name,
+			    :list_creator_fb_name => self.feed.user.try(:facebook_name),
 			    :list_description => self.feed.description,
 			    :list_open => self.feed.is_open,
 			    :list_is_private => self.feed.is_private,
