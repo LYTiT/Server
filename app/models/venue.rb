@@ -812,30 +812,67 @@ class Venue < ActiveRecord::Base
   end
 
   def update_descriptives_from_instagram(instagram_hash) 
-=begin  
-    caption = instagram_hash["caption"]["text"].gsub!(/\B[@#]\S+\b/, '').strip rescue nil
+    caption = instagram_hash["caption"]["text"] rescue nil
     tags = instagram_hash["tags"]
 
+    if caption != nil
+      update_descriptives(caption)
+    end
+
+    if tags != nil
+      update_descriptives(caption)
+    end
+  end
+
+
+  def update_descriptives(descriptive_string)
+    descriptive_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
     begin
       spell_checker = Gingerice::Parser.new
-      caption = spell_checker.parse(caption)["result"]
+      descriptive_string = spell_checker.parse(descriptive_string)["result"]
     rescue
       p "Spell checker failed to start"
     end
 
     #remove occurances of the venue name and city (their occurnace carries little value)
     #as well as some other stop words.
-    stop_words = "nyc, brooklyn, queens, manhattan, like, follow, instagram, twitter"
-    c
-    caption.gu
+    descriptive_string.gsub(self.name.downcase, "").try(:strip)
+    descriptive_string.gsub(self.name.downcase.gsub(" ", ""), "").try(:strip)
+    descriptive_string.gsub(self.city.downcase, "").try(:strip)
+    descriptive_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
 
     #extract nouns
     text_tagger = EngTagger.new
-    caption_nouns = text_tagger.get_nouns(text_tagger.add_tags(caption)).keys
+    descriptive_nouns = text_tagger.get_nouns(text_tagger.add_tags(descriptive_string)).keys
     singularized = []
-    caption_nouns.each{|noun| singularized << noun.singularize}
-=end
+    descriptive_nouns.each{|noun| singularized << noun.singularize}
+
+    #Trending words analysis
+    breakdown = Highscore::Content.new singularized.join(" ")
+    breakdown.configure do
+      set :long_words_threshold, 15
+      set :short_words_threshold, 3
+      set :ignore_case, true
+    end
+
+    top_key_words = breakdown.keywords.top(10)
+
+    descriptives_hash = self.descriptives
+    key_word_relevance_half_life = 120 #minutes
+    for key_word in top_key_words
+      if descriptives_hash[key_word.text] != nil
+        previous_weight = descriptives_hash[key_word.text]["weight"]
+        new_weight = previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"])/60.0) / (key_word_relevance_half_life)).round(4)+key_word.weight
+        descriptives_hash[key_word.text]["weight"] = new_weight
+        descriptives_hash[key_word.text]["updated_at"] = Time.now
+      else
+        descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}  
+      end
+    end
+
+    self.update_columns(descriptives: descriptives_hash)
+    self.update_columns(descriptives_string: descriptives_hash.keys.join(" ").strip)
   end
 
   def set_categories_and_descriptives(foursquare_venue)

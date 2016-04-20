@@ -9,7 +9,7 @@ json.array! @feeds do |feed|
 	json.num_moments feed.num_moments
 	json.feed_color feed.feed_color
 	json.users_can_add_places feed.open
-	json.creator feed.user
+	json.creator feed.user.partial
 	json.has_added feed.feed_users.where("user_id = ?", @user.id).first.present?
 	json.list_description feed.description
 	json.preview_image_url feed.preview_image_url
