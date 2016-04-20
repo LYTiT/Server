@@ -126,14 +126,28 @@ class User < ActiveRecord::Base
   def update_user_venue_categories(source)
     interest_categories_hash = self.interests["venue_categories"]
     
-    source.categories each do |label, category|
-      if interest_categories_hash[category] != nil
-        previous_score = interest_categories_hash[category].to_f
-        interest_categories_hash[category] += (previous_score + 1.0)
+    source.categories.each do |label, category|
+      category.downcase!
+      if interest_categories_hash != nil and interest_categories_hash.length > 0 
+        if interest_categories_hash[category] != nil
+          underlying_venue_ids = interest_categories_hash[category]["venue_ids"]
+          if underlying_venue_ids.include?(source.id) == true
+            previous_score = interest_categories_hash[category]["weight"].to_f
+            interest_categories_hash[category] += (previous_score + 1.0)
+          else
+            interest_categories_hash["venue_ids"] = underlying_venue_ids << source.id
+            previous_score = interest_categories_hash[category]["weight"].to_f
+            interest_categories_hash[category] += (previous_score + 0.01)
+          end
+        else
+          interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
+        end
       else
-        interest_categories_hash[category] = 1.0
+        interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
       end
     end
+
+    self.update_columns(interests: interest_categories_hash)
   end
 
 
