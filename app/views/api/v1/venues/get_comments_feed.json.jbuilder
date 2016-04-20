@@ -86,5 +86,6 @@ json.cache! @view_cache_key do |json|
 	end
 
 	json.venue_id @venue.id
+	json.categories @venue.categories.values
 	json.venue_foursuqare_id @venue.foursquare_id
 end
