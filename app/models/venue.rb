@@ -921,7 +921,7 @@ class Venue < ActiveRecord::Base
 
   def set_top_tags
     calibrate_descriptive_weights
-    top_descriptives = self.descriptives.keys[0..4]
+    top_descriptives = self.descriptives
 
     tags_hash = {}
     i = 0

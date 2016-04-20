@@ -57,7 +57,7 @@ class User < ActiveRecord::Base
 
   #I.
   def partial
-    {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name, :profile_image_url => self.profile_image_url}
+    {:id => self.id, :name => self.name, :facebook_id => self.facebook_id, :facebook_name => self.facebook_name, :profile_image_url => self.profile_image_url, :is_verified => self.is_verified}
   end
 
   def can_post?
@@ -127,7 +127,12 @@ class User < ActiveRecord::Base
     interest_categories_hash = self.interests["venue_categories"]
     
     source.categories each do |label, category|
-      interest_categories_hash[category] = 1.0
+      if interest_categories_hash[category] != nil
+        previous_score = interest_categories_hash[category].to_f
+        interest_categories_hash[category] += (previous_score + 1.0)
+      else
+        interest_categories_hash[category] = 1.0
+      end
     end
   end
 

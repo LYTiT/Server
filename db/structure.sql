@@ -1894,7 +1894,8 @@ CREATE TABLE users (
     longitude double precision,
     lonlat_geometry geometry(Point),
     lonlat_geography geography(Point,4326),
-    violations json DEFAULT '{}'::json NOT NULL
+    violations json DEFAULT '{}'::json NOT NULL,
+    is_verified boolean DEFAULT false
 );
 
 
@@ -4635,4 +4636,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160417191546');
 INSERT INTO schema_migrations (version) VALUES ('20160417233907');
 
 INSERT INTO schema_migrations (version) VALUES ('20160418180605');
+
+INSERT INTO schema_migrations (version) VALUES ('20160420162525');
 
