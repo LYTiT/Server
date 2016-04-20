@@ -849,7 +849,7 @@ class Venue < ActiveRecord::Base
   def update_descriptives(descriptive_string)
     descriptive_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
-    if descriptive_string != nil && descriptives_string != ""
+    if descriptive_string != nil && descriptive_string != ""
       begin
         spell_checker = Gingerice::Parser.new
         descriptive_string = spell_checker.parse(descriptive_string)["result"]
@@ -876,11 +876,11 @@ class Venue < ActiveRecord::Base
 
             #Trending words analysis
             breakdown = Highscore::Content.new singularized.join(" ")
-            breakdown.configure do
-              set :long_words_threshold, 15
-              set :short_words_threshold, 3
-              set :ignore_case, true
-            end
+              breakdown.configure do
+                set :long_words_threshold, 15
+                set :short_words_threshold, 3
+                set :ignore_case, true
+              end
 
             top_key_words = breakdown.keywords.top(10)
 
@@ -893,7 +893,7 @@ class Venue < ActiveRecord::Base
                 descriptives_hash[key_word.text]["weight"] = new_weight
                 descriptives_hash[key_word.text]["updated_at"] = Time.now
               else
-                descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}  
+                descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}
               end
             end
 
