@@ -27,6 +27,5 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.tag_3 v.trending_tags["tag_3"]
         json.tag_4 v.trending_tags["tag_4"]
         json.tag_5 v.trending_tags["tag_5"]
-        json.foursquare_id v.foursquare_id
     end
 end
