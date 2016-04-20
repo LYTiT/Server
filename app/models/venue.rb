@@ -839,7 +839,7 @@ class Venue < ActiveRecord::Base
     end
 
     self.update_columns(categories: categories_hash)
-    self.update_columns(categories_string: category_hash.keys.join(" ").strip)
+    self.update_columns(categories_string: categories_hash.keys.join(" ").strip)
 
     f2_tags = foursquare_venue.tags
     update_descriptives(f2.tags.join(" ").split)
