@@ -123,10 +123,9 @@ class User < ActiveRecord::Base
 
   def update_user_venue_categories(source)
     interest_categories_hash = self.interests["venue_categories"]
-    if interest_categories_hash.length > 0
     
-    else
-
+    source.categories each do |label, category|
+      interest_categories_hash[category] = 1.0
     end
   end
 

@@ -909,11 +909,11 @@ class Venue < ActiveRecord::Base
     descriptives_hash = self.descriptives
     key_word_relevance_half_life = 120 #minutes
     if descriptives_hash.length > 0
-      for descriptive in descriptives_hash
-        previous_weight = descriptive.last["weight"].to_f
-        new_weight = previous_weight * 2 ** ((-(Time.now - descriptive.last["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)
-        descriptives_hash[descriptive.first]["weight"] = new_weight
-        descriptives_hash[descriptive.first]["updated_at"] = Time.now
+      descriptives_hash each do |descriptive, details|
+        previous_weight = details["weight"].to_f
+        new_weight = previous_weight * 2 ** ((-(Time.now - details["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)
+        descriptives_hash[descriptive]["weight"] = new_weight
+        descriptives_hash[descriptive]["updated_at"] = Time.now
       end
     end
     self.update_columns(descriptives: Hash[descriptives_hash.sort_by { |k,v| -v["weight"] }])
