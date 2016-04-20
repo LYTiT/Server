@@ -919,8 +919,6 @@ class Venue < ActiveRecord::Base
     top_descriptives = Hash[self.descriptives.sort_by { |k,v| -v["weight"] }[0..4]].keys
 
     tags_hash = {}
-    tags_string = ""
-
     i = 0
     for descriptive in top_descriptives
       tags_hash["tag_#{i+1}"] = descriptive
