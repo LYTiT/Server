@@ -846,28 +846,28 @@ class Venue < ActiveRecord::Base
     update_descriptives(f2_tags.join(" ").strip)
   end
 
-  def update_descriptives(descriptive_string)
-    descriptive_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
+  def update_descriptives(new_descriptives_string)
+    new_descriptives_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
-    if descriptive_string != nil && descriptive_string != ""
+    if new_descriptives_string != nil && new_descriptives_string != ""
       begin
         spell_checker = Gingerice::Parser.new
-        descriptive_string = spell_checker.parse(descriptive_string)["result"]
+        new_descriptives_string = spell_checker.parse(new_descriptives_string)["result"]
       rescue
         p "Spell checker failed to start"
       end
 
       #remove occurances of the venue name and city (their occurnace carries little value)
       #as well as some other stop words.
-      descriptive_string.gsub(self.name.downcase, "").try(:strip)
-      descriptive_string.gsub(self.name.downcase.gsub(" ", ""), "").try(:strip)
-      descriptive_string.gsub(self.city.downcase, "").try(:strip)
-      descriptive_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
+      new_descriptives_string.gsub(self.name.downcase, "").try(:strip)
+      new_descriptives_string.gsub(self.name.downcase.gsub(" ", ""), "").try(:strip)
+      new_descriptives_string.gsub(self.city.downcase, "").try(:strip)
+      new_descriptives_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
 
-      if descriptive_string != nil && descriptives_string != ""
+      if new_descriptives_string != nil && new_descriptives_string != ""
         #extract nouns
         text_tagger = EngTagger.new
-        descriptives_tagged = text_tagger.get_nouns(text_tagger.add_tags(descriptive_string))
+        descriptives_tagged = text_tagger.get_nouns(text_tagger.add_tags(new_descriptives_string))
         if descriptives_tagged != nil
           descriptive_nouns = descriptives_tagged.keys
           if descriptive_nouns.count > 0
