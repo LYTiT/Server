@@ -129,19 +129,14 @@ class User < ActiveRecord::Base
     
     source.categories.each do |label, category|
       category.downcase!
-      if interest_categories_hash != nil and interest_categories_hash.length > 0 
-        if interest_categories_hash[category] != nil
-          underlying_venue_ids = interest_categories_hash[category]["venue_ids"]
-          if underlying_venue_ids.include?(source.id) == true
-            previous_score = interest_categories_hash[category]["weight"].to_f
-            interest_categories_hash[category] += (previous_score + 1.0)
-          else
-            interest_categories_hash["venue_ids"] = underlying_venue_ids << source.id
-            previous_score = interest_categories_hash[category]["weight"].to_f
-            interest_categories_hash[category] += (previous_score + 0.01)
-          end
+      if interest_categories_hash != nil and interest_categories_hash[category] != nil
+        underlying_venue_ids = interest_categories_hash[category]["venue_ids"]
+        if underlying_venue_ids.include?(source.id) == true
+          previous_score = interest_categories_hash[category]["weight"].to_f
+          interest_categories_hash[category] = {"weight" => (previous_score + 0.01), "venue_ids" => underlying_venue_ids}
         else
-          interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
+          update_venue_ids = underlying_venue_ids << source.id
+          interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => update_venue_ids}
         end
       else
         interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
@@ -152,6 +147,31 @@ class User < ActiveRecord::Base
     self.update_columns(interests: interests_hash)
   end
 
+  def update_user_descriptives(source)
+    interests_hash = self.interests
+    descriptives_categories_hash = self.interests["descriptives"]
+
+    source_top_descriptives = Hash[source.descriptives.to_a[0..4]]
+
+    source_top_descriptives.each do |descriptive, details|
+      descriptive = descriptive.downcase
+      if descriptives_categories_hash != nil and descriptives_categories_hash[descriptive] != nil
+        underlying_venue_ids = descriptives_categories_hash[descriptive]["venue_ids"]
+        if underlying_venue_ids.include?(source.id) == true
+          previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
+          descriptives_categories_hash[descriptive] = {"weight" => (previous_score + details["weight"].to_f)/2.0, "venue_ids" => underlying_venue_ids}
+        else
+          update_venue_ids = underlying_venue_ids << source.id
+          descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, "venue_ids" => update_venue_ids}
+        end
+      else
+        descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, "venue_ids" => [source.id]}
+      end
+    end
+    interests_hash["descriptives"] = descriptives_categories_hash
+    
+    self.update_columns(interests: interests_hash)
+  end
 
 
 

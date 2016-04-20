@@ -61,7 +61,7 @@ class PostPass < ActiveRecord::Base
 			:venue_address => vc.venue_details["address"],
 			:venue_city => vc.venue_details["city"],
 			:venue_country => vc.venue_details["country"],
-			:latitude => vc.venue_details["latitdue"],
+			:latitude => vc.venue_details["latitude"],
 			:longitude => vc.venue_details["longitude"],
 			:content_origin => 'lytit',
 			:geo_views => vc.geo_views,
