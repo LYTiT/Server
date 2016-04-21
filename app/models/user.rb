@@ -165,7 +165,7 @@ class User < ActiveRecord::Base
           interest_categories_hash[category]["weight"] = previous_score + 0.01
         else
           updated_source_ids = underlying_source_ids << source.id
-          interest_categories_hash[category]["weight"] = previous_score + value
+          interest_categories_hash[category]["weight"] = previous_score + added_value
           interest_categories_hash[category][tracker_key] = updated_source_ids
         end
       else
@@ -180,7 +180,7 @@ class User < ActiveRecord::Base
   def update_user_descriptives(venue, favorite_venue=nil, list=nil)
     if venue != nil
       tracker_key = "searched_venue_ids"
-      added_value = 1.0
+      added_value_multiplier = 1.0
       source = venue
     elsif favorite_venue != nil
       tracker_key = "favorite_venue_ids"
