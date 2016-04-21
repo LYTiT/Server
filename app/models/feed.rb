@@ -118,7 +118,7 @@ class Feed < ActiveRecord::Base
 	  end
 	  venue_attributes_hash["venue_categories"] = venue_categories_hash
 	  
-	  self.update_columns(venue_attributes: venue_attributes_hash.to_json)
+	  self.update_columns(venue_attributes: venue_attributes_hash)
 	end
 
 	def update_descriptives(venue)
@@ -148,7 +148,7 @@ class Feed < ActiveRecord::Base
 	  end
 	  venue_attributes_hash["descriptives"] = descriptives_hash
 	  
-	  self.update_columns(venue_attributes: venue_attributes_hash.to_json)
+	  self.update_columns(venue_attributes: venue_attributes_hash)
 	end	
 
 	def Feed.new_member_calibration(feed_id, user_id)
