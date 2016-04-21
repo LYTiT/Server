@@ -96,7 +96,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if params[:from_search] == "1" && page == 1
-			@user.delay.update_interests(@venue)
+			@user.delay.update_interests(@venue, "search")
 		end
 
 		if Time.now.min >= 10
