@@ -1673,9 +1673,9 @@ def recommendation_reason_for(user)
     if interest_match == true
       for interest in top_user_interests
         if Venue.interest_search(interest).where("id = ?", self.id).first != nil
-          if user.interests[interest]["venue_ids"] != nil
+          if user.interests["descriptives"][interest].try(:[], "venue_ids") != nil or user.interests["venue_categories"][interest].try(:[], "venue_ids")
             return "Similar to venues searched for"
-          elsif user.interests[interest]["favorite_venue_ids"] != nil
+          elsif user.interests["descriptives"][interest].try(:[], "favorite_venue_ids") != nil or user.interests["venue_categories"][interest].try(:[], "favorite_venue_ids") != nil
             return "Based on your favorites"
           else
             return "Based on your List interests"
