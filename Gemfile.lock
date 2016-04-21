@@ -155,10 +155,6 @@ GEM
     eventbrite (0.0.1)
       hashie (~> 3.0)
       rest-client (~> 1.4)
-    eventful_api (0.0.1)
-      addressable (~> 2.3.4)
-      multi_json (~> 1.5.0)
-      oauth (~> 0.3.6)
     excon (0.25.3)
     execjs (2.6.0)
     factory_girl (4.7.0)
@@ -284,8 +280,6 @@ GEM
     nokogiri (1.6.7.2)
       mini_portile2 (~> 2.0.0.rc2)
     normalize-rails (4.0.0)
-    oauth (0.3.6)
-      ruby-hmac (>= 0.3.1)
     paperclip (4.3.6)
       activemodel (>= 3.2.0)
       activesupport (>= 3.2.0)
@@ -393,7 +387,6 @@ GEM
       rspec-mocks (~> 3.4.0)
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
-    ruby-hmac (0.4.0)
     ruby_parser (3.8.1)
       sexp_processor (~> 4.1)
     rubypython (0.6.3)
@@ -501,7 +494,6 @@ DEPENDENCIES
   email_validator
   engtagger
   eventbrite
-  eventful_api
   factory_girl_rails
   faker
   fast-stemmer
