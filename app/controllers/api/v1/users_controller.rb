@@ -376,6 +376,36 @@ class Api::V1::UsersController < ApiBaseController
 		@venues = Venue.live_recommendation_for(@user, params[:latitude], params[:longitude])
 	end
 
+	def get_interests
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@interests = @user.top_interests
+		render 'user_interests.json.jbuilder'
+	end
+
+	def get_suggested_interests
+		@user = User.find_by_authentication_token(params[:auth_token])
+		@interests = @user.suggested_interests
+		render 'user_interests.json.jbuilder'
+	end
+
+	def add_interest
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if @user.add_interest(params[:interest])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Interest added'] } }, status: :unprocessable_entity
+		end		
+	end
+
+	def remove_interest
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if @user.remove_interest(params[:interest])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Interest successfully removed'] } }, status: :unprocessable_entity
+		end			
+	end
+
 
 	#-------------------------------------------------->
 

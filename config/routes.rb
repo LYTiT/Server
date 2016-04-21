@@ -71,6 +71,10 @@ LytitServer::Application.routes.draw do
         get 'get_daily_posts'
         get 'get_nearby_requests'
         get 'get_happening_venue_recs'
+        get 'get_interests'
+        get 'get_suggested_interests'
+        post 'add_interest'
+        post 'remove_interest'
       end
 
       resources :feeds, only: [:create] do

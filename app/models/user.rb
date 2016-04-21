@@ -108,6 +108,23 @@ class User < ActiveRecord::Base
     Activity.where("feed_id IN (#{user_list_ids})").order("adjusted_sort_position DESC")
   end
 
+  def top_user_interests(count=10)
+    category_interests = self.interests["venue_categories"]
+    decriptive_interests = self.interests["descriptives"]
+
+    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..4]].keys
+
+    num_descripitives = 10 - top_category_interests.length
+
+    top_descriptives = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
+
+    return (top_categories+top_descriptives).shuffle
+  end
+
+  def suggested_interests
+    ["skateboard", "justin bieber", "cake"]
+  end
+
   def update_interests(source)
 =begin    
     interests_hash = self.interests
@@ -203,13 +220,37 @@ class User < ActiveRecord::Base
     self.update_columns(interests: interests_hash)
   end
 
-  def explicitly_add_interest(interest)
-    
+  def add_interest(interest)
+    interest = interest.downcase
+    require 'fuzzystringmatch'
+    jarow = FuzzyStringMatch::JaroWinkler.create( :native )
+    interests_hash = self.interests
+    descriptives_keys = interests_hash["descriptives"].keys
+
+    already_present = false
+    for key in descriptives_keys
+      if p jarow.getDistance(interest, key) >= 0.85
+        if interest != key
+          interests_hash["descriptives"][interest] = interests_hash["descriptives"][key]                
+          interests_hash["descriptives"].delete(key)
+        end
+        old_weight = interests_hash["descriptives"][interest]["weight"]
+        interests_hash["descriptives"][interest]["weight"] = old_weight + 20.0
+        already_present = true
+        break
+      end
+    end
+
+    if already_present == false
+      interests_hash["descriptives"][interest] = {"weight" => 20.0}
+    end
+
+    self.update_columns(interests: interests_hash)
   end
 
   def remove_interest(interest)
     interests_hash = self.interests
-    interests_hash.delete(interest)
+    interests_hash["descriptives"].delete(interest)
     self.update_columns(interests: interests_hash)
   end
 
