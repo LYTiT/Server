@@ -66,7 +66,7 @@ class Feed < ActiveRecord::Base
 		self.activities.order("adjusted_sort_position DESC")
 	end
 
-	def Feed.lookup(query)
+	def Feed.search(query)
 		like_query = query.downcase+'%'
 		direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) LIKE ('#{like_query}')"
 		query.gsub!(/\d\s?/, "")			

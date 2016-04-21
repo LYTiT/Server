@@ -13,7 +13,7 @@ json.comments(@comments) do |comment|
     json.video_url_3 comment.lytit_post["video_url_3"]
     json.venue_id comment.venue_details["id"]
     json.venue_name comment.venue_details["name"]
-    json.latitude comment.venue_details["latitdue"]
+    json.latitude comment.venue_details["latitude"]
     json.longitude comment.venue_details["longitude"]
     json.created_at comment.created_at
     json.content_origin 'lytit'

@@ -238,7 +238,7 @@ class User < ActiveRecord::Base
   end
 
   def add_interest(interest)
-    interest = interest.downcase
+    interest = interest.downcase.gsub(" ", "").singularize
     require 'fuzzystringmatch'
     jarow = FuzzyStringMatch::JaroWinkler.create( :native )
     interests_hash = self.interests
