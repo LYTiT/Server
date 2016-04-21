@@ -136,7 +136,7 @@ class User < ActiveRecord::Base
       update_user_descriptives(source, nil, nil)  
     elsif details == "favorited_venue"
       update_user_venue_categories(nil, source, nil)
-      update_user_descriptives(nil, srouce, nil)
+      update_user_descriptives(nil, source, nil)
     else
       update_user_venue_categories(nil, nil, source)
       update_user_descriptives(nil, nil, source)
@@ -222,10 +222,10 @@ class User < ActiveRecord::Base
         underlying_source_ids = descriptives_categories_hash[descriptive][tracker_key].to_a
         previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
         if underlying_source_ids != [] and underlying_source_ids.include?(source.id) == true
-          descriptives_categories_hash[descriptive]["weight"] = previous_score.to_f*1.05 #incrementing weight by 5%
+          descriptives_categories_hash[descriptive]["weight"] = (previous_score.to_f*(underlying_source_ids.count - 1.0) + details["weight"].to_f) / (underlying_source_ids.count) #weighted average
         else
           update_source_ids = underlying_source_ids << source.id
-          descriptives_categories_hash[descriptive]["weight"] = (previous_score + details["weight"].to_f*added_value_multiplier)
+          descriptives_categories_hash[descriptive]["weight"] = (previous_score*underlying_source_ids.count + details["weight"].to_f) / (underlying_source_ids.count + 1)
           descriptives_categories_hash[descriptive][tracker_key] = update_source_ids
         end
       else

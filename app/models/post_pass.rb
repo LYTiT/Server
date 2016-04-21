@@ -70,7 +70,7 @@ class PostPass < ActiveRecord::Base
 		}
 
 		type = "post_pass/#{vc.id}/#{self.id}"
-		preview = "New live peak avaliable. Pass it on?"
+		preview = "New live Moment avaliable!"
 
 		notification = self.store_new_notification(payload, user, type)
 		payload[:notification_id] = notification.id

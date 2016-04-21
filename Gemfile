@@ -2,81 +2,86 @@ source 'https://rubygems.org'
 
 ruby '2.2.2'
 
-gem 'clearance'
-gem 'coffee-rails'
-gem 'delayed_job_active_record', '>= 4.0.0'
-gem 'email_validator'
-gem 'flutie'
-gem 'high_voltage'
-gem 'jbuilder'
-gem 'jquery-rails'
-gem 'pg'
-gem 'rack-timeout'
 gem 'rails', '>= 4.0.0'
-gem 'rails_admin'#, "0.6.8"
+#Setup
+gem 'clearance'
+gem 'email_validator'
 gem 'recipient_interceptor'
-gem 'simple_form'
-gem 'title'
-gem 'uglifier'
-gem 'unicorn'
 gem "paranoia", "~> 2.0"
-gem 'haml-rails'
-gem 'geokit-rails'
-gem 'apns', git: 'https://github.com/jpoz/APNS.git'
-#gem 'higcm'
-gem 'rufus-scheduler'
-gem 'rubypython', "0.6.3"
-gem 'honeybadger'
-gem 'jquery-ui-rails'#, github: 'joliss/jquery-ui-rails', branch: 'rails-4.0.2'
 gem 'acts_as_singleton'
-gem "paperclip", "~> 4.1"
-gem 'aws-sdk', '~> 1.5.7'
-gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
-gem 'bson_ext'
-gem 'mongo'
-gem 'kaminari'
-gem 'descriptive_statistics'
-gem 'geocoder'
-gem 'pr_geohash'
-gem 'timezone'
-#gem 'typhoeus'
-gem 'tzinfo'
-gem 'skylight'
-gem 'heroku-deflater', :group => :production
-gem 'instagram'
-gem 'httparty'
-gem 'fuzzy-string-match'
-gem 'dalli'
-gem 'memcachier'
-gem 'whacamole'
+#Server Configurators
+gem 'rails_admin'#, "0.6.8"
 gem 'heroku-api'
-gem 'jbuilder_cache_multi'
-gem 'twitter'
+gem 'heroku-deflater', :group => :production
+gem 'unicorn'
+gem 'aws-sdk', '~> 1.5.7'
+gem 'rack-timeout'
+gem 'rufus-scheduler'
+gem 'honeybadger'
+gem 'delayed_job_active_record', '>= 4.0.0'
+gem 'skylight'
+gem 'whacamole'
+#Database
+gem 'pg'
 gem 'postgresql_cursor'
 gem 'pg_search', '= 1.0.3'
-gem 'activerecord-postgis-adapter'
-gem 'foursquare2'
-gem 'eventful_api'
+gem 'mongo'
+gem 'mongo_mapper', :git => "git://github.com/mongomapper/mongomapper.git", :tag => "v0.13.0.beta2"
+#JSON/Views
+gem 'jbuilder'
 gem 'multi_json'
+gem 'topojson-rails'
+gem 'kaminari'
+gem 'bson_ext'
+#Caching
+gem 'dalli'
+gem 'memcachier'
+gem 'jbuilder_cache_multi'
+#Geo
+gem 'activerecord-postgis-adapter'
+gem 'pr_geohash'
+gem 'geocoder'
+gem 'geokit-rails'
+#timezones
+gem 'timezone'
+gem 'tzinfo'
+#Scientific
+gem 'rubypython', "0.6.3"
+gem 'descriptive_statistics'
+#APIs
+gem 'httparty'
+gem 'instagram'
+gem 'twitter'
+gem 'foursquare2'
 gem 'eventbrite'
-
-#language processing
+#Language Processing
+gem 'fuzzy-string-match' #text proximity matching
 gem 'gingerice' #spell checker
 gem 'graph-rank' #text trend rank
+gem 'highscore' 
 gem 'engtagger' #part of speach determiner
-
-gem 'highscore'
 gem 'fast-stemmer'
-
-# design
+#Front-end Related
 gem 'sass-rails'
 gem 'bourbon'
 gem 'neat'
 gem 'font-awesome-rails'
 gem 'normalize-rails'
 gem 'twitter-bootstrap-rails', :git => 'git://github.com/seyhunak/twitter-bootstrap-rails.git', :branch => 'bootstrap3'
-gem 'topojson-rails'
 gem "d3-rails"
+gem 'jquery-rails'
+gem 'jquery-ui-rails'#, github: 'joliss/jquery-ui-rails', branch: 'rails-4.0.2'
+gem 'flutie'
+gem 'title'
+gem 'haml-rails'
+gem 'simple_form'
+gem "paperclip", "~> 4.1"
+gem 'high_voltage'
+gem 'coffee-rails'
+gem 'uglifier'
+#iOS Related
+gem 'apns', git: 'https://github.com/jpoz/APNS.git'
+#Other
 
 group :development do
   gem 'better_errors'
