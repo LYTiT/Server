@@ -108,7 +108,7 @@ class User < ActiveRecord::Base
     Activity.where("feed_id IN (#{user_list_ids})").order("adjusted_sort_position DESC")
   end
 
-  def top_user_interests(count=10)
+  def top_interests(count=10)
     category_interests = self.interests["venue_categories"]
     decriptive_interests = self.interests["descriptives"]
 
