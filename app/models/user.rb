@@ -125,19 +125,17 @@ class User < ActiveRecord::Base
     ["skateboard", "justin bieber", "cake"]
   end
 
-  def update_interests(source)
-=begin    
-    interests_hash = self.interests
-    interests_arr = self.interests.keys
-
-    source_categories = source.categories.values
-    source_foursquare_tags = source.descriptives.keys
-    source_trending_tags = source.trending_tags.values
-
-    self.increment_interest_by_origin(source, true, source_categories)
-    self.increment_interest_by_origin(source, false, source_foursquare_tags)
-    self.increment_interest_by_origin(source, false, source_trending_tags)
-=end    
+  def update_interests(source, details)
+    if details = "search"
+      update_user_venue_categories(source, nil, nil)
+      update_user_descriptives(source, nil, nil)
+    elsif details = "favorite_venue"
+      update_user_venue_categories(nil, source, nil)
+      update_user_descriptives(nil, srouce, nil)
+    else
+      update_user_venue_categories(nil, nil, source)
+      update_user_descriptives(nil, nil, source)
+    end
   end
 
   def update_user_venue_categories(venue, favorite_venue=nil, list=nil)
