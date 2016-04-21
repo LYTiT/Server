@@ -1667,6 +1667,8 @@ def recommendation_reason_for(user)
     return "Part of #{user_list.name}"
   else
     top_user_interests = user.top_interests(6)
+    venue_meta = self.categories.values+self.descriptives.keys
+    interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
 
     if interest_match == true
       for interest in top_user_interests
