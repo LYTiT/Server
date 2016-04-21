@@ -1661,7 +1661,6 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
-=begin
   user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
 
   if user_list != nil
@@ -1674,19 +1673,18 @@ def recommendation_reason_for(user)
     if interest_match == true
       for interest in top_user_interests
         if Venue.interest_search(interest).where("id = ?", self.id).first != nil
-          if user.interests["descriptives"][interest].try(:[], "venue_ids") != nil or user.interests["venue_categories"][interest].try(:[], "venue_ids")
+          sources = user.interests["descriptives"]["interest"].keys
+          if sources.contains? "venue_ids"
             return "Similar to venues searched for"
-          elsif user.interests["descriptives"][interest].try(:[], "favorite_venue_ids") != nil or user.interests["venue_categories"][interest].try(:[], "favorite_venue_ids") != nil
+          elsif sources.contains? "favorite_venue_ids"
             return "Based on your favorites"
           else
             return "Based on your List interests"
-          end
+          end    
         end
       end
     end
   end
-=end
-  "Recommended because I said so"  
 end
 
 
