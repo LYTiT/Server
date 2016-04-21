@@ -1651,7 +1651,7 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
   user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
   user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
 
-  results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("color_rating > -1.0 OR id IN (#{user_feed_venues})").limit(30)
+  results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("popularity_rank > 0.0").limit(30)
 
   if results.length == 0
     results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0 IN (#{user_feed_venues})").limit(30)  
