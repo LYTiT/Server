@@ -79,7 +79,12 @@ class User < ActiveRecord::Base
   def nearest_neighbors(count=10)
     User.where("lonlat_geometry IS NOT NULL").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
     #User.where("lonlat_geometry IS NOT NULL AND (lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})) * 100000 >= 400").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
-  end  
+  end
+
+  def update_feeds_and_favorites
+    update_user_feeds
+    update_favorite_venues
+  end
 
   def update_user_feeds
     update_interval = 15 #minutes

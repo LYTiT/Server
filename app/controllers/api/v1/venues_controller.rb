@@ -453,6 +453,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def check_vortex_proximity
 		@user = User.find_by_authentication_token(params[:auth_token])
+		@user.delay(:priority => -1).update_feeds_and_favorites
 		lat = params[:latitude]
 		long = params[:longitude]
 		InstagramVortex.check_nearby_vortex_existence(lat, long)
