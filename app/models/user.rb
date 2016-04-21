@@ -131,10 +131,10 @@ class User < ActiveRecord::Base
   end
 
   def update_interests(source, details)
-    if details = "searched_venue"
+    if details == "searched_venue"
       update_user_venue_categories(source, nil, nil)
       update_user_descriptives(source, nil, nil)  
-    elsif details = "favorited_venue"
+    elsif details == "favorited_venue"
       update_user_venue_categories(nil, source, nil)
       update_user_descriptives(nil, srouce, nil)
     else
