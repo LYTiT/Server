@@ -112,13 +112,27 @@ class User < ActiveRecord::Base
     category_interests = self.interests["venue_categories"]
     decriptive_interests = self.interests["descriptives"]
 
-    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..4]].keys
+    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..(count/2-1)]].keys
 
-    num_descripitives = 10 - top_categories.length
+    num_descripitives = count - top_categories.length
 
     top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
 
     return (top_categories+top_descriptives).shuffle
+  end
+
+  def top_interests_with_type(count=10)
+    category_interests = self.interests["venue_categories"]
+    decriptive_interests = self.interests["descriptives"]
+
+    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..(count/2-1)]].keys
+
+    num_descripitives = count - top_categories.length
+
+    top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
+
+    return (top_categories+top_descriptives).shuffle    
+
   end
 
   def suggested_interests
