@@ -1674,7 +1674,7 @@ def recommendation_reason_for(user)
       for interest in top_user_interests
         if Venue.interest_search(interest).where("id = ?", self.id).first != nil
           details = user.interests["descriptives"][interest] || user.interests["venue_categories"][interest]
-          sources = details.key
+          sources = details.keys
           if sources.contains? "searched_venue_ids"
             return "Similar to venues searched for"
           elsif sources.contains? "favorite_venue_ids"
