@@ -39,5 +39,6 @@ json.array! @venues do |v|
 	json.tag_3 v.trending_tags["tag_3"]
 	json.tag_4 v.trending_tags["tag_4"]
 	json.tag_5 v.trending_tags["tag_5"]
+	json.venue_categories v.categories.values
 	json.foursquare_id v.foursquare_id
 end

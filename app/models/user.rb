@@ -123,23 +123,38 @@ class User < ActiveRecord::Base
 =end    
   end
 
-  def update_user_venue_categories(source)
+  def update_user_venue_categories(venue, favorite_venue=nil, list=nil)
+    if venue != nil
+      tracker_key = "searched_venue_ids"
+      added_value = 1.0
+      source = venue
+    elsif favorite_venue != nil
+      tracker_key = "favorite_venue_ids"
+      added_value = 10.0
+      source = favorite_venue
+    else
+      tracker_key = "joined_list_ids"
+      added_value = 5.0
+      source = list
+    end
+
     interests_hash = self.interests
     interest_categories_hash = self.interests["venue_categories"]
     
     source.categories.each do |label, category|
-      category.downcase!
+      category = category.downcase
       if interest_categories_hash != nil and interest_categories_hash[category] != nil
-        underlying_venue_ids = interest_categories_hash[category]["venue_ids"]
-        if underlying_venue_ids.include?(source.id) == true
-          previous_score = interest_categories_hash[category]["weight"].to_f
-          interest_categories_hash[category] = {"weight" => (previous_score + 0.01), "venue_ids" => underlying_venue_ids}
+        underlying_source_ids = interest_categories_hash[category][tracker_key]
+        previous_score = interest_categories_hash[category]["weight"].to_f
+        if underlying_source_ids.include?(source.id) == true
+          interest_categories_hash[category]["weight"] = previous_score + 0.01
         else
-          update_venue_ids = underlying_venue_ids << source.id
-          interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => update_venue_ids}
+          updated_source_ids = underlying_source_ids << source.id
+          interest_categories_hash[category]["weight"] = previous_score + value
+          interest_categories_hash[category][tracker_key] = updated_source_ids
         end
       else
-        interest_categories_hash[category] = {"weight" => 1.0, "venue_ids" => [source.id]}
+        interest_categories_hash[category] = {"weight" => 1.0, tracker_key => [source.id]}
       end
     end
     interests_hash["venue_categories"] = interest_categories_hash
@@ -147,7 +162,21 @@ class User < ActiveRecord::Base
     self.update_columns(interests: interests_hash)
   end
 
-  def update_user_descriptives(source)
+  def update_user_descriptives(venue, favorite_venue=nil, list=nil)
+    if venue != nil
+      tracker_key = "searched_venue_ids"
+      added_value = 1.0
+      source = venue
+    elsif favorite_venue != nil
+      tracker_key = "favorite_venue_ids"
+      added_value_multiplier = 1.5
+      source = favorite_venue
+    else
+      tracker_key = "joined_list_ids"
+      added_value_multiplier = 1.2
+      source = list
+    end
+
     interests_hash = self.interests
     descriptives_categories_hash = self.interests["descriptives"]
 
@@ -156,16 +185,17 @@ class User < ActiveRecord::Base
     source_top_descriptives.each do |descriptive, details|
       descriptive = descriptive.downcase
       if descriptives_categories_hash != nil and descriptives_categories_hash[descriptive] != nil
-        underlying_venue_ids = descriptives_categories_hash[descriptive]["venue_ids"]
-        if underlying_venue_ids.include?(source.id) == true
-          previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
-          descriptives_categories_hash[descriptive] = {"weight" => (previous_score + details["weight"].to_f)/2.0, "venue_ids" => underlying_venue_ids}
+        underlying_source_ids = descriptives_categories_hash[descriptive][tracker_key]
+        previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
+        if underlying_source_ids.include?(source.id) == true
+          descriptives_categories_hash[descriptive]["weight"] = previous_score.to_f*1.05 #incrementing weight by 5%
         else
-          update_venue_ids = underlying_venue_ids << source.id
-          descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, "venue_ids" => update_venue_ids}
+          update_source_ids = underlying_source_ids << source.id
+          descriptives_categories_hash[descriptive]["weight"] = (previous_score + details["weight"].to_f*added_value_multiplier)
+          descriptives_categories_hash[descriptive][tracker_key] = update_source_ids
         end
       else
-        descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, "venue_ids" => [source.id]}
+        descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [source.id]}
       end
     end
     interests_hash["descriptives"] = descriptives_categories_hash
@@ -173,7 +203,15 @@ class User < ActiveRecord::Base
     self.update_columns(interests: interests_hash)
   end
 
+  def explicitly_add_interest(interest)
+    
+  end
 
+  def remove_interest(interest)
+    interests_hash = self.interests
+    interests_hash.delete(interest)
+    self.update_columns(interests: interests_hash)
+  end
 
   def increment_interest_by_origin(source, meta_is_category, meta)
     #source type = Searched Venue, Favorite Venue, List
