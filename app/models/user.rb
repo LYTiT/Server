@@ -97,7 +97,7 @@ class User < ActiveRecord::Base
   def update_favorite_venues
     instagram_refresh_rate = 15 #minutes
     favorite_venue_ids = "SELECT venue_id FROM favorite_venues WHERE user_id = #{self.id}"
-    favorite_stale_venues = Venue.where("id IN (#{favorite_venues_ids}) AND last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes).limit(5)
+    favorite_stale_venues = Venue.where("id IN (#{favorite_venue_ids}) AND last_instagram_pull_time < ?", Time.now-instagram_refresh_rate.minutes).limit(5)
     for stale_venue in favorite_stale_venues
       stale_venue.rebuild_cached_vc_feed
     end
@@ -119,20 +119,6 @@ class User < ActiveRecord::Base
     top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
 
     return (top_categories+top_descriptives).shuffle
-  end
-
-  def top_interests_with_type(count=10)
-    category_interests = self.interests["venue_categories"]
-    decriptive_interests = self.interests["descriptives"]
-
-    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..(count/2-1)]].keys
-
-    num_descripitives = count - top_categories.length
-
-    top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
-
-    return (top_categories+top_descriptives).shuffle    
-
   end
 
   def suggested_interests
