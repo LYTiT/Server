@@ -1661,6 +1661,7 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
+=begin
   user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
 
   if user_list != nil
@@ -1684,6 +1685,8 @@ def recommendation_reason_for(user)
       end
     end
   end
+=end
+  "Recommended because I said so"  
 end
 
 
