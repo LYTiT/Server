@@ -1643,19 +1643,19 @@ class Venue < ActiveRecord::Base
 # Actions ======================================================================================
 #===============================================================================================
 def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
-  #top_user_interests = Hash[user.interests.sort_by { |k,v| -v["score"] }[0..4]].keys
+  top_user_interests = user.top_user_interests(6)
 
-  #interest_query = top_user_interests.join(" ")
+  interest_query = top_user_interests.join(" ")
 
   search_box = Geokit::Bounds.from_point_and_radius([lat, long], 5, :units => :kms)
   user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
   user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
 
-  #results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)
+  results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)
 
-  #if results.length == 0
+  if results.length == 0
     results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("rating IS NOT NULL OR id IN (#{user_feed_venues})").limit(30)  
-  #end
+  end
 
   return results
 end
