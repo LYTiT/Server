@@ -114,9 +114,9 @@ class User < ActiveRecord::Base
 
     top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..4]].keys
 
-    num_descripitives = 10 - top_category_interests.length
+    num_descripitives = 10 - top_categories.length
 
-    top_descriptives = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
+    top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
 
     return (top_categories+top_descriptives).shuffle
   end
