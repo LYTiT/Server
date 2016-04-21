@@ -4,13 +4,14 @@ VENUE_META_CATEGORIES =
 	american_restaurant amusement_park arena
 	bagel bar beer 
 	cafe cat chinese_restaurant club cocktail 
-	discotheque dog drink 
+	deep_house discotheque dog drink 
+	exhibition exhibit
 	food french_restaurant 
 	gym 
 	indian_restaurant 
 	japanese_restaurant jazz 
-	mountain museum 
-	park pasta pizza pool pub 
+	mountain museum music
+	park pasta party pizza pool pop_up pub 
 	restaurant 
 	speakeasy stadium sushi 
 	zoo 

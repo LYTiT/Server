@@ -1032,7 +1032,9 @@ CREATE TABLE feeds (
     preview_image_url character varying(255),
     cover_image_url character varying(255),
     is_private boolean DEFAULT false,
-    list_category_id integer
+    list_category_id integer,
+    venue_attributes json DEFAULT '{"descriptives":{},"venue_categories":{}}'::json NOT NULL,
+    venue_attributes_string character varying
 );
 
 
@@ -1888,7 +1890,7 @@ CREATE TABLE users (
     facebook_name character varying(255),
     num_bolts integer DEFAULT 0,
     interests json DEFAULT '{}'::json NOT NULL,
-    description text,
+    profile_description text,
     profile_image_url text,
     latitude double precision,
     longitude double precision,
@@ -4638,4 +4640,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160417233907');
 INSERT INTO schema_migrations (version) VALUES ('20160418180605');
 
 INSERT INTO schema_migrations (version) VALUES ('20160420162525');
+
+INSERT INTO schema_migrations (version) VALUES ('20160420173733');
+
+INSERT INTO schema_migrations (version) VALUES ('20160421054900');
 

@@ -131,10 +131,10 @@ class User < ActiveRecord::Base
   end
 
   def update_interests(source, details)
-    if details = "search"
+    if details = "searched_venue"
       update_user_venue_categories(source, nil, nil)
       update_user_descriptives(source, nil, nil)  
-    elsif details = "favorite_venue"
+    elsif details = "favorited_venue"
       update_user_venue_categories(nil, source, nil)
       update_user_descriptives(nil, srouce, nil)
     else
@@ -161,12 +161,22 @@ class User < ActiveRecord::Base
     interests_hash = self.interests
     interest_categories_hash = self.interests["venue_categories"]
     
-    source.categories.each do |label, category|
-      category = category.downcase
+    if list != nil
+      source_categories = source.venue_attributes["venue_categories"]
+    else
+      source_categories = source.categories
+    end
+
+    source_categories.each do |label, category|
+      if list != nil
+        category = label.downcase
+      else
+        category = category.downcase
+      end
       if interest_categories_hash != nil and interest_categories_hash[category] != nil
-        underlying_source_ids = interest_categories_hash[category][tracker_key]
+        underlying_source_ids = interest_categories_hash[category][tracker_key].to_a
         previous_score = interest_categories_hash[category]["weight"].to_f
-        if underlying_source_ids.include?(source.id) == true
+        if underlying_source_ids != [] and underlying_source_ids.include?(source.id) == true
           interest_categories_hash[category]["weight"] = previous_score + 0.01
         else
           updated_source_ids = underlying_source_ids << source.id
@@ -200,14 +210,18 @@ class User < ActiveRecord::Base
     interests_hash = self.interests
     descriptives_categories_hash = self.interests["descriptives"]
 
-    source_top_descriptives = Hash[source.descriptives.to_a[0..4]]
+    if list != nil
+      source_top_descriptives = Hash[source.venue_attributes["descriptives"].to_a[0..4]]
+    else
+      source_top_descriptives = Hash[source.descriptives.to_a[0..4]]
+    end
 
     source_top_descriptives.each do |descriptive, details|
       descriptive = descriptive.downcase
       if descriptives_categories_hash != nil and descriptives_categories_hash[descriptive] != nil
-        underlying_source_ids = descriptives_categories_hash[descriptive][tracker_key]
+        underlying_source_ids = descriptives_categories_hash[descriptive][tracker_key].to_a
         previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
-        if underlying_source_ids.include?(source.id) == true
+        if underlying_source_ids != [] and underlying_source_ids.include?(source.id) == true
           descriptives_categories_hash[descriptive]["weight"] = previous_score.to_f*1.05 #incrementing weight by 5%
         else
           update_source_ids = underlying_source_ids << source.id

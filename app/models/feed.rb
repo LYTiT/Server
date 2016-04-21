@@ -88,9 +88,68 @@ class Feed < ActiveRecord::Base
 		self.update_underlying_venues
 	end
 
-	def is_private?
-		self.code != nil
+	def update_venue_attributes(added_venue)
+		update_venue_categories(added_venue)
+		update_descriptives(added_venue)
 	end
+
+	def update_venue_categories(venue)
+	  tracker_key = "underlying_venue_ids"
+	  added_value = 5.0
+
+	  venue_attributes_hash = self.venue_attributes
+	  venue_categories_hash = self.venue_attributes["venue_categories"]
+	  
+	  venue.categories.each do |label, category|
+	    category = category.downcase
+	    if venue_categories_hash != nil and venue_categories_hash[category] != nil
+	      underlying_source_ids = venue_categories_hash[category][tracker_key]
+	      previous_score = venue_categories_hash[category]["weight"].to_f
+	      if underlying_source_ids.include?(venue.id) == true
+	        venue_categories_hash[category]["weight"] = previous_score + 0.01
+	      else
+	        updated_source_ids = underlying_source_ids << venue.id
+	        venue_categories_hash[category]["weight"] = previous_score + added_value
+	        venue_categories_hash[category][tracker_key] = updated_source_ids
+	      end
+	    else
+	      venue_categories_hash[category] = {"weight" => 1.0, tracker_key => [venue.id]}
+	    end
+	  end
+	  venue_attributes_hash["venue_categories"] = venue_categories_hash
+	  
+	  self.update_columns(venue_attributes: venue_attributes_hash)
+	end
+
+	def update_descriptives(venue)
+	  tracker_key = "searched_venue_ids"
+	  added_value_multiplier = 1.2
+
+	  venue_attributes_hash = self.venue_attributes
+	  descriptives_hash = self.venue_attributes["descriptives"]
+
+	  source_top_descriptives = Hash[venue.descriptives.to_a[0..4]]
+
+	  source_top_descriptives.each do |descriptive, details|
+	    descriptive = descriptive.downcase
+	    if descriptives_hash != nil and descriptives_hash[descriptive] != nil
+	      underlying_source_ids = descriptives_hash[descriptive][tracker_key]
+	      previous_score = descriptives_hash[descriptive]["weight"].to_f
+	      if underlying_source_ids.include?(venue.id) == true
+	        descriptives_hash[descriptive]["weight"] = previous_score.to_f*1.05 #incrementing weight by 5%
+	      else
+	        update_source_ids = underlying_source_ids << venue.id
+	        descriptives_hash[descriptive]["weight"] = (previous_score + details["weight"].to_f*added_value_multiplier)
+	        descriptives_hash[descriptive][tracker_key] = update_source_ids
+	      end
+	    else
+	      descriptives_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [venue.id]}
+	    end
+	  end
+	  venue_attributes_hash["descriptives"] = descriptives_hash
+	  
+	  self.update_columns(venue_attributes: venue_attributes_hash)
+	end	
 
 	def Feed.new_member_calibration(feed_id, user_id)
 		user = User.find_by_id(user_id)
@@ -98,7 +157,8 @@ class Feed < ActiveRecord::Base
 		if user != nil && feed != nil	
 			feed.calibrate_num_members
 			feed.increment!(:num_users, 1)
-			user.increment!(:num_lists, 1)	
+			user.increment!(:num_lists, 1)
+			user.update_interests(feed, "joined_list")
 		end
 	end
 
@@ -122,6 +182,7 @@ class Feed < ActiveRecord::Base
 			added_moment_count = venue.venue_comments.count || 0
 			feed.increment!(:num_moments, added_moment_count)	
 			feed.update_geo_mass_center
+			feed.update_venue_attributes(venue)
 		end
 	end
 

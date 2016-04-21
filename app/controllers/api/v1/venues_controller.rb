@@ -96,7 +96,7 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 
 		if params[:from_search] == "1" && page == 1
-			@user.delay.update_interests(@venue, "search")
+			@user.delay.update_interests(@venue, "searched_venue")
 		end
 
 		if Time.now.min >= 10
@@ -461,11 +461,13 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def add_to_favorites
+		@user = User.find_by_authentication_token(params[:auth_token])
 		venue = Venue.find_by_id(params[:venue_id])
 		venue_details_hash = venue.details_hash
 		fv = FavoriteVenue.create!(:venue_id => venue.id, :venue_name => venue.name, :user_id => params[:user_id], :venue_details => venue_details_hash)
 
 		if fv
+			@user.delay.update_interests(venue, "favorited_venue")
 			render json: fv
 		else
 			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue Not Favorited"] } }, :status => :not_found
