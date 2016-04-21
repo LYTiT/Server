@@ -1643,7 +1643,7 @@ class Venue < ActiveRecord::Base
 # Actions ======================================================================================
 #===============================================================================================
 def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
-  top_user_interests = user.top_user_interests(6)
+  top_user_interests = user.top_interests(6)
 
   interest_query = top_user_interests.join(" ")
 

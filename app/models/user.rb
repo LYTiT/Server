@@ -128,7 +128,7 @@ class User < ActiveRecord::Base
   def update_interests(source, details)
     if details = "search"
       update_user_venue_categories(source, nil, nil)
-      update_user_descriptives(source, nil, nil)
+      update_user_descriptives(source, nil, nil)  
     elsif details = "favorite_venue"
       update_user_venue_categories(nil, source, nil)
       update_user_descriptives(nil, srouce, nil)
