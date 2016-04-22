@@ -11,7 +11,7 @@ json.cache! @view_cache_key do |json|
 			json.twitter_user_avatar_url comment[:user][:profile_image_url]
 			json.twitter_user_id comment[:user][:id]
 			json.twitter_handle comment[:user][:screen_name]
-		elsif comment.class.name == "Hash" and comment["created_time"] != nil and comment["created_time"] > (Time.now-5.hours).to_i
+		elsif comment.class.name == "Hash" and comment["created_time"] != nil and comment["created_time"].to_i > (Time.now-5.hours).to_i
 		    json.instagram_id comment["id"]
 		    json.media_type comment["type"]
 		    json.image_url_1 comment["images"]["thumbnail"]["url"]
