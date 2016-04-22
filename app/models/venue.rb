@@ -814,10 +814,10 @@ class Venue < ActiveRecord::Base
 
   def update_descriptives_from_instagram(instagram_hash) 
     caption = instagram_hash["caption"]["text"] rescue ""
-    tags = instagram_hash["tags"].join(" ").strip
+    #tags = instagram_hash["tags"].join(" ").strip
 
-    if caption.length > 0 or tags.length > 0
-      update_descriptives(caption+" "+tags)
+    if caption.length > 0
+      update_descriptives(caption)
     end
 
   end
