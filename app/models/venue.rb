@@ -1032,6 +1032,11 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def Venue.name_for_comparison(raw_venue_name, city)
+    scrubbed_name = Venue.scrub_venue_name(raw_venue_name, city)
+    stop_word_cleared_name = Venue.clear_stop_words(scrubbed_name)
+  end
+
   def Venue.scrub_venue_name(raw_name, city)
     #Many Instagram names are contaminated with extra information inputted by the user, i.e "Concert @ Madison Square Garden"
     if raw_name != nil && city != nil
@@ -1063,11 +1068,6 @@ class Venue < ActiveRecord::Base
     pattern = /\b(?:#{ Regexp.union(stop_words).source })\b/    
     lower_venue_name[pattern]
     lower_venue_name.gsub(pattern, '').squeeze(' ').strip.titleize
-  end
-
-  def Venue.name_for_comparison(raw_venue_name, city)
-    scrubbed_name = Venue.scrub_venue_name(raw_venue_name, city)
-    stop_word_cleared_name = Venue.clear_stop_words(scrubbed_name)
   end
 
   def Venue.name_is_proper?(vname) 
@@ -2039,12 +2039,12 @@ end
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
-        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), Venue.name_for_comparison(foursquare_venue.name.downcase, origin_city))#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), foursquare_venue.name.downcase.gsub(origin_city, ""))#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.75
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
             overlap = venue_name.downcase.split & entry.name.downcase.split
-            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), Venue.name_for_comparison(entry.name.downcase, origin_city))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
+            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), foursquare_venue.name.downcase.gsub(origin_city, ""))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
             if jarow_winkler_proximity >= 0.75
               foursquare_venue = entry
             end
