@@ -27,7 +27,7 @@ json.cache! @view_cache_key do |json|
 		    json.thirdparty_username comment["user"]["username"]
 		    json.thirdparty_user_id comment["user"]["id"]
 		    json.profile_image_url comment["user"]["profile_picture"]
-		elsif comment.entry_type == "lytit_post"
+		elsif comment.class.name != "Hash" and comment.entry_type == "lytit_post"
 			json.content_origin "lytit"
 			json.id comment.id
 			json.user_id comment.user_details["id"]
@@ -43,7 +43,7 @@ json.cache! @view_cache_key do |json|
 		    json.video_url_3 comment.lytit_post["video_url_3"]
 		    json.created_at comment.lytit_post["created_at"]		
 		    json.reaction comment.lytit_post["reaction"]    
-		elsif comment.entry_type == "instagram"
+		elsif comment.class.name != "Hash" and comment.entry_type == "instagram"
 			json.content_origin "instagram"
 			json.id comment.id
 		    json.instagram_id comment.instagram["instagram_id"]
@@ -59,7 +59,7 @@ json.cache! @view_cache_key do |json|
 		    json.thirdparty_username comment.instagram["instagram_user"]["name"]
 		    json.thirdparty_user_id comment.instagram["instagram_user"]["instagram_id"]
 		    json.profile_image_url comment.instagram["instagram_user"]["profile_image_url"]
-		elsif comment.entry_type == "tweet"
+		elsif comment.class.name != "Hash" and comment.entry_type == "tweet"
 			json.content_origin "twitter"
 			json.id comment.id
 			json.lytit_tweet_id comment.tweet["id"]
@@ -74,14 +74,16 @@ json.cache! @view_cache_key do |json|
 			json.twitter_user_id comment.tweet["twitter_user"]["twitter_id"]
 			json.twitter_handle comment.tweet["twitter_user"]["handle"]
 		else
-			json.id comment.id
-			json.event_id comment.event["id"]
-			json.event_name comment.event["name"]
-			json.event_description comment.event["description"]
-			json.event_start_time comment.event["start_time"]
-			json.event_end_time comment.event["end_time"]
-			json.event_source_url comment.event["source_url"]
-			json.event_cover_image_url comment.event["cover_image_url"]
+			if comment.class.name != "Hash"
+				json.id comment.id
+				json.event_id comment.event["id"]
+				json.event_name comment.event["name"]
+				json.event_description comment.event["description"]
+				json.event_start_time comment.event["start_time"]
+				json.event_end_time comment.event["end_time"]
+				json.event_source_url comment.event["source_url"]
+				json.event_cover_image_url comment.event["cover_image_url"]
+			end
 		end
 	end
 
