@@ -2041,7 +2041,7 @@ end
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
             overlap = venue_name.downcase.split & entry.name.downcase.split
-            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), entry.name.downcase.gsub(origin_city, ""))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
+            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), entry.name.downcase.gsub("the" , "").gsub(origin_city, ""))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
             if jarow_winkler_proximity >= 0.75
               foursquare_venue = entry
               break
