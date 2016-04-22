@@ -81,7 +81,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def search
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@feeds = Feed.lookup(params[:q])
+		@feeds = Feed.search(params[:q])
 		 #(Feed.where("LOWER(name) like (?)", params[:q].downcase+"%").includes(:feed_users).limit(10)+Feed.search(params[:q]).includes(:feed_users).limit(10)).uniq#Feed.search(params[:q]).includes(:feed_users).limit(15)
 	end
 
