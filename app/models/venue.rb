@@ -845,6 +845,14 @@ class Venue < ActiveRecord::Base
     update_descriptives(f2_tags.join(" ").strip)
   end
 
+  def add_category(category)
+    categories_hash = self.categories
+    num_categories = categories_hash.count
+    categories_hash["category_#{num_categories+1}"] = category
+    self.update_columns(categories: categories_hash)
+    self.update_columns(categories_string: categories_hash.values.join(" ").strip)
+  end
+
   def update_descriptives(new_descriptives_string)
     new_descriptives_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
