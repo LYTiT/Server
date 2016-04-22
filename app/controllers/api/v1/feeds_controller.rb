@@ -365,6 +365,16 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = Feed.categories
 	end
 
+	def get_list_categories
+		@categories = ListCategory.all.page(params[:page]).per(10)
+	end
+
+	def get_lists_of_category
+		lat = params[:latitude]
+		long = params[:longitude]
+		@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
+	end
+
 	def get_spotlyts
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)

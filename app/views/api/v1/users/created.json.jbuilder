@@ -6,6 +6,7 @@ json.is_verified @user.is_verified
 json.fb_id @user.facebook_id
 json.fb_name @user.facebook_name
 json.num_likes @user.num_likes
+json.num_bolts @user.num_bolts
 json.phone_number @user.phone_number
 json.country_code @user.country_code
 json.lytit_admin @user.is_admin?

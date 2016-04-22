@@ -1034,7 +1034,9 @@ CREATE TABLE feeds (
     is_private boolean DEFAULT false,
     list_category_id integer,
     venue_attributes json DEFAULT '{"descriptives":{},"venue_categories":{}}'::json NOT NULL,
-    venue_attributes_string character varying
+    venue_attributes_string character varying,
+    central_mass_lonlat_geometry geometry(Point),
+    central_mass_lonlat_geography geography(Point,4326)
 );
 
 
@@ -1266,6 +1268,38 @@ CREATE SEQUENCE list_categories_id_seq
 --
 
 ALTER SEQUENCE list_categories_id_seq OWNED BY list_categories.id;
+
+
+--
+-- Name: list_category_entries; Type: TABLE; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE TABLE list_category_entries (
+    id integer NOT NULL,
+    feed_id integer,
+    list_category_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+--
+-- Name: list_category_entries_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE list_category_entries_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: list_category_entries_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE list_category_entries_id_seq OWNED BY list_category_entries.id;
 
 
 --
@@ -2444,6 +2478,13 @@ ALTER TABLE ONLY list_categories ALTER COLUMN id SET DEFAULT nextval('list_categ
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY list_category_entries ALTER COLUMN id SET DEFAULT nextval('list_category_entries_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY lyt_spheres ALTER COLUMN id SET DEFAULT nextval('lyt_spheres_id_seq'::regclass);
 
 
@@ -2812,6 +2853,14 @@ ALTER TABLE ONLY likes
 
 ALTER TABLE ONLY list_categories
     ADD CONSTRAINT list_categories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: list_category_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -; Tablespace: 
+--
+
+ALTER TABLE ONLY list_category_entries
+    ADD CONSTRAINT list_category_entries_pkey PRIMARY KEY (id);
 
 
 --
@@ -3255,6 +3304,20 @@ CREATE INDEX index_feed_venues_on_venue_id ON feed_venues USING btree (venue_id)
 
 
 --
+-- Name: index_feeds_on_central_mass_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_central_mass_lonlat_geography ON feeds USING gist (central_mass_lonlat_geography);
+
+
+--
+-- Name: index_feeds_on_central_mass_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_central_mass_lonlat_geometry ON feeds USING gist (central_mass_lonlat_geometry);
+
+
+--
 -- Name: index_feeds_on_name; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3336,6 +3399,20 @@ CREATE INDEX index_likes_on_liked_id ON likes USING btree (liked_id);
 --
 
 CREATE INDEX index_likes_on_liker_id ON likes USING btree (liker_id);
+
+
+--
+-- Name: index_list_category_entries_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_list_category_entries_on_feed_id ON list_category_entries USING btree (feed_id);
+
+
+--
+-- Name: index_list_category_entries_on_list_category_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_list_category_entries_on_list_category_id ON list_category_entries USING btree (list_category_id);
 
 
 --
@@ -4644,4 +4721,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160420162525');
 INSERT INTO schema_migrations (version) VALUES ('20160420173733');
 
 INSERT INTO schema_migrations (version) VALUES ('20160421054900');
+
+INSERT INTO schema_migrations (version) VALUES ('20160422023421');
+
+INSERT INTO schema_migrations (version) VALUES ('20160422031504');
 

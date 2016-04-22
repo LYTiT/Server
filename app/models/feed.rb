@@ -34,8 +34,6 @@ class Feed < ActiveRecord::Base
 	              }      
 
 
-
-
 	acts_as_mappable :default_units => :kms,
 	                 :default_formula => :sphere,
 	                 :distance_field_name => :distance,
@@ -55,6 +53,9 @@ class Feed < ActiveRecord::Base
 	has_many :reported_objects, :dependent => :destroy
 
 	has_many :feed_join_requests, :dependent => :destroy
+
+	has_many :list_category_entries, :dependent => :destroy
+	has_many :list_categories, through: :list_category_entries
 
 	belongs_to :user
 
@@ -107,13 +108,15 @@ class Feed < ActiveRecord::Base
 	      previous_score = venue_categories_hash[category]["weight"].to_f
 	      if underlying_source_ids.include?(venue.id) == true
 	        venue_categories_hash[category]["weight"] = previous_score + 0.01
+	        venue_categories_hash[descriptive]["latest_update_time"] = Time.now
 	      else
 	        updated_source_ids = underlying_source_ids << venue.id
 	        venue_categories_hash[category]["weight"] = previous_score + added_value
 	        venue_categories_hash[category][tracker_key] = updated_source_ids
+	        venue_categories_hash[descriptive]["latest_update_time"] = Time.now
 	      end
 	    else
-	      venue_categories_hash[category] = {"weight" => 1.0, tracker_key => [venue.id]}
+	      venue_categories_hash[category] = {"weight" => 1.0, tracker_key => [venue.id], "latest_update_time" => Time.now}
 	    end
 	  end
 	  venue_attributes_hash["venue_categories"] = venue_categories_hash
@@ -137,13 +140,15 @@ class Feed < ActiveRecord::Base
 	      previous_score = descriptives_hash[descriptive]["weight"].to_f
 	      if underlying_source_ids.include?(venue.id) == true
 	        descriptives_hash[descriptive]["weight"] = previous_score.to_f*1.05 #incrementing weight by 5%
+	        descriptives_hash[descriptive]["latest_update_time"] = Time.now
 	      else
 	        update_source_ids = underlying_source_ids << venue.id
 	        descriptives_hash[descriptive]["weight"] = (previous_score + details["weight"].to_f*added_value_multiplier)
 	        descriptives_hash[descriptive][tracker_key] = update_source_ids
+	        descriptives_hash[descriptive]["latest_update_time"] = Time.now
 	      end
 	    else
-	      descriptives_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [venue.id]}
+	      descriptives_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [venue.id], "latest_update_time" => Time.now}
 	    end
 	  end
 	  venue_attributes_hash["descriptives"] = descriptives_hash
@@ -326,6 +331,10 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
+	def Feed.of_category(category, lat=40.741140, long=-73.981917)
+		Feed.all.joins(:list_category_entries).where("category = ?", category).order("feeds.central_mass_lonlat_geometry <-> st_point(#{long},#{lat})")
+	end
+
 	def update_geo_mass_center
 		#Calculation for the geographic midpoint of a List based on locations of underlying Venues
 		underlying_venues = self.venues
@@ -365,6 +374,9 @@ class Feed < ActiveRecord::Base
 
 			self.update_columns(central_mass_latitude: geo_mass_lat)
 			self.update_columns(central_mass_longitude: geo_mass_long)
+			point = "POINT(#{geo_mass_long} #{geo_mass_lat})"
+			self.update_columns(central_mass_lonlat_geometry: point)
+			self.update_columns(central_mass_lonlat_geography: point)			
 			return [geo_mass_lat, geo_mass_long]
 		else
 			nil

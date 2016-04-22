@@ -178,13 +178,15 @@ class User < ActiveRecord::Base
         previous_score = interest_categories_hash[category]["weight"].to_f
         if underlying_source_ids != [] and underlying_source_ids.include?(source.id) == true
           interest_categories_hash[category]["weight"] = previous_score + 0.01
+          interest_categories_hash[category]["latest_update_time"] = Time.now
         else
           updated_source_ids = underlying_source_ids << source.id
           interest_categories_hash[category]["weight"] = previous_score + added_value
           interest_categories_hash[category][tracker_key] = updated_source_ids
+          interest_categories_hash[category]["latest_update_time"] = Time.now
         end
       else
-        interest_categories_hash[category] = {"weight" => 1.0, tracker_key => [source.id]}
+        interest_categories_hash[category] = {"weight" => 1.0, tracker_key => [source.id], "latest_update_time" => Time.now}
       end
     end
     interests_hash["venue_categories"] = interest_categories_hash
@@ -223,13 +225,15 @@ class User < ActiveRecord::Base
         previous_score = descriptives_categories_hash[descriptive]["weight"].to_f
         if underlying_source_ids != [] and underlying_source_ids.include?(source.id) == true
           descriptives_categories_hash[descriptive]["weight"] = (previous_score.to_f*(underlying_source_ids.count - 1.0) + details["weight"].to_f) / (underlying_source_ids.count) #weighted average
+          descriptives_categories_hash[descriptive]["latest_update_time"] = Time.now
         else
           update_source_ids = underlying_source_ids << source.id
           descriptives_categories_hash[descriptive]["weight"] = (previous_score*underlying_source_ids.count + details["weight"].to_f) / (underlying_source_ids.count + 1)
           descriptives_categories_hash[descriptive][tracker_key] = update_source_ids
+          descriptives_categories_hash[descriptive]["latest_update_time"] = Time.now
         end
       else
-        descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [source.id]}
+        descriptives_categories_hash[descriptive] = {"weight" => details["weight"].to_f, tracker_key => [source.id], "latest_update_time" => Time.now}
       end
     end
     interests_hash["descriptives"] = descriptives_categories_hash
