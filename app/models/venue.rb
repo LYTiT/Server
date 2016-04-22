@@ -509,6 +509,7 @@ class Venue < ActiveRecord::Base
     self.feeds.update_all("num_moments = num_moments+1")
     self.update_rating(true, true)
     self.update_columns(latest_rating_update_time: Time.now)
+    self.update_featured_comment(vc)
 
     self.update_rating(true, true)
 
