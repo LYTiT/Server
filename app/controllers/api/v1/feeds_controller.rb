@@ -373,6 +373,7 @@ class Api::V1::FeedsController < ApiBaseController
 		lat = params[:latitude]
 		long = params[:longitude]
 		@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
+		render 'get_feeds.json.jbuilder'
 	end
 
 	def get_spotlyts
