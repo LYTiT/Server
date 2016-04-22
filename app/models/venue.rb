@@ -564,7 +564,7 @@ class Venue < ActiveRecord::Base
         end
       end
 
-      super_content_count = self.venue_comments.where("adjusted_sort_position >= ?", current_position).count
+      super_content_count = self.venue_comments.where("adjusted_sort_position >= ? AND adjusted_sort_position <= ?", current_position, current_position+5.hours).count
 
       if super_content_count > 0 && (page_offset == 0 || page_number*page_count <= page_offset)
         new_super_content_num_pages = super_content_count/page_count + (super_content_count%page_count != 0 ? 1:0)
@@ -819,7 +819,6 @@ class Venue < ActiveRecord::Base
     if caption.length > 0
       update_descriptives(caption)
     end
-
   end
 
   def set_categories_and_descriptives(foursquare_venue)
