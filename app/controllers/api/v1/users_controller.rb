@@ -96,6 +96,14 @@ class Api::V1::UsersController < ApiBaseController
 			@user.profile_description = params[:profile_description]
 		end
 
+		if params[:num_daily_moments] != nil
+			if params[:num_daily_moments].to_i < 25 
+				@user.num_daily_moments = params[:num_daily_moments]
+			else
+				@user.num_daily_moments = nil
+			end
+		end
+
 		if @user.save		
 			@user.delay(:priority => -1).update_list_activity_user_details
 			render json: { success: true }
@@ -407,6 +415,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_user
+		@user = User.find_by_id(params[:id])		
 	end
 
 

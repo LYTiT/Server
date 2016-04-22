@@ -2036,12 +2036,12 @@ end
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
-        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), foursquare_venue.name.downcase.gsub(origin_city, ""))#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, foursquare_venue.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.75
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
             overlap = venue_name.downcase.split & entry.name.downcase.split
-            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city), entry.name.downcase.gsub("the" , "").gsub(origin_city, ""))#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
+            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, entry.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
             if jarow_winkler_proximity >= 0.75
               foursquare_venue = entry
               break
