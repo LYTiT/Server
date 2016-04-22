@@ -492,7 +492,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@events = Event.where("venue_id = ?", params[:venue_id])
 	end
 
-	def get_featured_lytit_venue
+	def get_lytit_featured_venue
 		featured_venue_id = 0
 		@venue = Venue.find_by_id(featured_venue_id)
 	end

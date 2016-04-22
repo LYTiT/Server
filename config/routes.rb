@@ -276,7 +276,7 @@ LytitServer::Application.routes.draw do
           get 'get_comments_feed'
         end
         collection do
-          get 'get_featured_lytit_venue'
+          get 'get_lytit_featured_venue'
         end
         collection do
           get 'get_surrounding_venues'

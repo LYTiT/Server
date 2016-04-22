@@ -147,11 +147,6 @@ class Api::V1::FeedsController < ApiBaseController
 		#FeedVenue.where("feed_venues.feed_id = ?", params[:id]).includes(:venue, :user, :activity).order("venues.name ASC").page(params[:page]).per(15)
 	end
 
-	def get_recommended_venue
-		feed = Feed.find_by_id(params[:feed_id])
-		@venue = feed.recommended_venue_for_user(params[:latitude], params[:longitude])	
-	end
-
 	def add_venue
 		params[:first_feed]
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
@@ -394,6 +389,11 @@ class Api::V1::FeedsController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		@recommendations = FeedRecommendation.for_user(@user, params[:latitude], params[:longitude])
 	end
+
+	def get_recommended_venue
+		feed = Feed.find_by_id(params[:feed_id])
+		@venue = feed.recommended_venue_for_user(params[:latitude], params[:longitude])	
+	end	
 
 	def invite_user
 		fi = FeedInvitation.create!(:inviter_id => params[:inviter_id], :invitee_id => params[:invitee_id], :feed_id => params[:feed_id])
