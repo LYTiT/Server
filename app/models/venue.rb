@@ -163,8 +163,8 @@ class Venue < ActiveRecord::Base
   #TABLE OF CONTENTS
   #I.Creation Methods
   #II.Search Method
-  #III.Selection
-  #IV.Ranking Methods
+  #III.Ranking Methods
+  #IV.Selection 
   #V.Content Methods
   #VI.Attribute Methods
   #VII.Validation Methods
@@ -490,137 +490,6 @@ class Venue < ActiveRecord::Base
   end
 
 #===============================================================================================
-# Rarnking =====================================================================================
-#===============================================================================================
-
-  #A. Lytit/Color Ratings------------------------------------------------------------
-  #----------------------------------------------------------------------------------
-  def Venue.update_all_active_venue_ratings
-    for venue in Venue.where("rating IS NOT NULL")
-      if venue.is_visible? == true
-        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
-          venue.update_rating()
-        end
-      end
-
-      if venue.details_missing? == true
-        venue.add_foursquare_details
-      end
-    end
-  end
-
-  def is_visible?
-    visible = true
-    latest_posted_comment_time = self.latest_posted_comment_time || Time.now
-    if (self.rating == nil or self.rating.round(2) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
-      visible = false
-    end
-
-    if visible == false
-      self.update_columns(rating: nil)
-      self.update_columns(r_up_votes: 1.0)
-      self.update_columns(r_down_votes: 1.0)
-      self.update_columns(color_rating: -1.0)
-      self.update_columns(popularity_rank: 0.0)
-      self.update_columns(latest_posted_comment_time: nil)
-    end
-
-    return visible
-  end
-
-  def update_rating(after_post=false, lytit_post=false)
-    latest_posted_comment_time = self.latest_posted_comment_time || Time.now
-    old_r_up_vote_count = self.r_up_votes 
-    if after_post == true
-      if lytit_post == true
-        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+6.0
-      else
-        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
-      end
-    else
-      new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
-    end
-    self.update_columns(r_up_votes: new_r_up_vote_count)
-
-    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
-
-    a = new_r_up_vote_count >= 1.0 ? new_r_up_vote_count : 1.0
-    b = 1.0
-
-    puts "A = #{a}, B = #{b}, Y = #{y}"
-
-    # x = LytitBar::inv_inc_beta(a, b, y)
-    # for some reason the python interpreter installed is not recognized by RubyPython
-    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
-
-    if $?.to_i == 0
-      puts "rating before = #{self.rating}"
-      puts "rating after = #{x}"
-
-      new_rating = eval(x).round(4)
-      color_rating = new_rating.round_down(1)
-
-      update_columns(rating: new_rating)
-      update_historical_avg_rating
-
-      if a > 1.0
-        update_columns(color_rating: color_rating)        
-        update_popularity_rank
-      else
-        update_columns(color_rating: -1.0)
-        update_columns(popularity_rank: 0.0)
-      end
-
-      update_columns(latest_rating_update_time: Time.now)
-    else
-      puts "Could not calculate rating. Status: #{$?.to_i}"
-    end
-  end
-
-  def update_historical_avg_rating
-    tz_offset = time_zone_offset || 0.0
-    current_hour = (Time.now.utc + tz_offset.hours).hour.to_i
-    ratings_hash = self.hist_rating_avgs
-    key = "hour_#{current_hour}"
-    count = ratings_hash[key]["count"]
-    previous_hist_rating = ratings_hash[key]["rating"]    
-    current_rating = rating || 0
-    updated_hist_rating = (previous_hist_rating * count.to_f + current_rating) / (count.to_f + 1.0)
-    ratings_hash[key]["count"] = count + 1
-    ratings_hash[key]["rating"] = updated_hist_rating
-    self.update_columns(hist_rating_avgs: ratings_hash)
-  end
-
-  #A. Trend Scoring------------------------------------------------------------------
-  #---------------------------------------------------------------------------------- 
-  def update_popularity_rank
-    view_half_life = 60.0 #minutes
-    latest_page_view_time_wrapper = latest_page_view_time || Time.now
-    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
-    self.update_columns(page_views: new_page_view_count)
-    tz_offset = self.time_zone_offset || 0.0
-    current_hour = (Time.now.utc + tz_offset.hours).hour.to_i
-    key = "hour_#{current_hour}"
-    historical_rating = self.hist_rating_avgs[key]["rating"]
-    current_rating = rating || 0
-    k = 0.8
-    m = 0.01
-    e = 0.2
-    new_popularity_rank = (current_rating + (current_rating - historical_rating)*k) + new_page_view_count*m + event_happening?*e
-    self.update_columns(popularity_rank: new_popularity_rank)
-  end
-
-  def account_page_view(u_id)
-    view_half_life = 120.0 #minutes
-    latest_page_view_time_wrapper = latest_page_view_time || Time.now
-    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)+1.0
-
-    self.update_columns(page_views: new_page_view_count)
-    self.update_columns(latest_page_view_time: Time.now)
-    FeedUser.joins(feed: :feed_venues).where("venue_id = ?", self.id).each{|feed_user| feed_user.update_interest_score(0.05)}
-  end
-
-#===============================================================================================
 # Content ======================================================================================
 #===============================================================================================
   def add_new_post(user, post)
@@ -776,6 +645,137 @@ class Venue < ActiveRecord::Base
     new_tweets = new_tweets.map(&:to_hash)
     return ((new_instagrams+new_tweets).sort_by{|content| VenueComment.thirdparty_created_at(content)}).reverse!
   end
+
+#===============================================================================================
+# Rarnking =====================================================================================
+#===============================================================================================
+
+  #A. Lytit/Color Ratings------------------------------------------------------------
+  #----------------------------------------------------------------------------------
+  def Venue.update_all_active_venue_ratings
+    for venue in Venue.where("rating IS NOT NULL")
+      if venue.is_visible? == true
+        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
+          venue.update_rating()
+        end
+      end
+
+      if venue.details_missing? == true
+        venue.add_foursquare_details
+      end
+    end
+  end
+
+  def is_visible?
+    visible = true
+    latest_posted_comment_time = self.latest_posted_comment_time || Time.now
+    if (self.rating == nil or self.rating.round(2) == 0.0) || (Time.now - latest_posted_comment_time)/60.0 >= (LytitConstants.threshold_to_venue_be_shown_on_map)
+      visible = false
+    end
+
+    if visible == false
+      self.update_columns(rating: nil)
+      self.update_columns(r_up_votes: 1.0)
+      self.update_columns(r_down_votes: 1.0)
+      self.update_columns(color_rating: -1.0)
+      self.update_columns(popularity_rank: 0.0)
+      self.update_columns(latest_posted_comment_time: nil)
+    end
+
+    return visible
+  end
+
+  def update_rating(after_post=false, lytit_post=false)
+    latest_posted_comment_time = self.latest_posted_comment_time || Time.now
+    old_r_up_vote_count = self.r_up_votes 
+    if after_post == true
+      if lytit_post == true
+        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+6.0
+      else
+        new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)+1.0
+      end
+    else
+      new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
+    end
+    self.update_columns(r_up_votes: new_r_up_vote_count)
+
+    y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
+
+    a = new_r_up_vote_count >= 1.0 ? new_r_up_vote_count : 1.0
+    b = 1.0
+
+    puts "A = #{a}, B = #{b}, Y = #{y}"
+
+    # x = LytitBar::inv_inc_beta(a, b, y)
+    # for some reason the python interpreter installed is not recognized by RubyPython
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+
+    if $?.to_i == 0
+      puts "rating before = #{self.rating}"
+      puts "rating after = #{x}"
+
+      new_rating = eval(x).round(4)
+      color_rating = new_rating.round_down(1)
+
+      update_columns(rating: new_rating)
+      update_historical_avg_rating
+
+      if a > 1.0
+        update_columns(color_rating: color_rating)        
+        update_popularity_rank
+      else
+        update_columns(color_rating: -1.0)
+        update_columns(popularity_rank: 0.0)
+      end
+
+      update_columns(latest_rating_update_time: Time.now)
+    else
+      puts "Could not calculate rating. Status: #{$?.to_i}"
+    end
+  end
+
+  def update_historical_avg_rating
+    tz_offset = time_zone_offset || 0.0
+    current_hour = (Time.now.utc + tz_offset.hours).hour.to_i
+    ratings_hash = self.hist_rating_avgs
+    key = "hour_#{current_hour}"
+    count = ratings_hash[key]["count"]
+    previous_hist_rating = ratings_hash[key]["rating"]    
+    current_rating = rating || 0
+    updated_hist_rating = (previous_hist_rating * count.to_f + current_rating) / (count.to_f + 1.0)
+    ratings_hash[key]["count"] = count + 1
+    ratings_hash[key]["rating"] = updated_hist_rating
+    self.update_columns(hist_rating_avgs: ratings_hash)
+  end
+
+  #A. Trend Scoring------------------------------------------------------------------
+  #---------------------------------------------------------------------------------- 
+  def update_popularity_rank
+    view_half_life = 60.0 #minutes
+    latest_page_view_time_wrapper = latest_page_view_time || Time.now
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)
+    self.update_columns(page_views: new_page_view_count)
+    tz_offset = self.time_zone_offset || 0.0
+    current_hour = (Time.now.utc + tz_offset.hours).hour.to_i
+    key = "hour_#{current_hour}"
+    historical_rating = self.hist_rating_avgs[key]["rating"]
+    current_rating = rating || 0
+    k = 0.8
+    m = 0.01
+    e = 0.2
+    new_popularity_rank = (current_rating + (current_rating - historical_rating)*k) + new_page_view_count*m + event_happening?*e
+    self.update_columns(popularity_rank: new_popularity_rank)
+  end
+
+  def account_page_view(u_id)
+    view_half_life = 120.0 #minutes
+    latest_page_view_time_wrapper = latest_page_view_time || Time.now
+    new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)+1.0
+
+    self.update_columns(page_views: new_page_view_count)
+    self.update_columns(latest_page_view_time: Time.now)
+    FeedUser.joins(feed: :feed_venues).where("venue_id = ?", self.id).each{|feed_user| feed_user.update_interest_score(0.05)}
+  end  
 
 
 
