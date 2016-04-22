@@ -37,6 +37,8 @@ class Event < ActiveRecord::Base
 				:source => "Eventbrite", :venue_id => venue.id, :category => eventbrite_event.category.try(:name), :cover_image_url => eventbrite_event.logo.try(:url))
 			VenueComment.create!(:entry_type => "event", :venue_id => venue.id, :venue_details => venue.partial, :event => new_event.partial, :adjusted_sort_position => (new_event.start_time+1.hour).to_i)
 			venue.update_columns(event_details: new_event.partial)
+			venue.update_category(eventbrite_event["category"]["name"])
+			
 		else
 			p "Event not created."
 		end

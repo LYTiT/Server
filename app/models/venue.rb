@@ -848,9 +848,11 @@ class Venue < ActiveRecord::Base
   def add_category(category)
     categories_hash = self.categories
     num_categories = categories_hash.count
-    categories_hash["category_#{num_categories+1}"] = category
-    self.update_columns(categories: categories_hash)
-    self.update_columns(categories_string: categories_hash.values.join(" ").strip)
+    if categories_hash.values.include? category == false
+      categories_hash["category_#{num_categories+1}"] = category
+      self.update_columns(categories: categories_hash)
+      self.update_columns(categories_string: categories_hash.values.join(" ").strip)
+    end
   end
 
   def update_descriptives(new_descriptives_string)
