@@ -406,6 +406,9 @@ class Api::V1::UsersController < ApiBaseController
 		end			
 	end
 
+	def get_user
+	end
+
 
 	#-------------------------------------------------->
 
