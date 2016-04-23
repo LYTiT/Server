@@ -505,7 +505,10 @@ class Venue < ActiveRecord::Base
       self.update_columns(latest_posted_comment_time: vc.created_at)
     end
     
-    self.update_descriptives(vc.lytit_post["comment"])
+    if vc.lytit_post["comment"] != nil
+      self.update_descriptives(vc.lytit_post["comment"])
+    end
+
     self.feeds.update_all("num_moments = num_moments+1")
     self.update_rating(true, true)
     self.update_columns(latest_rating_update_time: Time.now)
