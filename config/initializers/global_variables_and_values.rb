@@ -3,7 +3,7 @@ VENUE_META_CATEGORIES =
 	"
 	american_restaurant amusement_park arena 
 	bagel bar beer boxing 
-	cafe cat chinese_restaurant club cocktail 
+	cafe car cat chinese_restaurant club cocktail concert 
 	deep_house discotheque dog drink 
 	exhibition exhibit 
 	food french_restaurant 
@@ -11,9 +11,9 @@ VENUE_META_CATEGORIES =
 	indian_restaurant 
 	japanese_restaurant jazz 
 	mountain museum music 
-	park pasta party pizza pool pop_up pub 
-	restaurant 
-	speakeasy stadium sushi 
+	park pasta party performance pizza pool pop_up pub 
+	restaurant rock_concert 
+	speakeasy stadium supercar sushi 
 	zoo 
 	"
 
