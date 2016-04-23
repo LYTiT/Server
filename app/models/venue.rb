@@ -899,7 +899,7 @@ class Venue < ActiveRecord::Base
             for key_word in top_key_words
               if descriptives_hash[key_word.text] != nil
                 previous_weight = descriptives_hash[key_word.text]["weight"].to_f
-                previous_num_posts = descriptives_hash[key_word.text]["num_posts"]
+                previous_num_posts = descriptives_hash[key_word.text]["num_posts"] || 1
                 new_weight = ((previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)) * previous_num_posts + key_word.weight.to_f) / (previous_num_posts + 1)
                 descriptives_hash[key_word.text]["weight"] = new_weight
                 descriptives_hash[key_word.text]["updated_at"] = Time.now
