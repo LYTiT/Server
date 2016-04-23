@@ -899,11 +899,13 @@ class Venue < ActiveRecord::Base
             for key_word in top_key_words
               if descriptives_hash[key_word.text] != nil
                 previous_weight = descriptives_hash[key_word.text]["weight"].to_f
-                new_weight = previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)+key_word.weight.to_f
+                previous_num_posts = descriptives_hash[key_word.text]["num_posts"]
+                new_weight = ((previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)) * previous_num_posts + key_word.weight.to_f) / (previous_num_posts + 1)
                 descriptives_hash[key_word.text]["weight"] = new_weight
                 descriptives_hash[key_word.text]["updated_at"] = Time.now
+                descriptives_hash[key_word.text]["num_posts"] = previous_num_posts + 1
               else
-                descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now}
+                descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now, "num_posts" => 1}
               end
             end
 
@@ -936,7 +938,7 @@ class Venue < ActiveRecord::Base
     tags_hash = {}
     i = 1
     top_descriptives.each do |descriptive, details|
-      if details["updated_at"].to_datetime > Time.now-2.hours
+      if details["weight"].round(1) > 0.0
         tags_hash["tag_#{i}"] = descriptive        
       else
         tags_hash["tag_#{i}"] = nil
