@@ -64,7 +64,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def activity_feed
-		self.activities.order("adjusted_sort_position DESC")
+		self.activities.where("adjusted_sort_position > ?", (Time.now-1.day).to_i).order("adjusted_sort_position DESC")
 	end
 
 	def Feed.search(query)
