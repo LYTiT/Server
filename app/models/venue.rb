@@ -664,6 +664,8 @@ class Venue < ActiveRecord::Base
       if venue.details_missing? == true
         venue.add_foursquare_details
       end
+
+      venue.set_top_tags
     end
   end
 
