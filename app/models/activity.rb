@@ -125,6 +125,7 @@ class Activity < ActiveRecord::Base
 		payload = {
 		    :object_id => self.id, 
 		    :activity_id => self.id,
+		    :venue_comment_id => self.venue_comment_id,
 		    :type => 'share_notification',
 		    :num_likes => num_likes,
   			:has_liked => self.liked_by?(member),
