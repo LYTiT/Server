@@ -159,7 +159,6 @@ class Venue < ActiveRecord::Base
 
 
 
-
   #TABLE OF CONTENTS
   #I.Creation Methods
   #II.Search Method
