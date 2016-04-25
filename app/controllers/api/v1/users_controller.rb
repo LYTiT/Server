@@ -335,7 +335,6 @@ class Api::V1::UsersController < ApiBaseController
 		@user = User.where("authentication_token = ?", params[:auth_token]).includes(:likes).first
 		@activities = @user.aggregate_list_feed.page(params[:page]).per(10)
 		render 'lists_feed.json.jbuilder'
-		render 'featured_list_venues.json.jbuilder'
 	end
 
 	def get_list_recommendations
