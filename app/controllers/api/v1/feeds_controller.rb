@@ -366,6 +366,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_list_spotlyts
 		@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
+		render 'get_feeds.json.jbuilder'
 	end
 
 	def get_lists_of_category
