@@ -112,6 +112,7 @@ class Api::V1::VenuesController < ApiBaseController
 		else
 			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)			
 			@comments = @venue.content_feed_page(page)
+			@view_cache_key = "venues/#{@venue.id}/#{@venue.latest_posted_comment_time.to_i}/comments/view/#{time_key}/page_#{page}"
 			render 'get_comments_feed.json.jbuilder'
 		end
 	end
