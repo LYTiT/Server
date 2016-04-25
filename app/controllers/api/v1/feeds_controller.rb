@@ -364,6 +364,10 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(10)
 	end
 
+	def get_list_spotlyts
+		@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
+	end
+
 	def get_lists_of_category
 		lat = params[:latitude]
 		long = params[:longitude]
