@@ -364,7 +364,7 @@ class Api::V1::UsersController < ApiBaseController
 		long = params[:longitude]
 		search_box = Geokit::Bounds.from_point_and_radius([lat,long], 20, :units => :kms)
 		nearby_vortex = InstagramVortex.in_bounds(search_box).order("id ASC").first
-		#nearby_vortex = InstagramVortex.within(20, :units => :kms, :origin => [lat, long]).order("id ASC").first
+		
 		if nearby_vortex != nil
 			cache_key = "trending_venues/[#{nearby_vortex.latitude},#{nearby_vortex.longitude}]"
 		else
