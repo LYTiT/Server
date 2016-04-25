@@ -271,7 +271,11 @@ class User < ActiveRecord::Base
 
   def remove_interest(interest)
     interests_hash = self.interests
-    interests_hash["descriptives"].delete(interest)
+    if interests_hash["descriptives"][interest] != nil 
+      interests_hash["descriptives"].delete(interest)
+    else
+      interests_hash["venue_categories"].delete(interest)
+    end
     self.update_columns(interests: interests_hash)
   end
 
