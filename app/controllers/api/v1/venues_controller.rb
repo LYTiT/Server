@@ -327,7 +327,6 @@ class Api::V1::VenuesController < ApiBaseController
 			#render 'display_by_parts.json.jbuilder'
 		else
 			p "#{page} $$$$$$$ RECACHING"
-			Rails.cache.write(@view_cache_key, time_key, :expires_in => 10.minutes)
 			city_cache_key = "#{city}/lyt_map/page_#{page}/v3"
 
 			if page == 1
