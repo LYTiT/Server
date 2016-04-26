@@ -2308,7 +2308,7 @@ end
     end
 
     query = ""
-    top_tags = [self.tag_1, self.tag_2, self.tag_3, self.tag_4, self.tag_5].compact#self.meta_datas.order("relevance_score DESC LIMIT 5")
+    top_tags = [self.trending_tags["tag_1"], self.trending_tags["tag_2"], self.trending_tags["tag_3"], self.trending_tags["tag_4"], self.trending_tags["tag_5"]].compact#self.meta_datas.order("relevance_score DESC LIMIT 5")
     if top_tags.count > 0
       top_tags.each{|tag| query+=(tag+" OR ")}        
       query+= self.name
