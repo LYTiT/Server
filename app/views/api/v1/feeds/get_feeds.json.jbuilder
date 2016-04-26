@@ -13,4 +13,5 @@ json.array! @feeds do |feed|
 	json.is_private feed.is_private
 	json.preview_image_url feed.preview_image_url
 	json.cover_image_url feed.cover_image_url
+	json.has_added feed.feed_users.where("user_id = ?", @user.id).first.present?
 end
