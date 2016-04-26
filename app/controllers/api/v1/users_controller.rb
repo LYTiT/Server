@@ -345,11 +345,6 @@ class Api::V1::UsersController < ApiBaseController
 		@user.delay(:priority => -3).update_user_feeds
 	end
 
-	def get_nearby_requests
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@requests = MomentRequest.get_surrounding_request(params[:latitude], params[:longitude], @user.id)
-	end
-
 	def get_nearby_venues
 		@venues = []#@user.surrounding_venues(params[:latitude], params[:longitude])
 		if @venues.first.is_a?(Hash) 
