@@ -86,9 +86,11 @@ json.comments(@comments) do |comment|
     end
 end
 
-json.venue_id @venue.id
-json.venue_address @venue.address
-json.venue_postal_code @venue.postal_code
-json.venue_state @venue.state
-json.venue_categories @venue.categories.values
-json.venue_foursuqare_id @venue.foursquare_id
+if @venue != nil
+    json.venue_id @venue.id
+    json.venue_address @venue.address
+    json.venue_postal_code @venue.postal_code
+    json.venue_state @venue.state
+    json.venue_categories @venue.categories.values
+    json.venue_foursuqare_id @venue.foursquare_id
+end
