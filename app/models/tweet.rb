@@ -191,4 +191,30 @@ class Tweet < ActiveRecord::Base
 		end
 	end
 
+  def Tweet.sort(i, j)
+    if j == nil
+      return 1
+    else
+      if i.created_at < Time.now-1.day && j.created_at < Time.now-1.day
+        i.delete
+        j.delete
+        return 1
+      elsif i.created_at < Time.now-1.day
+        i.delete
+        return 1
+      elsif j.created_at < Time.now-1.day
+        j.delete
+        return 1
+      else
+        if Tweet.popularity_score_calculation(i.user.followers_count, i.retweet_count, i.favorite_count) > Tweet.popularity_score_calculation(j.user.followers_count, j.retweet_count, j.favorite_count)
+          return -1
+        elsif Tweet.popularity_score_calculation(i.user.followers_count, i.retweet_count, i.favorite_count) < Tweet.popularity_score_calculation(j.user.followers_count, j.retweet_count, j.favorite_count)
+          return 1
+        else
+          return 0
+        end      
+      end
+    end
+  end	
+
 end
