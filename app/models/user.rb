@@ -114,8 +114,8 @@ class User < ActiveRecord::Base
   end
 
   def top_interests(count=10)
-    category_interests = self.interests["venue_categories"]
-    decriptive_interests = self.interests["descriptives"]
+    category_interests = self.interests["venue_categories"] || {}
+    decriptive_interests = self.interests["descriptives"] || {}
 
     top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..(count/2-1)]].keys
 

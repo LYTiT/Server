@@ -1661,15 +1661,20 @@ class Venue < ActiveRecord::Base
 def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
   top_user_interests = user.top_interests(6)
 
-  interest_query = top_user_interests.join(" ")
+  if top_user_interests.count > 0
+    interest_query = top_user_interests.join(" ")
 
-  search_box = Geokit::Bounds.from_point_and_radius([lat, long], 5, :units => :kms)
-  user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
-  user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
+    search_box = Geokit::Bounds.from_point_and_radius([lat, long], 5, :units => :kms)
+    user_feed_ids = "SELECT feed_id FROM feed_users WHERE user_id = #{user.id}"
+    user_feed_venues = "SELECT venue_id FROM feed_venues WHERE feed_id IN (#{user_feed_ids})"
 
-  results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("popularity_rank > 0.0").limit(30)
+    results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("popularity_rank > 0.0").limit(30)
 
-  if results.length == 0
+    if results.length == 0
+      results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0").limit(30)  
+    end
+  end
+  else
     results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0").limit(30)  
   end
 
@@ -1677,25 +1682,29 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
-  user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
-
-  if user_list != nil
-    return "Part of #{user_list.name}"
+  if user.interests = {}
+    return "Active around you"
   else
-    top_user_interests = user.top_interests(6)
-    interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
+    user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
 
-    if interest_match == true
-      for interest in top_user_interests
-        if Venue.interest_search(interest).where("id = ?", self.id).first != nil
-          details = user.interests["descriptives"][interest] || user.interests["venue_categories"][interest]
-          if details["searched_venue_ids"] != nil
-            return "Similar to venues searched for"
-          elsif details["favorite_venue_ids"] != nil
-            return "Based on your favorites"
-          else
-            return "Based on your List interests"
-          end    
+    if user_list != nil
+      return "Part of #{user_list.name}"
+    else
+      top_user_interests = user.top_interests(6)
+      interest_match = Venue.interest_search(top_user_interests.join(" ")).where("id = ?", self.id).first != nil
+
+      if interest_match == true
+        for interest in top_user_interests
+          if Venue.interest_search(interest).where("id = ?", self.id).first != nil
+            details = user.interests["descriptives"][interest] || user.interests["venue_categories"][interest]
+            if details["searched_venue_ids"] != nil
+              return "Similar to venues searched for"
+            elsif details["favorite_venue_ids"] != nil
+              return "Based on your favorites"
+            else
+              return "Based on your List interests"
+            end    
+          end
         end
       end
     end
