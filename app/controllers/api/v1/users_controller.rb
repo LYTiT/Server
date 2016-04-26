@@ -409,7 +409,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_user
-		@user = User.find_by_id(params[:id])		
+		@user = User.find_by_id(params[:user_id])		
 	end
 
 
