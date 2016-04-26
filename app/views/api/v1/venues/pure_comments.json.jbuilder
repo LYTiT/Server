@@ -84,13 +84,9 @@ json.comments(@comments) do |comment|
             json.event_cover_image_url comment.event["cover_image_url"]
         end
     end
-end
 
-if @venue != nil
-    json.venue_id @venue.id
-    json.venue_address @venue.address
-    json.venue_postal_code @venue.postal_code
-    json.venue_state @venue.state
-    json.venue_categories @venue.categories.values
-    json.venue_foursuqare_id @venue.foursquare_id
+    json.venue_id comment.venue_details["id"]
+    json.venue_name comment.venue_details["name"]
+    json.latitude comment.venue_details["latitdue"]
+    json.longitude comment.venue_details["longitude"]
 end
