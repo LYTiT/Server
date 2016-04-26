@@ -28,11 +28,11 @@ json.activity(@activities) do |activity|
   json.longitude activity.venue_details["longitude"]
   json.added_note activity.feed_venue_details["added_note"]
 
-  json.tag_1 activity.venue_details["trending_tags"].try(["tag_1"])
-  json.tag_2 activity.venue_details["trending_tags"].try(["tag_2"])
-  json.tag_3 activity.venue_details["trending_tags"].try(["tag_3"])
-  json.tag_4 activity.venue_details["trending_tags"].try(["tag_4"])
-  json.tag_5 activity.venue_details["trending_tags"].try(["tag_5"])
+  json.tag_1 activity.venue_details.try(["trending_tags"]).try(["tag_1"])
+  json.tag_2 activity.venue_details.try(["trending_tags"]).try(["tag_2"])
+  json.tag_3 activity.venue_details.try(["trending_tags"]).try(["tag_3"])
+  json.tag_4 activity.venue_details.try(["trending_tags"]).try(["tag_4"])
+  json.tag_5 activity.venue_details.try(["trending_tags"]).try(["tag_5"])
 
   json.topic activity.topic_details["message"]
 
