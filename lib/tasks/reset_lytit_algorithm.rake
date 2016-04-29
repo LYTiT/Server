@@ -10,43 +10,28 @@ namespace :lytit do
 #    LytitVote.delete_all
 #    puts 'cleared votes'
 
-    #Venue.update_all(rating: 0.0)
-    #Venue.update_all(color_rating: -1.0)
-    #Venue.all.each do |venue|
-    #  venue.reset_r_vector
-    #end
-
-
     #delete Instagrams, Meta Data, Feed Activity and Notifications older than a day old
     #VenueComment.where("content_origin = ? AND (NOW() - created_at) >= INTERVAL '1 DAY'", 'instagram').destroy_all
     
+
+    #Daily cleanup
     Tweet.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
-    
-    #MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
-    #Activity.where("(NOW() - created_at) >= INTERVAL '1 DAY' AND venue_comment_id IS NOT NULL").delete_all
     Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
-    
-    #MetaData.where("(NOW() - created_at) > INTERVAL '1 DAY'").delete_all
+    InstagramVortex.stale_vortex_check
 
-    #check if vortexes are being used. If not, deactivate them.
-    vortexes = InstagramVortex.all
-
-    for vortex in vortexes
-        if vortex.details == "auto generated" && (vortex.last_user_ping == nil or vortex.last_user_ping < (Time.now-2.days))
-            if vortex.created_at < Time.now - 5.days
-                vortex.delete
-            else
-                vortex.update_columns(active: false)
-            end
-        end
-    end
 
     #VenueComment.cleanup_and_recalibration
     #Venue.cleanup_and_calibration
     FeedRecommendation.set_daily_spotlyt
 
+    #Pull events for primary cities
     Event.focus_cities_pull
+
+    #Set lower bound on Tweet id pull
     Tweet.set_daiy_tweet_id
+
+    #Reset number of new moments for favorite venues of users if necessary
+    FavoriteVenue.num_new_moment_reset
 
     puts "done."
   end  

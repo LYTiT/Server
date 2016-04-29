@@ -268,4 +268,17 @@ class InstagramVortex < ActiveRecord::Base
       self.save
 	end
 
+	def InstagramVortex.stale_vortex_check
+	    vortexes = InstagramVortex.all
+	    for vortex in vortexes
+	        if vortex.details == "auto generated" && (vortex.last_user_ping == nil or vortex.last_user_ping < (Time.now-2.days))
+	            if vortex.created_at < Time.now - 5.days
+	                vortex.delete
+	            else
+	                vortex.update_columns(active: false)
+	            end
+	        end
+	    end
+	end
+
 end

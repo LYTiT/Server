@@ -808,7 +808,8 @@ CREATE TABLE favorite_venues (
     venue_name character varying(255),
     venue_details json DEFAULT '{}'::json NOT NULL,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    latest_check_time timestamp without time zone
 );
 
 
@@ -1931,7 +1932,8 @@ CREATE TABLE users (
     lonlat_geometry geometry(Point),
     lonlat_geography geography(Point,4326),
     violations json DEFAULT '{}'::json NOT NULL,
-    is_verified boolean DEFAULT false
+    is_verified boolean DEFAULT false,
+    num_daily_moments integer
 );
 
 
@@ -4725,4 +4727,8 @@ INSERT INTO schema_migrations (version) VALUES ('20160421054900');
 INSERT INTO schema_migrations (version) VALUES ('20160422023421');
 
 INSERT INTO schema_migrations (version) VALUES ('20160422031504');
+
+INSERT INTO schema_migrations (version) VALUES ('20160422205735');
+
+INSERT INTO schema_migrations (version) VALUES ('20160429171901');
 

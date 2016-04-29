@@ -115,6 +115,8 @@ class Api::V1::VenuesController < ApiBaseController
 			@view_cache_key = "venues/#{@venue.id}/#{@venue.latest_posted_comment_time.to_i}/comments/view/#{time_key}/page_#{page}"
 			render 'get_comments_feed.json.jbuilder'
 		end
+
+		@venue.delay.account_page_view(@user.id, params[:is_favorite])
 	end
 
 
