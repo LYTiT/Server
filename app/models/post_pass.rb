@@ -78,7 +78,7 @@ class PostPass < ActiveRecord::Base
 
 		if user.push_token
 			count = Notification.where(user_id: user.id, read: false, deleted: false).count
-			APNS.send_notification(user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count}) rescue "Notification Send Issue"
+			APNS.send_notification(user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
 		end
 
 	end

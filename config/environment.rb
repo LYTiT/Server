@@ -16,7 +16,7 @@ ActionMailer::Base.smtp_settings = {
 }
 
 APNS.host = 'gateway.push.apple.com'
-APNS.pem  = "#{Rails.root}/" + "pem_certificates/PushProdCertCombined.pem"
+APNS.pem  = "#{Rails.root}/" + "pem_certificates/PushProdCertCombinedMay2016.pem"
 APNS.port = 2195
 APNS.pass = 'lytit'
 
