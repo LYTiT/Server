@@ -3,6 +3,7 @@ class FavoriteVenue < ActiveRecord::Base
 	belongs_to :venue
 
 	def num_new_moments_for_user
+		latest_check_time = self.latest_check_time || Time.now - 24.hours
 		new_moment_count = self.venue.venue_comments.where("created_at > ?", latest_check_time).count
 		self.update_columns(num_new_moments: new_moment_count)
 		self.update_columns(latest_check_time: Time.now)
