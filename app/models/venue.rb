@@ -645,7 +645,7 @@ class Venue < ActiveRecord::Base
       end
     end
     VenueComment.delay.convert_new_social_media_to_vcs(new_instagrams, new_tweets, self)
-    new_tweets = new_tweets.map(&:to_hash)
+    new_tweets = (new_tweets.select{|tweet| tweet.created_at >= self.latest_posted_comment_time }).map(&:to_hash)
     return ((new_instagrams+new_tweets).sort_by{|content| VenueComment.thirdparty_created_at(content)}).reverse!
   end
 
