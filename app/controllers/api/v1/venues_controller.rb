@@ -108,8 +108,10 @@ class Api::V1::VenuesController < ApiBaseController
 		@view_cache_key = "venues/#{@venue.id}/#{@venue.latest_posted_comment_time.to_i}/comments/view/#{time_key}/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true and (@venue.latest_posted_comment_time != nil and @venue.latest_posted_comment_time > Time.now - 5.hours)
+			p "Rendering view from cache"
 			render 'get_comments_feed.json.jbuilder'
 		else
+			p "Rebuilding views"
 			Rails.cache.write(@view_cache_key, Time.now, :expires_in => 10.minutes)			
 			@comments = @venue.content_feed_page(page)
 			@view_cache_key = "venues/#{@venue.id}/#{@venue.latest_posted_comment_time.to_i}/comments/view/#{time_key}/page_#{page}"
