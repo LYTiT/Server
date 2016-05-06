@@ -139,7 +139,9 @@ LytitServer::Application.routes.draw do
         post 'request_to_join'
         post 'accept_join_request'
         post 'reject_join_request'
-        get 'get_list_categories'
+        collection do
+          get 'get_list_categories'
+        end
         get 'get_list_spotlyts'
       end
 
