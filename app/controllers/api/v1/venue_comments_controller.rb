@@ -7,9 +7,9 @@ class Api::V1::VenueCommentsController < ApiBaseController
 		city = params[:user_city]
 		country = params[:user_country]		
 		vc = VenueComment.find_by_id(params[:venue_comment_id])	
-		if vc 
-			User.find_by_id(params[:user_id]).increment!(:num_bolts, 1)
+		if vc 			
 			if CommentView.find_by_venue_comment_id_and_user_id(params[:venue_comment_id], params[:user_id]) == nil and (vc.user_id != params[:user_id])
+				User.find_by_id(params[:user_id]).increment!(:num_bolts, 1)
 				vc.increment_geo_views(country, city)
 				view = CommentView.create!(:venue_comment_id => params[:venue_comment_id], :user_id => params[:user_id])				
 			end
