@@ -7,5 +7,7 @@ json.array! @spotlyts do |spotlyt|
 	json.created_at spotlyt.feed.created_at
 	json.num_venues spotlyt.feed.num_venues
 	json.num_users	spotlyt.feed.num_users
+	json.preview_image_url spotlyt.feed.preview_image_url
+	json.cover_image_url spotlyt.feed.cover_image_url
 	json.feed_color spotlyt.feed.feed_color
 end
