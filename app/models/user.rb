@@ -159,10 +159,10 @@ class User < ActiveRecord::Base
     end
 
     interests_hash = self.interests
-    interest_categories_hash = self.interests["venue_categories"]
+    interest_categories_hash = self.interests["venue_categories"] || {}
     
     if list != nil
-      source_categories = source.venue_attributes["venue_categories"]
+      source_categories = source.venue_attributes["venue_categories"] || {}
     else
       source_categories = source.categories
     end
