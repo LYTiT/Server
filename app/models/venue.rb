@@ -881,8 +881,10 @@ class Venue < ActiveRecord::Base
       #as well as some other stop words.
       new_descriptives_string.gsub(self.name.downcase, "").try(:strip)
       new_descriptives_string.gsub(self.name.downcase.gsub(" ", ""), "").try(:strip)
-      new_descriptives_string.gsub(self.city.downcase, "").try(:strip)
-      new_descriptives_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
+      if self.city != nil
+        new_descriptives_string.gsub(self.city.downcase, "").try(:strip)
+        new_descriptives_string.gsub(self.city.downcase.gsub(" ", ""), "").try(:strip)
+      end
 
       if new_descriptives_string != nil && new_descriptives_string != ""
         #extract nouns
