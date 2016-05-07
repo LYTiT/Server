@@ -210,7 +210,7 @@ class User < ActiveRecord::Base
     end
 
     interests_hash = self.interests
-    descriptives_categories_hash = self.interests["descriptives"]
+    descriptives_categories_hash = self.interests["descriptives"] || {}
 
     if list != nil
       source_top_descriptives = Hash[source.venue_attributes["descriptives"].to_a[0..4]]
