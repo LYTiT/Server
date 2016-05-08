@@ -769,7 +769,7 @@ class Venue < ActiveRecord::Base
     self.update_columns(popularity_rank: new_popularity_rank)
   end
 
-  def account_page_view(u_id, is_favorite=false)
+  def account_page_view(u_id, is_favorite="0")
     view_half_life = 120.0 #minutes
     latest_page_view_time_wrapper = latest_page_view_time || Time.now
     new_page_view_count = (self.page_views * 2 ** ((-(Time.now - latest_page_view_time_wrapper)/60.0) / (view_half_life))).round(4)+1.0
@@ -778,7 +778,7 @@ class Venue < ActiveRecord::Base
     self.update_columns(latest_page_view_time: Time.now)
     FeedUser.joins(feed: :feed_venues).where("venue_id = ?", self.id).each{|feed_user| feed_user.update_interest_score(0.05)}
 
-    if is_favorite == true
+    if is_favorite == "1"
       favorite_venue = FavoriteVenue.find_by_user_id_and_venue_id(u_id, self.id)
       favorite_venue.num_new_moments_for_user if (favorite_venue.latest_check_time == nil or favorite_venue.latest_check_time < Time.now - 15.minutes)
     end
