@@ -34,7 +34,6 @@ class CommentView < ActiveRecord::Base
         :longitude => vc.venue_details["longitude"],
         :timestamp => vc.created_at.to_i,
         :content_origin => 'lytit',
-        :geo_views => vc.geo_views,
         :num_views => vc.views
       }
 
@@ -76,7 +75,7 @@ class CommentView < ActiveRecord::Base
     lytit_posts = VenueComment.where("entry_type = ? AND created_at > ?", "lytit_post", Time.now-24.hours)
 
     for lytit_post in lytit_posts
-      CommentView.auto_view_generator(lytit_post)      
+      #CommentView.auto_view_generator(lytit_post)      
     end
   end
 
@@ -104,7 +103,7 @@ class CommentView < ActiveRecord::Base
       city = selected_venue.city
       lytit_post.increment_geo_views(country, city)
 
-      view = CommentView.delay(run_at: rand(600).seconds.from_now).create!(:venue_comment_id => lytit_post.id, :user_id => 1)
+      view = CommentView.delay(run_at: rand(900).seconds.from_now).create!(:venue_comment_id => lytit_post.id, :user_id => 1)
     end
   end
 
