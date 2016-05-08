@@ -94,7 +94,7 @@ class CommentView < ActiveRecord::Base
     num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
 
     for i in 1..num_simulted_views
-      view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 0)        
+      view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 1)        
     end
   end
 
