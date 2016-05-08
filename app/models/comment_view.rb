@@ -95,8 +95,11 @@ class CommentView < ActiveRecord::Base
 
     for i in 1..num_simulted_views
       User.find_by_id(lytit_post.user_id).increment!(:num_bolts, 1)
-      country = 
-      city = 
+      nearby_venue = Venue.close_to(venue.latitude, venue.longitude, 20000).first
+      faraway_venue = Venue.far_from(venue.latitude, venue.longitude, 20000).offset(rand(1000)).first rescue Venue.far_from(venue.latitude, venue.longitude, 20000).first
+      selected_venue = (rand(10) < 9 ? nearby_venue : faraway_venue) 
+      country = selected_venue.country
+      city = selected_venue.city
       lytit_post.increment_geo_views(country, city)
       view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 1)        
     end
