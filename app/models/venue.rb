@@ -517,14 +517,6 @@ class Venue < ActiveRecord::Base
 
     #Append comment to venues cached feed if present by adding a negative page number.
     self.rebuild_cached_vc_feed
-
-    if self.moment_request_details != {}
-      if MomentRequest.fulfilled_by_post(self.moment_request_details["created_at"], "lytit_post")
-        mr = MomentRequest.find_by_id(self.moment_request_details["id"])
-        mr.notify_requesters_of_response(vc)
-        self.update_columns(moment_request_details: {})
-      end
-    end
   end
 
   def rebuild_cached_vc_feed
