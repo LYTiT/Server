@@ -1685,7 +1685,8 @@ CREATE TABLE reported_objects (
     venue_comment_id integer,
     feed_id integer,
     created_at timestamp without time zone,
-    updated_at timestamp without time zone
+    updated_at timestamp without time zone,
+    activity_comment_id integer
 );
 
 
@@ -4731,4 +4732,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160422031504');
 INSERT INTO schema_migrations (version) VALUES ('20160422205735');
 
 INSERT INTO schema_migrations (version) VALUES ('20160429171901');
+
+INSERT INTO schema_migrations (version) VALUES ('20160508001633');
 

@@ -2,6 +2,7 @@ class ReportedObject < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :venue_comment
 	belongs_to :feed
+	belongs_to :activity_comment
 	belongs_to :reporter, class_name: "User"
 
 	after_create :evaluate_report
@@ -26,10 +27,18 @@ class ReportedObject < ActiveRecord::Base
 					support_issue_id = new_support_issue.id
 				end
 
-				message = "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]}. As a result, your posting
+				message = "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]} at #{venue_comment.venue_details["name"]}. As a result, your posting
 				privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses 
 				may result in suspension of your Lytit usage rights."
 				sm = SupportMessage.create!(:message => message, :support_issue_id => support_issue_id, :user_id => user.id)
+			end
+		end
+
+		if type = "Activity Comment"
+			num_reports = self.activity_comment.reported_objects.count
+
+			if num_reports > 10
+				self.activity_comment.delete
 			end
 		end
 	end

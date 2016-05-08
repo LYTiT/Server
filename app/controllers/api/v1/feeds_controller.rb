@@ -287,13 +287,33 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def add_activity_comment
-		fac = ActivityComment.create!(:activity_id => params[:activity_id], :user_id => params[:user_id], :comment => params[:comment])
-		if fac
+		ac = ActivityComment.create!(:activity_id => params[:activity_id], :user_id => params[:user_id], :comment => params[:comment])
+		if ac
 			fa = Activity.find_by_id(params[:activity_id])
 			fa.update_comment_parameters(Time.now, params[:user_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not create activity comment'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def delete_activity_comment
+		ac = ActivityComment.find_by_id(params[:activity_comment_id])
+		if ac && ac.user_id == params[:user_id]
+			fa = Activity.find_by_id(params[:activity_id])
+			fa.decrement!(:num_comments, 1)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not delete activity comment'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def report_activity_comment
+		ac = ActivityComment.find_by_id(params[:activity_comment_id])
+		if ac.report(params[:user_id])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could not report activity comment'] } }, status: :unprocessable_entity
 		end
 	end
 

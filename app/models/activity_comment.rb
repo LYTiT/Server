@@ -2,6 +2,8 @@ class ActivityComment < ActiveRecord::Base
 	belongs_to :user
 	belongs_to :activity
 
+	has_many :reported_objects, :dependent => :destroy
+
 	after_create :new_chat_notification
 
 
@@ -87,6 +89,10 @@ class ActivityComment < ActiveRecord::Base
 
 	def notification_payload
 	  	nil
+	end
+
+	def report(reporter_id)
+		ReportedObject.create!(:type=> "Activity Comment", :activity_comment_id => params[:feed_id], :reporter_id => reporter_id)
 	end
 
 end
