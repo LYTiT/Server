@@ -2,7 +2,7 @@ json.array! @spotlyts do |spotlyt|
 	json.id spotlyt.feed.id
 	json.has_added spotlyt.feed.has_added?(@user)
 	json.name spotlyt.feed.name
-	json.creator spotlyt.feed.user.partial
+	json.creator spotlyt.feed.user.try(:partial)
 	json.list_description spotlyt.feed.description
 	json.created_at spotlyt.feed.created_at
 	json.num_venues spotlyt.feed.num_venues
