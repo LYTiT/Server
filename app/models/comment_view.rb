@@ -94,6 +94,10 @@ class CommentView < ActiveRecord::Base
     num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
 
     for i in 1..num_simulted_views
+      User.find_by_id(lytit_post.user_id).increment!(:num_bolts, 1)
+      country = 
+      city = 
+      lytit_post.increment_geo_views(country, city)
       view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 1)        
     end
   end

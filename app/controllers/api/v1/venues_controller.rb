@@ -92,7 +92,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if venue_id != nil && venue_id != 0
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
-			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			@venue = Venue.fetch(params[:name], params[:address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
 		if params[:from_search] == "1" && page == 1
