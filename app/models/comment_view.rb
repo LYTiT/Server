@@ -76,7 +76,7 @@ class CommentView < ActiveRecord::Base
     lytit_posts = VenueComment.where("entry_type = ? AND created_at > ?", "lytit_post", Time.now-24.hours)
 
     for lytit_post in lytit_posts
-      CommentView.auto_view_generator(lytit_post)      
+      #CommentView.auto_view_generator(lytit_post)      
     end
   end
 
@@ -94,13 +94,15 @@ class CommentView < ActiveRecord::Base
     num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
 
     for i in 1..num_simulted_views
-      User.find_by_id(lytit_post.user_id).increment!(:num_bolts, 1)
+      lytit_post.user.increment!(:num_bolts, 1)
+
       nearby_venue = Venue.close_to(venue.latitude, venue.longitude, 20000).first
       faraway_venue = Venue.far_from(venue.latitude, venue.longitude, 20000).offset(rand(1000)).first rescue Venue.far_from(venue.latitude, venue.longitude, 20000).first
       selected_venue = (rand(10) < 9 ? nearby_venue : faraway_venue) 
       country = selected_venue.country
       city = selected_venue.city
       lytit_post.increment_geo_views(country, city)
+
       view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 1)        
     end
   end
