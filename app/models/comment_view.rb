@@ -70,6 +70,32 @@ class CommentView < ActiveRecord::Base
       :deleted => false
     }
     Notification.create(notification)
-  end  
+  end
+
+  def CommentView.assign_views
+    lytit_posts = VenueComment.where("content_origin = ? AND created_at > ?", "lytit_post", Time.now-24.hours)
+
+    for lytit_post in lytit_posts
+      CommentView.auto_view_generator(lytit_post)      
+    end
+  end
+
+  def CommentView.auto_view_generator(lytit_post, total_sim_user_base=50000)
+    venue = lytit_post.venue
+    venue_rating = venue.rating
+
+    num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
+    total_users = User.where("latitude IS NOT NULL").count
+    
+    num_simulated_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/10
+
+    num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", lytit_post.adjusted_sort_position).count
+
+    num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
+
+    for i in 1..num_simulted_views
+      view = CommentView.create!(:venue_comment_id => lytit_post.id, :user_id => 0)        
+    end
+  end
 
 end

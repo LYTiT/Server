@@ -40,6 +40,8 @@ namespace :lytit do
     #LYT Updating------------------>
     Venue.update_all_active_venue_ratings
 
+    CommentView.assign_views
+
 
     #reset_lytit_algo runs only in production so to clear 24 hour Venue Comments we use the work around below 
     if Time.now.hour == 23 && Time.now.min > 30

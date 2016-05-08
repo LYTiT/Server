@@ -54,6 +54,12 @@ class User < ActiveRecord::Base
   before_save :generate_user_confirmation_token
   after_save :notify_venue_managers
 
+  scope :close_to, -> (latitude, longitude, distance_in_meters = 2000) {
+    where(%{
+      ST_DWithin( users.lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(%f %f)'), %d )
+    } % [longitude, latitude, distance_in_meters])
+  }
+
 
   #I.
   def partial
