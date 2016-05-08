@@ -636,6 +636,10 @@ class Venue < ActiveRecord::Base
         p "Twitter too slow."
       end
     end
+    
+    if new_instagrams.count > 0
+      self.update_columns(last_instagram_post: new_instagrams.first["id"])
+    end
     VenueComment.delay.convert_new_social_media_to_vcs(new_instagrams, new_tweets, self)
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now - 5.hours
     new_tweets = (new_tweets.select{|tweet| tweet.created_at >= latest_posted_comment_time}).map(&:to_hash)
