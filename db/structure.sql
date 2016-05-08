@@ -3188,13 +3188,6 @@ CREATE INDEX index_comment_views_on_venue_comment_id ON comment_views USING btre
 
 
 --
--- Name: index_comment_views_on_venue_comment_id_and_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE UNIQUE INDEX index_comment_views_on_venue_comment_id_and_user_id ON comment_views USING btree (venue_comment_id, user_id);
-
-
---
 -- Name: index_event_announcements_on_event_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4734,4 +4727,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160422205735');
 INSERT INTO schema_migrations (version) VALUES ('20160429171901');
 
 INSERT INTO schema_migrations (version) VALUES ('20160508001633');
+
+INSERT INTO schema_migrations (version) VALUES ('20160508013118');
 

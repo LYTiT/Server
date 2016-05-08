@@ -5,7 +5,7 @@ class CommentView < ActiveRecord::Base
 
   validates :venue_comment, presence: true
   validates :user, presence: true
-  validates_uniqueness_of :user_id, :scope => :venue_comment_id, message: "has all ready viewed this post"
+  #validates_uniqueness_of :user_id, :scope => :venue_comment_id, message: "has all ready viewed this post"
 
   after_create :send_new_views_notification
 
