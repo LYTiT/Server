@@ -5,7 +5,7 @@ class Notification
   timestamps!
   safe 
 
-  def bulk_destroy(notification_ids)
+  def Notification.bulk_destroy(notification_ids)
 	for notification_id in notification_ids
 		notification = Notification.where(id: notification_id, deleted: false).first
 		notification[:deleted] = true

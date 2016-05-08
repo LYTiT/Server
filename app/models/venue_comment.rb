@@ -43,7 +43,39 @@ class VenueComment < ActiveRecord::Base
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
 	end
 
-	def increment_geo_views(country, city)
+	def increment_geo_views(country, city, latitude=0.0, longitude=0.0)
+		#determining which continent the view is coming from
+		viewer_position = [latitude, longitude]
+		#[sw, ne]
+		north_america_bounds = Geokit::Bounds.new(Geokit::LatLng.new(6.941979, -170.136810),Geokit::LatLng.new(73.557736,-52.539152))
+		south_america_bounds = Geokit::Bounds.new(Geokit::LatLng.new(-56.307847, -102.636809),Geokit::LatLng.new(6.941979, -33.531578))
+		europe_bounds = Geokit::Bounds.new(Geokit::LatLng.new(33.956071, -25.998513),Geokit::LatLng.new(71.631733, 43.739573)) 
+
+		africa_bounds_1 = Geokit::Bounds.new(Geokit::LatLng.new(14.761126, -25.998513),Geokit::LatLng.new(36.978899, 33.956071))
+		africa_bounds_2 = Geokit::Bounds.new(Geokit::LatLng.new(-36.405239, -25.998513),Geokit::LatLng.new(14.761126, 50.767733))
+		
+		asia_bounds_1 = Geokit::Bounds.new(Geokit::LatLng.new(33.956071, 43.739573),Geokit::LatLng.new(78.127094, -169.561336))
+		asia_bounds_2 = Geokit::Bounds.new(Geokit::LatLng.new(14.761126, 34.438466),Geokit::LatLng.new(33.956071,-169.561336))
+		asia_bounds_3 = Geokit::Bounds.new(Geokit::LatLng.new(-10.703582, 50.767733),Geokit::LatLng.new(14.761126,-169.561336))
+		australia_bounds = Geokit::Bounds.new(Geokit::LatLng.new(-48.340006, 113.509112),Geokit::LatLng.new(-10.703582,-169.561336))
+
+		if north_america_bounds.contains?(viewer_position)
+			continent = "north_america"
+		elsif south_america_bounds.contains?(viewer_position)
+			continent = "south_america"
+		elsif europe_bounds.contains?(viewer_position)
+			continent = "europe"
+		elsif africa_bounds_1.contains?(viewer_position) or africa_bounds_2.contains?(viewer_position)
+			continent = "africa"
+		elsif asia_bounds_1.contains?(viewer_position) or asia_bounds_2.contains?(viewer_position) or asia_bounds_3.contains?(viewer_position)
+			continent = "asia"
+		elsif australia_bounds.contains?(viewer_position)
+			continent = "australia"
+		else
+			continent = nil
+		end
+
+
 		geo_views_hash = self.geo_views
 		viewing_country = geo_views_hash[country]
 
@@ -56,7 +88,7 @@ class VenueComment < ActiveRecord::Base
 			end			
 			geo_views_hash[country]["total_views"] += 1
 		else			
-			geo_views_hash[country] = {"total_views" => 1, "cities" => {city => 1}}
+			geo_views_hash[country] = {"total_views" => 1, "cities" => {city => 1}, "continent" => continent}
 		end
 
 		self.update_columns(geo_views: geo_views_hash)

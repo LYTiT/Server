@@ -87,7 +87,7 @@ class CommentView < ActiveRecord::Base
     num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
     total_users = User.where("latitude IS NOT NULL").count
     
-    num_simulated_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/1000.0 + ((rand(1) == 0 ? 1 : -1) * rand(10))
+    num_simulated_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/1000.0 + ((rand(2) == 0 ? 1 : -1) * rand(10))
 
     num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", lytit_post.adjusted_sort_position).count
 
@@ -98,7 +98,7 @@ class CommentView < ActiveRecord::Base
 
       nearby_venue = Venue.close_to(venue.latitude, venue.longitude, 20000).first
       faraway_venue = Venue.far_from(venue.latitude, venue.longitude, 20000).offset(rand(1000)).first rescue Venue.far_from(venue.latitude, venue.longitude, 20000).first
-      selected_venue = (rand(10) < 9 ? nearby_venue : faraway_venue) 
+      selected_venue = (rand(99) < 96 ? nearby_venue : faraway_venue) 
       country = selected_venue.country
       city = selected_venue.city
       lytit_post.increment_geo_views(country, city)
