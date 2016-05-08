@@ -34,7 +34,7 @@ class ReportedObject < ActiveRecord::Base
 			end
 		end
 
-		if type = "Activity Comment"
+		if type == "Activity Comment"
 			num_reports = self.activity_comment.reported_objects.count
 
 			if num_reports > 10
