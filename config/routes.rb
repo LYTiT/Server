@@ -16,6 +16,9 @@ LytitServer::Application.routes.draw do
           collection do
             post 'mark_feedchat_as_read'
           end
+          collection do
+            post 'bulk_destroy'
+          end
           post 'mark_as_responded_to'
         end
         post 'set_version'

@@ -15,6 +15,15 @@ class Api::V1::NotificationsController < ApiBaseController
 		end
 	end
 
+	def bulk_destroy
+		notification_ids = params[:notification_ids].split(",")
+		if Notification.bulk_destroy(notification_ids)
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Notifications not destoryed"] } }, :status => :not_found
+		end
+	end
+
 	def mark_as_read
 		notification = Notification.where(id: params[:notification_id], user_id: @user.id, deleted: false).first
 		if notification.present?
