@@ -780,7 +780,7 @@ class Venue < ActiveRecord::Base
 
     if is_favorite == "1"
       favorite_venue = FavoriteVenue.find_by_user_id_and_venue_id(u_id, self.id)
-      favorite_venue.num_new_moments_for_user if (favorite_venue.latest_check_time == nil or favorite_venue.latest_check_time < Time.now - 15.minutes)
+      favorite_venue.num_new_moments_for_user #if (favorite_venue.latest_check_time == nil or favorite_venue.latest_check_time < Time.now - 15.minutes)
     end
   end  
 
