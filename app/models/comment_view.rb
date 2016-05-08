@@ -73,7 +73,7 @@ class CommentView < ActiveRecord::Base
   end
 
   def CommentView.assign_views
-    lytit_posts = VenueComment.where("content_origin = ? AND created_at > ?", "lytit_post", Time.now-24.hours)
+    lytit_posts = VenueComment.where("entry_type = ? AND created_at > ?", "lytit_post", Time.now-24.hours)
 
     for lytit_post in lytit_posts
       CommentView.auto_view_generator(lytit_post)      
