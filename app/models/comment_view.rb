@@ -87,7 +87,7 @@ class CommentView < ActiveRecord::Base
     num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
     total_users = User.where("latitude IS NOT NULL").count
     
-    num_simulated_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/10.0
+    num_simulated_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/100.0
 
     num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", lytit_post.adjusted_sort_position).count
 
