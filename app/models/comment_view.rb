@@ -82,7 +82,7 @@ class CommentView < ActiveRecord::Base
 
   def CommentView.auto_view_generator(lytit_post, total_sim_user_base=50000)
     venue = lytit_post.venue
-    venue_rating = venue.rating || 0.0001
+    venue_rating = venue.rating || rand(5) >=3 ? 0 : 0.0005
 
     num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
     total_users = User.where("latitude IS NOT NULL").count
