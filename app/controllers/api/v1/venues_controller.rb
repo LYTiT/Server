@@ -66,6 +66,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def post_comment
+		params[:proposed_location]
 		if params[:venue_id] != nil
 			venue = Venue.find_by_id(params[:venue_id])
 		else

@@ -1018,7 +1018,7 @@ class Venue < ActiveRecord::Base
           #no corresponding venue found in Foursquare database
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
-        elsif excluded_venue_types.include?(foursquare_venue.categories.first.name) == true
+        elsif foursquare_venue.categories.first.try(:name) != nil and excluded_venue_types.include?(foursquare_venue.categories.first.name) == true
             return nil
         else
           #for major US cities we only deal with verified venues
