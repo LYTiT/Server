@@ -37,9 +37,11 @@ class CommentView < ActiveRecord::Base
         :num_views => vc.views
       }
 
-      type = "comment_view/#{vc.id}/#{vc.views}"
+      type = "comment_view/#{vc.id}"
 
-      notification = self.store_new_notification(payload, vc_user, type)
+
+      notification = Notification.where(type: type).first || self.store_new_notification(payload, vc_user, type)
+
       payload[:notification_id] = notification.id
 
       if vc.views == 1

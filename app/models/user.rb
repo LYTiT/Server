@@ -67,8 +67,10 @@ class User < ActiveRecord::Base
   end
 
   def can_post?
-    if violations.key("Reported Post") != nil
-      (Time.now - violations.key("Reported Post")) > 1.day
+    #The more report occurances, the longer the time out.
+    num_reports = self.violations.values.count("Reported Post").count
+    if num_reports > 0
+      (Time.now - violations.select{|k, v| v == "Reported Post"}.keys[0]) > num_reports*2.hours
     else
       true
     end
