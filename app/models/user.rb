@@ -71,8 +71,9 @@ class User < ActiveRecord::Base
     num_reports = self.violations.values.count("Reported Post")
     if num_reports > 0
       (Time.now - violations.select{|k, v| v == "Reported Post"}.keys[0]) > num_reports*2.hours
+      retrun "Cannot Post"
     else
-      true
+      nil
     end
   end
 

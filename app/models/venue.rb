@@ -1008,6 +1008,8 @@ class Venue < ActiveRecord::Base
   def Venue.validate_venue(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
     #Used to establish if a location tied to an Instagram is legitimate and not a fake, "Best Place Ever" type one.
     #Returns a venue object if location is valid, otherwise nil. Primary check occurs through a Froursquare lookup.
+    excluded_venue_types = ["States & Municipalities", "City", "County", "Country", "Neighborhood", "State", "Town", "Village"]
+
     if venue_name != nil and Venue.name_is_proper?(venue_name)
       lytit_venue_lookup = Venue.fetch_venues_for_instagram_pull(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
 
@@ -1016,6 +1018,8 @@ class Venue < ActiveRecord::Base
           #no corresponding venue found in Foursquare database
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
           return nil
+        elsif excluded_venue_types.include?(foursquare_venue.categories.first.name) == true
+            return nil
         else
           #for major US cities we only deal with verified venues
           major_cities = ["United States"]
@@ -1823,7 +1827,7 @@ end
         
           jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
 
-          if jarow_winkler_proximity >= 0.7 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
+          if jarow_winkler_proximity >= 0.85 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
             if not search_hash[instagram.location.id]
               search_hash[instagram.location.id] = jarow_winkler_proximity
             else

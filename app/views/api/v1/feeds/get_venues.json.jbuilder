@@ -16,4 +16,5 @@ json.array! @feed_venues do |feed_venue|
   json.added_note feed_venue.feed_venue_details["added_note"]
 
   json.did_like @user.likes.where("activity_id = ?", feed_venue.id).first.present?
+  json.num_upvotes
 end
