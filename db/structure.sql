@@ -981,7 +981,10 @@ CREATE TABLE feed_venues (
     user_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    description text
+    description text,
+    num_upvotes integer DEFAULT 0,
+    num_comments integer DEFAULT 0,
+    upvote_user_ids json DEFAULT '[]'::json NOT NULL
 );
 
 
@@ -4729,4 +4732,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160429171901');
 INSERT INTO schema_migrations (version) VALUES ('20160508001633');
 
 INSERT INTO schema_migrations (version) VALUES ('20160508013118');
+
+INSERT INTO schema_migrations (version) VALUES ('20160509232959');
 

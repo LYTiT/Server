@@ -147,6 +147,19 @@ class Api::V1::FeedsController < ApiBaseController
 		#FeedVenue.where("feed_venues.feed_id = ?", params[:id]).includes(:venue, :user, :activity).order("venues.name ASC").page(params[:page]).per(15)
 	end
 
+	def upvote_list_venue
+		fv = FeedVenue.find_by_id(params[:feed_venue_id])
+		upvote_user_ids = fv.upvote_user_ids
+		if params[:upvote] == "1"
+			fv.increment!(num_upvotes: 1)
+			fv.update_columns(upvote_user_ids: upvote_user_ids << params[:user_id])
+		else
+			fv.decrement!(num_upvotes: 1)
+			fv.update_columns(upvote_user_ids: upvote_user_ids.delete(params[:user_id]))
+		end
+		render json: { success: true }
+	end
+
 	def add_venue
 		params[:first_feed]
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
