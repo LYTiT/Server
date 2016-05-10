@@ -206,7 +206,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
-		Feed.delay(:priority => -2).removed_venue_calibration(params[:id])
+		Feed.delay(:priority => -2).removed_venue_calibration(params[:id], params[:venue_id])
 		feed_venue.destroy		
 		render json: { success: true }
 	end

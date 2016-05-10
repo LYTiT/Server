@@ -181,8 +181,10 @@ class Feed < ActiveRecord::Base
 
 	def Feed.added_venue_calibration(feed_id, venue_id)
 		feed = Feed.find_by_id(feed_id)
-		if feed != nil && venue_id != nil
+		if feed != nil && venue_id != nil			
 			feed.increment!(:num_venues, 1)
+			venue_ids = feed.venue_ids
+			feed.update_columns(venue_ids: venue_ids << venue_id)
 			venue = Venue.find_by_id(venue_id)
 			added_moment_count = venue.venue_comments.count || 0
 			feed.increment!(:num_moments, added_moment_count)	
@@ -191,8 +193,10 @@ class Feed < ActiveRecord::Base
 		end
 	end
 
-	def Feed.removed_venue_calibration(feed_id)
+	def Feed.removed_venue_calibration(feed_id, venue_id)
 		feed = Feed.find_by_id(feed_id)
+		venue_ids = feed.venue_ids
+		feed.update_columns(venue_ids: venue_ids.delete(venue_id))
 		feed.update_columns(num_moments: feed.venue_comments.count)
 		feed.decrement!(:num_venues, 1)
 		feed.update_geo_mass_center
@@ -406,7 +410,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def Feed.populate_venue_ids_arrays
-		feed in Feed.all
+		for feed in Feed.all
 			feed.update_columns(venue_ids: feed.feed_venues.pluck(:id))
 		end
 	end
