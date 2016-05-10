@@ -986,7 +986,8 @@ CREATE TABLE feed_venues (
     num_comments integer DEFAULT 0,
     upvote_user_ids json DEFAULT '[]'::json NOT NULL,
     venue_details json DEFAULT '{}'::json NOT NULL,
-    user_details json DEFAULT '{}'::json NOT NULL
+    user_details json DEFAULT '{}'::json NOT NULL,
+    activity_id integer
 );
 
 
@@ -4739,4 +4740,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160508013118');
 INSERT INTO schema_migrations (version) VALUES ('20160509232959');
 
 INSERT INTO schema_migrations (version) VALUES ('20160510041828');
+
+INSERT INTO schema_migrations (version) VALUES ('20160510181231');
 

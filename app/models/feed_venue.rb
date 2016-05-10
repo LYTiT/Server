@@ -18,6 +18,7 @@ class FeedVenue < ActiveRecord::Base
 			a = Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => feed.partial, :user_id => self.user_id, :user_details => user.partial,
 				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
 				:adjusted_sort_position => (self.created_at).to_i, :feed_venue_id => self.id)
+			self.update_columns(activity_id: a.id)
 
 			ActivityFeed.create!(:feed_id => feed_id, :activity_id => a.id)
 			feed_members = feed.feed_users
@@ -102,6 +103,7 @@ class FeedVenue < ActiveRecord::Base
 		for feed_venue in FeedVenue.all
 			feed_venue.update_columns(venue_details: (feed_venue.venue.try(:partial)) || {})
 			feed_venue.update_columns(user_details: (feed_venue.user.try(:partial)) || {})
+			feed_venue.update_columns(activity_id: feed.activity.id)
 		end
 	end
 

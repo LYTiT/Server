@@ -1,6 +1,6 @@
 json.array! @feed_venues do |feed_venue|
   json.venue_id feed_venue.venue_details["id"]
-  json.activity_id feed_venue.id
+  json.activity_id feed_venue.activity_id
   json.name feed_venue.venue_details["name"]
   json.address feed_venue.venue_details["address"]
   json.city feed_venue.venue_details["city"]
