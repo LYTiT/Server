@@ -20,7 +20,7 @@ namespace :lytit do
     InstagramVortex.stale_vortex_check
 
 
-    #VenueComment.cleanup_and_recalibration
+    VenueComment.cleanup_and_recalibration
     #Venue.cleanup_and_calibration
     FeedRecommendation.set_daily_spotlyt
 

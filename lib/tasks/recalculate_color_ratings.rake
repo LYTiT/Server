@@ -50,12 +50,12 @@ namespace :lytit do
       MetaData.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
       #Activity.where("(NOW() - created_at) >= INTERVAL '1 DAY'").delete_all
       Notification.where({created_at: {"$lte": (Time.now-1.day)}}).delete_all
-      Tweet.set_daiy_tweet_id
+      #Tweet.set_daily_tweet_id
     end
 
     end_time = Time.now
 
-    Tweet.set_daiy_tweet_id
+    Tweet.set_daily_tweet_id
     
     puts "Done. Time Taken: #{end_time - start_time}s"
 

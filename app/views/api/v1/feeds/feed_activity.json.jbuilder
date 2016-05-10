@@ -32,6 +32,7 @@ json.activity(@activities) do |activity|
     json.num_upvotes activity.feed_venue.num_upvotes
     json.num_comments activity.feed_venue.num_comments
     json.did_upvote activity.feed_venue.upvote_user_ids.include?(@user.id)
+    json.feed_venue_id activity.feed_venue.id
   else
     json.num_comments activity.num_comments
   end

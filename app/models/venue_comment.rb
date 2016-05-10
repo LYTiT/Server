@@ -43,6 +43,14 @@ class VenueComment < ActiveRecord::Base
 		Venue.where("id IN (?)", associated_venue_ids).update_all(updated_at: Time.now)
 	end
 
+	def VenueComment.daily_cleanup
+		expired_activity_ids = Activity.where("activity_type != ? AND activity_type != ? AND created_at < ?", "added_venue", "new_topic", Time.now-24.hours).pluck(:id)
+		ActivityComment.where("activity_id IN (?)", expired_activity_ids).delete_all
+		ActivityFeed.where("activity_id IN (?)", expired_activity_ids).delete_all
+		Activity.where("activity_type != ? AND activity_type != ? AND created_at < ?", "added_venue", "new_topic", Time.now-24.hours).delete_all
+		VenueComment.where("created_at < ?", Time.now-24.hours).delete_all
+	end
+
 	def increment_geo_views(country, city, latitude=0.0, longitude=0.0)
 		#determining which continent the view is coming from
 		viewer_position = [latitude, longitude]

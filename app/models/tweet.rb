@@ -12,7 +12,7 @@ class Tweet < ActiveRecord::Base
 		{:twitter_user => {:name => self.author_name, :handle => self.handle, :profile_image_url => self.author_avatar, :twitter_id => self.author_id}, :id => self.id, :twitter_id => self.twitter_id, :tweet_text => self.tweet_text, :image_url_1 => self.image_url_1, :image_url_2 => self.image_url_2, :image_url_3 => self.image_url_3, :popularity_score => self.popularity_score, :created_at => self.timestamp}
 	end
 
-	def Tweet.set_daiy_tweet_id
+	def Tweet.set_daily_tweet_id
 		lower_tweet_id_daily_bound = Tweet.where("timestamp > ?", Time.now - 24.hours).order("timestamp ASC").first.twitter_id
 		LytitConstants.where("constant_name = ?", "daily_tweet_id").first.update_columns(big_value: lower_tweet_id_daily_bound)
 	end
