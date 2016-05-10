@@ -100,8 +100,8 @@ class FeedVenue < ActiveRecord::Base
 
 	def FeedVenue.set_venue_and_user_details
 		for feed_venue in FeedVenue.all
-			feed_venue.update_columns(venue_detais: (feed_venue.venue.try(:partial)) || {})
-			feed_venue.update_columns(user_detais: (feed_venue.user.try(:partial)) || {})
+			feed_venue.update_columns(venue_detais: (feed_venue.venue.try(:partial).to_json) || {})
+			feed_venue.update_columns(user_detais: (feed_venue.user.try(:partial).to_json) || {})
 		end
 	end
 
