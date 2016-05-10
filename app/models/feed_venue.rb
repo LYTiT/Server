@@ -103,7 +103,7 @@ class FeedVenue < ActiveRecord::Base
 		for feed_venue in FeedVenue.all
 			feed_venue.update_columns(venue_details: (feed_venue.venue.try(:partial)) || {})
 			feed_venue.update_columns(user_details: (feed_venue.user.try(:partial)) || {})
-			feed_venue.update_columns(activity_id: feed_venue.activity.id)
+			feed_venue.update_columns(activity_id: feed_venue.activity.try(:id))
 		end
 	end
 
