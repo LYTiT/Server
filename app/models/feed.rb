@@ -229,8 +229,8 @@ class Feed < ActiveRecord::Base
 	end
 
 	def comments
-		venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
-		comments = VenueComment.where("venue_id IN (#{venue_ids}) AND adjusted_sort_position > ?", (Time.now-5.hours).to_i).order("adjusted_sort_position DESC")
+		#venue_ids = "SELECT venue_id FROM feed_venues WHERE feed_id = #{self.id}"
+		comments = VenueComment.where("venue_id IN (#{self.venue_ids}) AND adjusted_sort_position > ?", (Time.now-5.hours).to_i).order("adjusted_sort_position DESC")
 	end
 
 	def activity_of_the_day
