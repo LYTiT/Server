@@ -222,7 +222,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_feed
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:user_is_member].to_i == 0
-			@join_request_exists = FeedJoinRequest.find_by_user_id_and_feed_id(@user.id, params[:feed_id]).present?
+			@join_request_exists = FeedJoinRequest.where("user_id = ? AND feed_id AND granted IS NOT TRUE", @user.id, params[:feed_id]).any?
 		else
 			@join_request_exists = nil
 		end
