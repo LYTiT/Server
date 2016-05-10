@@ -1988,7 +1988,7 @@ end
         instagrams = venue.instagram_location_ping(false, true)
         if instagrams.length > 0
           instagrams.sort_by!{|instagram| -(instagram.created_time.to_i)} rescue nil
-          venue.set_last_venue_comment_details(instagrams.first)
+          #venue.set_last_venue_comment_details(instagrams.first)
           VenueComment.delay.map_instagrams_to_hashes_and_convert(instagrams)
         end
         #set venue's last vc fields to latest instagram

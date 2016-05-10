@@ -31,6 +31,10 @@ class Api::V1::VenueCommentsController < ApiBaseController
 	def delete_post
 		vc = VenueComment.find_by_id(params[:venue_comment_id])
 		if params[:user_id] == vc.user_id
+			if vc.venue.venue_comment_details["id"] == vc.id
+				second_latest_vc = vc.venue.venue_comments.order("adjusted_sort_position DESC").limit(1).offset(1)
+				vc.venue.update_featured_comment(vc)
+			end
 			vc.destroy
 			render json: { success: true }
 		else
