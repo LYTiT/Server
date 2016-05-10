@@ -152,7 +152,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def upvote_list_venue
 		fv = FeedVenue.find_by_id(params[:feed_venue_id])
 		upvote_user_ids = fv.upvote_user_ids
-		if params[:upvote] == "1"
+		if params[:upvote] == true
 			fv.increment!(num_upvotes: 1)
 			fv.update_columns(upvote_user_ids: upvote_user_ids << params[:user_id])
 		else
