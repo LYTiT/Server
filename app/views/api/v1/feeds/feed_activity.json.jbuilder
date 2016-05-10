@@ -28,7 +28,13 @@ json.activity(@activities) do |activity|
   json.longitude activity.venue_details["longitude"]
   json.added_note activity.feed_venue_details["added_note"]
   
-
+  if activity.activity_type = "added_venue"
+    json.num_upvotes activity.feed_venue.num_upvotes
+    json.num_comments activity.feed_venue.num_comments
+    json.did_upvote activity.feed_venue.upvote_user_ids.include?(@user.id)
+  else
+    json.num_comments activity.num_comments
+  end
 
   json.tag_1 activity.venue_details["trending_tags"].try(["tag_1"])
   json.tag_2 activity.venue_details["trending_tags"].try(["tag_2"])
