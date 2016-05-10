@@ -415,7 +415,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	#-------------------------------------------------->
 
-	def report
+	def report_user
 		ro = ReportedObject.create!(:type=> "User", :user_id => params[:user_id], :reporter_id => params[:reporter_id])
 		if ro 
 			render json: { success: true }

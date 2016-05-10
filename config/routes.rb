@@ -79,6 +79,7 @@ LytitServer::Application.routes.draw do
         post 'add_interest'
         post 'remove_interest'
         get 'get_user'
+        post 'report_user'
       end
 
       resources :feeds, only: [:create] do
