@@ -196,7 +196,8 @@ class Feed < ActiveRecord::Base
 	def Feed.removed_venue_calibration(feed_id, venue_id)
 		feed = Feed.find_by_id(feed_id)
 		venue_ids = feed.venue_ids
-		feed.update_columns(venue_ids: venue_ids.delete(venue_id))
+		venue_ids.delete(venue_id)
+		feed.update_columns(venue_ids: venue_ids)
 		feed.update_columns(num_moments: feed.venue_comments.count)
 		feed.decrement!(:num_venues, 1)
 		feed.update_geo_mass_center
