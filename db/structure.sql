@@ -984,7 +984,9 @@ CREATE TABLE feed_venues (
     description text,
     num_upvotes integer DEFAULT 0,
     num_comments integer DEFAULT 0,
-    upvote_user_ids json DEFAULT '[]'::json NOT NULL
+    upvote_user_ids json DEFAULT '[]'::json NOT NULL,
+    venue_details json DEFAULT '{}'::json NOT NULL,
+    user_details json DEFAULT '{}'::json NOT NULL
 );
 
 
