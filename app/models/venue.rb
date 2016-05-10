@@ -1922,12 +1922,13 @@ end
     else
       instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
       #Instagram includes the post with the min_id specified...we need to filter it out.
-      if instagrams.length > 0
-        instagrams = instagrams.take instagrams.length-1
-      else
-        instagrams = []
-      end
       self.update_columns(last_instagram_pull_time: Time.now)
+    end
+
+    if instagrams.length > 0
+      instagrams = instagrams.take instagrams.length-1
+    else
+      instagrams = []
     end
 
     if instagrams != nil and instagrams.first != nil
