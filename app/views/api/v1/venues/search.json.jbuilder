@@ -13,4 +13,6 @@ json.array! @venues do |v|
   json.color_rating v.color_rating
   json.time_zone_offset v.time_zone_offset
   json.is_meta_search @is_meta
+  json.foursquare_id v.foursquare_id
+  json.instagram_location_id v.instagram_location.id
 end
