@@ -405,5 +405,11 @@ class Feed < ActiveRecord::Base
 		self.venues.where("(NOW() - latest_posted_comment_time) <= INTERVAL '1 HOUR'").order("rating DESC LIMIT 10").shuffle
 	end
 
+	def Feed.populate_venue_ids_arrays
+		feed in Feed.all
+			feed.update_columns(venue_ids: feed.feed_venues.pluck(:id))
+		end
+	end
+
 
 end

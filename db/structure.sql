@@ -1042,7 +1042,8 @@ CREATE TABLE feeds (
     venue_attributes json DEFAULT '{"descriptives":{},"venue_categories":{}}'::json NOT NULL,
     venue_attributes_string character varying,
     central_mass_lonlat_geometry geometry(Point),
-    central_mass_lonlat_geography geography(Point,4326)
+    central_mass_lonlat_geography geography(Point,4326),
+    venue_ids json DEFAULT '[]'::json NOT NULL
 );
 
 
@@ -4736,4 +4737,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160508001633');
 INSERT INTO schema_migrations (version) VALUES ('20160508013118');
 
 INSERT INTO schema_migrations (version) VALUES ('20160509232959');
+
+INSERT INTO schema_migrations (version) VALUES ('20160510041828');
 
