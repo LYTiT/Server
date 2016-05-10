@@ -15,7 +15,7 @@ json.array! @feed_venue_activities do |feed_venue_activity|
   json.feed_venue_id feed_venue_activity.feed_venue_details["id"]
   json.added_note feed_venue_activity.feed_venue_details["added_note"]
 
-  json.did_upvote feed_venue_activity.upvote_user_ids.include?(@user.id)
-  json.num_upvotes feed_venue_activity.feed_venue.num_upvotes
+  json.did_upvote 
+  json.num_upvotes
   json.num_comments
 end
