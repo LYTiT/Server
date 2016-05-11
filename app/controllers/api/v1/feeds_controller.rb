@@ -165,7 +165,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def add_venue
 		params[:first_feed]
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).any? == false
-			venue = Venue.find_by_id(params[:feed_id])
+			venue = Venue.find_by_id(params[:venue_id])
 			@user = User.find_by_authentication_token(params[:auth_token])
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:added_note], 
 				:venue_details => venue.partial, :user_details => user.partial)
@@ -187,7 +187,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 
 		@user = User.find_by_authentication_token(params[:auth_token])
-		
+
 		if FeedVenue.where("feed_id = ? AND venue_id = ?", params[:feed_id], venue.id).any? == false
 			new_feed_venue = FeedVenue.new(:feed_id => params[:feed_id], :venue_id => venue.id, :user_id => params[:user_id], :description => params[:added_note],
 				:venue_details => venue.partial, :user_details => @user.partial)
