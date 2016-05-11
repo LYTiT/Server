@@ -154,10 +154,12 @@ class Api::V1::FeedsController < ApiBaseController
 		upvote_user_ids = fv.upvote_user_ids
 		if params[:upvote] == true
 			fv.increment!(:num_upvotes, 1)
-			fv.update_columns(upvote_user_ids: upvote_user_ids << params[:user_id])
+			upvote_user_ids << params[:user_id]
+			fv.update_columns(upvote_user_ids: upvote_user_ids)
 		else
 			fv.decrement!(:num_upvotes, 1)
-			fv.update_columns(upvote_user_ids: upvote_user_ids.delete(params[:user_id]))
+			upvote_user_ids.delete(params[:user_id])
+			fv.update_columns(upvote_user_ids: upvote_user_ids)
 		end
 		render json: { success: true }
 	end
