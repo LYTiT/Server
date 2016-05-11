@@ -12,7 +12,7 @@ class CommentView < ActiveRecord::Base
   def send_new_views_notification
   	vc = self.venue_comment
     vc_user = vc.user
-  	if vc.views == 1 || (vc.views%5 == 0 && vc.views <= 20) || (vc.views%10 && vc.views > 20)
+  	if vc.num_enlytened == 1 || (vc.num_enlytened%5 == 0 && vc.num_enlytened <= 20) || (vc.num_enlytened%10 && vc.num_enlytened > 20)
       payload = {
         :object_id => self.id,       
         :type => 'moment_views_notification',
@@ -34,7 +34,8 @@ class CommentView < ActiveRecord::Base
         :longitude => vc.venue_details["longitude"],
         :timestamp => vc.created_at.to_i,
         :content_origin => 'lytit',
-        :num_views => vc.views
+        :num_views => vc.num_enlytened
+        :num_enlytened => vc.num_enlytened
       }
 
       type = "comment_view/#{vc.id}"
