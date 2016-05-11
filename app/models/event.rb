@@ -40,7 +40,10 @@ class Event < ActiveRecord::Base
 			event_category = eventbrite_event["category"]
 			if event_category != nil
 				venue.add_category(event_category["name"])
-			end			
+			end
+			latest_comment_type_times = venue.latest_comment_type_times
+			latest_comment_type_times["event"] = new_event.end_time
+			venue.update_columns(latest_comment_type_times: latest_comment_type_times)
 		else
 			p "Event not created."
 		end

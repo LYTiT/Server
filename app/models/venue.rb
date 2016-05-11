@@ -507,6 +507,9 @@ class Venue < ActiveRecord::Base
     if vc.lytit_post["comment"] != nil
       self.update_descriptives(vc.lytit_post["comment"])
     end
+    latest_comment_type_times = self.latest_comment_type_times
+    latest_comment_type_times["lytit_post"] = Time.now
+    self.update_columns(latest_comment_type_times: latest_comment_type_times)
 
     self.feeds.update_all("num_moments = num_moments+1")
     self.update_rating(true, true)
@@ -637,8 +640,18 @@ class Venue < ActiveRecord::Base
       end
     end
     
-    if new_instagrams.count > 0
-      self.update_columns(last_instagram_post: new_instagrams.first["id"])
+    latest_comment_type_times = self.latest_comment_type_times
+    if new_instagrams.count > 0 or new_tweets.count > 0
+      if new_instagrams.count > 0
+        self.update_columns(last_instagram_post: new_instagrams.first["id"])
+        latest_comment_type_times["instagram"] = DateTime.strptime(new_instagrams["created_time"],'%s')
+      end
+
+      if new_tweets.count > 0
+        latest_comment_type_times["tweet"] = new_tweets.first[:created_at].to_datetime
+      end
+      
+      self.update_columns(latest_comment_type_times: latest_comment_type_times)
     end
 
     VenueComment.delay.convert_new_social_media_to_vcs(new_instagrams, new_tweets, self)
