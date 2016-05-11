@@ -51,6 +51,68 @@ class VenueComment < ActiveRecord::Base
 		VenueComment.where("created_at < ?", Time.now-24.hours).delete_all
 	end
 
+	def send_new_enlytened_notification
+		if self.num_enlytened == 1 || (self.num_enlytened%5 == 0 && self.num_enlytened <= 20) || (self.num_enlytened%10 && self.num_enlytened > 20)
+			payload = {
+				:object_id => self.id,       
+				:type => 'moment_enlytement_notification',
+				:venue_comment_id => self.id,
+				:media_type => self.lytit_post["media_type"],
+				:media_dimensions => self.lytit_post["media_dimensions"],
+				:image_url_1 => self.lytit_post["image_url_1"],
+				:image_url_2 => self.lytit_post["image_url_2"],
+				:image_url_3 => self.lytit_post["image_url_3"],
+				:video_url_1 => self.lytit_post["video_url_1"],
+				:video_url_2 => self.lytit_post["video_url_2"],
+				:video_url_3 => self.lytit_post["video_url_3"],
+				:venue_id => self.venue_details["id"],
+				:venue_name => self.venue_details["name"],
+				:venue_address => self.venue_details["address"],
+				:venue_city => self.venue_details["city"],
+				:venue_country => self.venue_details["country"],
+				:latitude => self.venue_details["latitdue"],
+				:longitude => self.venue_details["longitude"],
+				:timestamp => self.created_at.to_i,
+				:content_origin => 'lytit',
+				:num_enlytened => self.num_enlytened
+			}
+
+			type = "#{self.id}/enlytement"
+
+
+			notification = Notification.where(type: type).first || self.store_new_notification(payload, user, type)
+
+			payload[:notification_id] = notification.id
+
+			if self.num_enlytened == 1
+				preview = "Your post at #{self.venue_details["name"]} has enlytened a person!"
+			elsif self.num_enlytened > 1 && self.num_enlytened <= 20
+				preview = "+5 more people enlytened!"
+			else
+				preview = "+10 more people enlytened!"
+			end
+
+			if user.push_token && user.active == true
+				count = Notification.where(user_id: user.id, read: false, deleted: false).count
+				APNS.send_notification(user.push_token, { :priority =>10, :alert => preview, :content_available => 1, :other => payload, :badge => count})
+			end
+		end
+	end
+
+	def store_new_notification(payload, notification_user, type)
+		notification = {
+			:payload => payload,
+			:gcm => notification_user.gcm_token.present?,
+			:apns => notification_user.push_token.present?,
+			:response => nil,
+			:user_id => notification_user.id,
+			:read => false,
+			:message => type,
+			:deleted => false
+		}
+		Notification.create(notification)
+	end
+
 	def increment_geo_views(country, city, latitude=0.0, longitude=0.0)
 		#determining which continent the view is coming from
 		viewer_position = [latitude, longitude]
@@ -685,6 +747,7 @@ class VenueComment < ActiveRecord::Base
 			self.user.increment!(:num_bolts, 1)
 			self.increment_geo_views(country, city, latitude, longitude)
 			evaluater_user_ids[user_id] = "enlytened"
+			send_new_enlytened_notification
 		else
 			evaluater_user_ids[user_id] = "not_enlytened"
 		end 
