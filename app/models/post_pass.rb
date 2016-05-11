@@ -66,7 +66,8 @@ class PostPass < ActiveRecord::Base
 			:longitude => vc.venue_details["longitude"],
 			:content_origin => 'lytit',
 			:geo_views => vc.geo_views,
-			:num_views => vc.views,
+			:num_views => vc.num_enlytened,
+			:num_enlytened => vc.num_enlytened,
 			:surprise_response_time => post_pass_lifespan
 		}
 
