@@ -93,8 +93,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 	json.venue_state @venue.state
 	json.venue_categories @venue.categories.values
 	json.venue_foursuqare_id @venue.foursquare_id
-	json.has_event nil
-	json.has_lytit nil
-	json.has_instagram nil
-	json.has_twitter nil
+	json.has_event true
+	json.has_lytit true
+	json.has_instagram true
+	json.has_twitter true
 end
