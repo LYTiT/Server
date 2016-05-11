@@ -743,11 +743,11 @@ class VenueComment < ActiveRecord::Base
 	def evaluate(user_id, enlytened, city, country, latitude, longitude)
 		evaluater_user_ids = self.evaluater_user_ids
 		if enlytened == true
-			vc.increment(:num_enlytened, 1)
+			self.increment(:num_enlytened, 1)
 			self.user.increment!(:num_bolts, 1)
 			self.increment_geo_views(country, city, latitude, longitude)
 			evaluater_user_ids[user_id] = "enlytened"
-			send_new_enlytened_notification
+			self.send_new_enlytened_notification
 		else
 			evaluater_user_ids[user_id] = "not_enlytened"
 		end 
