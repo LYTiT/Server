@@ -34,7 +34,7 @@ class CommentView < ActiveRecord::Base
         :longitude => vc.venue_details["longitude"],
         :timestamp => vc.created_at.to_i,
         :content_origin => 'lytit',
-        :num_views => vc.num_enlytened
+        :num_views => vc.num_enlytened,
         :num_enlytened => vc.num_enlytened
       }
 
