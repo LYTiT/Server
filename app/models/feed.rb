@@ -405,6 +405,11 @@ class Feed < ActiveRecord::Base
 		self.venues.in_bounds(search_box).where("rating IS NOT NULL").order("popularity_rank DESC").first
 	end
 
+	def assign_new_admin(user)
+		self.update_columns(user_id: user.id)
+		self.update_columns(user_details: user.partial)
+	end
+
 
 	def featured_venues
 		self.venues.where("(NOW() - latest_posted_comment_time) <= INTERVAL '1 HOUR'").order("rating DESC LIMIT 10").shuffle
