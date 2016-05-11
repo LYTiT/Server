@@ -638,7 +638,7 @@ class Venue < ActiveRecord::Base
     end
     
     if new_instagrams.count > 0
-      self.update_columns(last_instagram_post: new_instagrams.first["id"])
+      self.update_columns(last_instagram_post: new_instagrams.first["id"]
     end
     VenueComment.delay.convert_new_social_media_to_vcs(new_instagrams, new_tweets, self)
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now - 5.hours

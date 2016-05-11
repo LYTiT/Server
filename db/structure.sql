@@ -2253,7 +2253,8 @@ CREATE TABLE venues (
     last_instagram_id character varying(255),
     moment_request_details json DEFAULT '{}'::json NOT NULL,
     lonlat_geometry geometry(Point),
-    lonlat_geography geography(Point,4326)
+    lonlat_geography geography(Point,4326),
+    latest_comment_type_times json DEFAULT '{"lytit_post":"2016-05-09T22:50:27.053-04:00","instagram":"2016-05-09T22:50:27.053-04:00","tweet":"2016-05-09T22:50:27.053-04:00","event":"2016-05-09T22:50:27.053-04:00"}'::json NOT NULL
 );
 
 
@@ -4742,4 +4743,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160509232959');
 INSERT INTO schema_migrations (version) VALUES ('20160510041828');
 
 INSERT INTO schema_migrations (version) VALUES ('20160510181231');
+
+INSERT INTO schema_migrations (version) VALUES ('20160511022316');
 

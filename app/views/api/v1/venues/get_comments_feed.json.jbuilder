@@ -93,8 +93,8 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 	json.venue_state @venue.state
 	json.venue_categories @venue.categories.values
 	json.venue_foursuqare_id @venue.foursquare_id
-	json.has_event true
-	json.has_lytit true
-	json.has_instagram true
-	json.has_twitter true
+	json.has_event @venue.latest_comment_type_times["event"] > Time.now - 1.day
+	json.has_lytit @venue.latest_comment_type_times["lytit_post"] > Time.now - 1.day
+	json.has_instagram @venue.latest_comment_type_times["instagram"] > Time.now - 5.hours
+	json.has_twitter @venue.latest_comment_type_times["tweet"]["presence"] > Time.now - 5.hours
 end
