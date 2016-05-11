@@ -96,5 +96,5 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 	json.has_event @venue.latest_comment_type_times["event"] > Time.now - 1.day
 	json.has_lytit @venue.latest_comment_type_times["lytit_post"] > Time.now - 1.day
 	json.has_instagram @venue.latest_comment_type_times["instagram"] > Time.now - 5.hours
-	json.has_twitter @venue.latest_comment_type_times["tweet"]["presence"] > Time.now - 5.hours
+	json.has_twitter @venue.latest_comment_type_times["tweet"] > Time.now - 5.hours
 end
