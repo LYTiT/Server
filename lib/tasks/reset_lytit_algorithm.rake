@@ -28,7 +28,7 @@ namespace :lytit do
     Event.focus_cities_pull
 
     #Set lower bound on Tweet id pull
-    Tweet.set_daiy_tweet_id
+    Tweet.set_daily_tweet_id
 
     #Reset number of new moments for favorite venues of users if necessary
     FavoriteVenue.num_new_moment_reset

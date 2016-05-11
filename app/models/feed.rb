@@ -108,12 +108,12 @@ class Feed < ActiveRecord::Base
 	      previous_score = venue_categories_hash[category]["weight"].to_f
 	      if underlying_source_ids.include?(venue.id) == true
 	        venue_categories_hash[category]["weight"] = previous_score + 0.01
-	        venue_categories_hash[descriptive]["latest_update_time"] = Time.now
+	        venue_categories_hash[category]["latest_update_time"] = Time.now
 	      else
 	        updated_source_ids = underlying_source_ids << venue.id
 	        venue_categories_hash[category]["weight"] = previous_score + added_value
 	        venue_categories_hash[category][tracker_key] = updated_source_ids
-	        venue_categories_hash[descriptive]["latest_update_time"] = Time.now
+	        venue_categories_hash[category]["latest_update_time"] = Time.now
 	      end
 	    else
 	      venue_categories_hash[category] = {"weight" => 1.0, tracker_key => [venue.id], "latest_update_time" => Time.now}
