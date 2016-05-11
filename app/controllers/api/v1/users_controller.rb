@@ -314,7 +314,7 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def get_daily_posts
-		@comments = @user.venue_comments.where("adjusted_sort_position > ?", (Time.now-1.day).to_i).order("id DESC")
+		@comments = @user.venue_comments.where("adjusted_sort_position > ?", (Time.now-1.day).to_i).order("id DESC").page(params[:page]).per(10)
 	end
 
 	def toggle_group_notification
