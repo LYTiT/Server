@@ -100,7 +100,6 @@ class VenueComment < ActiveRecord::Base
 		end
 
 		self.update_columns(geo_views: geo_views_hash)
-		self.increment!(:views, 1)
 	end
 
 	def add_fake_geo_views(num_cycles=20)
