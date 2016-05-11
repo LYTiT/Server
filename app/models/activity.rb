@@ -24,7 +24,7 @@ class Activity < ActiveRecord::Base
 	def update_comment_parameters(t, u_id)
 		increment!(:num_comments, 1)
 		update_columns(latest_comment_time: t)
-		if self.activity_type = "added_venue"
+		if self.activity_type == "added_venue"
 			self.feed_venue.increment!(:num_comments, 1)
 		end
 
