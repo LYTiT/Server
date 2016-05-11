@@ -678,6 +678,18 @@ class VenueComment < ActiveRecord::Base
 			Time.parse(content[:created_at])
 		end
 	end
+
+	def evaluate(user_id, enlytened, city, country, latitude, longitude)
+		evaluater_user_ids = self.evaluater_user_ids
+		if enlytened == true
+			vc.increment(:num_enlytened, 1)
+			self.user.increment!(:num_bolts, 1)
+			self.increment_geo_views(country, city, latitude, longitude)
+			evaluater_user_ids[user_id] = "enlytened"
+		else
+			evaluater_user_ids[user_id] = "not_enlytened"
+		end 
+	end
 			
 end
 

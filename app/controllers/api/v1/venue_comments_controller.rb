@@ -41,4 +41,14 @@ class Api::V1::VenueCommentsController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['User can only delete his/her posts.'] } }, status: :unprocessable_entity
 		end
 	end
+
+	def evaluate
+		vc = VenueComment.find_by_id(params[:venue_comment_id])
+		if vc.evaluate(params[:user_id], params[:enlytened] == "1", params[:city], params[:country], params[:latitude], params[:longitude])
+			render json: { success: true}
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Post not evaluated successfully'] } }, status: :unprocessable_entity
+		end
+	end
+
 end

@@ -176,6 +176,7 @@ LytitServer::Application.routes.draw do
         get 'get_venue_comment'
         post 'delete_post'
         post 'register_view'
+        post 'evaluate'
       end
 
       resources :post_passes do

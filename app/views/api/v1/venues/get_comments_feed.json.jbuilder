@@ -42,7 +42,9 @@ json.cache! @view_cache_key, :expires_in => 10.minutes do |json|
 		    json.video_url_2 comment.lytit_post["video_url_2"]
 		    json.video_url_3 comment.lytit_post["video_url_3"]
 		    json.created_at comment.lytit_post["created_at"]		
-		    json.reaction comment.lytit_post["reaction"]    
+		    json.reaction comment.lytit_post["reaction"]
+		   	json.num_enlytened comment.num_enlytened
+			json.did_evaluate comment.evaluater_user_ids.keys.include?(@user.id)
 		elsif comment.class.name != "Hash" and comment.entry_type == "instagram"
 			json.content_origin "instagram"
 			json.id comment.id

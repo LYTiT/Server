@@ -2006,7 +2006,7 @@ CREATE TABLE venue_comments (
     venue_id integer,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
-    views integer DEFAULT 0,
+    num_enlytened integer DEFAULT 0,
     adj_views double precision DEFAULT 0.0,
     offset_created_at character varying(255),
     content_origin character varying(255),
@@ -2031,7 +2031,8 @@ CREATE TABLE venue_comments (
     venue_details json DEFAULT '{}'::json NOT NULL,
     entry_type character varying(255),
     visible boolean DEFAULT true,
-    active boolean DEFAULT true
+    active boolean DEFAULT true,
+    evaluater_user_ids json DEFAULT '{}'::json NOT NULL
 );
 
 
@@ -4745,4 +4746,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160510041828');
 INSERT INTO schema_migrations (version) VALUES ('20160510181231');
 
 INSERT INTO schema_migrations (version) VALUES ('20160511022316');
+
+INSERT INTO schema_migrations (version) VALUES ('20160511045047');
 
