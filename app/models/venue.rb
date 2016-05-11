@@ -373,11 +373,14 @@ class Venue < ActiveRecord::Base
     VENUE_META_CATEGORIES.include? query.downcase.tr(" ", "_").singularize
   end
 
-  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex)
+  def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex, city=nil)
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
 
-    vname = scrub_venue_name(vname, vortex.city)
+    city = city || vortex.city
+    if city != nil
+      vname = scrub_venue_name(vname, city)
+    end
 
     if vname != nil && vname != ""
       if inst_id_lookup.try(:venue) != nil && inst_loc_id.to_i != 0
