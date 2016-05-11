@@ -644,13 +644,13 @@ class Venue < ActiveRecord::Base
     if new_instagrams.count > 0 or new_tweets.count > 0
       if new_instagrams.count > 0
         self.update_columns(last_instagram_post: new_instagrams.first["id"])
-        latest_comment_type_times["instagram"] = DateTime.strptime(new_instagrams["created_time"],'%s')
+        latest_comment_type_times["instagram"] = DateTime.strptime(new_instagrams.first["created_time"],'%s')
       end
 
       if new_tweets.count > 0
         latest_comment_type_times["tweet"] = new_tweets.first[:created_at].to_datetime
       end
-      
+
       self.update_columns(latest_comment_type_times: latest_comment_type_times)
     end
 
