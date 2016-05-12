@@ -27,10 +27,7 @@ class SupportMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 		
-		if self.message == "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]}. As a result, your posting
-				privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses 
-				may result in suspension of your Lytit usage rights."
-
+		if self.message == "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]}. As a result, your posting privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses may result in suspension of your Lytit usage rights."
 			alert = "Team Lytit sent you an important message"				
 		else
 			alert = "Team Lytit responded to your message"
