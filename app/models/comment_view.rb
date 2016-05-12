@@ -41,7 +41,6 @@ class CommentView < ActiveRecord::Base
       type = "comment_view/#{vc.id}"
 
 
-
       notification = Notification.where(type: type).first || self.store_new_notification(payload, vc_user, type)
 
       payload[:notification_id] = notification.id
