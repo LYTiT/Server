@@ -9,7 +9,7 @@ json.lists(@feeds) do |feed|
 	json.num_moments feed.num_moments
 	json.feed_color feed.feed_color
 	json.users_can_add_places feed.open
-	json.creator feed.user
+	json.creator feed.user.try(:partial)
 	json.has_added feed.has_added?(@user)
 	json.list_description feed.description
 	json.preview_image_url feed.preview_image_url
