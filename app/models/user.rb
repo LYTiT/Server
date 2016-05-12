@@ -70,8 +70,12 @@ class User < ActiveRecord::Base
     #The more report occurances, the longer the time out.
     num_reports = self.violations.values.count("Reported Post")
     if num_reports > 0
-      (Time.now - violations.select{|k, v| v == "Reported Post"}.keys[0]) > num_reports*2.hours
-      retrun "Cannot Post"
+      time_since_latest_report = Time.now - violations.select{|k, v| v == "Reported Post"}.keys[0]
+      if time_since_latest_report < num_reports*2.hours
+        retrun "Your posting privileges are currently suspended due to having posted innapropriate content. You may post again in #{((num_reports*2.hours-time_since_latest_report)/60.0).to_i} minutes."
+      else
+        nil
+      end      
     else
       nil
     end

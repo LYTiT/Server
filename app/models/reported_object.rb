@@ -28,7 +28,7 @@ class ReportedObject < ActiveRecord::Base
 				end
 
 				message = "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]} at #{venue_comment.venue_details["name"]}. As a result, your posting
-				privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses 
+				privileges will be revoked for #{user.violations.values.count("Reported Post")*2} hours. If you believe this is an error, you may respond to this message. Repeat offenses 
 				may result in suspension of your Lytit usage rights."
 				sm = SupportMessage.create!(:message => message, :support_issue_id => support_issue_id, :user_id => user.id)
 			end
