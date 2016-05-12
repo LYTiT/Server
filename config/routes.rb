@@ -178,6 +178,7 @@ LytitServer::Application.routes.draw do
         post 'delete_post'
         post 'register_view'
         post 'evaluate'
+        post 'report'
       end
 
       resources :post_passes do
