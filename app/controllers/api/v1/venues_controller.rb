@@ -480,7 +480,6 @@ class Api::V1::VenuesController < ApiBaseController
 	def add_to_favorites
 		@user = User.find_by_authentication_token(params[:auth_token])
 		venue = Venue.find_by_id(params[:venue_id])
-		venue_details_hash = venue.details_hash
 		fv = FavoriteVenue.create!(:venue_id => venue.id, :venue_name => venue.name, :user_id => params[:user_id], :venue_details => venue.partial)
 
 		if fv
