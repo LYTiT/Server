@@ -806,7 +806,7 @@ class Venue < ActiveRecord::Base
 #===============================================================================================
 # Attributes ===================================================================================
 #===============================================================================================
-  def details_hash
+  def partial
     {"address" => address, "city" => city, "state" => state, "country" => country, "postal_code" => postal_code, "latitude" => latitude, "longitude" => longitude}
   end
 

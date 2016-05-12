@@ -46,7 +46,7 @@ class Api::V1::VenuesController < ApiBaseController
 			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)
 			mr.increment!(:num_requesters, 1)
 			venue.update_columns(moment_request_details: mr.to_json)
-			no_errors = true
+			no_errors = truef
 		end
 
 		if no_errors
@@ -481,7 +481,7 @@ class Api::V1::VenuesController < ApiBaseController
 		@user = User.find_by_authentication_token(params[:auth_token])
 		venue = Venue.find_by_id(params[:venue_id])
 		venue_details_hash = venue.details_hash
-		fv = FavoriteVenue.create!(:venue_id => venue.id, :venue_name => venue.name, :user_id => params[:user_id], :venue_details => venue_details_hash)
+		fv = FavoriteVenue.create!(:venue_id => venue.id, :venue_name => venue.name, :user_id => params[:user_id], :venue_details => venue.partial)
 
 		if fv
 			@user.delay.update_interests(venue, "favorited_venue")
