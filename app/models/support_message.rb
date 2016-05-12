@@ -5,8 +5,8 @@ class SupportMessage < ActiveRecord::Base
 	after_create :new_message_notification
 
 	def new_message_notification
-		if user.is_admin? == true
-			self.send_new_message_notification(support_issue.user)
+		if user.is_a dmin? == true
+			self.	(support_issue.user)
 		else
 			support_issue.update_columns(latest_message_time: Time.now)
 		end
@@ -27,7 +27,7 @@ class SupportMessage < ActiveRecord::Base
 			payload[:notification_id] = notification.id
 		end
 		
-		if self.message == "It appears you have posted an inappropriate #{venue_comment.lytit_post["media_type"]}. As a result, your posting privileges will be revoked for 24 hours. If you believe this is an error, you may respond to this message. Repeat offenses may result in suspension of your Lytit usage rights."
+		if self.message.first(26) == "It appears you have posted"
 			alert = "Team Lytit sent you an important message"				
 		else
 			alert = "Team Lytit responded to your message"
