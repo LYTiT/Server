@@ -16,4 +16,5 @@ json.array! @feeds do |feed|
 	json.num_likes @num_likes
 	json.preview_image_url feed.preview_image_url
 	json.cover_image_url feed.cover_image_url
+	json.is_private feed.is_private
 end
