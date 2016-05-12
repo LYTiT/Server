@@ -23,7 +23,8 @@ class FeedInvitation < ActiveRecord::Base
       		:fb_name => inviter.facebook_name,
 		    :feed_id => feed.id,
 		    :feed_name => feed.name,
-		    :feed_color => feed.feed_color
+		    :feed_color => feed.feed_color,
+		    :list_creator_id => feed.user_id
 
 		}
 
