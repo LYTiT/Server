@@ -150,6 +150,7 @@ LytitServer::Application.routes.draw do
         post 'delete_activity_comment'
         post 'report_activity_comment'
         post 'upvote_list_venue'
+        post 'report'
       end
 
       resources :support_issues do
