@@ -362,7 +362,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_list_spotlyts
-		@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
+		@spotlyts = Feed.all.where("is_spotlyt IS TRUE")
 		render 'get_feeds.json.jbuilder'
 	end
 
@@ -374,8 +374,14 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_spotlyts
-		@user = User.find_by_authentication_token(params[:auth_token])
-		@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
+		if params[:version] != "1.1.0"
+			@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
+			render 'get_feeds.json.jbuilder'
+		else
+			@user = User.find_by_authentication_token(params[:auth_token])
+			@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
+			render 'get_spotlyts'
+		end
 	end
 
 	def get_daily_spotlyts
