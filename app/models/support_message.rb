@@ -5,7 +5,7 @@ class SupportMessage < ActiveRecord::Base
 	after_create :new_message_notification
 
 	def new_message_notification
-		if user.is_a dmin? == true
+		if user.is_admin? == true
 			self.	(support_issue.user)
 		else
 			support_issue.update_columns(latest_message_time: Time.now)
