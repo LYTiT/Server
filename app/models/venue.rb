@@ -1774,7 +1774,7 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
-  def Venue.dupe_venues_in_city(city)
+  def Venue.clear_dupe_venues
     pre_dupe_clear_count = Venue.where("city = ?",city).count
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
