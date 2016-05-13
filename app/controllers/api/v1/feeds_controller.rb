@@ -388,7 +388,7 @@ class Api::V1::FeedsController < ApiBaseController
 	def get_daily_spotlyts
 		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:version] != "1.1.0"
-			@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
+			@feeds = Feed.all.where("in_spotlyt IS TRUE")
 			render 'get_feeds.json.jbuilder'
 		else			
 			@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
