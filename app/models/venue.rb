@@ -1774,11 +1774,11 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
-  def Venue.clear_dupe_venues
+  def Venue.clear_dupe_venues(city)
     pre_dupe_clear_count = Venue.where("city = ?",city).count
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
-    dupes = Venue.select([:name,:city]).group(:name,:city).having("count(*) > 1")
+    dupes = Venue.where("city = ?", city).select([:name,:city]).group(:name,:city).having("count(*) > 1")
     for dupe in dupes
       p"Venue: #{dupe.name} IN #{dupe.city}"
       dupe_venues = Venue.where("name = ? AND city = ? AND ID NOT IN (#{feed_venue_ids}) AND ID NOT IN (#{favorite_venue_ids})", dupe.name, dupe.city)
