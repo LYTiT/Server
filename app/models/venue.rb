@@ -1774,6 +1774,21 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
+  def Venue.dupe_venues_in_city(city)
+    pre_dupe_clear_count = Venue.where("city = ?",city).count
+    feed_venue_ids = "SELECT venue_id FROM feed_venues"
+    favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
+    dupes = Venue.where("address is null").select([:name,:city]).group(:name,:city).having("count(*) > 1")
+    for dupe in dupes
+      p"Venue: #{dupe.name} IN #{dupe.city}"
+      dupe_venues = Venue.where("name = ? AND city = ? AND ID NOT IN (#{feed_venue_ids}) AND ID NOT IN (#{favorite_venue_ids}) AND address IS null", dupe.name, dupe.city)
+
+      dupe_venues.delete_all
+    end
+    after_dupe_clear_count = Venue.where("city = ?",city).count
+    p "Num dupes cleared: #{after_dupe_clear_count-pre_dupe_clear_count}"
+  end
+
   def Venue.database_cleanup_nulls
     #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
     #database size and improve searching/lookup performance. 
