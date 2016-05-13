@@ -1144,7 +1144,7 @@ ALTER SEQUENCE instagram_auth_tokens_id_seq OWNED BY instagram_auth_tokens.id;
 CREATE TABLE instagram_location_id_lookups (
     id integer NOT NULL,
     venue_id integer,
-    instagram_location_id integer
+    instagram_location_id bigint
 );
 
 
@@ -4753,4 +4753,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160511045047');
 INSERT INTO schema_migrations (version) VALUES ('20160512232811');
 
 INSERT INTO schema_migrations (version) VALUES ('20160513000853');
+
+INSERT INTO schema_migrations (version) VALUES ('20160513002644');
 

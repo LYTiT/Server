@@ -361,15 +361,16 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(10)
 	end
 
-	def get_list_spotlyts
-		@spotlyts = Feed.all.where("is_spotlyt IS TRUE")
-		render 'get_feeds.json.jbuilder'
-	end
 
 	def get_lists_of_category
 		lat = params[:latitude]
 		long = params[:longitude]
 		@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
+		render 'get_feeds.json.jbuilder'
+	end
+
+	def get_list_spotlyts
+		@spotlyts = Feed.all.where("is_spotlyt IS TRUE")
 		render 'get_feeds.json.jbuilder'
 	end
 
@@ -380,18 +381,18 @@ class Api::V1::FeedsController < ApiBaseController
 		else
 			@user = User.find_by_authentication_token(params[:auth_token])
 			@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
-			render 'get_spotlyts'
+			render 'get_spotlyts.json.jbuilder'
 		end
 	end
 
 	def get_daily_spotlyts
+		@user = User.find_by_authentication_token(params[:auth_token])
 		if params[:version] != "1.1.0"
 			@spotlyts = Feed.all.where("in_spotlyt IS TRUE")
 			render 'get_feeds.json.jbuilder'
-		else
-			@user = User.find_by_authentication_token(params[:auth_token])
+		else			
 			@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
-			render 'get_spotlyts'
+			render 'get_spotlyts.json.jbuilder'
 		end
 	end
 
