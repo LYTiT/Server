@@ -1788,8 +1788,8 @@ end
 
     days_back = num_days_back || 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
-    favorite_venue_ids = "SELECT venue_id FROM feed_venues"
-    criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
+    favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
+    criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND venues.id NOT (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
     InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "Associated Inst Location Ids Cleared"    
@@ -1806,7 +1806,7 @@ end
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "Associated Venue Page Views Cleared"
 
-    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, '').delete_all
+    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND id NOT (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, '').delete_all
     p "Venues Cleared"
     num_venues_after_cleanup = Venue.all.count
 
