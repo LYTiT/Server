@@ -326,7 +326,7 @@ class Api::V1::VenuesController < ApiBaseController
 			previous_time_key = 50
 		end
 
-		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_#{page}/v3"
+		@view_cache_key = "#{city}/lyt_map/view/#{time_key}/page_#{page}"
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			p "#{page} ------- DIRECT VIEW RENDER"
@@ -345,7 +345,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		else
 			p "#{page} $$$$$$$ RECACHING"
-			city_cache_key = "#{city}/lyt_map/page_#{page}/v3"
+			city_cache_key = "#{city}/lyt_map/page_#{page}"
 
 			if page == 1
 				num_page_entries = 300
