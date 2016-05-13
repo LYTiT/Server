@@ -717,7 +717,6 @@ class Venue < ActiveRecord::Base
       self.update_columns(r_down_votes: 1.0)
       self.update_columns(color_rating: -1.0)
       self.update_columns(popularity_rank: 0.0)
-      self.update_columns(latest_posted_comment_time: nil)
     end
 
     return visible
@@ -1003,11 +1002,11 @@ class Venue < ActiveRecord::Base
       venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
       if venue_featured_activity == nil
         venue_featured_activity = Activity.create!(:activity_type => "featured_venue_tweet", :venue_id => self.id, :venue_details => self_partial, 
-          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.tweet.created_at.to_i)
+          :venue_comment_details => vc.to_json, :adjusted_sort_position => vc.tweet[:created_at].to_i)
       else
         if vc.tweet[:created_at].to_i > venue_featured_activity.venue_comment_details["adjusted_sort_position"].to_i
           venue_featured_activity.update_columns(venue_comment_details: vc.to_json)
-          venue_featured_activity.update_columns(adjusted_sort_position: vc.tweet.created_at.to_i)
+          venue_featured_activity.update_columns(adjusted_sort_position: vc.tweet[:created_at].to_i)
         end
       end      
     else
@@ -1775,7 +1774,7 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
-  def Venue.database_cleanup(num_days_back)
+  def Venue.database_cleanup_nulls(num_days_back=nil)
     #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
     #database size and improve searching/lookup performance. 
     #Keep venues that fit following criteria:
@@ -1789,7 +1788,46 @@ end
     days_back = num_days_back || 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
     favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
-    criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND venues.id NOT (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
+    criteria = "latest_posted_comment_time IS NULL AND venues.id NOT IN (#{feed_venue_ids}) AND venues.id NOT IN (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
+
+    InstagramLocationIdLookup.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Inst Location Ids Cleared"    
+    VenueComment.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Venue Comments Cleared"    
+    MetaData.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Meta Data Cleared"
+    Tweet.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Tweets Cleared"
+    LytitVote.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Lytit Votes Cleared"
+    LytSphere.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Lyt Spheres Cleared"
+    VenuePageView.all.joins(:venue).where(criteria, "").delete_all
+    p "Associated Venue Page Views Cleared"
+
+    Venue.where("latest_posted_comment_time IS NULL AND id NOT IN (#{feed_venue_ids}) AND id NOT IN (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", '').delete_all
+    p "Venues Cleared"
+    num_venues_after_cleanup = Venue.all.count
+
+    p"Venue Database cleanup complete! Venue Count Before: #{num_venues_before_cleanup}. Venue Count After: #{num_venues_after_cleanup}. Total Cleared: #{num_venues_before_cleanup - num_venues_after_cleanup}"
+  end  
+
+
+  def Venue.database_cleanup(num_days_back=nil)
+    #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
+    #database size and improve searching/lookup performance. 
+    #Keep venues that fit following criteria:
+    #1. Venue is in a List
+    #2. Venue has been Bookmarked
+    #3. Venue is an Apple verified venue (address != nil, city != nil)
+    #4. Venue CURRENTLY has a color rating
+    #5. Venue has been posted at in the past 3 days
+    num_venues_before_cleanup = Venue.all.count
+
+    days_back = num_days_back || 3
+    feed_venue_ids = "SELECT venue_id FROM feed_venues"
+    favorite_venue_ids = "SELECT venue_id FROM favorite_venues"
+    criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND venues.id NOT IN (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
     InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "Associated Inst Location Ids Cleared"    
@@ -1806,7 +1844,7 @@ end
     VenuePageView.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
     p "Associated Venue Page Views Cleared"
 
-    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND id NOT (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, '').delete_all
+    Venue.where("latest_posted_comment_time < ? AND id NOT IN (#{feed_venue_ids}) AND id NOT IN (#{favorite_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0", Time.now - days_back.days, '').delete_all
     p "Venues Cleared"
     num_venues_after_cleanup = Venue.all.count
 
