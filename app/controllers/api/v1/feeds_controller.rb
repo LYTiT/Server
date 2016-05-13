@@ -376,8 +376,8 @@ class Api::V1::FeedsController < ApiBaseController
 			lat = params[:latitude]
 			long = params[:longitude]
 			@user = User.find_by_authentication_token(params[:auth_token])
-			category = params[:category].slice!(0)
-			category = params[:category].slice!(category.length-1)
+			category = params[:categories].slice!(0)
+			category = category.slice!(category.length-1)
 			@feeds = Feed.of_category(category, lat, long)#.page(params[:page]).per(10)
 			render 'get_feeds.json.jbuilder'
 		end
