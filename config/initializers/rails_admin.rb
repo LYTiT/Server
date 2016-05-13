@@ -23,9 +23,9 @@ RailsAdmin.config do |config|
         hide
       end
       include_all_fields
-      field :venues do
-        label 'Manage Venue(s)'
-      end
+      #field :venues do
+      #  label 'Manage Venue(s)'
+      #end
     end
   end
 =begin
