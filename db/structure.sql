@@ -2217,7 +2217,7 @@ CREATE TABLE venues (
     latest_posted_comment_time timestamp without time zone,
     popularity_rank double precision DEFAULT 0.0,
     page_views double precision DEFAULT 0,
-    instagram_location_id integer,
+    instagram_location_id bigint,
     last_instagram_pull_time timestamp without time zone,
     verified boolean DEFAULT true,
     latest_page_view_time timestamp without time zone,
@@ -4751,4 +4751,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160511022316');
 INSERT INTO schema_migrations (version) VALUES ('20160511045047');
 
 INSERT INTO schema_migrations (version) VALUES ('20160512232811');
+
+INSERT INTO schema_migrations (version) VALUES ('20160513000853');
 
