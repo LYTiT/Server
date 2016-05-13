@@ -328,12 +328,13 @@ class Venue < ActiveRecord::Base
 
     if lat_long_lookup == nil
       center_point = [vlatitude, vlongitude]
-      search_radius = 0.8
+      search_radius = 5
       search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
       if is_proposed_location == true
         vname = vname.titleize
       end
-      result = Venue.search(vname, false, search_box, nil)
+      result = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", 0.0).order("lonlat_geometry <-> st_point(#{vlongitude},#{vlatitude})").first
+
 =begin    
       if lat_long_lookup == nil
         center_point = [vlatitude, vlongitude]
@@ -408,7 +409,8 @@ class Venue < ActiveRecord::Base
 
         #name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
 
-        name_lookup = Venue.search(vname, false, search_box, nil)
+        name_lookup = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", 0.0).order("lonlat_geometry <-> st_point(#{long},#{lat})").first
+
 
         #if name_lookup == nil
         #  name_lookup = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
@@ -439,7 +441,7 @@ class Venue < ActiveRecord::Base
   end
 
   #Main Venue database searching method
-  def Venue.search(query, top_5 = false, proximity_box = nil, view_box = nil)
+  def Venue.search(query, top_5 = false, proximity_box = nil, view_box = nil, origin_point = nil)
     if proximity_box != nil      
       search_box = proximity_box
     elsif view_box != nil 
