@@ -146,6 +146,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_list_categories'
         end
+        collection do
+          get 'get_lists_of_category'
+        end
         get 'get_list_spotlyts'
         post 'delete_activity_comment'
         post 'report_activity_comment'
