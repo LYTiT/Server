@@ -9,10 +9,10 @@ RailsAdmin.config do |config|
     end
   end
 
-  config.excluded_models << "ExportedDataCsv"
-  config.excluded_models << "VenuesCsv"
-  config.excluded_models << "VotesCsv"
-  config.excluded_models << "LytitBar"
+  #config.excluded_models << "ExportedDataCsv"
+  #config.excluded_models << "VenuesCsv"
+  #config.excluded_models << "VotesCsv"
+  #config.excluded_models << "LytitBar"
 
   config.model 'User' do
     edit do
