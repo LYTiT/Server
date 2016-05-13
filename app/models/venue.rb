@@ -1774,7 +1774,7 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
-  def Venue.database_cleanup_nulls(num_days_back=nil)
+  def Venue.database_cleanup_nulls
     #cleanup venue database by removing garbage/unused venues. This is necessary in order to manage
     #database size and improve searching/lookup performance. 
     #Keep venues that fit following criteria:
