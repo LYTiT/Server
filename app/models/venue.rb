@@ -1781,7 +1781,7 @@ end
     dupes = Venue.select([:name,:city]).group(:name,:city).having("count(*) > 1")
     for dupe in dupes
       p"Venue: #{dupe.name} IN #{dupe.city}"
-      dupe_venues = Venue.where("name = ? AND city = ? AND ID NOT IN (#{feed_venue_ids}) AND ID NOT IN (#{favorite_venue_ids}) AND address IS null", dupe.name, dupe.city)
+      dupe_venues = Venue.where("name = ? AND city = ? AND ID NOT IN (#{feed_venue_ids}) AND ID NOT IN (#{favorite_venue_ids})", dupe.name, dupe.city)
 
       dupe_venues.delete_all
     end
