@@ -180,7 +180,7 @@ class Venue < ActiveRecord::Base
 # CREATION =====================================================================================
 #===============================================================================================
 
-  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id, origin_vortex)
+  def self.create_new_db_entry(name, address, city, state, country, postal_code, phone, latitude, longitude, instagram_location_id, origin_vortex, is_proposed=false)
     venue = Venue.create!(:name => name, :latitude => latitude, :longitude => longitude, :fetched_at => Time.now)
     
     if city == nil
@@ -229,6 +229,7 @@ class Venue < ActiveRecord::Base
       venue.phone_number = Venue.formatTelephone(phone)
     end
 
+    venue.is_proposed = is_proposed
     venue.save
 
 =begin
@@ -286,76 +287,91 @@ class Venue < ActiveRecord::Base
     ActiveRecord::Base.connection.execute(sql)
   end
 
-  #Used when querying with Apple Maps data
-  def self.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, is_meta_search=false)
+  #Fetch Lytit Venues related to query (both textual and meta). Used for searching.
+  def self.fetch(query, position_lat, position_long, view_box, is_meta_search=false)
     if query != nil && query != ""
-      central_screen_point = [(ne_lat.to_f-sw_lat.to_f)/2.0 + sw_lat.to_f, (ne_long.to_f-sw_long.to_f)/2.0 + sw_long.to_f]
+      central_screen_point = [(view_box[:ne_lat]-view_box[:sw_lat])/2.0 + view_box[:sw_lat], (view_box[:ne_long:]-view_box[:sw_long])/2.0 + view_box[:sw_long]]
+
       if is_meta_search == true        
-        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100 
+        if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [view_box[:ne_lat], view_box[:ne_long]], :units => :km) <= 100 
           #searching around user since screen is near users location.
           search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 10, :units => :kms)
           surrounding_meta_results = Venue.in_bounds(search_box).where("color_rating > -1.0").interest_search(query).limit(20)
         else
           #searching in view
-          in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", sw_lat, ne_lat, sw_long, ne_long).where("rating IS NOT NULL").interest_search(query).limit(20)
+          in_view_results = Venue.where("latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?", view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).where("rating IS NOT NULL").interest_search(query).limit(20)
         end
+
       else
-        if (ne_lat.to_f != 0.0 && ne_long.to_f != 0.0) and (sw_lat.to_f != 0.0 && sw_long.to_f != 0.0)          
-          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [ne_lat, ne_long], :units => :km) <= 100
+        #Lytit DB search that takes into consideration user coordinates and screen view.
+        if (view_box[:ne_lat] != 0.0 && view_box[:ne_long] != 0.0) and (view_box[:sw_lat] != 0.0 && view_box[:sw_long] != 0.0)
+          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [view_box[:ne_lat], view_box[:ne_long], :units => :km) <= 100
+              #Surrounding search
               search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 20, :units => :kms)
-              surrounding_search = Venue.search(query, search_box, nil, true)
+              surrounding_search = Venue.search(query, true, search_box, nil)
           else
-              outer_region = {:ne_lat => ne_lat, :ne_long => ne_long,:sw_lat => sw_lat ,:sw_long => sw_long}
-              inview_search = Venue.search(query, nil, outer_region, true)
+              #In view search
+              inview_search = Venue.search(query, true, nil, view_box)
           end
         else
-          Venue.search(query, nil, nil, true)
+          Venue.search(query, true, nil, nil)
         end
       end
+
     else
       []
     end
   end
 
-  #General User location search query
-  def self.fetch(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude)
-    lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first    
-    
+  #Fetch a single venue or create it if not present in DB. Used for assigning Venues to things.
+  def self.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
+    lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
+
     if lat_long_lookup == nil
       center_point = [vlatitude, vlongitude]
-      search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-      result = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
-      if result == nil
-        #handeling geographies
-        if vaddress == nil
-          if vcity != nil #city search
-            search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
-            result = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname).first
-          end
-
-          if vstate != nil && vcity == nil #state search
-            search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
-            result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname).first
-          end
-
-          if (vcountry != nil && vstate == nil ) && vcity == nil #country search
-            search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
-            result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname).first
-          end
-        else #venue search
-          #search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
-          #result = Venue.search(vname, search_box, nil).first
-          result = nil
-          #result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
-        end
+      search_radius = 0.8
+      search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
+      if is_proposed_location == true
+        vname = vname.titleize
       end
+      result = Venue.search(vname, false, search_box, nil)
+=begin    
+      if lat_long_lookup == nil
+        center_point = [vlatitude, vlongitude]
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+        result = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
+        if result == nil
+          #handeling geographies
+          if vaddress == nil
+            if vcity != nil #city search
+              search_box = Geokit::Bounds.from_point_and_radius(center_point, 10, :units => :kms)
+              result = Venue.in_bounds(search_box).where("address IS NULL AND name = ? OR name = ?", vcity, vname).first
+            end
+
+            if vstate != nil && vcity == nil #state search
+              search_box = Geokit::Bounds.from_point_and_radius(center_point, 100, :units => :kms)
+              result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND name = ? OR name = ?", vstate, vname).first
+            end
+
+            if (vcountry != nil && vstate == nil ) && vcity == nil #country search
+              search_box = Geokit::Bounds.from_point_and_radius(center_point, 1000, :units => :kms)
+              result = Venue.in_bounds(search_box).where("address IS NULL AND city IS NULL AND state IS NULL AND name = ? OR name = ?", vcountry, vname).first
+            end
+          else #venue search
+            #search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.250, :units => :kms)
+            #result = Venue.search(vname, search_box, nil).first
+            result = nil
+            #result = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
+          end
+        end
+=end        
     else
       result = lat_long_lookup
     end
 
     if result == nil
       if vlatitude != nil && vlongitude != nil 
-        result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil)
+        result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil, is_proposed_location)
         result.update_columns(verified: true)
       else
         return nil
@@ -393,7 +409,7 @@ class Venue < ActiveRecord::Base
 
         #name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
 
-        name_lookup = Venue.search(vname, search_box, nil)
+        name_lookup = Venue.search(vname, false, search_box, nil)
 
         #if name_lookup == nil
         #  name_lookup = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
@@ -424,7 +440,7 @@ class Venue < ActiveRecord::Base
   end
 
   #Main Venue database searching method
-  def Venue.search(query, proximity_box = nil, view_box = nil, top_5 = false)
+  def Venue.search(query, top_5 = false, proximity_box = nil, view_box = nil)
     if proximity_box != nil      
       search_box = proximity_box
     elsif view_box != nil 
@@ -1033,9 +1049,12 @@ class Venue < ActiveRecord::Base
     excluded_venue_types = ["States & Municipalities", "City", "County", "Country", "Neighborhood", "State", "Town", "Village"]
 
     if venue_name != nil and Venue.name_is_proper?(venue_name)
+      #Search for venue in Lytit DB
       lytit_venue_lookup = Venue.fetch_venues_for_instagram_pull(venue_name, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
 
       if lytit_venue_lookup == nil
+        #Venue not found so need to check if venue is valid and create a new entry if so.
+
         foursquare_venue = Venue.foursquare_venue_lookup(venue_name, venue_lat, venue_long, origin_vortex.city)
           #no corresponding venue found in Foursquare database
         if foursquare_venue == nil || foursquare_venue == "F2 ERROR"
@@ -1048,6 +1067,7 @@ class Venue < ActiveRecord::Base
           if major_countries.include? origin_vortex.country == true && foursquare_venue.verified == false
             return nil
           else
+            #Creating new entry.
             new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, foursquare_venue.location.address, origin_vortex.city, foursquare_venue.location.state, origin_vortex.country, foursquare_venue.location.postalCode, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
             new_lytit_venue.update_columns(foursquare_id: foursquare_venue.id)
             new_lytit_venue.update_columns(verified: true)

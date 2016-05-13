@@ -210,9 +210,6 @@ LytitServer::Application.routes.draw do
           get 'refresh_map_view_by_parts'
         end 
         collection do
-          get 'search'
-        end
-        collection do
           get 'direct_fetch'
         end
         collection do

@@ -66,11 +66,14 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def post_comment
-		params[:proposed_location]
+		if params[:proposed_location] == true or formatted_address == nil
+			is_proposed_location = true
+		end
+
 		if params[:venue_id] != nil
 			venue = Venue.find_by_id(params[:venue_id])
 		else
-			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			venue = Venue.fetch_or_create(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], is_proposed_location)
 		end
 
 		user = User.find_by_authentication_token(params[:auth_token])
@@ -93,7 +96,7 @@ class Api::V1::VenuesController < ApiBaseController
 		if venue_id != nil && venue_id != 0
 			@venue = Venue.find_by_id(params[:venue_id])
 		else
-			@venue = Venue.fetch(params[:name], params[:address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			@venue = Venue.fetch_or_create(params[:name], params[:address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
 		if params[:from_search] == "1" && page == 1
@@ -191,12 +194,13 @@ class Api::V1::VenuesController < ApiBaseController
 		end	
 	end
 
+#depricated
 	def get_comments_implicitly
 		num_elements_per_page = 10
 		page = params[:page].to_i
 
 		if params[:country] != nil
-			@venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			@venue = Venue.fetch_or_create(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 			#Venue.fetch(params["name"], params["formatted_address"], params["city"], params["state"], params["country"], params["postal_code"], params["phone_number"], params["latitude"], params["longitude"])
 		else
 			@venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude].to_f, params[:longitude].to_f, params[:instagram_location_id], nil)
@@ -379,19 +383,6 @@ class Api::V1::VenuesController < ApiBaseController
 		end
 	end
 
-	def search
-		@user = User.find_by_authentication_token(params[:auth_token])
-
-		if params[:instagram_location_id] == nil
-			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
-			@venues = [venue]
-		else
-			@venues =[Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil)]
-		end
-
-		render 'search.json.jbuilder'
-	end
-
 	def direct_fetch
 		position_lat = params[:latitude]
 		position_long = params[:longitude]
@@ -401,13 +392,15 @@ class Api::V1::VenuesController < ApiBaseController
 		sw_lat = params[:sw_latitude]
 		sw_long = params[:sw_longitude]
 
+		view_box = {:ne_lat => ne_lat, :ne_long => ne_long, :sw_lat => sw_lat, :sw_long => sw_long}
+
 		query = params[:q]
 
 		if Venue.query_is_meta?(query) == true
-			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, true)
+			@venues = Venue.fetch_or_create(query, position_lat, position_long, view_box, true)
 			@is_meta = true
 		else
-			@venues = Venue.direct_fetch(query, position_lat, position_long, ne_lat, ne_long, sw_lat, sw_long, false)
+			@venues = Venue.fetch_or_create(query, position_lat, position_long, view_box, false)
 			@is_meta = false
 		end
 

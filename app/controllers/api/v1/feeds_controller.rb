@@ -185,7 +185,7 @@ class Api::V1::FeedsController < ApiBaseController
 		if params[:instagram_location_id] != nil
 			venue = Venue.fetch_venues_for_instagram_pull(params[:name], params[:latitude], params[:longitude], params[:instagram_location_id], nil, params[:city])
 		else
-			venue = Venue.fetch(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
+			venue = Venue.fetch_or_create(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude])
 		end
 
 		@user = User.find_by_authentication_token(params[:auth_token])

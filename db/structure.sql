@@ -2256,7 +2256,8 @@ CREATE TABLE venues (
     moment_request_details json DEFAULT '{}'::json NOT NULL,
     lonlat_geometry geometry(Point),
     lonlat_geography geography(Point,4326),
-    latest_comment_type_times json DEFAULT '{"lytit_post":"2016-05-09T22:50:27.053-04:00","instagram":"2016-05-09T22:50:27.053-04:00","tweet":"2016-05-09T22:50:27.053-04:00","event":"2016-05-09T22:50:27.053-04:00"}'::json NOT NULL
+    latest_comment_type_times json DEFAULT '{"lytit_post":"2016-05-09T22:50:27.053-04:00","instagram":"2016-05-09T22:50:27.053-04:00","tweet":"2016-05-09T22:50:27.053-04:00","event":"2016-05-09T22:50:27.053-04:00"}'::json NOT NULL,
+    is_proposed boolean DEFAULT false
 );
 
 
@@ -4757,4 +4758,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160513000853');
 INSERT INTO schema_migrations (version) VALUES ('20160513002644');
 
 INSERT INTO schema_migrations (version) VALUES ('20160513054655');
+
+INSERT INTO schema_migrations (version) VALUES ('20160513214021');
 
