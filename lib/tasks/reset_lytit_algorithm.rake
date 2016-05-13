@@ -33,7 +33,7 @@ namespace :lytit do
     #Reset number of new moments for favorite venues of users if necessary
     FavoriteVenue.num_new_moment_reset
 
-    Venue.database_cleanup(num_days_back=nil)
+    Venue.database_cleanup(3)
 
     puts "done."
   end  
