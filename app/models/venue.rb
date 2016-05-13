@@ -388,12 +388,16 @@ class Venue < ActiveRecord::Base
       else
         #Check if there is a direct name match in proximity
         center_point = [lat, long]
-        search_box = Geokit::Bounds.from_point_and_radius(center_point, 0.3, :units => :kms)
+        search_radius = 10 #kms
+        search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
 
-        name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
-        if name_lookup == nil
-          name_lookup = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
-        end
+        #name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
+
+        name_lookup = Venue.search(vname, search_box, nil)
+
+        #if name_lookup == nil
+        #  name_lookup = Venue.in_bounds(search_box).name_search(vname).with_pg_search_rank.where("pg_search.rank > 0.3").first
+        #end
 
         if name_lookup != nil
           result = name_lookup
@@ -1040,8 +1044,8 @@ class Venue < ActiveRecord::Base
             return nil
         else
           #for major US cities we only deal with verified venues
-          major_cities = ["United States"]
-          if major_cities.include? origin_vortex.country == true && foursquare_venue.verified == false
+          major_countries = ["United States"]
+          if major_countries.include? origin_vortex.country == true && foursquare_venue.verified == false
             return nil
           else
             new_lytit_venue = Venue.create_new_db_entry(foursquare_venue.name, foursquare_venue.location.address, origin_vortex.city, foursquare_venue.location.state, origin_vortex.country, foursquare_venue.location.postalCode, nil, venue_lat, venue_long, venue_instagram_location_id, origin_vortex)
@@ -1076,9 +1080,21 @@ class Venue < ActiveRecord::Base
       lower_raw_name = raw_name.downcase 
       lower_city = city.downcase
 
+      if lower_raw_name.include?(" @ ") == true
+        lower_raw_name = lower_raw_name.partition(" @ ").last.strip
+      end
+
+      if lower_raw_name.include?("@ ") == true
+        lower_raw_name = lower_raw_name.partition("@ ").last.strip
+      end
+
+      if lower_raw_name.include?(" @") == true
+        lower_raw_name = lower_raw_name.partition(" @").last.strip
+      end
+
       if lower_raw_name.include?("@") == true
         lower_raw_name = lower_raw_name.partition("@").last.strip
-      end
+      end      
 
       if lower_raw_name.include?(" at ") == true
         lower_raw_name = lower_raw_name.partition(" at ").last.strip.capitalize
@@ -1880,7 +1896,7 @@ end
         if venue_instagrams.count < 3
           puts ("Pinging Instagram for more Instagrams!")
           venue_instagrams = self.instagram_ping(true, false)
-          self.update_columns(last_instagram_pull_time: Time.now + 15.minutes)
+          self.update_columns(last_instagram_pull_time: Time.now + 10.minutes)
         else
           self.update_columns(last_instagram_pull_time: Time.now)
         end
@@ -2073,18 +2089,23 @@ end
 
     foursquare_search_results = client.search_venues(:ll => "#{venue_lat},#{venue_long}", :query => Venue.name_for_comparison(venue_name.downcase, origin_city), :radius => search_radius) rescue "F2 ERROR"
     if foursquare_search_results != "F2 ERROR" and (foursquare_search_results.first != nil and foursquare_search_results.first.last.count > 0)
-      foursquare_venue = foursquare_search_results.first.last.first
-      if foursquare_venue != nil and (venue_name.downcase.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(venue_name.downcase) == false)
+
+      foursquare_venue = foursquare_search_results.first.last.first #first Foursquare Venue
+      downcase_venue_name = venue_name.downcase
+      if foursquare_venue != nil and (downcase_venue_name.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(downcase_venue_name) == false)
+        #If foursquare_venue name is not equal or is not contained we do a string comparison
         require 'fuzzystringmatch'
         jarow = FuzzyStringMatch::JaroWinkler.create( :native )
-        overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
-        jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, foursquare_venue.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
-        if jarow_winkler_proximity < 0.75
+        #overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
+        #jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, foursquare_venue.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = p jarow.getDistance(downcase_venue_name, foursquare_venue.name.downcase)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        if jarow_winkler_proximity < 0.87
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
-            overlap = venue_name.downcase.split & entry.name.downcase.split
-            jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, entry.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
-            if jarow_winkler_proximity >= 0.75
+            #overlap = venue_name.downcase.split & entry.name.downcase.split
+            #jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, entry.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
+            jarow_winkler_proximity = p jarow.getDistance(downcase_venue_name, entry.name.downcase)
+            if jarow_winkler_proximity >= 0.87
               foursquare_venue = entry
               break
             end
