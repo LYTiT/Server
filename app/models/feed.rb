@@ -337,7 +337,7 @@ class Feed < ActiveRecord::Base
 	end
 
 	def Feed.of_category(category, lat=40.741140, long=-73.981917)
-		Feed.all.joins(:list_category_entries).where("name = ?", category).order("feeds.central_mass_lonlat_geometry <-> st_point(#{long},#{lat})")
+		Feed.all.joins(list_category_entries: :list_category).where("list_categories.name = ?", category).order("feeds.central_mass_lonlat_geometry <-> st_point(#{long},#{lat})")
 	end
 
 	def update_geo_mass_center

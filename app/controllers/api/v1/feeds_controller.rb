@@ -361,13 +361,24 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(10)
 	end
 
-
 	def get_lists_of_category
 		lat = params[:latitude]
 		long = params[:longitude]
 		@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
 		render 'get_feeds.json.jbuilder'
 	end
+
+	def get_initial_recommendations
+		if params[:version] == "1.1.0"
+			@recommendations = FeedRecommendation.for_categories(params[:categories], params[:latitude], params[:longitude])
+			render 'get_initial_recommendations'
+		else
+			lat = params[:latitude]
+			long = params[:longitude]
+			@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
+			render 'get_feeds.json.jbuilder'
+		end
+	end	
 
 	def get_list_spotlyts
 		@spotlyts = Feed.all.where("is_spotlyt IS TRUE")
@@ -394,10 +405,6 @@ class Api::V1::FeedsController < ApiBaseController
 			@spotlyts = FeedRecommendation.where("spotlyt IS TRUE").includes(:feed)
 			render 'get_spotlyts.json.jbuilder'
 		end
-	end
-
-	def get_initial_recommendations
-		@recommendations = FeedRecommendation.for_categories(params[:categories], params[:latitude], params[:longitude])
 	end
 	
 	def get_recommendations
