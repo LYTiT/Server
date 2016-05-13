@@ -387,10 +387,10 @@ class Api::V1::VenuesController < ApiBaseController
 		position_lat = params[:latitude]
 		position_long = params[:longitude]
 
-		ne_lat = params[:ne_latitude]
-		ne_long = params[:ne_longitude]
-		sw_lat = params[:sw_latitude]
-		sw_long = params[:sw_longitude]
+		ne_lat = params[:ne_latitude].to_f
+		ne_long = params[:ne_longitude].to_f
+		sw_lat = params[:sw_latitude].to_f
+		sw_long = params[:sw_longitude].to_f
 
 		view_box = {:ne_lat => ne_lat, :ne_long => ne_long, :sw_lat => sw_lat, :sw_long => sw_long}
 
