@@ -397,10 +397,10 @@ class Api::V1::VenuesController < ApiBaseController
 		query = params[:q]
 
 		if Venue.query_is_meta?(query) == true
-			@venues = Venue.fetch_or_create(query, position_lat, position_long, view_box, true)
+			@venues = Venue.fetch(query, position_lat, position_long, view_box, true)
 			@is_meta = true
 		else
-			@venues = Venue.fetch_or_create(query, position_lat, position_long, view_box, false)
+			@venues = Venue.fetch(query, position_lat, position_long, view_box, false)
 			@is_meta = false
 		end
 
