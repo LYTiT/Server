@@ -290,7 +290,7 @@ class Venue < ActiveRecord::Base
   #Fetch Lytit Venues related to query (both textual and meta). Used for searching.
   def self.fetch(query, position_lat, position_long, view_box, is_meta_search=false)
     if query != nil && query != ""
-      central_screen_point = [(view_box[:ne_lat]-view_box[:sw_lat])/2.0 + view_box[:sw_lat], (view_box[:ne_long:]-view_box[:sw_long])/2.0 + view_box[:sw_long]]
+      central_screen_point = [(view_box[:ne_lat]-view_box[:sw_lat])/2.0 + view_box[:sw_lat], (view_box[:ne_long]-view_box[:sw_long])/2.0 + view_box[:sw_long]]
 
       if is_meta_search == true        
         if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [view_box[:ne_lat], view_box[:ne_long]], :units => :km) <= 100 
@@ -305,7 +305,7 @@ class Venue < ActiveRecord::Base
       else
         #Lytit DB search that takes into consideration user coordinates and screen view.
         if (view_box[:ne_lat] != 0.0 && view_box[:ne_long] != 0.0) and (view_box[:sw_lat] != 0.0 && view_box[:sw_long] != 0.0)
-          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [view_box[:ne_lat], view_box[:ne_long], :units => :km) <= 100
+          if Geocoder::Calculations.distance_between(central_screen_point, [position_lat, position_long], :units => :km) <= 20 and Geocoder::Calculations.distance_between(central_screen_point, [view_box[:ne_lat], view_box[:ne_long]], :units => :km) <= 100
               #Surrounding search
               search_box = Geokit::Bounds.from_point_and_radius(central_screen_point, 20, :units => :kms)
               surrounding_search = Venue.search(query, true, search_box, nil)
@@ -317,7 +317,6 @@ class Venue < ActiveRecord::Base
           Venue.search(query, true, nil, nil)
         end
       end
-
     else
       []
     end
@@ -1789,6 +1788,7 @@ end
 
     days_back = num_days_back || 3
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
+    favorite_venue_ids = "SELECT venue_id FROM feed_venues"
     criteria = "latest_posted_comment_time < ? AND venues.id NOT IN (#{feed_venue_ids}) AND (address is NULL OR city = ?) AND color_rating < 0"
 
     InstagramLocationIdLookup.all.joins(:venue).where(criteria, Time.now - days_back.days, "").delete_all
