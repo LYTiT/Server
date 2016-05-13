@@ -1045,7 +1045,7 @@ CREATE TABLE feeds (
     central_mass_lonlat_geometry geometry(Point),
     central_mass_lonlat_geography geography(Point,4326),
     venue_ids json DEFAULT '[]'::json NOT NULL,
-    in_spotlyt boolean DEFAULT true
+    in_spotlyt boolean DEFAULT false
 );
 
 
@@ -4755,4 +4755,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160512232811');
 INSERT INTO schema_migrations (version) VALUES ('20160513000853');
 
 INSERT INTO schema_migrations (version) VALUES ('20160513002644');
+
+INSERT INTO schema_migrations (version) VALUES ('20160513054655');
 
