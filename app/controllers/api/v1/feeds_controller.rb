@@ -375,7 +375,7 @@ class Api::V1::FeedsController < ApiBaseController
 		else
 			lat = params[:latitude]
 			long = params[:longitude]
-			@lists = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
+			@feeds = Feed.of_category(params[:category], lat, long).page(params[:page]).per(10)
 			render 'get_feeds.json.jbuilder'
 		end
 	end	
