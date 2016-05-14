@@ -358,13 +358,13 @@ class Api::V1::VenuesController < ApiBaseController
 			@venues = Rails.cache.fetch(city_cache_key, :expires_in => 10.minutes) do
 				#this could go wrong if more than 300 active venues in 3km radius
 				if page == 1
-					venues = Venue.close_to(lat, long, 5000).where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
+					venues = Venue.close_to(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, latest_posted_comment_time, instagram_location_id, venue_comment_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
 				end
 
 				if page == 1 and venues.length == 0
-					venues =  Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
+					venues =  Venue.far_from(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, latest_posted_comment_time, instagram_location_id, venue_comment_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
 				elsif page > 1
-					venues = Venue.far_from(lat, long, 5000).where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a rescue "error"
+					venues = Venue.far_from(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, latest_posted_comment_time, instagram_location_id, venue_comment_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a rescue "error"
 				else
 					nil
 				end
