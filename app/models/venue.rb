@@ -573,7 +573,7 @@ class Venue < ActiveRecord::Base
     comments = Rails.cache.fetch(vc_cache_key, :expires_in => 10.minutes) do
       #Clear offset value if rebuilding feed.
       if page_number == 1
-        max_vc_id = self.venue_comments.order("adjusted_sort_position DESC").first.try(:id) || -1
+        max_vc_id = self.venue_comments.order("id DESC").first.try(:id) || -1
         self.update_columns(venue_comment_id: max_vc_id)
         
         if self.page_offset > 0
@@ -617,7 +617,8 @@ class Venue < ActiveRecord::Base
           else
             #No new social media content so we move to venue comments.
             p "No new social media, returning Venue Comments"
-            vcs = self.venue_comments.where("((adjusted_sort_position > ? AND entry_type != ?) OR (adjusted_sort_position > ? AND entry_type = ?)) AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+            vcs = self.venue_comments.where("((adjusted_sort_position > ? AND entry_type != ?) OR (adjusted_sort_position > ? AND entry_type = ?)) 
+              AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
             else
@@ -627,7 +628,9 @@ class Venue < ActiveRecord::Base
         else
           #The page offset value is the amount of proceeding pages filled with either super content or live social media.
           p "Straight to Venue Comments"
-          vcs = self.venue_comments.where("((adjusted_sort_position > ? AND entry_type != ?) OR (adjusted_sort_position > ? AND entry_type = ?)) AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+          vcs = self.venue_comments.where("((adjusted_sort_position > ? AND entry_type != ?) OR (adjusted_sort_position > ? AND entry_type = ?)) 
+            AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, 
+            self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
           if vcs.count > 0
             vcs.to_a
           else
