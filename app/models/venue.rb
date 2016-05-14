@@ -907,7 +907,7 @@ class Venue < ActiveRecord::Base
   def update_descriptives(new_descriptives_string)
     new_descriptives_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
     #check spelling
-    if new_descriptives_string != nil && new_descriptives_string != "" && (new_descriptives_string.include? "__" == false)
+    if new_descriptives_string != nil && new_descriptives_string != "" && (new_descriptives_string.include?("__") == false)
       begin
         spell_checker = Gingerice::Parser.new
         new_descriptives_string = spell_checker.parse(new_descriptives_string)["result"]

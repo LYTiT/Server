@@ -130,11 +130,11 @@ class User < ActiveRecord::Base
     category_interests = self.interests["venue_categories"] || {}
     decriptive_interests = self.interests["descriptives"] || {}
 
-    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }[0..(count/2-1)]].keys
+    top_categories = Hash[category_interests.sort_by { |k,v| -v["weight"] }.select{|k,v| k["weight"] > 5.0}[0..(count/2-1)]].keys
 
     num_descripitives = count - top_categories.length
 
-    top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }[0..num_descripitives]].keys
+    top_descriptives = Hash[decriptive_interests.sort_by { |k,v| -v["weight"] }.select{|k,v| k["weight"] > 5.0}[0..num_descripitives]].keys
 
     return (top_categories+top_descriptives).shuffle
   end
