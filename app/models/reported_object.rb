@@ -8,14 +8,14 @@ class ReportedObject < ActiveRecord::Base
 	after_create :evaluate_report
 
 	def evaluate_report
-		if type == "Reported Post"
+		if report_type == "Reported Post"
 			num_reports = self.venue_comment.reported_objects.count
 			num_total_views = self.venue_comment.evaluater_user_ids.count
 
 			if (num_total_views > 8 && num_reports.to_f/num_total_views.to_f >= 0.5 && venue_comment.adjusted_sort_position != -1)
 				venue_comment.update_columns(adjusted_sort_position: -1)
 				previous_violations = user.violations				
-				user.update_columns(violations: {"#{Time.now}" => type}.merge!(previous_violations))
+				user.update_columns(violations: {"#{Time.now}" => report_type}.merge!(previous_violations))
 
 
 				user_support_issue = user.support_issue
@@ -34,7 +34,7 @@ class ReportedObject < ActiveRecord::Base
 			end
 		end
 
-		if type == "Activity Comment"
+		if report_type == "Activity Comment"
 			num_reports = self.activity_comment.reported_objects.count
 
 			if num_reports > 10
