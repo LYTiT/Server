@@ -950,10 +950,14 @@ class Venue < ActiveRecord::Base
               if descriptives_hash[key_word.text] != nil
                 previous_weight = descriptives_hash[key_word.text]["weight"].to_f
                 previous_num_posts = descriptives_hash[key_word.text]["num_posts"] || 1
-                new_weight = ((previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)) * previous_num_posts + key_word.weight.to_f) / (previous_num_posts + 1)
-                descriptives_hash[key_word.text]["weight"] = new_weight
-                descriptives_hash[key_word.text]["updated_at"] = Time.now
-                descriptives_hash[key_word.text]["num_posts"] = previous_num_posts + 1
+                new_weight = ( ((previous_weight * 2 ** ((-(Time.now - descriptives_hash[key_word.text]["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)) * previous_num_posts + key_word.weight.to_f) / (previous_num_posts + 1)).round(2)
+                if new_weight < 1.0
+                  descriptives_hash.delete(key_word.text)
+                else
+                  descriptives_hash[key_word.text]["weight"] = new_weight
+                  descriptives_hash[key_word.text]["updated_at"] = Time.now
+                  descriptives_hash[key_word.text]["num_posts"] = previous_num_posts + 1
+                end
               else
                 descriptives_hash[key_word.text] = {"weight" => key_word.weight, "updated_at" => Time.now, "num_posts" => 1}
               end
@@ -973,9 +977,13 @@ class Venue < ActiveRecord::Base
     if descriptives_hash.length > 0
       descriptives_hash.each do |descriptive, details|
         previous_weight = details["weight"].to_f
-        new_weight = previous_weight * 2 ** ((-(Time.now - details["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(4)
-        descriptives_hash[descriptive]["weight"] = new_weight
-        descriptives_hash[descriptive]["updated_at"] = Time.now
+        new_weight = previous_weight * 2 ** ((-(Time.now - details["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(2)
+        if new_weight.round(2) < 1.0  
+          descriptives_hash.delete(descriptive)
+        else
+          descriptives_hash[descriptive]["weight"] = new_weight
+          descriptives_hash[descriptive]["updated_at"] = Time.now
+        end
       end
     end
     self.update_columns(descriptives: Hash[descriptives_hash.sort_by { |k,v| -v["weight"] }])
@@ -1780,6 +1788,13 @@ end
 #===============================================================================================
 # Cleanups =====================================================================================
 #===============================================================================================
+  def Venue.clear_geographies
+    excluded_venue_types = ["States & Municipalities", "City", "County", "Country", "Neighborhood", "State", "Town", "Village"]
+    for excluded_venue_type in excluded_venue_types
+       Venue.all.where("categories ->> 'category_1' = ? OR categories ->> 'category_2' = ? OR categories ->> 'category_3' = ?", excluded_venue_type, excluded_venue_type, excluded_venue_type).delete_all 
+    end
+  end
+
   def Venue.clear_dupe_venues(city)
     pre_dupe_clear_count = Venue.where("city = ?",city).count
     feed_venue_ids = "SELECT venue_id FROM feed_venues"
