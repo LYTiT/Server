@@ -87,9 +87,9 @@ class VenueComment < ActiveRecord::Base
 			if self.num_enlytened == 1
 				preview = "Your post at #{self.venue_details["name"]} has enlytened a person!"
 			elsif self.num_enlytened > 1 && self.num_enlytened <= 20
-				preview = "+5 more people enlytened!"
+				preview = "You've enlytened 5 more people!"
 			else
-				preview = "+10 more people enlytened!"
+				preview = "You've enlytened 10 more people!"
 			end
 
 			if user.push_token && user.active == true
@@ -743,7 +743,7 @@ class VenueComment < ActiveRecord::Base
 	def evaluate(user_id, enlytened, city, country, latitude, longitude)
 		evaluater_user_ids = self.evaluater_user_ids
 		if enlytened == true
-			self.increment(:num_enlytened, 1)
+			self.increment!(:num_enlytened, 1)
 			self.user.increment!(:num_bolts, 1)
 			self.increment_geo_views(country, city, latitude, longitude)
 			evaluater_user_ids[user_id] = "enlytened"
