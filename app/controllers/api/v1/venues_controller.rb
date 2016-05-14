@@ -326,7 +326,7 @@ class Api::V1::VenuesController < ApiBaseController
 			previous_time_key = 50
 		end
 
-		@view_cache_key = "#{city}/lyt_map/view/#{Time.now.to_date}/#{Time.now.hour}/#{time_key}/page_#{page}"
+		@view_cache_key = "#{city}/lyt_map/view/#{Time.now.to_date}/#{Time.now.hour}/#{time_key}/page_#{page}v1"
 
 		if Rails.cache.exist?(@view_cache_key) == true
 			p "#{page} ------- DIRECT VIEW RENDER"
@@ -337,7 +337,7 @@ class Api::V1::VenuesController < ApiBaseController
 			end
 		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
 			p "#{page} ^^^^^^^ RENDERING PREVIOUS SEGMENT VIEW"
-			@view_cache_key = "#{city}/lyt_map/view/#{Time.now.to_date}/#{Time.now.hour}/#{previous_time_key}/page_#{page}"
+			@view_cache_key = "#{city}/lyt_map/view/#{Time.now.to_date}/#{Time.now.hour}/#{previous_time_key}/page_#{page}v1"
 			if params[:version] == "1.1.0"
 				render "refresh_map_view_by_parts_old.json.jbuilder"
 			else
