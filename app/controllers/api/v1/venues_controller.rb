@@ -347,11 +347,13 @@ class Api::V1::VenuesController < ApiBaseController
 			p "#{page} $$$$$$$ RECACHING"
 			city_cache_key = "#{city}/lyt_map/page_#{page}"
 
-			if page == 1
-				num_page_entries = 300
-			else
-				num_page_entries = 500
-			end
+			#if page == 1
+			#	num_page_entries = 300
+			#else
+			#	num_page_entries = 500
+			#end
+
+			num_page_entries = 300
 
 			@venues = Rails.cache.fetch(city_cache_key, :expires_in => 10.minutes) do
 				#this could go wrong if more than 300 active venues in 3km radius
