@@ -9,6 +9,7 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.longitude v.longitude
         json.color_rating v.color_rating
         json.trending_score v.popularity_rank
+        
         json.instagram_location_id v.instagram_location_id
         json.event_id v.event_details["id"]
         if v.venue_comment_details["entry_type"] == "lytit_post"
