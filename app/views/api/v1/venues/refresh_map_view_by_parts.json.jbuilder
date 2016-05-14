@@ -11,7 +11,7 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.trending_score v.popularity_rank
         json.last_post_time (Time.now - v.latest_posted_comment_time)
         json.instagram_location_id v.instagram_location_id
-        
+        json.event_id v.event_details["id"]
         if v.venue_comment_details["entry_type"] == "lytit_post"
             json.preview_image v.venue_comment_details["lytit_post"]["image_url_1"]
             json.full_image v.venue_comment_details["lytit_post"]["image_url_2"]
