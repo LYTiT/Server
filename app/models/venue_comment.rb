@@ -319,7 +319,7 @@ class VenueComment < ActiveRecord::Base
 			vc = nil			
 
 			if presence == nil
-				vc = VenueComment.create!(:entry_type => "instagram", :venue_id => origin_venue.id, :venue_details => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :adjusted_sort_position => created_time.to_i)
+				vc = VenueComment.create!(:entry_type => "instagram", :venue_id => origin_venue.id, :venue_details => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :instagram_id => instagram_hash["id"], :adjusted_sort_position => created_time.to_i)
 			end
 
 			if vc != nil
@@ -439,7 +439,6 @@ class VenueComment < ActiveRecord::Base
 			origin_venue.update_columns(latest_rating_update_time: Time.now)
 		end
 
-		sphere = LytSphere.create_new_sphere(origin_venue)
 	end
 
 	def VenueComment.create_instagram_partial(instagram_hash)
