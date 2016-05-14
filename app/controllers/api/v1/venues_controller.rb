@@ -333,7 +333,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if params[:version] == "1.1.0"
 				render "refresh_map_view_by_parts_old.json.jbuilder"
 			else
-				render "refresh_map_view_by_parts_update.json.jbuilder"
+				render "refresh_map_view_by_parts.json.jbuilder"
 			end
 		elsif page > 1 && Rails.cache.exist?("#{city}/lyt_map/view/#{previous_time_key}/page_#{page}") == true
 			p "#{page} ^^^^^^^ RENDERING PREVIOUS SEGMENT VIEW"
@@ -341,7 +341,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if params[:version] == "1.1.0"
 				render "refresh_map_view_by_parts_old.json.jbuilder"
 			else
-				render "refresh_map_view_by_parts_update.json.jbuilder"
+				render "refresh_map_view_by_parts.json.jbuilder"
 			end
 		else
 			p "#{page} $$$$$$$ RECACHING"
@@ -379,7 +379,7 @@ class Api::V1::VenuesController < ApiBaseController
 			if params[:version] == "1.1.0"
 				render "refresh_map_view_by_parts_old.json.jbuilder"
 			else
-				render "refresh_map_view_by_parts_update.json.jbuilder"
+				render "refresh_map_view_by_parts.json.jbuilder"
 			end
 
 		end

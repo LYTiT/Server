@@ -5,10 +5,15 @@ class PostPass < ActiveRecord::Base
 	after_create :send_new_post_pass_notification
 
 	def PostPass.initiate(vc)
-		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE AND id != #{vc.user_id}")
+		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE AND id != #{vc.user_id} AND role_id != 1")
 
 		for receiver in first_revceivers
 			PostPass.create!(:user_id => receiver.id, :venue_comment_id => vc.id)
+		end
+
+		admins = User.all.joins(:role).where("roles.name = ?", "Admin")
+		for admin in admins
+			PostPass.create!(:user_id => admin.id, :venue_comment_id => self.venue_comment_id)
 		end
 	end
 
@@ -17,11 +22,6 @@ class PostPass < ActiveRecord::Base
 		next_users = self.select_next_users
 		for next_user in next_users
 			PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
-		end
-
-		admins = User.all.joins(:role).where("roles.name = ?", "Admin")
-		for admin in admins
-			PostPass.create!(:user_id => admin.id, :venue_comment_id => self.venue_comment_id)
 		end
 	end
 
