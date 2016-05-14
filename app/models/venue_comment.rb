@@ -750,6 +750,7 @@ class VenueComment < ActiveRecord::Base
 		else
 			evaluater_user_ids[user_id] = "not_enlytened"
 		end 
+		self.update_columns(evaluater_user_ids: evaluater_user_ids)
 	end
 			
 end
