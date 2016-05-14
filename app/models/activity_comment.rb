@@ -93,7 +93,7 @@ class ActivityComment < ActiveRecord::Base
 	end
 
 	def report(reporter_id)
-		ReportedObject.create!(:report_type=> "Activity Comment", :activity_comment_id => self.id, :reporter_id => reporter_id)
+		ReportedObject.create!(:report_type=> "Activity Comment", :activity_comment_id => self.id, :reporter_id => reporter_id, :user_id => self.user_id)
 	end
 
 end

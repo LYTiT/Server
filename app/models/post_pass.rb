@@ -18,6 +18,11 @@ class PostPass < ActiveRecord::Base
 		for next_user in next_users
 			PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
 		end
+
+		admins = User.all.joins(:role).where("roles.name = ?", "Admin")
+		for admin in admins
+			PostPass.create!(:user_id => admin.id, :venue_comment_id => self.venue_comment_id)
+		end
 	end
 
 	def terminate
