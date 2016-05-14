@@ -1,4 +1,4 @@
-json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
+
     json.array! @venues do |v|
         json.id v.id
         json.name v.name
@@ -9,7 +9,7 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.longitude v.longitude
         json.color_rating v.color_rating
         json.trending_score v.popularity_rank
-        
+
         json.instagram_location_id v.instagram_location_id
         json.event_id v.event_details["id"]
         if v.venue_comment_details["entry_type"] == "lytit_post"
@@ -29,4 +29,3 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.tag_5 v.trending_tags["tag_5"]
         json.venue_categories v.categories.values
     end
-end
