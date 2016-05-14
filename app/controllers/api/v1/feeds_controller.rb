@@ -431,7 +431,7 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def report
-		ro = ReportedObject.create!(:type=> "Feed", :feed_id => params[:feed_id], :reporter_id => params[:user_id])
+		ro = ReportedObject.create!(:report_type=> "Feed", :feed_id => params[:feed_id], :reporter_id => params[:user_id])
 		if ro 
 			render json: { success: true }
 		else

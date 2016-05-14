@@ -1687,7 +1687,7 @@ ALTER SEQUENCE post_passes_id_seq OWNED BY post_passes.id;
 
 CREATE TABLE reported_objects (
     id integer NOT NULL,
-    type character varying(255),
+    report_type character varying(255),
     reporter_id integer,
     user_id integer,
     venue_comment_id integer,
@@ -4760,4 +4760,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160513002644');
 INSERT INTO schema_migrations (version) VALUES ('20160513054655');
 
 INSERT INTO schema_migrations (version) VALUES ('20160513214021');
+
+INSERT INTO schema_migrations (version) VALUES ('20160514040533');
 

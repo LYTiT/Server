@@ -28,7 +28,7 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def report
-		ReportedObject.create!(:reporter_id => user_id, :venue_comment_id => venue_comment_id, :type => "Reported Post", :user_id => venue_comment.user_id)
+		ReportedObject.create!(:reporter_id => user_id, :venue_comment_id => venue_comment_id, :report_type => "Reported Post", :user_id => venue_comment.user_id)
 	end
 
 	def select_next_users

@@ -20,7 +20,7 @@ class Api::V1::VenueCommentsController < ApiBaseController
 	end
 
 	def report
-		ro = ReportedObject.create!(:type=> "Report Moment", :venue_comment_id => params[:venue_comment_id], :reporter_id => params[:user_id])
+		ro = ReportedObject.create!(:report_type=> "Report Moment", :venue_comment_id => params[:venue_comment_id], :reporter_id => params[:user_id])
 		if ro 
 			render json: { success: true }
 		else
