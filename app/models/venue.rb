@@ -326,7 +326,7 @@ class Venue < ActiveRecord::Base
   def self.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
 
-    if lat_long_lookup == nil
+    if lat_long_lookup == nil 
       center_point = [vlatitude, vlongitude]
       search_radius = 5
       search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
@@ -398,7 +398,7 @@ class Venue < ActiveRecord::Base
       vname = scrub_venue_name(vname, city)
     end
 
-    if vname != nil && vname != ""
+    if vname != nil && vname != "" && (long != nil && lat != nil)
       if inst_id_lookup.try(:venue) != nil && inst_loc_id.to_i != 0
         result = inst_id_lookup.venue
       else
