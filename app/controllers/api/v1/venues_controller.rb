@@ -66,7 +66,7 @@ class Api::V1::VenuesController < ApiBaseController
 	end
 
 	def post_comment
-		if params[:proposed_location] == true or formatted_address == nil
+		if params[:proposed_location] == true or params[:formatted_address] == nil
 			is_proposed_location = true
 		end
 

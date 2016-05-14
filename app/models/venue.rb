@@ -618,7 +618,8 @@ class Venue < ActiveRecord::Base
             #No new social media content so we move to venue comments.
             p "No new social media, returning Venue Comments"
             vcs = self.venue_comments.where("((adjusted_sort_position > ? AND entry_type != ?) OR (adjusted_sort_position > ? AND entry_type = ?)) 
-              AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
+              AND adjusted_sort_position < ? AND id <= ?", (Time.now-5.hours).to_i, "lytit_post", (Time.now-24.hours).to_i, "lytit_post", current_position, 
+              self.venue_comment_id).limit(page_count).offset(((page_number-self.page_offset)-1)*page_count).order("adjusted_sort_position DESC")
             if vcs.count > 0
               vcs.to_a
             else
