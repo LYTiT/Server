@@ -70,7 +70,7 @@ class VenueComment < ActiveRecord::Base
 				:venue_address => self.venue_details["address"],
 				:venue_city => self.venue_details["city"],
 				:venue_country => self.venue_details["country"],
-				:latitude => self.venue_details["latitdue"],
+				:latitude => self.venue_details["latitude"],
 				:longitude => self.venue_details["longitude"],
 				:timestamp => self.created_at.to_i,
 				:content_origin => 'lytit',
