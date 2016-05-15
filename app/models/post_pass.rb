@@ -51,6 +51,7 @@ class PostPass < ActiveRecord::Base
 		post_pass_lifespan = 30*60 #seconds (30mins)
 		
 		payload = {
+			:intended_for => self.user_id,
 			:object_id => self.id,       
 			:type => 'post_pass_notification',
 			:venue_comment_id => vc.id,

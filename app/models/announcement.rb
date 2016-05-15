@@ -53,6 +53,7 @@ class Announcement < ActiveRecord::Base
 	def send_new_announcement(members, for_lumen_games, for_background_update)
 		for member in members
 			payload = {
+				:intended_for => member.id,
 				:object_id => self.id,
 				:type => 'announcement_notification', 
 				:user_id => member.id,

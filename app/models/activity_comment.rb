@@ -25,6 +25,7 @@ class ActivityComment < ActiveRecord::Base
 
 	def send_new_chat_notification(member)
 		payload = {
+			:intended_for => member.id,
 		    :object_id => self.id, 
 		    :activity_id => activity_id,
 		    :activity_type => activity.activity_type,

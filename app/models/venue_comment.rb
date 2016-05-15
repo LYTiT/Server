@@ -54,6 +54,7 @@ class VenueComment < ActiveRecord::Base
 	def send_new_enlytened_notification
 		if self.num_enlytened == 1 || (self.num_enlytened%5 == 0 && self.num_enlytened <= 20) || (self.num_enlytened%10 && self.num_enlytened > 20)
 			payload = {
+				:intended_for => self.user_id,
 				:object_id => self.id,       
 				:type => 'moment_enlytement_notification',
 				:venue_comment_id => self.id,

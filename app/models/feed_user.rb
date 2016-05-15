@@ -40,6 +40,7 @@ class FeedUser < ActiveRecord::Base
 
 	def send_new_user_notification(receiver, is_creator)
 		payload = {
+			:intended_for => receiver.id,
 		    :object_id => self.id, 
 		    :type => 'added_list_notification', 
 		    :user_id => user.id,

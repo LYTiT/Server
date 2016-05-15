@@ -33,6 +33,7 @@ class FeedVenue < ActiveRecord::Base
 
 	def send_new_venue_notification(member)
 		payload = {
+			:intended_for => member.id,
 		    :object_id => self.id, 
 		    :type => 'added_place_notification', 
 		    :user_id => user_id,

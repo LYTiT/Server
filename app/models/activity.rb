@@ -127,6 +127,7 @@ class Activity < ActiveRecord::Base
 		end
 			
 		payload = {
+			:intended_for => member.id,
 		    :object_id => self.id, 
 		    :activity_id => self.id,
 		    :venue_comment_id => self.venue_comment_id,
@@ -226,6 +227,7 @@ class Activity < ActiveRecord::Base
 
 	def send_new_topic_notification(member, activity_feed_of_member)
 		payload = {
+			:intended_for => member.id,
 		    :object_id => self.id, 
 		    :activity_id => self.id,
 		    :type => 'new_topic_notification',

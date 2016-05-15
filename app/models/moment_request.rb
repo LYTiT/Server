@@ -92,6 +92,7 @@ class MomentRequest < ActiveRecord::Base
 
 		for requester in requesters
 			if requester != nil
+				payload[:intended_for] = requester.id
 				type = "Moment Request Response"
 				notification = self.store_new_notification(payload, requester, type)
 				payload[:notification_id] = notification.id

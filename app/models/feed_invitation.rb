@@ -14,6 +14,7 @@ class FeedInvitation < ActiveRecord::Base
 
 	def send_invitation_notification
 		payload = {
+			:intended_for => invitee.id,
 		    :object_id => self.id, 
 		    :type => 'invited_list_notification', 
 		    :user_id => inviter.id,

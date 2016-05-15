@@ -364,6 +364,7 @@ class User < ActiveRecord::Base
 
   def send_friend_joined_lytit_notification(existing_user, new_user, new_user_fb_name, new_user_fb_id)
     payload = {
+      :intended_for => existing_user.id,
       :object_id => new_user.id,
       :user_id => new_user.id,
       :type => "facebook_friend_notification",

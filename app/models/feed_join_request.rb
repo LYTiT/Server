@@ -20,6 +20,7 @@ class FeedJoinRequest < ActiveRecord::Base
 		list_admin = self.feed.user
 		if list_admin != nil
 			payload = {
+				:intended_for => feed.user_id,
 			    :object_id => self.id, 
 			    :type => 'list_access_request_notification', 
 			    :user_id => self.user_id,
@@ -57,6 +58,7 @@ class FeedJoinRequest < ActiveRecord::Base
 
 		if requester != nil
 			payload = {
+				:intended_for => requester.id,
 			    :object_id => self.id, 
 			    :type => 'list_access_response_notification', 
 			    :list_access_request_accepted => response,

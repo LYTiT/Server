@@ -29,6 +29,7 @@ class Like < ActiveRecord::Base
 		end
 
 		payload = {
+			:intended_for => liked.id,
 		    :object_id => self.id, 
 		    :type => "like_notification",
 		    :activity_id => activity.id,

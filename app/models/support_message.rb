@@ -14,6 +14,7 @@ class SupportMessage < ActiveRecord::Base
 
 	def send_new_message_notification(support_user)
 		payload = {
+			:intended_for => support_user.id,
 		    :object_id => self.id, 
 		    :type => 'support_notification',
 		    :support_issue_id => support_issue_id,

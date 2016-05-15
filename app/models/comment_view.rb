@@ -14,6 +14,7 @@ class CommentView < ActiveRecord::Base
     vc_user = vc.user
   	if vc.num_enlytened == 1 || (vc.num_enlytened%5 == 0 && vc.num_enlytened <= 20) || (vc.num_enlytened%10 && vc.num_enlytened > 20)
       payload = {
+        :intended_for => self.venue_comment.user_id,
         :object_id => self.id,       
         :type => 'moment_views_notification',
         :venue_comment_id => vc.id,
