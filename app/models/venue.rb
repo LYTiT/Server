@@ -1046,7 +1046,15 @@ class Venue < ActiveRecord::Base
     else
       nil
     end
-  end  
+  end
+
+  def Venue.last_post_time(time)
+    if time != nil && time != ""
+      (Time.now-time.to_datetime).to_i
+    else
+      0
+    end
+  end
 
   def event_happening?
     self.events.where("start_time >= ? AND end_time <= ?", Time.now, Time.now).any? ? 1:0
