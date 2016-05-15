@@ -17,17 +17,21 @@ class PostPass < ActiveRecord::Base
 		end
 	end
 
-	def pass_on
+	def pass_on(user_id)
 		self.update_columns(passed_on: true)
 		next_users = self.select_next_users
 		for next_user in next_users
 			PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
 		end
+
+		if User.find_by_id(user_id).role_id == 1
+			#inititiate fake view generator
+		end
 	end
 
-	def terminate
+	def terminate(user_id)
 		self.update_columns(passed_on: false)
-		if PostPass.where("venue_comment_id = ? AND passed_on IS TRUE OR passed_on IS NULL", self.venue_comment_id).count == 0
+		if PostPass.where("venue_comment_id = ? AND passed_on IS TRUE OR passed_on IS NULL", self.venue_comment_id).count == 0 or User.find_by_id(user_id).role_id == 1
 			venue_comment.update_columns(active: false)
 		end
 	end
