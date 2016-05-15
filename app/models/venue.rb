@@ -996,7 +996,7 @@ class Venue < ActiveRecord::Base
     tags_hash = {}
     i = 1
     top_descriptives.each do |descriptive, details|
-      if details["weight"].round(1) > 0.0
+      if details["weight"].round(2) > 0.0
         tags_hash["tag_#{i}"] = descriptive        
       else
         tags_hash["tag_#{i}"] = nil
