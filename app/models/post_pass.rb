@@ -13,7 +13,7 @@ class PostPass < ActiveRecord::Base
 
 		admins = User.all.joins(:role).where("roles.name = ?", "Admin")
 		for admin in admins
-			PostPass.create!(:user_id => admin.id, :venue_comment_id => self.venue_comment_id)
+			PostPass.create!(:user_id => admin.id, :venue_comment_id => vc.id)
 		end
 	end
 
