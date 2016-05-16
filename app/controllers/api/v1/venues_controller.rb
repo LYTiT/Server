@@ -46,7 +46,7 @@ class Api::V1::VenuesController < ApiBaseController
 			mru = MomentRequestUser.create!(:user_id => params[:user_id], :moment_request_id => mr.id)
 			mr.increment!(:num_requesters, 1)
 			venue.update_columns(moment_request_details: mr.to_json)
-			no_errors = truef
+			no_errors = true
 		end
 
 		if no_errors

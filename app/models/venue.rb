@@ -732,7 +732,7 @@ class Venue < ActiveRecord::Base
 
   def Venue.update_visibilities
     start_time = Time.now
-    invisible_venues = Venue.where("(rating IS NOT NULL AND rating = ?) OR latest_posted_comment_time < ?", 0.0, Time.now-LytitConstants.threshold_to_venue_be_shown_on_map.minutes)
+    invisible_venues = Venue.where("rating = 0.0 OR (rating IS NOT NULL AND latest_posted_comment_time < ? AND latest_posted_comment_time > ?)", Time.now-LytitConstants.threshold_to_venue_be_shown_on_map.minutes, Time.now-24.hours)
     invisible_venues.update_all({:r_up_votes => true, :r_down_votes => true, :color_rating => -1.0, :popularity_rank => 0.0, :rating => nil})
     end_time = Time.now
     puts "Done. Time Taken: #{end_time - start_time}s"
