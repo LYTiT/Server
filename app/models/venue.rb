@@ -333,7 +333,12 @@ class Venue < ActiveRecord::Base
       if is_proposed_location == true
         vname = vname.titleize
       end
-      result = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", 0.0).order("lonlat_geometry <-> st_point(#{vlongitude},#{vlatitude})").first
+      if is_proposed_location
+        min_pg_search_rank = 0.3
+      else
+        min_pg_search_rank = 0.2
+      end
+      result = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", min_pg_search_rank).order("lonlat_geometry <-> st_point(#{vlongitude},#{vlatitude})").first
 
 =begin    
       if lat_long_lookup == nil
@@ -368,6 +373,8 @@ class Venue < ActiveRecord::Base
     else
       result = lat_long_lookup
     end
+
+
 
     if result == nil
       if vlatitude != nil && vlongitude != nil 
