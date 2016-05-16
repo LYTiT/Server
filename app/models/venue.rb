@@ -761,11 +761,11 @@ class Venue < ActiveRecord::Base
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
     new_r_up_vote_count = ((old_r_up_vote_count) * 2**((-(Time.now.utc - latest_posted_comment_time)/60.0) / (LytitConstants.vote_half_life_h))).round(4)
-
-    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
+    
     y = (1.0 / (1 + LytitConstants.rating_loss_l)).round(4)
     a = new_r_up_vote_count >= 1.0 ? new_r_up_vote_count : 1.0
     b = 1.0
+    x = `python2 -c "import scipy.special;print scipy.special.betaincinv(#{a}, #{b}, #{y})"`
     new_rating = eval(x).round(2)
     end_time = Time.now
     p "Time take: #{end_time-start_time} seconds"
