@@ -719,6 +719,7 @@ class Venue < ActiveRecord::Base
   #A. Lytit/Color Ratings------------------------------------------------------------
   #----------------------------------------------------------------------------------
   def Venue.update_all_active_venue_ratings
+    start_time = Time.now
     Venue.update_visibilities
     for venue in Venue.where("rating IS NOT NULL AND (latest_rating_update_time IS NULL OR latest_rating_update_time < ?)", Time.now-5.minutes)
       #if venue.is_visible? == true
@@ -726,8 +727,10 @@ class Venue < ActiveRecord::Base
       #    venue.update_rating()
       #  end
       #end
-      venue.udpate_rating()
+      venue.update_rating()
     end
+    end_time = Time.now
+    puts "Done. Time Taken: #{end_time - start_time}s"
   end
 
   def Venue.update_visibilities
