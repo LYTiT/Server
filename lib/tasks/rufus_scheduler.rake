@@ -41,8 +41,10 @@ namespace :lytit do
     #Cluster clearing ----------------------------------->
     $scheduler.every '10m' do
       puts "Scheduler run at #{Time.now}"
+      start_time = Time.now
       puts "Setting Top Tags"
       Venue.each{|venue| venue.set_top_tags}
+      end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
 
