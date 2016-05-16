@@ -382,7 +382,7 @@ class VenueComment < ActiveRecord::Base
 	def self.convert_raw_instagram_params_to_vc(instagram_params, origin_venue_id)
 		presence = VenueComment.find_by_instagram_id(instagram_params["instagram_id"])
 		if presence == nil
-			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true and (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
+			if Venue.name_is_proper?(instagram_params["venue_name"].titlecase) == true && (instagram_params["latitude"] != nil && instagram_params["longitude"] != nil)
 				if origin_venue_id == nil	
 					#venue = Venue.fetch_venues_for_instagram_pull(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)
 					venue = Venue.validate_venue(instagram_params["venue_name"], instagram_params["latitude"], instagram_params["longitude"], instagram_params["instagram_location_id"], nil)

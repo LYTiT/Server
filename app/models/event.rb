@@ -7,14 +7,14 @@ class Event < ActiveRecord::Base
 		self.to_json
 	end
 
-	def Event.focus_cities_pull
+	def Event.focus_cities_pull(day="tomorrow")
 		focus_cities = ["New York", "Los Angeles", "San Francisco"]
 		#focus_cities = ["New York"]
 		Event.where("end_time < ?", Time.now - 2.hours).delete_all
 		
 
 		for city in focus_cities
-			Event.pull_city_events(city, "tomorrow")
+			Event.pull_city_events(city, day)
 		end
 	end
 

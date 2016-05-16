@@ -324,12 +324,21 @@ class Venue < ActiveRecord::Base
 
   #Fetch a single venue or create it if not present in DB. Used for assigning Venues to things.
   def self.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
+    downcase_name = v.name.downcase
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
 
     if lat_long_lookup == nil 
+      
       center_point = [vlatitude, vlongitude]
-      search_radius = 5
+      if downcase_name.include? "park" or downcase_name.include? "university"
+        search_radius = 10 #kms 
+      elsif downcase_name.include? "center" or downcase_name.include? "stadium" or downcase_name.include? "square"
+        search_radius = 0.5
+      else
+        search_radius = 0.1
+      end
       search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
+      
       if is_proposed_location == true
         vname = vname.titleize
       end
@@ -399,6 +408,7 @@ class Venue < ActiveRecord::Base
   def self.fetch_venues_for_instagram_pull(vname, lat, long, inst_loc_id, vortex, city=nil)
     #Reference LYTiT Instagram Location Id Database
     inst_id_lookup = InstagramLocationIdLookup.find_by_instagram_location_id(inst_loc_id)
+    downcase_name = vname.downcase
 
     city = city || vortex.city
     if city != nil
@@ -411,12 +421,19 @@ class Venue < ActiveRecord::Base
       else
         #Check if there is a direct name match in proximity
         center_point = [lat, long]
-        search_radius = 10 #kms
+        if downcase_name.include? "park" or downcase_name.include? "university"
+          search_radius = 10 #kms 
+        elsif downcase_name.include? "center" or downcase_name.include? "stadium" or downcase_name.include? "square"
+          search_radius = 0.5
+        else
+          search_radius = 0.1
+        end
+
         search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
 
         #name_lookup = Venue.in_bounds(search_box).fuzzy_name_search(vname, 0.8).first
 
-        name_lookup = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", 0.0).order("lonlat_geometry <-> st_point(#{long},#{lat})").first
+        name_lookup = Venue.in_bounds(search_box).name_search(vname).where("pg_search.rank >= ?", 0.1).order("lonlat_geometry <-> st_point(#{long},#{lat})").first
 
 
         #if name_lookup == nil
