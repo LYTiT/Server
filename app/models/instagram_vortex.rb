@@ -23,7 +23,7 @@ class InstagramVortex < ActiveRecord::Base
 	has_many :vortex_paths, :dependent => :destroy
 
 	def InstagramVortex.global_pull
-      vortexes = InstagramVortex.where("active = ? AND city NOT IN (?)", true, ["New York"])
+      vortexes = InstagramVortex.where("active = ?")
       for vortex in vortexes
         puts "Entered vortex #{vortex.details}"
         vortex.pull
