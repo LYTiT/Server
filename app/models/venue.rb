@@ -814,6 +814,7 @@ class Venue < ActiveRecord::Base
         update_columns(color_rating: color_rating)        
         update_popularity_rank
       else
+        update_columns(rating: nil)
         update_columns(color_rating: -1.0)
         update_columns(popularity_rank: 0.0)
       end
