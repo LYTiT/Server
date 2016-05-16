@@ -25,28 +25,7 @@ namespace :lytit do
       start_time = Time.now
 
       puts "Pulling from Instagram"
-      InstagramVortex.focus_cities_pull
-
-      vortexes = InstagramVortex.where("active = ? AND city NOT IN (?)", true, ["New York"])
-      for vortex in vortexes
-        puts "Entered vortex #{vortex.details}"
-        vortex.update_columns(last_instagram_pull_time: Time.now)
-        new_instagrams = Instagram.media_search(vortex.latitude, vortex.longitude, :distance => vortex.pull_radius, :count => 1000)
-        new_instagrams.each do |instagram|
-          VenueComment.create_vc_from_instagram(instagram.to_hash, nil, vortex, true)
-        end
-        vortex.move
-        #if there are multiple vortexes in a city we traverse through them to save instagram API calls
-        if vortex.vortex_group_que != nil
-          vortex.update_columns(active: false)
-          next_city_vortex = InstagramVortex.where("vortex_group = ? AND vortex_group_que = ?", vortex.vortex_group, vortex.vortex_group_que+1).first
-          #if vortex is the last in que (no vortex exists with vortex_group_que+1) activate the first vortex in the city
-          if next_city_vortex == nil
-            next_city_vortex = InstagramVortex.where("vortex_group = ? AND vortex_group_que = ?", vortex.vortex_group, 1).first
-          end
-          next_city_vortex.update_columns(active: true)
-        end
-      end
+      InstagramVortex.global_pull
 
       puts("Recalculating color ratings")
       #spheres = LytSphere.uniq.pluck(:sphere)
@@ -60,13 +39,10 @@ namespace :lytit do
     end
     
     #Cluster clearing ----------------------------------->
-    $scheduler.every '5m' do
+    $scheduler.every '10m' do
       puts "Scheduler run at #{Time.now}"
-      start_time = Time.now
-
-      puts "Clearing clusters"
-      ClusterTracker.delete_all
-      end_time = Time.now
+      puts "Setting Top Tags"
+      Venue.each{|venue| venue.set_top_tags}
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
 

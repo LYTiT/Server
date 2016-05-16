@@ -719,19 +719,24 @@ class Venue < ActiveRecord::Base
   #A. Lytit/Color Ratings------------------------------------------------------------
   #----------------------------------------------------------------------------------
   def Venue.update_all_active_venue_ratings
-    for venue in Venue.where("rating IS NOT NULL")
-      if venue.is_visible? == true
-        if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
-          venue.update_rating()
-        end
-      end
-
-      if venue.details_missing? == true
-        venue.add_foursquare_details
-      end
-
-      venue.set_top_tags
+    Venue.update_visibilities
+    for venue in Venue.where("(rating IS NOT NULL AND latest_rating_update_time IS NOT NULL) AND latest_rating_update_time < ?", Time.now-5.minutes)
+      #if venue.is_visible? == true
+      #  if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
+      #    venue.update_rating()
+      #  end
+      #end
+      venue.udpate_rating()
     end
+  end
+
+  def Venue.update_visibilities
+    invisible_venues = Venue.where("rating = ? OR latest_posted_comment_time < ?", 0.0, Time.now-LytitConstants.threshold_to_venue_be_shown_on_map.minutes)
+    invisible_venues.update_all(r_up_votes: 1.0)
+    invisible_venues.update_all(r_down_votes: 1.0)
+    invisible_venues.update_all(color_rating: -1.0)
+    invisible_venues.update_all(popularity_rank: 0.0)
+    invisible_venues.update_all(rating: nil)
   end
 
   def is_visible?
@@ -782,7 +787,7 @@ class Venue < ActiveRecord::Base
       puts "rating before = #{self.rating}"
       puts "rating after = #{x}"
 
-      new_rating = eval(x).round(4)
+      new_rating = eval(x).round(2)
       color_rating = new_rating.round_down(1)
 
       update_columns(rating: new_rating)
