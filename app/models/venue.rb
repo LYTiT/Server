@@ -720,7 +720,7 @@ class Venue < ActiveRecord::Base
   #----------------------------------------------------------------------------------
   def Venue.update_all_active_venue_ratings
     Venue.update_visibilities
-    for venue in Venue.where("(rating IS NOT NULL AND latest_rating_update_time IS NOT NULL) AND latest_rating_update_time < ?", Time.now-5.minutes)
+    for venue in Venue.where("rating IS NOT NULL AND (latest_rating_update_time IS NULL OR latest_rating_update_time < ?)", Time.now-5.minutes)
       #if venue.is_visible? == true
       #  if venue.latest_rating_update_time != nil and venue.latest_rating_update_time < Time.now - 5.minutes
       #    venue.update_rating()
@@ -757,6 +757,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_rating(after_post=false, lytit_post=false)
+    start_time = "Time.now"
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
     if after_post == true
@@ -801,6 +802,8 @@ class Venue < ActiveRecord::Base
       end
 
       update_columns(latest_rating_update_time: Time.now)
+      end_time = Time.now
+      p "Time take: #{start_time-end_time} seconds"
     else
       puts "Could not calculate rating. Status: #{$?.to_i}"
     end
