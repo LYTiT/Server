@@ -423,10 +423,8 @@ class Venue < ActiveRecord::Base
         center_point = [lat, long]
         if downcase_name.include? "park" or downcase_name.include? "university"
           search_radius = 10 #kms 
-        elsif downcase_name.include? "center" or downcase_name.include? "stadium" or downcase_name.include? "square"
+        elsif
           search_radius = 0.5
-        else
-          search_radius = 0.1
         end
 
         search_box = Geokit::Bounds.from_point_and_radius(center_point, search_radius, :units => :kms)
@@ -1852,6 +1850,11 @@ end
     for excluded_venue_type in excluded_venue_types
        Venue.all.where("categories ->> 'category_1' = ? OR categories ->> 'category_2' = ? OR categories ->> 'category_3' = ?", excluded_venue_type, excluded_venue_type, excluded_venue_type).delete_all 
     end
+  end
+
+  def Venue.global_dupe_clear
+    cities = Venue.all.pluck(:city).uniq
+    cities.each{|city| Venue.clear_dupe_venues(city)}
   end
 
   def Venue.clear_dupe_venues(city)
