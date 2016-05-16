@@ -813,7 +813,7 @@ class Venue < ActiveRecord::Base
       update_columns(rating: new_rating)
       update_historical_avg_rating
 
-      if new_rating > 0.0
+      if new_rating > y
         update_columns(color_rating: color_rating)        
         update_popularity_rank
       else
