@@ -361,9 +361,9 @@ class Api::V1::VenuesController < ApiBaseController
 					venues = Venue.close_to(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
 				end
 
-				if page == 1 and venues.length == 0
-					venues = Venue.far_from(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-1)*num_page_entries).to_a rescue "error"
-				elsif page > 1
+				if page > 1 or venue.length == 0					
+					if page == 1
+					end
 					venues = Venue.far_from(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a rescue "error"
 				else
 					nil

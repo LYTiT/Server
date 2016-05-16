@@ -320,7 +320,7 @@ class VenueComment < ActiveRecord::Base
 			vc = nil			
 
 			if presence == nil
-				vc = VenueComment.create!(:entry_type => "instagram", :venue_id => origin_venue.id, :venue_details => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :instagram_id => instagram_hash["id"], :adjusted_sort_position => created_time.to_i)
+				vc = VenueComment.create!(:entry_type => "instagram", :venue_id => origin_venue.id, :venue_details => origin_venue.partial, :instagram => VenueComment.create_instagram_partial(instagram_hash), :instagram_id => instagram_hash["id"], :adjusted_sort_position => created_time.to_i) rescue nil
 			end
 
 			if vc != nil
