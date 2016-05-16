@@ -8,9 +8,10 @@ class Event < ActiveRecord::Base
 	end
 
 	def Event.focus_cities_pull
-		#focus_cities = ["New York", "Los Angeles", "San Francisco"]
+		focus_cities = ["New York", "Los Angeles", "San Francisco"]
+		#focus_cities = ["New York"]
 		Event.where("end_time < ?", Time.now - 2.hours).delete_all
-		focus_cities = ["New York"]
+		
 
 		for city in focus_cities
 			Event.pull_city_events(city, "tomorrow")
