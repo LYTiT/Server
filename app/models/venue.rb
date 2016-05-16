@@ -771,6 +771,7 @@ class Venue < ActiveRecord::Base
     new_rating = eval(x).round(2)
     end_time = Time.now
     p "Time take: #{end_time-start_time} seconds"
+    new_rating
   end
 
   def update_rating(after_post=false, lytit_post=false)
@@ -809,7 +810,7 @@ class Venue < ActiveRecord::Base
       update_columns(rating: new_rating)
       update_historical_avg_rating
 
-      if a > 1.0
+      if new_rating > 0.0
         update_columns(color_rating: color_rating)        
         update_popularity_rank
       else
