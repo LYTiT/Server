@@ -757,7 +757,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_rating(after_post=false, lytit_post=false)
-    start_time = "Time.now"
+    start_time = Time.now
     latest_posted_comment_time = self.latest_posted_comment_time || Time.now
     old_r_up_vote_count = self.r_up_votes 
     if after_post == true
