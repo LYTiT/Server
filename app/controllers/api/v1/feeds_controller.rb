@@ -361,6 +361,14 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(20)
 	end
 
+	def assign_category
+		if ListCategoryEntry.create!(:feed_id => [:feed_id], :list_category_id => params[:list_category_id])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Category Assigned'] } }, status: :unprocessable_entity
+		end
+	end
+
 	def get_lists_of_category
 		lat = params[:latitude]
 		long = params[:longitude]

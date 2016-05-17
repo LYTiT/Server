@@ -12,6 +12,24 @@ class Api::V1::VenuesController < ApiBaseController
 		render json: venue
 	end
 
+	def delete
+		if @venue.delete
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_NOT_FOUND, messages: ["Venue deleted"] } }, :status => :not_found
+		end
+	end
+
+	def reset_instagram_id
+		@venue.update_columns(instagram_id: nil)
+		@venue.set_instagram_location_id(100)
+	end
+
+	def reset_foursquare_id 
+		@venue.update_columns(foursquare_id: nil)
+		@venue.add_foursquare_details
+	end	
+
 	def report_comment
 		if FlaggedComment.where("user_id = ? AND venue_comment_id = ? AND message = ?", @user.id, params[:comment_id], params[:message]).any? == false
 			venue_comment = VenueComment.find(params[:comment_id])

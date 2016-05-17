@@ -154,6 +154,7 @@ LytitServer::Application.routes.draw do
         post 'report_activity_comment'
         post 'upvote_list_venue'
         post 'report'
+        post 'assign_category'
       end
 
       resources :support_issues do
@@ -293,6 +294,9 @@ LytitServer::Application.routes.draw do
         collection do
           get 'get_surrounding_venues'
         end
+        post 'delete'
+        post 'reset_instagram_id'
+        post 'reset_foursquare_id'
       end
 
       controller :lytit_bar do
