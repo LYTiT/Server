@@ -23,7 +23,7 @@ class PostPass < ActiveRecord::Base
 		self.update_columns(passed_on: true)
 		next_users = self.select_next_users
 		for next_user in next_users
-			if next_user.id != self.venue_comment.user_details["id"]
+			if next_user.id != self.venue_comment.user_details["id"] && venue_comment.active == true
 				PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
 			end
 		end
@@ -36,7 +36,7 @@ class PostPass < ActiveRecord::Base
 	def terminate(user_id)
 		self.update_columns(passed_on: false)
 		if PostPass.where("venue_comment_id = ? AND passed_on IS TRUE OR passed_on IS NULL", self.venue_comment_id).count == 0 or User.find_by_id(user_id).role_id == 1
-			venue_comment.update_columns(active: false)
+			venue_comment.update_columns(active: false, adjusted_sort_position: -1)
 		end
 	end
 
