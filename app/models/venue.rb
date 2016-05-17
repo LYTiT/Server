@@ -423,7 +423,7 @@ class Venue < ActiveRecord::Base
         center_point = [lat, long]
         if downcase_name.include? "park" or downcase_name.include? "university"
           search_radius = 10 #kms 
-        elsif
+        else
           search_radius = 0.5
         end
 
