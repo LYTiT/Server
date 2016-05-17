@@ -13,7 +13,9 @@ class PostPass < ActiveRecord::Base
 
 		admins = User.all.joins(:role).where("roles.name = ?", "Admin")
 		for admin in admins
-			PostPass.create!(:user_id => admin.id, :venue_comment_id => vc.id)
+			if admin.id != vc.user_details["id"]
+				PostPass.create!(:user_id => admin.id, :venue_comment_id => vc.id)
+			end
 		end
 	end
 
@@ -21,7 +23,9 @@ class PostPass < ActiveRecord::Base
 		self.update_columns(passed_on: true)
 		next_users = self.select_next_users
 		for next_user in next_users
-			PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
+			if next_user.id != self.venue_comment.user_details["id"]
+				PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
+			end
 		end
 
 		if User.find_by_id(user_id).role_id == 1
