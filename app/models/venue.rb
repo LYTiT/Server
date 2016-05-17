@@ -324,7 +324,7 @@ class Venue < ActiveRecord::Base
 
   #Fetch a single venue or create it if not present in DB. Used for assigning Venues to things.
   def self.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
-    downcase_name = v.name.downcase
+    downcase_name = vname.downcase
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
 
     if lat_long_lookup == nil 
