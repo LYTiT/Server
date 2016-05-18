@@ -386,7 +386,7 @@ class Api::V1::UsersController < ApiBaseController
 
 	def get_suggested_interests
 		@user = User.find_by_authentication_token(params[:auth_token])
-		@interests = @user.suggested_interests.page(params[:page].to_i)
+		@interests = @user.suggested_interests.page(params[:page].to_i, 40)
 		render 'user_interests.json.jbuilder'
 	end
 
