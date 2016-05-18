@@ -157,6 +157,7 @@ LytitServer::Application.routes.draw do
         get 'get_admin_list_categories'
         post 'assign_categories'
         post 'remove_categories'
+        post 'remove_activity'
       end
 
       resources :support_issues do
