@@ -383,11 +383,7 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    if result != nil 
-      overlap = (vname && result.name).downcase
-    end
-
-    if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub(overlap, ""), vname.downcase.gsub(overlap, ""))
+    if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub((vname && result.name).downcase, ""), vname.downcase.gsub((vname && result.name).downcase, ""))
       if vlatitude != nil && vlongitude != nil 
         result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil, is_proposed_location)
         result.update_columns(verified: true)
