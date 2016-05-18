@@ -212,6 +212,22 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
+	def remove_activity
+		if Activity.find_by_id(params[:activity_id]).delay(:priority => -8).destroy
+			render json: { success: false }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Activity not removed'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def remove_memeber
+		if FeedUser.find_by_user_id_and_venue_id(params[:user_id], params[:feed_id]).delay(:priority => -8).destroy
+			render json: { success: false }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Member not removed'] } }, status: :unprocessable_entity
+		end
+	end
+
 	def remove_venue
 		feed_venue = FeedVenue.where("feed_id = ? AND venue_id = ?", params[:id], params[:venue_id]).first
 		Feed.delay(:priority => -2).removed_venue_calibration(params[:id], params[:venue_id])

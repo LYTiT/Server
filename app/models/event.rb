@@ -95,6 +95,15 @@ class Event < ActiveRecord::Base
 		return all_events
 	end
 
+	def Event.lyt_up_event_venues
+		Venue.where("event_details ->> 'end_time' < ?", Time.now).update_all(event_id: nil, event_details: {})
+		Venue.where("color_rating IS NULL or color_rating < 0.3").joins(:events).where("start_time <= ? AND end_time >= ?", Time.now+15.minutes, Time.now).update_all(color_rating: 0.3, rating: 0.3)
+		for venue in Venue.where("event_id IS NULL").joins(:events).where("start_time <= ? AND end_time >= ?", Time.now+15.minutes, Time.now)
+			venue_event = venue.joins(:events).where("start_time <= ? AND end_time >= ?", Time.now+15.minutes, Time.now).order("start_time ASC").first
+			venue.update_columns(event_id: venue_event.id, event_details: venue_event.partial)
+		end
+	end
+
 =begin
 	def Event.get_events(location, lat, long, radius, query, order)
 		client = EventfulApi::Client.new(:oauth_token => '8fa0de8d90dd5406c64d', :oauth_secret => '354fce0db74408ca8de7')
