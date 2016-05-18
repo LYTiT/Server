@@ -383,7 +383,9 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    overlap = (vname & result.name).downcase
+    if result != nil 
+      overlap = (vname & result.name).downcase
+    end
 
     if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub(overlap, ""), vname.downcase.gsub(overlap, ""))
       if vlatitude != nil && vlongitude != nil 
