@@ -12,13 +12,6 @@ namespace :lytit do
       #Heroku::API.new(:api_key => 'bad9f90f-2bd6-47b7-a392-b06a06667933').post_ps_restart('lytit-bolt')
     #end
 
-    $scheduler.every '1h' do
-      Activity.feature_venue_cleanup
-      VenueComment.cleanup_and_recalibration
-      Venue.where("latest_posted_comment_time <= ?", Time.now - 24.hours).update_all(tag_1: nil, tag_2: nil, tag_3: nil, tag_4: nil, tag_5: nil)
-      #Venue.cleanup_and_calibration
-    end
-
     #Instagram Pulling and LYT Updating ------------------------------>
     $scheduler.every '5m' do
       puts "Scheduler run at #{Time.now}"
@@ -47,6 +40,21 @@ namespace :lytit do
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
+
+    $scheduler.every '30m' do
+      puts "Clearing expired Post Passes"
+      puts "Scheduler run at #{Time.now}"
+      PostPass.where("created_at < ?", Time.now-30.minutes).delete_all
+    end
+
+    $scheduler.every '1h' do
+      Activity.feature_venue_cleanup
+      VenueComment.cleanup_and_recalibration
+      Venue.where("latest_posted_comment_time <= ?", Time.now - 24.hours).update_all(tag_1: nil, tag_2: nil, tag_3: nil, tag_4: nil, tag_5: nil)
+      #Venue.cleanup_and_calibration
+    end
+
+
 
     $scheduler.join
   end

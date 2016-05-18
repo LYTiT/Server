@@ -20,16 +20,18 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def pass_on(user_id)
-		self.update_columns(passed_on: true)
-		next_users = self.select_next_users
-		for next_user in next_users
-			if next_user.id != self.venue_comment.user_details["id"] && venue_comment.active == true
-				PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
+		if venue_comment.active == true
+			self.update_columns(passed_on: true)
+			next_users = self.select_next_users
+			for next_user in next_users
+				if next_user.id != self.venue_comment.user_details["id"]
+					PostPass.create!(:user_id => next_user.id, :venue_comment_id => self.venue_comment_id)
+				end
 			end
-		end
 
-		if User.find_by_id(user_id).role_id == 1
-			#inititiate fake view generator
+			if User.find_by_id(user_id).role_id == 1
+				#inititiate fake view generator
+			end
 		end
 	end
 
@@ -45,12 +47,12 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def select_next_users
-		#do not send to previous receivers as well as anyone who has X outstanding post_passes
+		receivable_limit = 5
+		#do not send to previous receivers as well as anyone who has receivable_limit outstanding post_passes
 		previous_post_pass_user_ids = "SELECT user_id FROM post_passes WHERE venue_comment_id = #{self.venue_comment_id}"
-		repeat_receiver_user_ids = "SELECT user_id FROM post_passes GROUP BY user_id HAVING COUNT(*) >= 5"
-		
-		#post_pass_user_ids = "SELECT user_id FROM post_passes WHERE (venue_comment_id = #{self.venue_comment_id} OR passed_on IS NULL)"
-		self.user.nearest_neighbors.where("(id NOT IN (#{previous_post_pass_user_ids}) AND id NOT IN (#{repeat_receiver_user_ids})) AND id != #{self.venue_comment.user_id} AND active IS TRUE AND role_id != 1")
+		repeat_receiver_user_ids = "SELECT user_id FROM post_passes GROUP BY user_id HAVING COUNT(*) >= #{receivable_limit}"
+		self.user.nearest_neighbors.where("(id NOT IN (#{previous_post_pass_user_ids}) AND id NOT IN (#{repeat_receiver_user_ids})) 
+			AND id != #{self.venue_comment.user_id} AND active IS TRUE AND role_id != 1")
 	end
 
 	def send_new_post_pass_notification
