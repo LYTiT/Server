@@ -45,6 +45,7 @@ namespace :lytit do
       puts "Clearing expired Post Passes"
       puts "Scheduler run at #{Time.now}"
       PostPass.where("created_at < ?", Time.now-30.minutes).delete_all
+      Event.lyt_up_event_venues
     end
 
     $scheduler.every '1h' do
