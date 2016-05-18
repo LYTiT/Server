@@ -360,6 +360,10 @@ class Api::V1::FeedsController < ApiBaseController
 		@activity_comments = ActivityComment.where("activity_id = ?", params[:activity_id]).includes(:user).order("id DESC").page(params[:page]).per(10)
 	end
 
+	def get_activity_comment
+		@activity_comment = ActivityComment.where("activity_id = ? AND user_id = ?", params[:activity_id], params[:user_id]).order("id ASC").first
+	end
+
 	def get_venue_comments
 		feed = Feed.find_by_id(params[:feed_id])
 		@comments = feed.comments.page(params[:page]).per(10)
