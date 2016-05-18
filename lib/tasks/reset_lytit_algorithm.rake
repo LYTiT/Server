@@ -34,7 +34,7 @@ namespace :lytit do
     FavoriteVenue.num_new_moment_reset
 
     Venue.database_cleanup(3)
-    PostPass.where("created < ?", Time.now-24.hours).delete_all
+    PostPass.where("created_at < ?", Time.now-24.hours).delete_all
 
     puts "done."
   end  

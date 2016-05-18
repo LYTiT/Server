@@ -154,7 +154,9 @@ LytitServer::Application.routes.draw do
         post 'report_activity_comment'
         post 'upvote_list_venue'
         post 'report'
-        post 'assign_category'
+        get 'get_admin_list_categories'
+        post 'assign_categories'
+        post 'remove_categories'
       end
 
       resources :support_issues do

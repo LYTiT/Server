@@ -361,11 +361,26 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(20)
 	end
 
-	def assign_category
-		if ListCategoryEntry.create!(:feed_id => [:feed_id], :list_category_id => params[:list_category_id])
+	def get_admin_list_categories
+		@feed = Feed.find_by_id(params[:feed_id])
+		@categories = ListCategory.all.page(params[:page]).per(20)
+	end
+
+	def assign_categories
+		category_ids = params[:category_ids].split(",")
+		if ListCategoryEntry.bulk_create(category_ids, params[:feed_id])
 			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Category Assigned'] } }, status: :unprocessable_entity
+		end
+	end
+
+	def remove_categories
+		category_ids = params[:category_ids].split(",")
+		if ListCategoryEntry.bulk_remove(category_ids, params[:feed_id])
+			render json: { success: true }
+		else
+			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Category Removed'] } }, status: :unprocessable_entity
 		end
 	end
 
