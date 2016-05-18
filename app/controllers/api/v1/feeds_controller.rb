@@ -220,7 +220,7 @@ class Api::V1::FeedsController < ApiBaseController
 		end
 	end
 
-	def remove_memeber
+	def remove_member
 		if FeedUser.find_by_user_id_and_venue_id(params[:user_id], params[:feed_id]).delay(:priority => -8).destroy
 			render json: { success: false }
 		else
