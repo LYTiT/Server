@@ -45,9 +45,12 @@ class PostPass < ActiveRecord::Base
 	end
 
 	def select_next_users
+		#do not send to previous receivers as well as anyone who has X outstanding post_passes
 		previous_post_pass_user_ids = "SELECT user_id FROM post_passes WHERE venue_comment_id = #{self.venue_comment_id}"
+		repeat_receiver_user_ids = "SELECT user_id FROM post_passes GROUP BY user_id HAVING COUNT(*) >= 5"
+		
 		#post_pass_user_ids = "SELECT user_id FROM post_passes WHERE (venue_comment_id = #{self.venue_comment_id} OR passed_on IS NULL)"
-		self.user.nearest_neighbors.where("id NOT IN (#{previous_post_pass_user_ids}) AND id != #{self.venue_comment.user_id} AND active IS TRUE AND role_id != 1")
+		self.user.nearest_neighbors.where("(id NOT IN (#{previous_post_pass_user_ids}) AND id NOT IN (#{repeat_receiver_user_ids})) AND id != #{self.venue_comment.user_id} AND active IS TRUE AND role_id != 1")
 	end
 
 	def send_new_post_pass_notification

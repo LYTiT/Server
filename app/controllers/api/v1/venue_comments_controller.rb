@@ -30,7 +30,8 @@ class Api::V1::VenueCommentsController < ApiBaseController
 
 	def delete_post
 		vc = VenueComment.find_by_id(params[:venue_comment_id])
-		if params[:user_id] == vc.user_id || User.find_by_authentication_token(params[:auth_token]).role_id == 1
+		@user = User.find_by_authentication_token(params[:auth_token])
+		if @user.id == vc.user_id || @user.role_id == 1
 			if vc.venue.venue_comment_details["id"] == vc.id
 				second_latest_vc = vc.venue.venue_comments.order("adjusted_sort_position DESC").limit(1).offset(1)
 				vc.venue.update_featured_comment(vc)
