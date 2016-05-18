@@ -384,7 +384,7 @@ class Venue < ActiveRecord::Base
     end
 
     if result != nil 
-      overlap = (vname & result.name).downcase
+      overlap = (vname && result.name).downcase
     end
 
     if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub(overlap, ""), vname.downcase.gsub(overlap, ""))
