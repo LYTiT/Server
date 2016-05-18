@@ -1061,6 +1061,11 @@ class Venue < ActiveRecord::Base
     self_partial = self.partial
     self_partial["trending_tags"] = trending_tags
 
+    if vc.entry_type != "tweet" && vc.entry_type != "event"
+      self.update_columns(venue_comment_details: vc.to_json)      
+    end
+
+=begin
     if vc.entry_type == "tweet"
       venue_featured_activity = Activity.where("venue_id = ? AND activity_type = ?", self.id, "featured_venue_tweet").first
       if venue_featured_activity == nil
@@ -1086,6 +1091,7 @@ class Venue < ActiveRecord::Base
       end
       self.update_columns(venue_comment_details: vc.to_json)      
     end
+=end    
     
   end
 

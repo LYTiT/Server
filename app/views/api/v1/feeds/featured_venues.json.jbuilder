@@ -32,7 +32,7 @@ json.cache! @venues, expires_in: 10.minutes, key: @view_cache_key do |json|
 
     json.added_note nil
 
-    json.attachment Activity.select_content_for_featured_venue_activity(venue, @user.id, @feed.id, @feed.name, @feed.feed_color)
+    json.attachment nil
 
     json.num_likes nil
     json.has_liked nil

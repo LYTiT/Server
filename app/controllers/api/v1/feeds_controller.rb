@@ -361,6 +361,7 @@ class Api::V1::FeedsController < ApiBaseController
 		@categories = ListCategory.all.page(params[:page]).per(20)
 	end
 
+#ADMIN Category Methods
 	def get_admin_list_categories
 		@feed = Feed.find_by_id(params[:feed_id])
 		@categories = ListCategory.all.page(params[:page]).per(20)
@@ -374,6 +375,7 @@ class Api::V1::FeedsController < ApiBaseController
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Category Assigned'] } }, status: :unprocessable_entity
 		end
 	end
+#----------------------	
 
 	def remove_categories
 		category_ids = params[:category_ids].split(",")
