@@ -159,6 +159,7 @@ LytitServer::Application.routes.draw do
         post 'remove_categories'
         post 'remove_activity'
         post 'remove_member'
+        get 'get_activity_comment'
       end
 
       resources :support_issues do
