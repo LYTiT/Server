@@ -140,7 +140,9 @@ class User < ActiveRecord::Base
   end
 
   def suggested_interests
-    ["skateboard", "justin bieber", "cake"]
+    ["skateboard", "sports" ,"nightlife", "justin bieber", "cake", "basketball", "music", "theater", "football",
+      "art", "game of thrones", "movies", "cars", "science", "nature", "running", "technology", "beer"]
+
   end
 
   def update_interests(source, details)
