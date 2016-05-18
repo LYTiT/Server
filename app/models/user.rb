@@ -258,14 +258,12 @@ class User < ActiveRecord::Base
 
   def add_interest(interest)
     interest = interest.downcase.gsub(" ", "").singularize
-    require 'fuzzystringmatch'
-    jarow = FuzzyStringMatch::JaroWinkler.create( :native )
     interests_hash = self.interests
     descriptives_keys = interests_hash["descriptives"].keys
 
     already_present = false
     for key in descriptives_keys
-      if p jarow.getDistance(interest, key) >= 0.85
+      if JAROW.getDistance(interest, key) >= 0.85
         if interest != key
           interests_hash["descriptives"][interest] = interests_hash["descriptives"][key]                
           interests_hash["descriptives"].delete(key)
@@ -297,9 +295,6 @@ class User < ActiveRecord::Base
   def increment_interest_by_origin(source, meta_is_category, meta)
     #source type = Searched Venue, Favorite Venue, List
     #meta origin = categories, foursquare_tags, trending_tags
-
-    require 'fuzzystringmatch'
-    jarow = FuzzyStringMatch::JaroWinkler.create( :native )
     interests_hash = self.interests
     interests_arr = self.interests.keys
 
@@ -325,7 +320,7 @@ class User < ActiveRecord::Base
       for entry in meta
         if interests_arr.count > 0
           for interest in interests_arr
-            jarow_winkler_proximity = p jarow.getDistance(interest, entry)
+            jarow_winkler_proximity = JAROW.getDistance(interest, entry)
             if jarow_winkler_proximity > 0.9
               #interest already present need to increment score.
               old_score = interests_hash[interest]["score"]

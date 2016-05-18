@@ -206,7 +206,7 @@ class Api::V1::FeedsController < ApiBaseController
 		fv = FeedVenue.find_by_id(params[:feed_venue_id])
 		fv.description = params[:added_note]
 		if fv.save
-			render json: { success: false }
+			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Could edit feed venue description'] } }, status: :unprocessable_entity
 		end
@@ -214,7 +214,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_activity
 		if Activity.find_by_id(params[:activity_id]).delay(:priority => -8).destroy
-			render json: { success: false }
+			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Activity not removed'] } }, status: :unprocessable_entity
 		end
@@ -222,7 +222,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def remove_member
 		if FeedUser.find_by_user_id_and_feed_id(params[:user_id], params[:feed_id]).delay(:priority => -8).destroy
-			render json: { success: false }
+			render json: { success: true }
 		else
 			render json: { error: { code: ERROR_UNPROCESSABLE, messages: ['Member not removed'] } }, status: :unprocessable_entity
 		end

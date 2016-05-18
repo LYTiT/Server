@@ -383,9 +383,9 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
+    overlap = (vname & result.name).downcase
 
-
-    if result == nil
+    if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub(overlap, ""), vname.downcase.gsub(overlap, ""))
       if vlatitude != nil && vlongitude != nil 
         result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil, is_proposed_location)
         result.update_columns(verified: true)
@@ -1993,8 +1993,6 @@ end
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   def set_instagram_location_id(search_radius)
     #Set-up of tools to be used
-    require 'fuzzystringmatch'
-    jarow = FuzzyStringMatch::JaroWinkler.create( :native )    
     if search_radius == nil
       search_radius = 100
     end
@@ -2021,7 +2019,7 @@ end
           instagram_location_name_clean = Venue.scrub_venue_name(instagram.location.name.downcase, city)
           venue_name_clean = Venue.scrub_venue_name(self.name.downcase, city)
         
-          jarow_winkler_proximity = p jarow.getDistance(instagram_location_name_clean, venue_name_clean)
+          jarow_winkler_proximity = JAROW.getDistance(instagram_location_name_clean, venue_name_clean)
 
           if jarow_winkler_proximity >= 0.85 && ((self.name.downcase.include?("park") == true && instagram.location.name.downcase.include?("park")) == true || (self.name.downcase.include?("park") == false && instagram.location.name.downcase.include?("park") == false))
             if not search_hash[instagram.location.id]
@@ -2256,17 +2254,15 @@ end
       downcase_venue_name = venue_name.downcase
       if foursquare_venue != nil and (downcase_venue_name.include?(foursquare_venue.name.downcase) == false && (foursquare_venue.name.downcase).include?(downcase_venue_name) == false)
         #If foursquare_venue name is not equal or is not contained we do a string comparison
-        require 'fuzzystringmatch'
-        jarow = FuzzyStringMatch::JaroWinkler.create( :native )
         #overlap = venue_name.downcase.split & foursquare_venue.name.downcase.split
         #jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, foursquare_venue.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
-        jarow_winkler_proximity = p jarow.getDistance(downcase_venue_name, foursquare_venue.name.downcase)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
+        jarow_winkler_proximity = JAROW.getDistance(downcase_venue_name, foursquare_venue.name.downcase)#venue_name.downcase.gsub(overlap, "").trim, foursquare_venue.name.downcase.gsub(overlap, "").trim)
         if jarow_winkler_proximity < 0.87
           foursquare_venue = nil
           for entry in foursquare_search_results.first.last
             #overlap = venue_name.downcase.split & entry.name.downcase.split
             #jarow_winkler_proximity = p jarow.getDistance(Venue.name_for_comparison(venue_name.downcase, origin_city).downcase, entry.name.downcase.gsub("the" , "").gsub(origin_city, "").strip)#(venue_name.downcase.gsub(overlap, "").trim, entry.name.downcase.gsub(overlap, "").trim)
-            jarow_winkler_proximity = p jarow.getDistance(downcase_venue_name, entry.name.downcase)
+            jarow_winkler_proximity = JAROW.getDistance(downcase_venue_name, entry.name.downcase)
             if jarow_winkler_proximity >= 0.87
               foursquare_venue = entry
               break
