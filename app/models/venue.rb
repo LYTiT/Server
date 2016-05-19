@@ -1805,8 +1805,8 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 
     results = Venue.in_bounds(search_box).order("popularity_rank DESC").interest_search(interest_query).where("popularity_rank > 0.0").limit(30)
 
-    if results.length == 0
-      results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0").limit(30)  
+    if results.length < 30
+      results << Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0").limit(30-results.length)
     end
   else
     results = Venue.in_bounds(search_box).order("popularity_rank DESC").where("color_rating > -1.0").limit(30)  
