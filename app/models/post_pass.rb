@@ -5,7 +5,7 @@ class PostPass < ActiveRecord::Base
 	after_create :send_new_post_pass_notification
 
 	def PostPass.initiate(vc)
-		first_revceivers = vc.user.nearest_neighbors.where("active IS TRUE AND id != #{vc.user_id} AND role_id != 1")
+		first_revceivers = vc.user.nearest_neighbors(vc.venue_details["latitude"], vc.venue_details["longitude"]).where("active IS TRUE AND id != #{vc.user_id} AND role_id != 1")
 
 		for receiver in first_revceivers
 			PostPass.create!(:user_id => receiver.id, :venue_comment_id => vc.id)
