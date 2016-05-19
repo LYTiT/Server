@@ -76,6 +76,10 @@ class Feed < ActiveRecord::Base
 		Feed.where("id in (#{direct_match_ids})").limit(5)+top_search_results		
 	end
 
+	def put_in_spotlyt(set=true)
+		self.update_columns(in_spotlyt: set)
+	end
+
 	def register_open(u_id)
 		feed_user = self.feed_users.where("user_id = ?", u_id).first
 		if feed_user != nil
