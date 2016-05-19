@@ -50,7 +50,7 @@ json.activity(@activities) do |activity|
   if activity.activity_type == "shared_lytit_post"
     json.venue_comment_id activity.venue_comment_id
     json.venue_comment_created_at activity.venue_comment_details["id"]
-    json.content_origin activity.venue_comment_details["entry_type"]
+    json.content_origin "lytit"
     json.media_dimensions activity.venue_comment_details["lytit_post"]["media_dimensions"]
     json.media_type activity.venue_comment_details["lytit_post"]["media_type"]
     json.image_url_1 activity.venue_comment_details["lytit_post"]["image_url_1"]
