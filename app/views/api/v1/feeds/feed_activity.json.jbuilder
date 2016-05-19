@@ -62,6 +62,7 @@ json.activity(@activities) do |activity|
     json.underlying_user_id activity.venue_comment_details["user_details"]["id"]
     json.underlying_user_name activity.venue_comment_details["user_details"]["name"]
     json.profile_image_url activity.venue_comment_details["user_details"]["profile_image_url"]
+    json.num_enlytened activity.venue_comment_details["num_enlytened"]
   elsif activity.activity_type == "shared_instagram"
     json.venue_comment_id activity.venue_comment_id
     json.venue_comment_created_at activity.venue_comment_details["id"]
