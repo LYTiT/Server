@@ -13,6 +13,8 @@ json.activity(@activities) do |activity|
 
   json.user_id activity.user_id
   json.user_name activity.user_details["name"]
+  json.user_profile_image_url activity.user_details["profile_image_url"]
+
   json.fb_id activity.user_details["facebook_id"]
   json.fb_name activity.user_details["facebook_name"] 
 
@@ -59,6 +61,7 @@ json.activity(@activities) do |activity|
     json.video_url_3 activity.venue_comment_details["lytit_post"]["video_url_3"]
     json.user_id activity.venue_comment_details["lytit_post"]["user_details"]["id"]
     json.user_name activity.venue_comment_details["lytit_post"]["user_details"]["name"]
+    json.profile_image_url activity.venue_comment_details["lytit_post"]["user_details"]["profile_image_url"]
   elsif activity.activity_type == "shared_instagram"
     json.venue_comment_id activity.venue_comment_id
     json.venue_comment_created_at activity.venue_comment_details["id"]
