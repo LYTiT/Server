@@ -4,13 +4,12 @@
  * the top of the compiled file, but it's generally better to create a new file per style scope.
 
 */
-/*! normalize.css v3.0.3 | MIT License | github.com/necolas/normalize.css */
+/*! normalize.css v4.0.0 | MIT License | github.com/necolas/normalize.css */
 /**
- * 1. Set default font family to sans-serif.
- * 2. Prevent iOS and IE text size adjust after device orientation change,
- *    without disabling user zoom.
+ * 1. Change the default font family in all browsers (opinionated).
+ * 2. Prevent adjustments of font size after orientation changes in IE and iOS.
  */
-/* line 9, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 8, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 html {
   font-family: sans-serif;
   /* 1 */
@@ -21,9 +20,9 @@ html {
 }
 
 /**
- * Remove default margin.
+ * Remove the margin in all browsers (opinionated).
  */
-/* line 19, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 18, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 body {
   margin: 0;
 }
@@ -31,12 +30,11 @@ body {
 /* HTML5 display definitions
    ========================================================================== */
 /**
- * Correct `block` display not defined for any HTML5 element in IE 8/9.
- * Correct `block` display not defined for `details` or `summary` in IE 10/11
- * and Firefox.
- * Correct `block` display not defined for `main` in IE 11.
+ * Add the correct display in IE 9-.
+ * 1. Add the correct display in Edge, IE, and Firefox.
+ * 2. Add the correct display in IE.
  */
-/* line 33, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 31, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 article,
 aside,
 details,
@@ -44,128 +42,147 @@ figcaption,
 figure,
 footer,
 header,
-hgroup,
 main,
 menu,
 nav,
 section,
 summary {
+  /* 1 */
   display: block;
 }
 
 /**
- * 1. Correct `inline-block` display not defined in IE 8/9.
- * 2. Normalize vertical alignment of `progress` in Chrome, Firefox, and Opera.
+ * Add the correct display in IE 9-.
  */
-/* line 54, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 50, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 audio,
 canvas,
 progress,
 video {
   display: inline-block;
-  /* 1 */
-  vertical-align: baseline;
-  /* 2 */
 }
 
 /**
- * Prevent modern browsers from displaying `audio` without controls.
- * Remove excess height in iOS 5 devices.
+ * Add the correct display in iOS 4-7.
  */
-/* line 67, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 61, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 audio:not([controls]) {
   display: none;
   height: 0;
 }
 
 /**
- * Address `[hidden]` styling not present in IE 8/9/10.
- * Hide the `template` element in IE 8/9/10/11, Safari, and Firefox < 22.
+ * Add the correct vertical alignment in Chrome, Firefox, and Opera.
  */
-/* line 77, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-[hidden],
-template {
+/* line 70, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+progress {
+  vertical-align: baseline;
+}
+
+/**
+ * Add the correct display in IE 10-.
+ * 1. Add the correct display in IE.
+ */
+/* line 79, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+template,
+[hidden] {
   display: none;
 }
 
 /* Links
    ========================================================================== */
 /**
- * Remove the gray background color from active links in IE 10.
+ * Remove the gray background on active links in IE 10.
  */
-/* line 89, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 91, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 a {
   background-color: transparent;
 }
 
 /**
- * Improve readability of focused elements when they are also in an
- * active/hover state.
+ * Remove the outline on focused links when they are also active or hovered
+ * in all browsers (opinionated).
  */
-/* line 98, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 100, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 a:active,
 a:hover {
-  outline: 0;
+  outline-width: 0;
 }
 
 /* Text-level semantics
    ========================================================================== */
 /**
- * Address styling not present in IE 8/9/10/11, Safari, and Chrome.
+ * 1. Remove the bottom border in Firefox 39-.
+ * 2. Add the correct text decoration in Chrome, Edge, IE, Opera, and Safari.
  */
-/* line 110, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 113, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 abbr[title] {
-  border-bottom: 1px dotted;
+  border-bottom: none;
+  /* 1 */
+  text-decoration: underline;
+  /* 2 */
+  text-decoration: underline dotted;
+  /* 2 */
 }
 
 /**
- * Address style set to `bolder` in Firefox 4+, Safari, and Chrome.
+ * Prevent the duplicate application of `bolder` by the next rule in Safari 6.
  */
-/* line 118, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 123, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 b,
 strong {
-  font-weight: bold;
+  font-weight: inherit;
 }
 
 /**
- * Address styling not present in Safari and Chrome.
+ * Add the correct font weight in Chrome, Edge, and Safari.
  */
-/* line 127, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 132, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+b,
+strong {
+  font-weight: bolder;
+}
+
+/**
+ * Add the correct font style in Android 4.3-.
+ */
+/* line 141, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 dfn {
   font-style: italic;
 }
 
 /**
- * Address variable `h1` font-size and margin within `section` and `article`
- * contexts in Firefox 4+, Safari, and Chrome.
+ * Correct the font size and margin on `h1` elements within `section` and
+ * `article` contexts in Chrome, Firefox, and Safari.
  */
-/* line 136, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 150, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 h1 {
   font-size: 2em;
   margin: 0.67em 0;
 }
 
 /**
- * Address styling not present in IE 8/9.
+ * Add the correct background and color in IE 9-.
  */
-/* line 145, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 159, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 mark {
-  background: #ff0;
+  background-color: #ff0;
   color: #000;
 }
 
 /**
- * Address inconsistent and variable font size in all browsers.
+ * Add the correct font size in all browsers.
  */
-/* line 154, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 168, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 small {
   font-size: 80%;
 }
 
 /**
- * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ * Prevent `sub` and `sup` elements from affecting the line height in
+ * all browsers.
  */
-/* line 162, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 177, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 sub,
 sup {
   font-size: 75%;
@@ -174,30 +191,30 @@ sup {
   vertical-align: baseline;
 }
 
-/* line 170, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-sup {
-  top: -0.5em;
-}
-
-/* line 174, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 185, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 sub {
   bottom: -0.25em;
+}
+
+/* line 189, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+sup {
+  top: -0.5em;
 }
 
 /* Embedded content
    ========================================================================== */
 /**
- * Remove border when inside `a` element in IE 8/9/10.
+ * Remove the border on images inside links in IE 10-.
  */
-/* line 185, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 200, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 img {
-  border: 0;
+  border-style: none;
 }
 
 /**
- * Correct overflow not hidden in IE 9/10/11.
+ * Hide the overflow in IE.
  */
-/* line 193, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 208, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 svg:not(:root) {
   overflow: hidden;
 }
@@ -205,119 +222,137 @@ svg:not(:root) {
 /* Grouping content
    ========================================================================== */
 /**
- * Address margin not present in IE 8/9 and Safari.
+ * 1. Correct the inheritance and scaling of font size in all browsers.
+ * 2. Correct the odd `em` font sizing in all browsers.
  */
-/* line 204, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-figure {
-  margin: 1em 40px;
-}
-
-/**
- * Address differences between Firefox and other browsers.
- */
-/* line 212, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-hr {
-  box-sizing: content-box;
-  height: 0;
-}
-
-/**
- * Contain overflow in all browsers.
- */
-/* line 221, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-pre {
-  overflow: auto;
-}
-
-/**
- * Address odd `em`-unit font size rendering in all browsers.
- */
-/* line 229, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 220, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 code,
 kbd,
 pre,
 samp {
   font-family: monospace, monospace;
+  /* 1 */
   font-size: 1em;
+  /* 2 */
+}
+
+/**
+ * Add the correct margin in IE 8.
+ */
+/* line 232, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+figure {
+  margin: 1em 40px;
+}
+
+/**
+ * 1. Add the correct box sizing in Firefox.
+ * 2. Show the overflow in Edge and IE.
+ */
+/* line 241, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+hr {
+  box-sizing: content-box;
+  /* 1 */
+  height: 0;
+  /* 1 */
+  overflow: visible;
+  /* 2 */
 }
 
 /* Forms
    ========================================================================== */
 /**
- * Known limitation: by default, Chrome and Safari on OS X allow very limited
- * styling of `select`, unless a `border` property is set.
+ * Change font properties to `inherit` in all browsers (opinionated).
  */
-/**
- * 1. Correct color not being inherited.
- *    Known issue: affects color of disabled elements.
- * 2. Correct font properties not being inherited.
- * 3. Address margins set differently in Firefox 4+, Safari, and Chrome.
- */
-/* line 252, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 254, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 button,
 input,
-optgroup,
 select,
 textarea {
-  color: inherit;
-  /* 1 */
   font: inherit;
-  /* 2 */
-  margin: 0;
-  /* 3 */
 }
 
 /**
- * Address `overflow` set to `hidden` in IE 8/9/10/11.
+ * Restore the font weight unset by the previous rule.
  */
-/* line 266, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-button {
+/* line 265, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+optgroup {
+  font-weight: bold;
+}
+
+/**
+ * Show the overflow in IE.
+ * 1. Show the overflow in Edge.
+ * 2. Show the overflow in Edge, Firefox, and IE.
+ */
+/* line 275, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+button,
+input,
+select {
+  /* 2 */
   overflow: visible;
 }
 
 /**
- * Address inconsistent `text-transform` inheritance for `button` and `select`.
- * All other form control elements do not inherit `text-transform` values.
- * Correct `button` style inheritance in Firefox, IE 8/9/10/11, and Opera.
- * Correct `select` style inheritance in Firefox.
+ * Remove the margin in Safari.
+ * 1. Remove the margin in Firefox and Safari.
  */
-/* line 277, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 286, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+button,
+input,
+select,
+textarea {
+  /* 1 */
+  margin: 0;
+}
+
+/**
+ * Remove the inheritance of text transform in Edge, Firefox, and IE.
+ * 1. Remove the inheritance of text transform in Firefox.
+ */
+/* line 298, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 button,
 select {
+  /* 1 */
   text-transform: none;
 }
 
 /**
- * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
- *    and `video` controls.
- * 2. Correct inability to style clickable `input` types in iOS.
- * 3. Improve usability and consistency of cursor style between image-type
- *    `input` and others.
+ * Change the cursor in all browsers (opinionated).
  */
-/* line 290, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 307, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 button,
-html input[type="button"],
-input[type="reset"],
-input[type="submit"] {
-  -webkit-appearance: button;
-  /* 2 */
+[type="button"],
+[type="reset"],
+[type="submit"] {
   cursor: pointer;
-  /* 3 */
 }
 
 /**
- * Re-set default cursor for disabled elements.
+ * Restore the default cursor to disabled elements unset by the previous rule.
  */
-/* line 302, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-button[disabled],
-html input[disabled] {
+/* line 318, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+[disabled] {
   cursor: default;
 }
 
 /**
- * Remove inner padding and border in Firefox 4+.
+ * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+ *    controls in Android 4.
+ * 2. Correct the inability to style clickable types in iOS.
  */
-/* line 311, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 328, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+button,
+html [type="button"],
+[type="reset"],
+[type="submit"] {
+  -webkit-appearance: button;
+  /* 2 */
+}
+
+/**
+ * Remove the inner border and padding in Firefox.
+ */
+/* line 339, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 button::-moz-focus-inner,
 input::-moz-focus-inner {
   border: 0;
@@ -325,68 +360,18 @@ input::-moz-focus-inner {
 }
 
 /**
- * Address Firefox 4+ setting `line-height` on `input` using `!important` in
- * the UA stylesheet.
+ * Restore the focus styles unset by the previous rule.
  */
-/* line 322, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-input {
-  line-height: normal;
+/* line 349, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+button:-moz-focusring,
+input:-moz-focusring {
+  outline: 1px dotted ButtonText;
 }
 
 /**
- * It's recommended that you don't attempt to style these elements.
- * Firefox's implementation doesn't respect box-sizing, padding, or width.
- *
- * 1. Address box sizing set to `content-box` in IE 8/9/10.
- * 2. Remove excess padding in IE 8/9/10.
+ * Change the border, margin, and padding in all browsers (opinionated).
  */
-/* line 334, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-input[type="checkbox"],
-input[type="radio"] {
-  box-sizing: border-box;
-  /* 1 */
-  padding: 0;
-  /* 2 */
-}
-
-/**
- * Fix the cursor style for Chrome's increment/decrement buttons. For certain
- * `font-size` values of the `input`, it causes the cursor style of the
- * decrement button to change from `default` to `text`.
- */
-/* line 346, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  height: auto;
-}
-
-/**
- * 1. Address `appearance` set to `searchfield` in Safari and Chrome.
- * 2. Address `box-sizing` set to `border-box` in Safari and Chrome.
- */
-/* line 356, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-input[type="search"] {
-  -webkit-appearance: textfield;
-  /* 1 */
-  box-sizing: content-box;
-  /* 2 */
-}
-
-/**
- * Remove inner padding and search cancel button in Safari and Chrome on OS X.
- * Safari (but not Chrome) clips the cancel button when the search input has
- * padding (and `textfield` appearance).
- */
-/* line 367, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-input[type="search"]::-webkit-search-cancel-button,
-input[type="search"]::-webkit-search-decoration {
-  -webkit-appearance: none;
-}
-
-/**
- * Define consistent border, margin, and padding.
- */
-/* line 376, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 358, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 fieldset {
   border: 1px solid #c0c0c0;
   margin: 0 2px;
@@ -394,56 +379,80 @@ fieldset {
 }
 
 /**
- * 1. Correct `color` not being inherited in IE 8/9/10/11.
- * 2. Remove padding so people aren't caught out if they zero out fieldsets.
+ * 1. Correct the text wrapping in Edge and IE.
+ * 2. Correct the color inheritance from `fieldset` elements in IE.
+ * 3. Remove the padding so developers are not caught out when they zero out
+ *    `fieldset` elements in all browsers.
  */
-/* line 387, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
+/* line 371, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
 legend {
-  border: 0;
+  box-sizing: border-box;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  display: table;
+  /* 1 */
+  max-width: 100%;
+  /* 1 */
+  padding: 0;
+  /* 3 */
+  white-space: normal;
+  /* 1 */
+}
+
+/**
+ * Remove the default vertical scrollbar in IE.
+ */
+/* line 384, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+textarea {
+  overflow: auto;
+}
+
+/**
+ * 1. Add the correct box sizing in IE 10-.
+ * 2. Remove the padding in IE 10-.
+ */
+/* line 393, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+[type="checkbox"],
+[type="radio"] {
+  box-sizing: border-box;
   /* 1 */
   padding: 0;
   /* 2 */
 }
 
 /**
- * Remove default vertical scrollbar in IE 8/9/10/11.
+ * Correct the cursor style of increment and decrement buttons in Chrome.
  */
-/* line 396, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-textarea {
-  overflow: auto;
+/* line 403, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+[type="number"]::-webkit-inner-spin-button,
+[type="number"]::-webkit-outer-spin-button {
+  height: auto;
 }
 
 /**
- * Don't inherit the `font-weight` (applied by a rule above).
- * NOTE: the default cannot safely be changed in Chrome and Safari on OS X.
+ * Correct the odd appearance of search inputs in Chrome and Safari.
  */
-/* line 405, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-optgroup {
-  font-weight: bold;
+/* line 412, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+[type="search"] {
+  -webkit-appearance: textfield;
 }
 
-/* Tables
-   ========================================================================== */
 /**
- * Remove most spacing between table cells.
+ * Remove the inner padding and cancel buttons in Chrome on OS X and
+ * Safari on OS X.
  */
-/* line 416, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-}
-
-/* line 421, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-3.0.3/vendor/assets/stylesheets/normalize-rails/normalize.css */
-td,
-th {
-  padding: 0;
+/* line 421, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/normalize-rails-4.0.0/vendor/assets/stylesheets/normalize-rails/normalize.css */
+[type="search"]::-webkit-search-cancel-button,
+[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
 }
 
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
    License: none (public domain)
 */
-/* line 6, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 6, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -466,46 +475,46 @@ time, mark, audio, video {
 }
 
 /* HTML5 display-role reset for older browsers */
-/* line 27, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 27, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
   display: block;
 }
 
-/* line 31, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 31, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 body {
   line-height: 1;
 }
 
-/* line 34, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 34, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 37, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 37, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 blockquote, q {
   quotes: none;
 }
 
-/* line 40, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 40, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 blockquote:before, blockquote:after,
 q:before, q:after {
   content: '';
   content: none;
 }
 
-/* line 45, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/vendor/assets/stylesheets/reset.scss */
+/* line 45, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/vendor/assets/stylesheets/reset.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 4, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/neat-1.7.2/app/assets/stylesheets/grid/_box-sizing.scss */
+/* line 4, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/neat-1.7.4/app/assets/stylesheets/grid/_box-sizing.scss */
 html {
   box-sizing: border-box;
 }
 
-/* line 9, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/neat-1.7.2/app/assets/stylesheets/grid/_box-sizing.scss */
+/* line 9, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/neat-1.7.4/app/assets/stylesheets/grid/_box-sizing.scss */
 *, *::after, *::before {
   box-sizing: inherit;
 }
@@ -520,24 +529,24 @@ html {
 Primary style
 
 -------------------------------- */
-/* line 13, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 13, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 *, *::after, *::before {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
 
-/* line 17, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 17, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 *::after, *::before {
   content: '';
 }
 
-/* line 21, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 21, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 html, body {
   height: 100%;
 }
 
-/* line 25, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 25, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 html {
   font-size: 62.5%;
   -webkit-overflow-scrolling: touch;
@@ -546,7 +555,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* line 33, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 33, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 body {
   font-size: 1.6rem;
   font-family: "Open Sans", sans-serif;
@@ -554,32 +563,32 @@ body {
   background-color: #232828;
 }
 @media only screen and (min-width: 1048px) {
-  /* line 33, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 33, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   body {
     /* hide horizontal scroll bar in IE */
     overflow-x: hidden;
   }
 }
 
-/* line 48, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 48, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #features {
   background: #232828;
   background-size: cover;
   overflow: auto;
 }
 @media only screen and (min-width: 1048px) {
-  /* line 48, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 48, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #features {
     overflow: hidden;
   }
 }
 
-/* line 58, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 58, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #home {
   overflow: hidden;
 }
 
-/* line 62, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 62, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #legal {
   background: white;
   color: black;
@@ -588,13 +597,13 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* line 69, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 69, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 a {
   color: #1d6ec6;
   text-decoration: none;
 }
 
-/* line 74, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 74, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 img {
   max-width: 100%;
 }
@@ -604,7 +613,7 @@ img {
 Home Page 
 
 -------------------------------- */
-/* line 83, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 83, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header-home {
   height: 80px;
   width: 100%;
@@ -622,35 +631,35 @@ Home Page
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.6/app/assets/stylesheets/addons/_clearfix.scss */
+/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.7/app/assets/stylesheets/addons/_clearfix.scss */
 .cd-header-home::after {
   clear: both;
   content: "";
   display: table;
 }
 @media only screen and (min-width: 768px) {
-  /* line 83, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 83, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header-home {
     width: 90%;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  /* line 100, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 100, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #logo {
     width: 150px;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  /* line 106, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 106, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #logo-legal {
     margin-left: 5%;
     width: 150px;
   }
 }
 
-/* line 113, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 113, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger {
   position: relative;
   float: right;
@@ -663,7 +672,7 @@ Home Page
   white-space: nowrap;
   color: transparent;
 }
-/* line 126, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 126, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger span,
 .cd-3d-nav-trigger span::before,
 .cd-3d-nav-trigger span::after {
@@ -675,7 +684,7 @@ Home Page
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 137, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 137, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger span {
   /* this is the central line */
   top: 21px;
@@ -684,7 +693,7 @@ Home Page
   -moz-transition: background 0.2s 0.5s;
   transition: background 0.2s 0.5s;
 }
-/* line 143, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 143, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger span::before, .cd-3d-nav-trigger span:after {
   /* these are the upper and lower lines */
   content: '';
@@ -693,25 +702,25 @@ Home Page
   -moz-transition: -moz-transform 0.2s 0.5s;
   transition: transform 0.2s 0.5s;
 }
-/* line 151, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 151, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger span::before {
   bottom: 8px;
 }
-/* line 155, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 155, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger span::after {
   top: 8px;
 }
-/* line 162, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 162, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger span {
   /* hide line in the center */
   background-color: rgba(255, 255, 255, 0);
 }
-/* line 166, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 166, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger span::before, .nav-is-visible .cd-3d-nav-trigger span::after {
   /* keep visible other 2 lines */
   background-color: white;
 }
-/* line 172, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 172, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger span::before {
   -webkit-transform: translateY(8px) rotate(-45deg);
   -moz-transform: translateY(8px) rotate(-45deg);
@@ -719,7 +728,7 @@ Home Page
   -o-transform: translateY(8px) rotate(-45deg);
   transform: translateY(8px) rotate(-45deg);
 }
-/* line 176, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 176, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger span::after {
   -webkit-transform: translateY(-8px) rotate(45deg);
   -moz-transform: translateY(-8px) rotate(45deg);
@@ -728,7 +737,7 @@ Home Page
   transform: translateY(-8px) rotate(45deg);
 }
 
-/* line 183, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 183, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home {
   position: relative;
   float: right;
@@ -742,12 +751,12 @@ Home Page
   color: transparent;
 }
 @media only screen and (min-width: 768px) {
-  /* line 183, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 183, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav-trigger-home {
     margin-top: 18px;
   }
 }
-/* line 200, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 200, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home span,
 .cd-3d-nav-trigger-home span::before,
 .cd-3d-nav-trigger-home span::after {
@@ -759,7 +768,7 @@ Home Page
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home span {
   /* this is the central line */
   top: 21px;
@@ -768,7 +777,7 @@ Home Page
   -moz-transition: background 0.2s 0.5s;
   transition: background 0.2s 0.5s;
 }
-/* line 217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home span::before, .cd-3d-nav-trigger-home span:after {
   /* these are the upper and lower lines */
   content: '';
@@ -777,25 +786,25 @@ Home Page
   -moz-transition: -moz-transform 0.2s 0.5s;
   transition: transform 0.2s 0.5s;
 }
-/* line 225, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 225, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home span::before {
   bottom: 8px;
 }
-/* line 229, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 229, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-trigger-home span::after {
   top: 8px;
 }
-/* line 235, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 235, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger-home span {
   /* hide line in the center */
   background-color: rgba(255, 255, 255, 0);
 }
-/* line 239, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 239, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger-home span::before, .nav-is-visible .cd-3d-nav-trigger-home span::after {
   /* keep visible other 2 lines */
   background-color: white;
 }
-/* line 245, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 245, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger-home span::before {
   -webkit-transform: translateY(8px) rotate(-45deg);
   -moz-transform: translateY(8px) rotate(-45deg);
@@ -803,7 +812,7 @@ Home Page
   -o-transform: translateY(8px) rotate(-45deg);
   transform: translateY(8px) rotate(-45deg);
 }
-/* line 249, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 249, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav-trigger-home span::after {
   -webkit-transform: translateY(-8px) rotate(45deg);
   -moz-transform: translateY(-8px) rotate(45deg);
@@ -813,13 +822,13 @@ Home Page
 }
 
 @media only screen and (min-width: 768px) {
-  /* line 256, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 256, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #legal-page-trigger {
     margin-right: 5%;
   }
 }
 
-/* line 262, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 262, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-container {
   /* this is the 3D navigation container */
   position: fixed;
@@ -842,7 +851,7 @@ Home Page
   -moz-transition: -moz-transform 0.5s 0s, visibility 0s 0.5s;
   transition: transform 0.5s 0s, visibility 0s 0.5s;
 }
-/* line 281, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 281, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav-container.nav-is-visible {
   visibility: visible;
   -webkit-transform: translateY(0);
@@ -855,13 +864,13 @@ Home Page
   transition: transform 0.5s 0s, visibility 0.5s 0s;
 }
 @media only screen and (min-width: 768px) {
-  /* line 262, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 262, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav-container {
     height: 170px;
   }
 }
 
-/* line 295, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 295, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav {
   /* this is the 3D rotating navigation */
   position: relative;
@@ -889,7 +898,7 @@ Home Page
   -moz-transition: -moz-transform 0.5s;
   transition: transform 0.5s;
 }
-/* line 309, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 309, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav::after {
   /* menu dark cover layer - to enhance perspective effect */
   content: '';
@@ -905,39 +914,39 @@ Home Page
   -moz-transition: opacity 0.5s 0s, visibility 0.5s 0s;
   transition: opacity 0.5s 0s, visibility 0.5s 0s;
 }
-/* line 323, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 323, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li {
   height: 100%;
   width: 16.66667%;
   float: left;
 }
-/* line 327, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 327, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:first-of-type a::before {
   background-image: url("home.svg");
   background-size: 32px 64px;
 }
-/* line 332, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 332, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:nth-of-type(2) a::before {
   background-image: url("features.svg");
 }
-/* line 336, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 336, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:nth-of-type(3) a::before {
   background-image: url("contact.svg");
   background-size: 32px 64px;
 }
-/* line 341, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 341, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:nth-of-type(4) a::before {
   background-image: url("blog.svg");
 }
-/* line 345, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 345, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:nth-of-type(5) a::before {
   background-image: url("facebook.svg");
 }
-/* line 349, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 349, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav li:nth-of-type(6) a::before {
   background-image: url("twitter.svg");
 }
-/* line 354, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 354, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav a {
   position: relative;
   display: block;
@@ -948,12 +957,12 @@ Home Page
   transition: background-color 0.2s;
 }
 @media only screen and (min-width: 768px) {
-  /* line 354, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 354, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav a {
     color: #565c5c !important;
   }
 }
-/* line 364, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 364, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav a::before {
   /* navigation icons */
   content: '';
@@ -973,29 +982,29 @@ Home Page
   background-repeat: no-repeat;
   background-position: 0 0;
 }
-/* line 376, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 376, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-3d-nav a:hover {
   background-color: black;
 }
-/* line 381, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 381, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav .cd-selected a {
   background-color: black;
 }
 @media only screen and (min-width: 768px) {
-  /* line 381, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 381, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav .cd-selected a {
     color: white !important;
   }
 }
-/* line 387, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 387, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-3d-nav .cd-selected a:hover {
   background-color: black;
 }
-/* line 391, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 391, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-3d-nav .cd-selected a::before {
   background-position: 0 -32px;
 }
-/* line 396, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 396, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav {
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
@@ -1003,7 +1012,7 @@ Home Page
   -o-transform: translateZ(0);
   transform: translateZ(0);
 }
-/* line 399, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 399, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-3d-nav::after {
   /* menu cover layer - hide it when navigation is visible */
   opacity: 0;
@@ -1013,7 +1022,7 @@ Home Page
   transition: opacity 0.5s 0s, visibility 0s 0.5s;
 }
 @media only screen and (min-width: 768px) {
-  /* line 409, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 409, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav a {
     padding: 7.6em 1em 0;
     color: #ffffff;
@@ -1027,7 +1036,7 @@ Home Page
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  /* line 424, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 424, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-3d-nav a::before {
     top: 4.4em;
     left: 50%;
@@ -1040,54 +1049,54 @@ Home Page
   }
 }
 
-/* line 432, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 432, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue {
   background-color: #16559a;
 }
 @media only screen and (min-width: 768px) {
-  /* line 434, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 434, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-blue a {
     color: #528eec !important;
   }
 }
-/* line 438, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 438, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-blue a:hover {
   background-color: #134983;
 }
-/* line 443, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 443, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue .cd-selected a {
   background-color: #103d6d;
 }
-/* line 446, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 446, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-blue .cd-selected a:hover {
   background-color: #103d6d;
 }
-/* line 453, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 453, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:first-of-type a::before {
   background-image: url("home-blue.svg");
 }
-/* line 457, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 457, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:nth-of-type(2) a::before {
   background-image: url("features-blue.svg");
 }
-/* line 461, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 461, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:nth-of-type(3) a::before {
   background-image: url("contact-blue.svg");
 }
-/* line 465, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 465, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:nth-of-type(4) a::before {
   background-image: url("blog-blue.svg");
 }
-/* line 469, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 469, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:nth-of-type(5) a::before {
   background-image: url("facebook-blue.svg");
 }
-/* line 473, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 473, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-blue li:nth-of-type(6) a::before {
   background-image: url("twitter-blue.svg");
 }
 
-/* line 480, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 480, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-marker {
   /* line at the bottom of nav selected item */
   position: absolute;
@@ -1109,7 +1118,7 @@ Home Page
   -moz-transition: -moz-transform 0.5s, left 0.5s, color 0.5s, background-color 0.5s;
   transition: transform 0.5s, left 0.5s, color 0.5s, background-color 0.5s;
 }
-/* line 494, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 494, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-marker::before {
   /* triangle at the bottom of nav selected item */
   content: '';
@@ -1127,7 +1136,7 @@ Home Page
   border: 10px solid transparent;
   border-bottom-color: inherit;
 }
-/* line 506, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 506, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .nav-is-visible .cd-marker {
   -webkit-transform: translateZ(0);
   -moz-transform: translateZ(0);
@@ -1137,43 +1146,43 @@ Home Page
 }
 
 /* these are the colors of the markers - line + arrow */
-/* line 513, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 513, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-1 {
   color: white;
   background-color: white;
 }
 
-/* line 517, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 517, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-2 {
   color: #1d6ec6;
   background-color: #1d6ec6;
 }
 
-/* line 521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-3 {
   color: #d6915e;
   background-color: #d6915e;
 }
 
-/* line 525, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 525, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-4 {
   color: #9a57bd;
   background-color: #9a57bd;
 }
 
-/* line 529, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 529, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-5 {
   color: #3B5998;
   background-color: #3B5998;
 }
 
-/* line 533, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 533, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .color-6 {
   color: #55acee;
   background-color: #55acee;
 }
 
-/* line 538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-content {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1191,7 +1200,7 @@ Home Page
   padding-left: 30px;
   padding-right: 30px;
 }
-/* line 547, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 547, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-content h1 {
   text-align: center;
   font-size: 2.8rem;
@@ -1199,7 +1208,7 @@ Home Page
   margin: 2em auto;
   margin-bottom: 12px;
 }
-/* line 557, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 557, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-content h2 {
   text-align: center;
   font-size: 1.8rem;
@@ -1208,7 +1217,7 @@ Home Page
   font-max-width: 400px;
   line-height: 1.15;
 }
-/* line 568, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 568, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-content.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1217,7 +1226,7 @@ Home Page
   transform: translateY(80px);
 }
 @media only screen and (min-width: 768px) {
-  /* line 573, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 573, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1225,13 +1234,13 @@ Home Page
     -o-transform: translateY(170px);
     transform: translateY(170px);
   }
-  /* line 577, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 577, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h1 {
     font-size: 3.6rem;
     margin: 6em auto;
     margin-bottom: 15px;
   }
-  /* line 584, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 584, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h2 {
     text-align: center;
     font-size: 2.0rem;
@@ -1244,35 +1253,35 @@ Home Page
   }
 }
 @media only screen and (min-width: 1024px) {
-  /* line 599, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 599, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h1 {
     margin: 3.5em auto;
     margin-bottom: 15px;
   }
 }
 @media only screen and (min-width: 1600px) {
-  /* line 606, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 606, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h1 {
     margin: 6em auto;
     margin-bottom: 15px;
   }
 }
 @media (max-height: 480px) {
-  /* line 615, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 615, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h1 {
     margin: 1em auto;
     margin-bottom: 15px;
   }
 }
 @media (max-height: 380px) {
-  /* line 622, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 622, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-content h1 {
     margin: 0em auto;
     margin-bottom: 15px;
   }
 }
 
-/* line 631, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 631, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 table {
   margin-top: 15px;
   margin-right: auto;
@@ -1280,7 +1289,7 @@ table {
   direction: rtl;
 }
 
-/* line 638, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 638, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .explore-features {
   position: absolute;
   margin-top: 15px;
@@ -1288,21 +1297,21 @@ table {
   margin-left: -40px;
 }
 @media (max-height: 480px) {
-  /* line 638, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 638, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .explore-features {
     margin: auto;
     width: 60px;
     margin-left: 70px;
   }
 }
-/* line 650, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 650, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .explore-features:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
   /* For IE8 and earlier */
 }
 
-/* line 656, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 656, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .app-badge {
   position: absolute;
   margin-top: 135px;
@@ -1310,7 +1319,7 @@ table {
   margin-left: -90px;
 }
 @media (max-height: 480px) {
-  /* line 656, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 656, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .app-badge {
     margin: auto;
     margin-left: -130px;
@@ -1318,7 +1327,7 @@ table {
   }
 }
 
-/* line 669, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 669, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #app-store {
   max-width: 80%;
   height: auto;
@@ -1339,7 +1348,7 @@ table {
 	margin-left: -85px;
 	//margin: 135px auto;
 }*/
-/* line 690, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 690, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-container {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1356,7 +1365,7 @@ table {
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("city-people-street-sun.png") center;
   background-size: cover;
 }
-/* line 696, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 696, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .home-container.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1365,7 +1374,7 @@ table {
   transform: translateY(80px);
 }
 @media only screen and (min-width: 768px) {
-  /* line 701, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 701, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .home-container.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1375,7 +1384,7 @@ table {
   }
 }
 
-/* line 712, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 712, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .legal-container {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1389,7 +1398,7 @@ table {
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 718, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 718, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .legal-container.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1398,7 +1407,7 @@ table {
   transform: translateY(80px);
 }
 @media only screen and (min-width: 768px) {
-  /* line 723, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 723, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .legal-container.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1407,47 +1416,47 @@ table {
     transform: translateY(170px);
   }
 }
-/* line 728, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 728, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .legal-container .legal {
   background: #1d6ec6;
   width: 100%;
   height: 70px;
 }
 @media only screen and (min-width: 768px) {
-  /* line 728, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 728, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .legal-container .legal {
     height: 70px;
   }
 }
 
-/* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content {
   margin-left: 20px;
   margin-right: 20px;
 }
-/* line 739, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 739, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content b, .cd-legal-content strong {
   font-weight: bold;
 }
-/* line 742, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 742, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content p {
   margin: 15px 0;
 }
-/* line 745, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 745, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content br {
   line-height: 40px;
 }
-/* line 748, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 748, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content ul {
   margin-left: 50px;
   list-style-type: circle;
 }
-/* line 752, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 752, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content ol {
   margin-left: 50px;
   list-style-type: lower-roman;
 }
-/* line 756, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 756, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-legal-content h1 {
   text-align: center;
   font-size: 3.5rem;
@@ -1455,14 +1464,14 @@ table {
   margin-top: 40px;
 }
 @media only screen and (min-width: 768px) {
-  /* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-legal-content {
     width: 75%;
     margin: auto;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 738, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-legal-content {
     width: 50%;
     margin: auto;
@@ -1474,7 +1483,7 @@ table {
 Features style
 
 -------------------------------- */
-/* line 783, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 783, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .features-container {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1490,7 +1499,7 @@ Features style
   background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("new-york.jpg") center;
   background-size: cover;
 }
-/* line 790, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 790, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .features-container.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1499,7 +1508,7 @@ Features style
   transform: translateY(80px);
 }
 @media only screen and (min-width: 768px) {
-  /* line 795, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 795, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .features-container.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1509,7 +1518,7 @@ Features style
   }
 }
 
-/* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .btn {
   display: inline-block;
   text-align: center;
@@ -1526,21 +1535,21 @@ Features style
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* line 817, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 817, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .btn:hover {
   background-color: #d9d9d9;
 }
-/* line 821, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 821, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .btn.salmon {
   color: white;
   background-color: #1d6ec6;
 }
-/* line 826, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 826, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .btn.salmon:hover {
   background-color: #4b95e5;
 }
 @media only screen and (min-width: 1048px) {
-  /* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 804, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .btn {
     margin-bottom: 0;
     font-size: 20px;
@@ -1549,7 +1558,7 @@ Features style
   }
 }
 
-/* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header {
   position: fixed;
   top: 0;
@@ -1577,35 +1586,35 @@ Features style
   -moz-transition: -moz-transform 0.3s;
   transition: transform 0.3s;
 }
-/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.6/app/assets/stylesheets/addons/_clearfix.scss */
+/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.7/app/assets/stylesheets/addons/_clearfix.scss */
 .cd-header::after {
   clear: both;
   content: "";
   display: table;
 }
-/* line 857, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 857, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header #cd-logo {
   float: left;
   margin: 0 0 0 5%;
 }
-/* line 861, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 861, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header #cd-logo img {
   display: block;
   width: 90px;
 }
-/* line 868, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 868, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header #cd-action {
   display: inline-block;
   float: right;
   margin: 10px 5% 0 0;
 }
-/* line 874, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 874, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header .btn {
   height: 30px;
   line-height: 30px;
   padding: 0 2em;
 }
-/* line 880, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 880, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-header.slide-down {
   -webkit-transform: translateY(0);
   -moz-transform: translateY(0);
@@ -1614,40 +1623,40 @@ Features style
   transform: translateY(0);
 }
 @media only screen and (min-width: 1048px) {
-  /* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header {
     height: 90px;
     background-color: transparent;
   }
-  /* line 888, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 888, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header #cd-logo {
     margin-top: 32px;
     font-size: 28px;
     font-size: 1.75rem;
   }
-  /* line 892, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 892, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header #cd-logo img {
     width: 80px;
     height: 25px;
   }
-  /* line 898, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 898, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header #cd-action {
     margin: 20px 5% 0 0;
   }
-  /* line 903, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 903, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header .btn {
     height: 50px;
     line-height: 50px;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 836, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-header {
     display: none;
   }
 }
 
-/* line 913, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 913, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #blur {
   display: none;
   z-index: 2;
@@ -1663,7 +1672,7 @@ Features style
   filter: blur(8px);
 }
 
-/* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-main-content {
   -webkit-transition: -webkit-transform 0.5s;
   -moz-transition: -moz-transform 0.5s;
@@ -1676,7 +1685,7 @@ Features style
   margin: 0 auto;
   margin-top: -80px;
 }
-/* line 942, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 942, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-main-content.nav-is-visible {
   -webkit-transform: translateY(80px);
   -moz-transform: translateY(80px);
@@ -1685,17 +1694,17 @@ Features style
   transform: translateY(80px);
 }
 @media only screen and (min-width: 100px) {
-  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: auto;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: auto;
   }
-  /* line 952, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 952, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-main-content.nav-is-visible {
     -webkit-transform: translateY(170px);
     -moz-transform: translateY(170px);
@@ -1705,7 +1714,7 @@ Features style
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 928, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-main-content {
     margin-top: -80px;
     height: 100%;
@@ -1714,7 +1723,7 @@ Features style
   }
 }
 
-/* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-product-intro {
   padding: 50px 5%;
   text-align: center;
@@ -1722,14 +1731,14 @@ Features style
   -moz-osx-font-smoothing: grayscale;
   height: 100vh;
 }
-/* line 973, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 973, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-product-intro h1 {
   font-size: 2.8rem;
   font-weight: 300;
   margin: 0.2em auto;
   margin-bottom: 12px;
 }
-/* line 983, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 983, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-product-intro p {
   padding: 0 0 20px;
   font-size: 1.9rem;
@@ -1738,13 +1747,13 @@ Features style
   max-width: 560px;
   margin: 0 auto;
 }
-/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.6/app/assets/stylesheets/addons/_clearfix.scss */
+/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.7/app/assets/stylesheets/addons/_clearfix.scss */
 .cd-product-intro .cd-triggers::after {
   clear: both;
   content: "";
   display: table;
 }
-/* line 998, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 998, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-product-intro .btn {
   width: 120px;
   height: 40px;
@@ -1752,24 +1761,24 @@ Features style
   margin-right: 8px;
 }
 @media only screen and (min-width: 480px) {
-  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     padding: 50px 10%;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     padding: 50px 15%;
   }
-  /* line 1011, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1011, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: 6em auto;
     margin-bottom: 15px;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 967, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro {
     /* Force Hardware Acceleration in WebKit */
     -webkit-transform: translateZ(0);
@@ -1795,7 +1804,7 @@ Features style
     -moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
     transition: transform 0.3s, opacity 0.3s;
   }
-  /* line 1037, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1037, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-product-intro {
     opacity: 0;
     -webkit-transform: translateY(-50%) translateX(-50%);
@@ -1804,21 +1813,21 @@ Features style
     -o-transform: translateY(-50%) translateX(-50%);
     transform: translateY(-50%) translateX(-50%);
   }
-  /* line 1042, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1042, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: auto;
     margin-bottom: 15px;
     font-size: 3.5rem;
     font-weight: 100;
   }
-  /* line 1051, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1051, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro p {
     font-size: 2.0rem;
     font-weight: 300;
     padding: 10px 0 44px;
     margin: 0;
   }
-  /* line 1061, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1061, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro .btn {
     margin-right: 15px;
     width: 190px;
@@ -1827,39 +1836,39 @@ Features style
   }
 }
 @media (max-height: 320px) {
-  /* line 1070, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1070, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-product-intro h1 {
     margin: -20px auto;
     margin-bottom: 15px;
   }
 }
 
-/* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #cd-product-tour {
   position: absolute;
   margin-top: -150px;
 }
 @media only screen and (min-width: 480px) and (max-height: 320px) {
-  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -80px;
   }
 }
 @media only screen and (min-width: 480px) and (min-height: 375px) {
-  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -80px;
   }
 }
 
 @media only screen and (min-width: 768px) {
-  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     margin-top: -135px;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1077, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #cd-product-tour {
     position: relative;
     width: 100%;
@@ -1882,7 +1891,7 @@ Features style
     -moz-transition: -moz-transform 0.3s;
     transition: transform 0.3s;
   }
-  /* line 1108, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1108, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .is-product-tour #cd-product-tour {
     -webkit-transform: translateY(-50%) translateX(0);
     -moz-transform: translateY(-50%) translateX(0);
@@ -1890,14 +1899,14 @@ Features style
     -o-transform: translateY(-50%) translateX(0);
     transform: translateY(-50%) translateX(0);
   }
-  /* line 1112, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1112, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   #cd-product-tour > ul {
     height: 100%;
     width: 100%;
   }
 }
 
-/* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-single-item {
   /* product tour - single list item */
   padding: 50px 5% 120px;
@@ -1907,14 +1916,14 @@ Features style
   -moz-osx-font-smoothing: grayscale;
   border-top: 1px solid white;
 }
-/* line 1128, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1128, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-single-item h2 {
   margin-bottom: 15px;
   font-size: 2.7rem;
   font-weight: 100;
   color: #c3d8f8;
 }
-/* line 1137, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1137, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-single-item p {
   padding: 10px 0 50px;
   font-size: 1.8rem;
@@ -1923,55 +1932,55 @@ Features style
   color: #b1cdf6;
 }
 @media only screen and (min-width: 100px) {
-  /* line 1149, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1149, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: #1d6ec6;
     border-top: transparent;
   }
-  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1154, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: #08224a;
     border-top: transparent;
   }
-  /* line 1157, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1157, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater h2 {
     color: #cedffa;
   }
-  /* line 1160, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1160, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater p {
     color: #abc8f6;
   }
 }
 @media only screen and (min-width: 480px) {
-  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item {
     padding: 50px 10% 120px;
   }
 }
 @media only screen and (min-width: 768px) {
-  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item {
     padding: 50px 15% 120px;
   }
-  /* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.6/app/assets/stylesheets/addons/_clearfix.scss */
+  /* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.7/app/assets/stylesheets/addons/_clearfix.scss */
   .cd-single-item::after {
     clear: both;
     content: "";
     display: table;
   }
-  /* line 1176, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1176, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 50%;
     float: left;
     margin-top: 180px;
   }
-  /* line 1181, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1181, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-caption {
     float: right;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1120, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item {
     position: absolute;
     top: 50%;
@@ -1986,44 +1995,44 @@ Features style
     padding: 0;
     visibility: visible;
   }
-  /* line 1197, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1197, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater {
     background: transparent;
   }
-  /* line 1199, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1199, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater h2 {
-    color: white;
+    color: #e6effc;
   }
-  /* line 1202, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1202, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.right-floater p {
-    color: white;
+    color: #d4e4fa;
   }
-  /* line 1207, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1207, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.left-floater {
     background: transparent;
   }
-  /* line 1211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1211, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-not-visible {
     /*need to create a specific class to change visibility value due to a Firefox bug*/
     /*CSS transition/animation fails when parent element changes visibility attribute*/
     visibility: hidden;
   }
-  /* line 1217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1217, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item h2 {
     font-size: 3.7rem;
     font-weight: 100;
-    color: white;
+    color: #e6effc;
   }
-  /* line 1225, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1225, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item p {
     font-size: 2.0rem;
     font-weight: 100;
-    color: white;
+    color: #d4e4fa;
     line-height: 25px;
     padding: 10px 0 44px;
     margin: 0;
   }
-  /* line 1236, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1236, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item .cd-caption {
     width: 60%;
     float: right;
@@ -2038,11 +2047,11 @@ Features style
     -moz-transition: -moz-transform 0.3s 0s, opacity 0.3s;
     transition: transform 0.3s, opacity 0.3s;
   }
-  /* line 1248, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1248, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-single-item.cd-active .cd-caption {
     opacity: 1;
   }
-  /* line 1252, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1252, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item.cd-move-right .cd-caption {
     -webkit-transform: translateX(100px);
     -moz-transform: translateX(100px);
@@ -2052,37 +2061,37 @@ Features style
   }
 }
 
-/* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-image-container {
   /*wrapper for image (and video - desktop only)*/
   max-width: 226px;
   margin: 0 auto;
   padding-top: 50px;
 }
-/* line 1264, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1264, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-image-container > div {
   position: relative;
 }
-/* line 1268, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1268, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-image-container img {
   display: block;
 }
-/* line 1272, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1272, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-image-container video {
   display: none;
 }
 @media only screen and (min-width: 768px) {
-  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-image-container {
     float: right;
   }
-  /* line 1279, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1279, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-single-item:nth-child(2n) .cd-image-container {
     float: left;
   }
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1258, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-image-container {
     height: 402px;
     width: 35%;
@@ -2090,13 +2099,13 @@ Features style
     max-width: none;
     padding-top: 0;
   }
-  /* line 1290, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1290, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-image-container > div {
     display: inline-block;
     max-width: 100%;
     max-height: 100%;
   }
-  /* line 1296, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1296, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-image-container img {
     height: 402px;
     -webkit-transition: -webkit-transform 0.3s;
@@ -2108,7 +2117,7 @@ Features style
     -o-transform: translateZ(0);
     transform: translateZ(0);
   }
-  /* line 1302, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1302, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-image-container video {
     /*not inserted in html - will be loaded through jQuery*/
     display: block;
@@ -2133,7 +2142,7 @@ Features style
     -o-transform: translateX(-50%) translateY(-50%) rotate(-90deg);
     transform: translateX(-50%) translateY(-50%) rotate(-90deg);
   }
-  /* line 1317, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1317, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container img {
     -webkit-transform: translateX(100%);
     -moz-transform: translateX(100%);
@@ -2141,7 +2150,7 @@ Features style
     -o-transform: translateX(100%);
     transform: translateX(100%);
   }
-  /* line 1321, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1321, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-move-right .cd-image-container video {
     -webkit-transform: translateX(50%) translateY(-50%) rotate(-90deg);
     -moz-transform: translateX(50%) translateY(-50%) rotate(-90deg);
@@ -2151,7 +2160,7 @@ Features style
   }
 }
 
-/* line 1328, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1328, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-phone-frame {
   /* Phone in CSS */
   -webkit-box-sizing: content-box;
@@ -2170,7 +2179,7 @@ Features style
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
 }
-/* line 1343, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1343, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after, .cd-phone-frame::before {
   /*these are the iPhone circle elements*/
   position: absolute;
@@ -2186,20 +2195,20 @@ Features style
   background-color: #d9d9d9;
   border-radius: 50%;
 }
-/* line 1353, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1353, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-phone-frame::before {
   height: 11px;
   width: 11px;
   top: -28px;
 }
-/* line 1359, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1359, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-phone-frame::after {
   height: 31px;
   width: 31px;
   bottom: -38px;
 }
 
-/* line 1366, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1366, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-image-wrapper {
   position: relative;
   overflow: hidden;
@@ -2207,7 +2216,7 @@ Features style
   max-width: 226px;
 }
 
-/* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-slider-nav {
   /* product discover slider navigation */
   display: none;
@@ -2218,13 +2227,13 @@ Features style
   width: 100%;
   height: 80px;
 }
-/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.6/app/assets/stylesheets/addons/_clearfix.scss */
+/* line 20, /Users/Leonid_Lukyanov/.rvm/gems/ruby-2.2.2/gems/bourbon-4.2.7/app/assets/stylesheets/addons/_clearfix.scss */
 .cd-slider-nav::after {
   clear: both;
   content: "";
   display: table;
 }
-/* line 1385, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1385, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-slider-nav a {
   position: relative;
   display: block;
@@ -2239,11 +2248,11 @@ Features style
   border-top: 1px solid white;
   border-right: 1px solid white;
 }
-/* line 1398, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1398, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover {
   background: rgba(255, 255, 255, 0.55);
 }
-/* line 1402, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1402, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-slider-nav a::before {
   /*this is the background arrow - we have been used a before element to change the opacity on hover*/
   position: absolute;
@@ -2265,11 +2274,11 @@ Features style
   -moz-transition: opacity 0.2s;
   transition: opacity 0.2s;
 }
-/* line 1414, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1414, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch .cd-slider-nav a:hover::before {
   opacity: 1;
 }
-/* line 1423, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1423, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-slider-nav .cd-next::before {
   -webkit-transform: translateX(-50%) translateY(-50%) rotate(180deg);
   -moz-transform: translateX(-50%) translateY(-50%) rotate(180deg);
@@ -2278,11 +2287,11 @@ Features style
   transform: translateX(-50%) translateY(-50%) rotate(180deg);
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1374, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-slider-nav {
     display: block;
   }
-  /* line 1430, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1430, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .cd-slider-nav a {
     visibility: hidden;
     opacity: 0;
@@ -2290,7 +2299,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0.3s, background 0.2s;
   }
-  /* line 1436, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1436, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a {
     visibility: visible;
     opacity: 1;
@@ -2298,7 +2307,7 @@ Features style
     -moz-transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
     transition: opacity 0.3s 0s, visibility 0s 0s, background 0.2s;
   }
-  /* line 1441, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1441, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .is-product-tour .cd-slider-nav a.cd-inactive {
     visibility: hidden;
     opacity: 0;
@@ -2308,7 +2317,7 @@ Features style
   }
 }
 
-/* line 1450, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1450, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .cd-loader {
   /*top loading bar*/
   position: fixed;
@@ -2326,7 +2335,7 @@ Features style
 Footer style
 
 -------------------------------- */
-/* line 1467, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1467, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered {
   box-sizing: border-box;
   position: absolute;
@@ -2340,26 +2349,26 @@ Footer style
   color: white;
 }
 
-/* line 1482, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1482, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .legal-footer {
   margin-top: 200px;
   color: #8f96a3;
 }
 
-/* line 1487, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1487, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-motto {
   color: #8d9093;
   font-size: 24px;
   margin: 0;
 }
 
-/* line 1493, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1493, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-company-name {
   font-size: 14px;
   margin: 0;
 }
 
-/* line 1499, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1499, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links {
   list-style: none;
   font-weight: bold;
@@ -2367,13 +2376,13 @@ Footer style
   margin: 0;
 }
 
-/* line 1507, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1507, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a {
   display: inline-block;
   text-decoration: none;
   color: inherit;
 }
-/* line 1512, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1512, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .footer-basic-centered .footer-links a:hover {
   opacity: 0.8;
   filter: alpha(opacity=80);
@@ -2381,50 +2390,50 @@ Footer style
 }
 
 @media (max-width: 667px) {
-  /* line 1521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1521, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .footer-basic-centered {
     padding: 15px;
   }
 
-  /* line 1525, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1525, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-motto {
     font-size: 18px;
   }
 
-  /* line 1529, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1529, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-company-name {
     font-size: 12px;
   }
 
-  /* line 1533, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1533, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links {
     font-size: 14px;
     padding: 25px 0 10px;
   }
 
-  /* line 1538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1538, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .footer-basic-centered .footer-links a {
     line-height: 1.8;
   }
 }
-/* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .features-footer {
   position: relative;
   padding-top: 0px;
   background: #1d6ec6;
 }
 @media only screen and (min-width: 1048px) {
-  /* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+  /* line 1543, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
   .features-footer {
     display: none;
   }
 }
 
-/* line 1552, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1552, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #hyperlink {
   color: #00ccff;
 }
-/* line 1554, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1554, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .no-touch #hyperlink:hover {
   color: #66e0ff;
 }
@@ -2434,19 +2443,19 @@ Footer style
 Login style
 
 -------------------------------- */
-/* line 1566, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1566, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login-block {
   padding-top: 20vh;
 }
 
-/* line 1570, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1570, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login {
   padding-left: 20%;
   padding-right: 20%;
   text-align: center;
   font-size: 16px;
 }
-/* line 1575, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1575, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login input[type=text], .login input[type=password], .login input[type=email] {
   font-size: 16px;
   height: 40px;
@@ -2459,49 +2468,49 @@ Login style
   text-align: center;
   margin-top: 25px;
 }
-/* line 1586, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1586, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login input[type=text]:focus, .login input[type=password]:focus, .login input[type=email]:focus {
   box-shadow: none;
 }
-/* line 1591, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1591, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login.before .sign_in_button {
   margin-top: 60px;
 }
-/* line 1596, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1596, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button {
   margin-top: 30px;
 }
-/* line 1598, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1598, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input {
   background-color: transparent;
   border: none;
 }
-/* line 1602, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1602, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login.after .sign_in_button input:hover {
   color: #00CCFF;
 }
-/* line 1607, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1607, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login .alert-danger {
   background-color: transparent;
   border: none;
   color: #A94442;
 }
 
-/* line 1613, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1613, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .login-2 {
   background: #1d6ec6;
 }
 
-/* line 1617, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1617, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .edit-password {
   background: #1d6ec6;
 }
-/* line 1619, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1619, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .edit-password br {
   line-height: 40px;
 }
 
-/* line 1624, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1624, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 .edit-password-title {
   text-align: center;
   -webkit-font-smoothing: antialiased;
@@ -2509,7 +2518,7 @@ Login style
   font-weight: 300;
 }
 
-/* line 1630, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Ecru/app/assets/stylesheets/style.scss */
+/* line 1630, /Users/Leonid_Lukyanov/Documents/LYTiT-Server/Nacre/app/assets/stylesheets/style.scss */
 #change-password {
   font-size: 1.8rem;
   margin-bottom: 5px;

@@ -1,6 +1,6 @@
 jQuery(document).ready(function($){
 	
-	$(function() {
+	/*$(function() {
 	  if($(window).width() <= 1024) {
 	    $("img").each(function() {
 			$(this).attr("src", $(this).attr("src").replace("/assets/list@2x.png", "/assets/list_m@2x.png"));
@@ -9,6 +9,6 @@ jQuery(document).ready(function($){
 			$(this).attr("src", $(this).attr("src").replace("/assets/live_search@2x.png", "/assets/live_search_m@2x.png"));
 	    });
 	  }
-	});
+	});*/
 
 });
