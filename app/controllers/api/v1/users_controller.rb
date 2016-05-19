@@ -163,12 +163,12 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def set_version
-		#@user = User.find_by_authentication_token(params[:auth_token])
-		#v = params[:version]
-		#if v.count(".") == 1
-		#	v = v + ".0"
-		#end
-		#@user.set_version(v)
+		@user = User.find_by_authentication_token(params[:auth_token])
+		v = params[:version]
+		if v.count(".") == 1
+			v = v + ".0"
+		end
+		@user.set_version(v)
 		render json: { success: true }
 	end	
 
