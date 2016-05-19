@@ -361,7 +361,8 @@ class Api::V1::FeedsController < ApiBaseController
 	end
 
 	def get_activity_comment
-		@activity_comment = ActivityComment.where("activity_id = ? AND user_id = ?", params[:activity_id], params[:user_id]).order("id ASC").first
+		@user_id = params[:user_id]
+		@activity_comment = ActivityComment.where("activity_id = ?", params[:activity_id]).order("id ASC").first
 	end
 
 	def get_venue_comments
