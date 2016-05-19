@@ -22,7 +22,7 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def reset_instagram_id
 		venue.instagram_location_id_lookups.delete_all
-		venue.update_columns(instagram_id: nil)
+		venue.update_columns(instagram_location_id: nil)
 		venue.set_instagram_location_id(100)
 	end
 
