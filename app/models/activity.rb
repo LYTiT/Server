@@ -73,7 +73,8 @@ class Activity < ActiveRecord::Base
 			if vc_details["instagram_id"] != nil
 				vc = VenueComment.convert_raw_instagram_params_to_vc(vc_details, origin_venue_id)
 			else
-				vc = Tweet.convert_raw_tweet_params(vc_details, origin_venue_id)
+				tweet = Tweet.convert_raw_tweet_params(vc_details, origin_venue_id)
+				vc = VenueComment.where("tweet ->> 'id' = '#{tweet.id}'").first
 			end	
 		else
 			vc = VenueComment.find_by_id(vc_id)
@@ -83,7 +84,8 @@ class Activity < ActiveRecord::Base
 			user = User.find_by_id(u_id)
 			feed = Feed.find_by_id(f_ids.first)
 			new_activity = Activity.create!(:activity_type => "shared_#{vc.entry_type}", :feed_id => f_ids.first, :feed_details => feed.partial, :num_lists => f_ids.count,
-			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_id => vc.id, :venue_comment_details => vc.to_json, :adjusted_sort_position => Time.now.to_i)								
+			 :user_id => user.id, :user_details => user.partial, :venue_details => vc.venue_details, :venue_comment_id => vc.id, :venue_comment_details => vc.to_json, 
+			 :adjusted_sort_position => Time.now.to_i)								
 			
 			if comment != nil && comment != ""
 				fac = ActivityComment.create!(:activity_id => new_activity.id, :user_id => u_id, :user_details => user.partial, :comment => comment)
