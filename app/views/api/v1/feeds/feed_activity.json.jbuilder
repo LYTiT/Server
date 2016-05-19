@@ -59,9 +59,9 @@ json.activity(@activities) do |activity|
     json.video_url_1 activity.venue_comment_details["lytit_post"]["video_url_1"]
     json.video_url_2 activity.venue_comment_details["lytit_post"]["video_url_2"]
     json.video_url_3 activity.venue_comment_details["lytit_post"]["video_url_3"]
-    json.user_id activity.venue_comment_details["lytit_post"]["user_details"]["id"]
-    json.user_name activity.venue_comment_details["lytit_post"]["user_details"]["name"]
-    json.profile_image_url activity.venue_comment_details["lytit_post"]["user_details"]["profile_image_url"]
+    json.user_id activity.user_details["id"]
+    json.user_name activity.user_details["name"]
+    json.profile_image_url activity.user_details["profile_image_url"]
   elsif activity.activity_type == "shared_instagram"
     json.venue_comment_id activity.venue_comment_id
     json.venue_comment_created_at activity.venue_comment_details["id"]

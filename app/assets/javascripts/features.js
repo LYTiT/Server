@@ -126,7 +126,7 @@ jQuery(document).ready(function($){
 		$('.cd-loader').stop().hide().css('width', 0);
 	}
 
-	function uploadVideo(selected) {
+	/*function uploadVideo(selected) {
 		selected.siblings('.cd-single-item').find('video').each(function(){
 			//pause videos user is not watching
 			$(this).get(0).pause();
@@ -172,5 +172,5 @@ jQuery(document).ready(function($){
 				}, 500);
 			});			
 		}
-	}
+	}*/
 });

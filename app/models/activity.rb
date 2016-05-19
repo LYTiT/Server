@@ -117,7 +117,7 @@ class Activity < ActiveRecord::Base
 		if self.venue_comment_details["entry_type"] == "instagram"
 			media_type = self.venue_comment_details["instagram"]["media_type"]
 		elsif self.venue_comment_details["entry_type"] == "lytit_post"
-			media_type = self.venue_comment.venue_comment_details["lytit_post"]["media_type"] 
+			media_type = self.venue_comment_details["lytit_post"]["media_type"] 
 		else
 			media_type = nil
 		end
