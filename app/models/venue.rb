@@ -2116,7 +2116,12 @@ end
       self.update_columns(last_instagram_pull_time: Time.now)
     #Else make a hybrid call of Instagrams no older than a day but since the last Instagram that was pulled for the Venue.  
     else
-      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_id, :min_timestamp => (Time.now-24.hours).to_time.to_i).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
+      if latest_posted_comment_time > Time.now-24.hours
+        min_timestamp = self.latest_posted_comment_time.to_time.to_i
+      else
+        min_timestamp = (Time.now-24.hours).to_time.to_i
+      end
+      instagrams = client.location_recent_media(self.instagram_location_id, :min_id => self.last_instagram_id, :min_timestamp => min_timestamp).map(&:to_hash) rescue self.rescue_instagram_api_call(instagram_access_token, day_pull, false)
       #Instagram includes the post with the min_id specified...we need to filter it out.
       self.update_columns(last_instagram_pull_time: Time.now)
     end
