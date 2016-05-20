@@ -92,7 +92,7 @@ class User < ActiveRecord::Base
   def nearest_neighbors(count=10, latitude=nil, longitude=nil)
     lat = latitude || self.longitude 
     long = longitude || self.longitude 
-    User.where("lonlat_geometry IS NOT NULL").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.longitude})").limit(count)
+    User.where("lonlat_geometry IS NOT NULL AND active IS TRUE").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.longitude})").limit(count)
     #User.where("lonlat_geometry IS NOT NULL AND (lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})) * 100000 >= 400").order("lonlat_geometry <-> st_point(#{self.longitude},#{self.latitude})").limit(count)
   end
 
