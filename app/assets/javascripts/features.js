@@ -10,7 +10,7 @@ jQuery(document).ready(function($){
 			$('body,html').animate({'scrollTop': $('#cd-product-tour').offset().top - 30 }, 200); 
 		} else {
 			$('.cd-main-content').addClass('is-product-tour');
-			uploadVideo(jQuery('.cd-active'));
+			//uploadVideo(jQuery('.cd-active'));
 		}
 	});
 
