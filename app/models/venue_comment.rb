@@ -80,7 +80,6 @@ class VenueComment < ActiveRecord::Base
 
 			type = "#{self.id}/enlytement"
 
-
 			notification = Notification.where(type: type).first || self.store_new_notification(payload, user, type)
 
 			payload[:notification_id] = notification.id

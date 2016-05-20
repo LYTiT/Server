@@ -95,17 +95,22 @@ class Api::V1::VenuesController < ApiBaseController
 		if params[:venue_id] != nil
 			venue = Venue.find_by_id(params[:venue_id])
 		else
-			venue = Venue.fetch_or_create(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], is_proposed_location)
+			venue = Venue.fetch_or_create(params[:name], params[:formatted_address], params[:city], params[:state], params[:country], 
+				params[:postal_code], params[:phone_number], params[:latitude], params[:longitude], is_proposed_location)
 		end
 
 		user = User.find_by_authentication_token(params[:auth_token])
 		
 		if params[:media_type] == "video"
-			image_url = params[:video_url_1].gsub(".mp4", ".jpg")
+			image_url = params[:video_url_3].gsub(".mp4", ".jpg")
 		else
 			image_url = params[:image_url_3]
 		end
-		post = {:comment => params[:comment], :media_type => params[:media_type], :media_dimensions => params[:media_dimensions], :image_url_1 => image_url, :image_url_2 => image_url, :image_url_3 => image_url, :video_url_1 => params[:video_url_1], :video_url_2 => params[:video_url_2], :video_url_3 => params[:video_url_3], :created_at => Time.now, :reaction => params[:reaction], :position_index => (Time.now+30.minutes).to_i}
+
+		post = {:comment => params[:comment], :media_type => params[:media_type], :media_dimensions => params[:media_dimensions], 
+			:image_url_1 => image_url, :image_url_2 => image_url, :image_url_3 => image_url, :video_url_1 => params[:video_url_1], 
+			:video_url_2 => params[:video_url_2], :video_url_3 => params[:video_url_3], :created_at => Time.now, :reaction => params[:reaction], 
+			:position_index => (Time.now+30.minutes).to_i}
 		vc = venue.add_new_post(user, post)
 
 		if vc
