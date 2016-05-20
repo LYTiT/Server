@@ -22,13 +22,16 @@ class Api::V1::VenuesController < ApiBaseController
 
 	def reset_instagram_id
 		venue.instagram_location_id_lookups.delete_all
-		venue.update_columns(instagram_location_id: nil)
+		if venue.update_columns(instagram_location_id: nil)
+			render json: { success: true }
+		end
 		#venue.set_instagram_location_id(100)
 	end
 
 	def reset_foursquare_id 
 		venue.update_columns(foursquare_id: nil)
 		venue.add_foursquare_details
+		render json: { success: true }
 	end	
 
 	def report_comment
