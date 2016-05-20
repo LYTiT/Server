@@ -1820,7 +1820,7 @@ def Venue.live_recommendation_for(user, lat=40.741140, long=-73.981917)
 end
 
 def recommendation_reason_for(user)
-  if user.interests = {}
+  if user.interests == {}
     return "Active around you"
   else
     user_list = user.feeds.joins(:feed_venues).where("venue_id = ?", self.id).first
