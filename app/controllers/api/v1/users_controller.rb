@@ -20,6 +20,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def create
+		User.where("vendor_id = ?", params[:vendor_id]).update_all(active: false, email: "")
+=begin		
 		#begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
@@ -34,6 +36,7 @@ class Api::V1::UsersController < ApiBaseController
 		#rescue
 		#	puts "Previous temp user issue"
 		#end
+=end		
 
 		@user = User.new(user_params)
 
