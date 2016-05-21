@@ -1844,6 +1844,8 @@ def recommendation_reason_for(user)
             end    
           end
         end
+      else
+        return "Active around you"
       end
     end
   end
