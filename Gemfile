@@ -56,6 +56,8 @@ gem 'foursquare2'
 gem 'eventbrite'
 #Language Processing
 gem 'fuzzy-string-match' #text proximity matching
+gem 'fuzzy_match'
+gem 'amatch'
 gem 'gingerice' #spell checker
 gem 'graph-rank' #text trend rank
 gem 'highscore' 

@@ -73,6 +73,8 @@ GEM
     acts_as_singleton (0.0.8)
       activerecord (>= 3.1.0)
     addressable (2.3.8)
+    amatch (0.3.0)
+      tins (~> 1.0)
     arel (6.0.3)
     awesome_print (1.6.1)
     aws-sdk (1.5.8)
@@ -181,6 +183,7 @@ GEM
       hashie (>= 1.0, < 4.0.0)
     fuzzy-string-match (0.9.7)
       RubyInline (>= 3.8.6)
+    fuzzy_match (2.1.0)
     geocoder (1.3.4)
     geokit (1.10.0)
     geokit-rails (2.1.0)
@@ -434,6 +437,7 @@ GEM
     tilt (2.0.2)
     timecop (0.8.1)
     timezone (0.99.2)
+    tins (1.10.1)
     title (0.0.5)
       i18n
       rails (>= 3.1)
@@ -476,6 +480,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord-postgis-adapter
   acts_as_singleton
+  amatch
   apns!
   aws-sdk (~> 1.5.7)
   better_errors
@@ -502,6 +507,7 @@ DEPENDENCIES
   foreman
   foursquare2
   fuzzy-string-match
+  fuzzy_match
   geocoder
   geokit-rails
   gingerice
