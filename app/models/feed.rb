@@ -95,7 +95,7 @@ class Feed < ActiveRecord::Base
 
 	def update_venue_attributes(added_venue)
 		update_venue_categories(added_venue)
-		update_descriptives(added_venue)
+		#update_descriptives(added_venue)
 	end
 
 	def update_venue_categories(venue)
