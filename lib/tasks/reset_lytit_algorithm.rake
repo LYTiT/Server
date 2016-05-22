@@ -22,7 +22,7 @@ namespace :lytit do
 
     VenueComment.cleanup_and_recalibration
     #Venue.cleanup_and_calibration
-    FeedRecommendation.set_daily_spotlyt
+    #FeedRecommendation.set_daily_spotlyt
 
     #Pull events for primary cities
     Event.focus_cities_pull

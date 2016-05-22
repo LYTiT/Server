@@ -909,7 +909,7 @@ class Venue < ActiveRecord::Base
   end
 
   def update_descriptives_from_instagram(instagram_hash)
-    set_or_update_tag(instagram_hash["tags"], DateTime.strptime(instagram_hash["created_time"],'%s'))
+    set_descriptives(instagram_hash["tags"], DateTime.strptime(instagram_hash["created_time"],'%s'))
 =begin    
     caption = instagram_hash["caption"]["text"] rescue ""
     #tags = instagram_hash["tags"].join(" ").strip
