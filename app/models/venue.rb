@@ -955,9 +955,11 @@ class Venue < ActiveRecord::Base
   end
 
   def set_descriptives(tags, post_time, tag=nil)
+    innapropriate = ["instagram", "insta", "followme", "follow", "like", "fuck", "bitch", "ass", "fuckme", "latergram"]
     if tag != nil
       tags = [tag]
     end
+    tags = tags - innapropriate
     if tags.length > 0
       descriptives_hash = self.descriptives
       tag_relevance_half_life = 60
@@ -974,7 +976,7 @@ class Venue < ActiveRecord::Base
             latest_tag_occurance_time = descriptives_hash[fuzzy_match]["latest_occurance"]
             new_weight = previous_weight * 2 ** ((-(Time.now - latest_tag_occurance_time.to_datetime)/60.0) / (tag_relevance_half_life)).round(2) + 1.0
             descriptives_hash[fuzzy_match]["weight"] = new_weight
-            descriptives_hash[fuzzy_match]["latest_occurance"] = post_time
+            descriptives_hash[fuzzy_match]["latest_occurance"] = post_time.to_datetime
           else
             descriptives_hash[tag] = {"weight" => 1.0, "latest_occurance" => post_time.to_datetime}
           end
