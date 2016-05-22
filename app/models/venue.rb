@@ -908,13 +908,16 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def update_descriptives_from_instagram(instagram_hash) 
+  def update_descriptives_from_instagram(instagram_hash)
+    set_or_update_tag(instagram_hash["tags"], DateTime.strptime(instagram_hash["created_time"],'%s'))
+=begin    
     caption = instagram_hash["caption"]["text"] rescue ""
     #tags = instagram_hash["tags"].join(" ").strip
 
     if caption.length > 0
       update_descriptives(caption)
     end
+=end    
   end
 
   def set_categories_and_descriptives(foursquare_venue)
@@ -937,8 +940,8 @@ class Venue < ActiveRecord::Base
     self.update_columns(categories: categories_hash)
     self.update_columns(categories_string: categories_hash.keys.join(" ").strip)
 
-    f2_tags = foursquare_venue.tags
-    update_descriptives(f2_tags.join(" ").strip)
+    #f2_tags = foursquare_venue.tags
+    #update_descriptives(f2_tags.join(" ").strip)
   end
 
   def add_category(category)
@@ -950,6 +953,73 @@ class Venue < ActiveRecord::Base
       self.update_columns(categories_string: categories_hash.values.join(" ").strip)
     end
   end
+
+  def set_descriptives(tags, post_time, tag=nil)
+    if tag != nil
+      tags = [tag]
+    end
+    if tags.length > 0
+      descriptives_hash = self.descriptives
+      tag_relevance_half_life = 60
+      for tag in tags
+        if descriptives_hash.length > 0
+          require 'fuzzy_match'
+          FuzzyMatch.engine = :amatch
+          descriptive_fuzzy_keys = FuzzyMatch.new(descriptives_hash.keys)    
+
+          fuzzy_match = descriptive_fuzzy_keys.find(tag)
+
+          if fuzzy_match != nil
+            previous_weight = descriptives_hash[fuzzy_match]["weight"]
+            latest_tag_occurance_time = descriptives_hash[fuzzy_match]["latest_occurance"]
+            new_weight = previous_weight * 2 ** ((-(Time.now - latest_tag_occurance_time.to_datetime)/60.0) / (tag_relevance_half_life)).round(2) + 1.0
+            descriptives_hash[fuzzy_match]["weight"] = new_weight
+            descriptives_hash[fuzzy_match]["latest_occurance"] = post_time
+          else
+            descriptives_hash[tag] = {"weight" => 1.0, "latest_occurance" => post_time.to_datetime}
+          end
+        else
+          descriptives_hash[tag] = {"weight" => 1.0, "latest_occurance" => post_time.to_datetime}
+        end
+      end
+      self.update_columns(descriptives: descriptives_hash)
+    end
+  end  
+
+  def calibrate_descriptive_weights
+    descriptives_hash = self.descriptives
+    key_word_relevance_half_life = 60 #minutes
+    if descriptives_hash.length > 0
+      descriptives_hash.each do |descriptive, details|
+        previous_weight = details["weight"].to_f
+        new_weight = previous_weight * 2 ** ((-(Time.now - details["latest_occurance"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(2)
+        if new_weight.round(2) < 0.5  
+          descriptives_hash.delete(descriptive)
+        else
+          descriptives_hash[descriptive]["weight"] = new_weight
+        end
+      end
+    end
+    self.update_columns(descriptives: Hash[descriptives_hash.sort_by { |k,v| -v["weight"] }])
+  end
+
+  def set_top_tags
+    calibrate_descriptive_weights
+    top_descriptives = Hash[self.descriptives.to_a[0..4]]
+
+    tags_hash = {}
+    i = 1
+    top_descriptives.each do |descriptive, details|
+      if details["weight"].round(2) > 0.0
+        tags_hash["tag_#{i}"] = descriptive        
+      else
+        tags_hash["tag_#{i}"] = nil
+      end
+      i += 1
+    end
+
+    self.update_columns(trending_tags: tags_hash)
+  end  
 
   def update_descriptives(new_descriptives_string)
     new_descriptives_string.gsub!(/\B[@#]\S+\b/, '').try(:downcase!).try(:strip)
@@ -1016,42 +1086,6 @@ class Venue < ActiveRecord::Base
         end
       end
     end
-  end
-
-  def calibrate_descriptive_weights
-    descriptives_hash = self.descriptives
-    key_word_relevance_half_life = 120 #minutes
-    if descriptives_hash.length > 0
-      descriptives_hash.each do |descriptive, details|
-        previous_weight = details["weight"].to_f
-        new_weight = previous_weight * 2 ** ((-(Time.now - details["updated_at"].to_datetime)/60.0) / (key_word_relevance_half_life)).round(2)
-        if new_weight.round(2) < 1.0  
-          descriptives_hash.delete(descriptive)
-        else
-          descriptives_hash[descriptive]["weight"] = new_weight
-          descriptives_hash[descriptive]["updated_at"] = Time.now
-        end
-      end
-    end
-    self.update_columns(descriptives: Hash[descriptives_hash.sort_by { |k,v| -v["weight"] }])
-  end
-
-  def set_top_tags
-    calibrate_descriptive_weights
-    top_descriptives = Hash[self.descriptives.to_a[0..4]]
-
-    tags_hash = {}
-    i = 1
-    top_descriptives.each do |descriptive, details|
-      if details["weight"].round(2) > 0.0
-        tags_hash["tag_#{i}"] = descriptive        
-      else
-        tags_hash["tag_#{i}"] = nil
-      end
-      i += 1
-    end
-
-    self.update_columns(trending_tags: tags_hash)
   end  
 
   def update_featured_comment(vc)
