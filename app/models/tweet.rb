@@ -30,7 +30,7 @@ class Tweet < ActiveRecord::Base
 	def self.bulk_conversion(raw_tweets, v, cluster_lat, cluster_long, zoom_level, map_scale)
 		if v != nil
 			for raw_tweet in raw_tweets
-				if Tweet.find_by_twitter_id(raw_tweet.id) == nil && t.first.source.include?("Instagram") == false
+				if Tweet.find_by_twitter_id(raw_tweet.id) == nil && raw_tweet.source.include?("Instagram") == false
 					raw_tweet_text = raw_tweet.text.dup
 					new_tweet = Tweet.create!(:twitter_id => raw_tweet.id, :tweet_text => raw_tweet_text, :image_url_1 => Tweet.implicit_image_url_1(raw_tweet), :image_url_2 => Tweet.implicit_image_url_2(raw_tweet), :image_url_3 => Tweet.implicit_image_url_3(raw_tweet), :author_id => raw_tweet.user.id, :handle => raw_tweet.user.screen_name, :author_name => raw_tweet.user.name, :author_avatar => raw_tweet.user.profile_image_url.to_s, :timestamp => raw_tweet.created_at, :from_cluster => false, :venue_id => v.id, :popularity_score => Tweet.popularity_score_calculation(raw_tweet.user.followers_count, raw_tweet.retweet_count, raw_tweet.favorite_count))
 					VenueComment.create!(:entry_type => "tweet", :venue_id => v.id, :venue_details => v.partial, :tweet => new_tweet.partial, :adjusted_sort_position => new_tweet.timestamp.to_i)
