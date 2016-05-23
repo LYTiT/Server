@@ -21,8 +21,8 @@ class Api::V1::UsersController < ApiBaseController
 
 	def create
 		#User.where("vendor_id = ?", params[:vendor_id]).update_all(active: false)
-=begin		
-		#begin
+	
+		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
 				if existing_temp_user.registered != true
@@ -33,13 +33,13 @@ class Api::V1::UsersController < ApiBaseController
 					existing_temp_user.update_columns(email: previous_email+"#{Time.now.min}#{Time.now.sec}"+".og")
 				end
 			end
-		#rescue
-		#	puts "Previous temp user issue"
-		#end
-=end		
+		rescue
+			puts "Previous temp user issue"
+		end
+
 
 		@user = User.new(user_params)
-		@user.email = Time.now.to_s+"@lytit.com"
+		#@user.email = Time.now.to_s+"@lytit.com"
 
 		if @user.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
