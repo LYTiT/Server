@@ -39,6 +39,7 @@ class Api::V1::UsersController < ApiBaseController
 =end		
 
 		@user = User.new(user_params)
+		@user.email = Time.now.to_s+"@lytit.com"
 
 		if @user.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
