@@ -42,7 +42,7 @@ class Api::V1::UsersController < ApiBaseController
 		@user.email = Time.now.to_i.to_s+"@lytit.com"
 
 		if @user.save
-			if params[:used_lytit_before] == @user.name#@user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
+			if params[:used_lytit_before] == params[:name]#@user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
 				name = @user.name
 				id = @user.id
 				@user.update_columns(vendor_id: name)
