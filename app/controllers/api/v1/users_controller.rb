@@ -20,8 +20,8 @@ class Api::V1::UsersController < ApiBaseController
 	end
 
 	def create
-		#User.where("vendor_id = ?", params[:vendor_id]).update_all(active: false)
-	
+		User.where("vendor_id = ?", params[:vendor_id]).update_all(active: false)
+=begin	
 		begin
 			existing_temp_user = User.where("email = ?", params[:email]).first
 			if (existing_temp_user != nil && params[:email].last(8) == "temp.com")
@@ -36,10 +36,10 @@ class Api::V1::UsersController < ApiBaseController
 		rescue
 			puts "Previous temp user issue"
 		end
-
+=end		
 
 		@user = User.new(user_params)
-		#@user.email = Time.now.to_s+"@lytit.com"
+		@user.email = Time.now.to_i.to_s+"@lytit.com"
 
 		if @user.save
 			if @user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
