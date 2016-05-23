@@ -398,7 +398,7 @@ class Api::V1::VenuesController < ApiBaseController
 						#This is a hack
 						#If no nearby active venues then we return ONE random far away venue on page 1. The following pages will
 						#pull venues from away and there will be no issue.
-						venues = Venue.far_from(lat, long, 1000000).select("id, name, address, city, country, latitude, longitude, color_rating, rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").first.to_a rescue "error"
+						venues = [Venue.far_from(lat, long, 1000000).select("id, name, address, city, country, latitude, longitude, color_rating, rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").first] rescue "error"
 					else
 						venues = Venue.far_from(lat, long, 5000).select("id, name, address, city, country, latitude, longitude, color_rating, rating, popularity_rank, instagram_location_id, latest_posted_comment_time, venue_comment_details, event_details, trending_tags, categories").where("color_rating > -1.0").order("color_rating DESC").limit(num_page_entries).offset((page-2)*num_page_entries).to_a rescue "error"
 					end
