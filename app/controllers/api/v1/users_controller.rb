@@ -40,11 +40,6 @@ class Api::V1::UsersController < ApiBaseController
 
 		@user = User.new(user_params)
 		@user.email = Time.now.to_i.to_s+"@lytit.com"
-		p "***************************************************"
-		p params[:used_lytit_before]
-		p params[:name]
-
-		p "***************************************************"
 
 		if @user.save
 			if params[:used_lytit_before] == params[:name]#@user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")

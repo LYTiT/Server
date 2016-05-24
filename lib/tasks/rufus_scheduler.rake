@@ -32,14 +32,16 @@ namespace :lytit do
     end
     
     #Cluster clearing ----------------------------------->
+=begin    
     $scheduler.every '10m' do
       puts "Scheduler run at #{Time.now}"
       start_time = Time.now
       puts "Setting Top Tags"
-      Venue.each{|venue| venue.set_top_tags}
+      Venue.where("update_time < ?", Time.now-1.day).each{|venue| venue.set_top_tags}
       end_time = Time.now
       puts "Done. Time Taken: #{end_time - start_time}s"
     end
+=end        
 
     $scheduler.every '30m' do
       puts "Clearing expired Post Passes"
