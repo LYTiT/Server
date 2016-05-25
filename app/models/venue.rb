@@ -532,11 +532,6 @@ class Venue < ActiveRecord::Base
     end
   end
 
-  def Venue.return_venues_in_feed_category(category_id, view_box)
-    category_feed_ids = "SELECT feed_id FROM list_category_entries WHERE list_category_id = #{category_id}"
-    Venue.where("(latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?) AND linked_list_ids && ARRAY[(#{category_feed_ids})]", view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).limit(20)
-  end
-
   def Venue.populate_feed_ids
     for feed_venue in FeedVenue.all
       venue = feed_venue.venue

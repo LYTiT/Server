@@ -1,4 +1,11 @@
 class FeedVenue < ActiveRecord::Base
+
+	scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
+		where(%{
+			feed_venues.central_mass_lonlat_geometry @ ST_MakeEnvelope(%f, %f, %f, %f, 4326) 
+			} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
+	}	
+
 	belongs_to :feed
 	belongs_to :user
 	belongs_to :venue
@@ -8,6 +15,15 @@ class FeedVenue < ActiveRecord::Base
 
 	after_create :delayed_new_venue_notification_and_activity
 
+	def FeedVenue.in_view(category_id, view_box)
+		center_screen_lat = (view_box[:ne_lat]-view_box[:sw_lat])/2.0+view_box[:sw_lat]
+		center_screen_long = (view_box[:ne_long]-view_box[:sw_long])/2.0+view_box[:ne_long]
+		v_weight = 0.5
+		m_weight = 0.1    
+
+		category_feed_ids = "SELECT feed_id FROM list_category_entries WHERE list_category_id = #{category_id}"
+		FeedVenue.inside_box(view_box[:sw_long], view_box[:sw_lat], view_box[:ne_long], view_box[:ne_lat]).where("feed_id IN (#{category_feed_ids})").order("central_mass_lonlat_geometry <-> st_point(#{center_screen_long},#{center_screen_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}").limit(20)
+	end
 
 	def delayed_new_venue_notification_and_activity
 		self.delay(:priority => -3).new_venue_notification_and_activity
@@ -113,6 +129,18 @@ class FeedVenue < ActiveRecord::Base
 			feed_venue.update_columns(venue_details: (feed_venue.venue.try(:partial)) || {})
 			feed_venue.update_columns(user_details: (feed_venue.user.try(:partial)) || {})
 			feed_venue.update_columns(activity_id: feed_venue.activity.try(:id))
+		end
+	end
+
+	def FeedVenue.set_feed_attributes
+		for feed_venue in FeedVenue.all
+			feed = feed_venue.feed
+			venue = feed_venue.venue
+			if feed != nil && venue != nil
+				feed_venue.update_columns(num_venues: feed.num_venues, num_users: feed.num_users, central_mass_lonlat_geometry: feed.central_mass_lonlat_geometry , central_mass_lonlat_geography: feed.central_mass_lonlat_geography)
+			else
+				feed_venue.delete
+			end
 		end
 	end
 

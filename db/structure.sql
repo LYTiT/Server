@@ -987,7 +987,12 @@ CREATE TABLE feed_venues (
     upvote_user_ids json DEFAULT '[]'::json NOT NULL,
     venue_details json DEFAULT '{}'::json NOT NULL,
     user_details json DEFAULT '{}'::json NOT NULL,
-    activity_id integer
+    activity_id integer,
+    num_venues integer,
+    num_users integer,
+    score_primer integer DEFAULT 0,
+    central_mass_lonlat_geometry geometry(Point),
+    central_mass_lonlat_geography geography(Point,4326)
 );
 
 
@@ -3292,6 +3297,20 @@ CREATE INDEX index_feed_users_on_user_id ON feed_users USING btree (user_id);
 
 
 --
+-- Name: index_feed_venues_on_central_mass_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feed_venues_on_central_mass_lonlat_geography ON feed_venues USING gist (central_mass_lonlat_geography);
+
+
+--
+-- Name: index_feed_venues_on_central_mass_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feed_venues_on_central_mass_lonlat_geometry ON feed_venues USING gist (central_mass_lonlat_geometry);
+
+
+--
 -- Name: index_feed_venues_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4773,4 +4792,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160513214021');
 INSERT INTO schema_migrations (version) VALUES ('20160514040533');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525033919');
+
+INSERT INTO schema_migrations (version) VALUES ('20160525173659');
 
