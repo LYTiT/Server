@@ -992,7 +992,8 @@ CREATE TABLE feed_venues (
     num_users integer,
     score_primer integer DEFAULT 0,
     central_mass_lonlat_geometry geometry(Point),
-    central_mass_lonlat_geography geography(Point,4326)
+    central_mass_lonlat_geography geography(Point,4326),
+    feed_details json DEFAULT '{}'::json
 );
 
 
@@ -4794,4 +4795,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160514040533');
 INSERT INTO schema_migrations (version) VALUES ('20160525033919');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525173659');
+
+INSERT INTO schema_migrations (version) VALUES ('20160525200206');
 

@@ -160,6 +160,9 @@ LytitServer::Application.routes.draw do
         post 'remove_activity'
         post 'remove_member'
         get 'get_activity_comment'
+        collection do
+          get 'get_list_venues_in_view'
+        end
       end
 
       resources :support_issues do

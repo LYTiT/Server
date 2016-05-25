@@ -7,7 +7,7 @@ json.cache! @view_cache_key, :expires_in => 20.minutes do |json|
         json.country v.country
         json.latitude v.latitude
         json.longitude v.longitude
-        json.color_rating v.color_rating
+        json.color_rating v.rating
         json.trending_score v.popularity_rank
         json.last_post_time 200
         json.instagram_location_id v.instagram_location_id

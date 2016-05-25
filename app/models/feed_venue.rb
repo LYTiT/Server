@@ -16,13 +16,13 @@ class FeedVenue < ActiveRecord::Base
 	after_create :delayed_new_venue_notification_and_activity
 
 	def FeedVenue.in_view(category_id, view_box)
-		center_screen_lat = (view_box[:ne_lat]-view_box[:sw_lat])/2.0+view_box[:sw_lat]
-		center_screen_long = (view_box[:ne_long]-view_box[:sw_long])/2.0+view_box[:ne_long]
+		center_screen_lat = (view_box[:ne_lat].to_f-view_box[:sw_lat].to_f)/2.0+view_box[:sw_lat].to_f
+		center_screen_long = (view_box[:ne_long].to_f-view_box[:sw_long].to_f)/2.0+view_box[:ne_long].to_f
 		v_weight = 0.5
 		m_weight = 0.1    
 
 		category_feed_ids = "SELECT feed_id FROM list_category_entries WHERE list_category_id = #{category_id}"
-		FeedVenue.inside_box(view_box[:sw_long], view_box[:sw_lat], view_box[:ne_long], view_box[:ne_lat]).where("feed_id IN (#{category_feed_ids})").order("central_mass_lonlat_geometry <-> st_point(#{center_screen_long},#{center_screen_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}").limit(20)
+		FeedVenue.inside_box(view_box[:sw_long], view_box[:sw_lat], view_box[:ne_long], view_box[:ne_lat]).where("feed_id IN (#{category_feed_ids})").includes(:venue).order("central_mass_lonlat_geometry <-> st_point(#{center_screen_long},#{center_screen_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}+score_primer").limit(20)
 	end
 
 	def delayed_new_venue_notification_and_activity
@@ -31,6 +31,7 @@ class FeedVenue < ActiveRecord::Base
 
 	def new_venue_notification_and_activity
 		if feed != nil
+=begin			
 			venue = self.venue
 			linked_list_ids = venue.linked_list_ids
         	linked_lists = venue.linked_lists
@@ -38,6 +39,9 @@ class FeedVenue < ActiveRecord::Base
         	linked_lists.merge({self.feed_id => {:list => self.feed.partial, :list_creator => self.feed.user.partial}})
         	venue.update_columns(linked_list_ids: linked_list_ids)
         	venue.update_columns(linked_lists: linked_lists)
+=end	
+			feed = self.feed
+			self.update_columns(feed_details: feed.partial)
 
 			a = Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => feed.partial, :user_id => self.user_id, :user_details => user.partial,
 				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
