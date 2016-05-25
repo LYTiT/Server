@@ -48,6 +48,8 @@ gem 'tzinfo'
 #Scientific
 gem 'rubypython', "0.6.3"
 gem 'descriptive_statistics'
+gem 'rubystats'
+gem 'croupier'
 #APIs
 gem 'httparty'
 gem 'instagram'

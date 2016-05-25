@@ -323,7 +323,7 @@ class Venue < ActiveRecord::Base
   end
 
   #Fetch a single venue or create it if not present in DB. Used for assigning Venues to things.
-  def self.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
+  def Venue.fetch_or_create(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, is_proposed_location=false)
     downcase_name = vname.downcase
     lat_long_lookup = Venue.where("latitude = ? AND longitude = ?", vlatitude, vlongitude).fuzzy_name_search(vname, 0.8).first
 
@@ -383,7 +383,7 @@ class Venue < ActiveRecord::Base
       result = lat_long_lookup
     end
 
-    if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or JAROW.getDistance(result.name.downcase.gsub((vname && result.name).downcase, ""), vname.downcase.gsub((vname && result.name).downcase, ""))
+    if result == nil or JAROW.getDistance(vname, result.name) < 0.9 or (JAROW.getDistance(result.name.downcase.gsub((vname && result.name).downcase, ""), vname.downcase.gsub((vname && result.name).downcase, "")) < 0.9 && JAROW.getDistance(result.name.downcase.gsub((vname && result.name).downcase, ""), vname.downcase.gsub((vname && result.name).downcase, "")) > 0.0)
       if vlatitude != nil && vlongitude != nil 
         result = Venue.create_new_db_entry(vname, vaddress, vcity, vstate, vcountry, vpostal_code, vphone, vlatitude, vlongitude, nil, nil, is_proposed_location)
         result.update_columns(verified: true)

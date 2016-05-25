@@ -752,6 +752,48 @@ class VenueComment < ActiveRecord::Base
 		end 
 		self.update_columns(evaluater_user_ids: evaluater_user_ids)
 	end
+
+	def view_generator(total_sim_user_base=50000)
+		#NEEDS TO TAKE INTO CONSIDERATION LOCAL TIME OF DAY
+		venue = self.venue
+		venue_rating = venue.rating || (rand(5) >=3 ? 0 : 0.0005)
+
+		num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
+		total_users = User.where("latitude IS NOT NULL").count
+
+		num_simulated_nearby_users = 
+
+		(total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/1000.0 + ((rand(2) == 0 ? 1 : -1) * rand(10))
+
+		num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", self.adjusted_sort_position).count
+
+		#num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
+
+		mean = 
+		sd = 
+		normal_dist = Rubystats::NormalDistribution.new(mean, sd)
+		x = normal_dist.rng.floor
+
+		if x > 0
+			num_new_views = x
+
+		end
+
+
+
+		for i in 1..num_simulted_views
+			lytit_post.user.increment!(:num_bolts, 1)
+
+			nearby_venue = Venue.close_to(venue.latitude, venue.longitude, 20000).first
+			faraway_venue = Venue.far_from(venue.latitude, venue.longitude, 20000).offset(rand(1000)).first rescue Venue.far_from(venue.latitude, venue.longitude, 20000).first
+			selected_venue = (rand(99) < 96 ? nearby_venue : faraway_venue) 
+			country = selected_venue.country
+			city = selected_venue.city
+			lytit_post.increment_geo_views(country, city)
+
+	  		view = CommentView.delay(run_at: rand(900).seconds.from_now).create!(:venue_comment_id => lytit_post.id, :user_id => 1)
+		end
+	end	
 			
 end
 
