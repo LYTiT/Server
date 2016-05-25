@@ -752,7 +752,7 @@ class VenueComment < ActiveRecord::Base
 		end 
 		self.update_columns(evaluater_user_ids: evaluater_user_ids)
 	end
-
+=begin
 	def view_generator(total_sim_user_base=50000)
 		#NEEDS TO TAKE INTO CONSIDERATION LOCAL TIME OF DAY
 		venue = self.venue
@@ -794,6 +794,7 @@ class VenueComment < ActiveRecord::Base
 	  		view = CommentView.delay(run_at: rand(900).seconds.from_now).create!(:venue_comment_id => lytit_post.id, :user_id => 1)
 		end
 	end	
+=end	
 			
 end
 
