@@ -761,9 +761,9 @@ class VenueComment < ActiveRecord::Base
 		num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count
 		total_users = User.where("latitude IS NOT NULL").count
 
-		num_simulated_nearby_users = 
+		num_simulated_nearby_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0))
 
-		(total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/1000.0 + ((rand(2) == 0 ? 1 : -1) * rand(10))
+		#total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0)) - lytit_post.views) * venue_rating/1000.0 + ((rand(2) == 0 ? 1 : -1) * rand(10))
 
 		num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", self.adjusted_sort_position).count
 

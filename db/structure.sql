@@ -2257,7 +2257,9 @@ CREATE TABLE venues (
     lonlat_geometry geometry(Point),
     lonlat_geography geography(Point,4326),
     latest_comment_type_times json DEFAULT '{"lytit_post":"2016-05-09T22:50:27.053-04:00","instagram":"2016-05-09T22:50:27.053-04:00","tweet":"2016-05-09T22:50:27.053-04:00","event":"2016-05-09T22:50:27.053-04:00"}'::json NOT NULL,
-    is_proposed boolean DEFAULT false
+    is_proposed boolean DEFAULT false,
+    linked_lists json DEFAULT '{}'::json,
+    linked_list_ids integer[] DEFAULT '{}'::integer[]
 );
 
 
@@ -3759,6 +3761,13 @@ CREATE INDEX index_venues_on_latitude ON venues USING btree (latitude);
 
 
 --
+-- Name: index_venues_on_linked_list_ids; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_venues_on_linked_list_ids ON venues USING gin (linked_list_ids);
+
+
+--
 -- Name: index_venues_on_longitude; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -4762,4 +4771,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160513054655');
 INSERT INTO schema_migrations (version) VALUES ('20160513214021');
 
 INSERT INTO schema_migrations (version) VALUES ('20160514040533');
+
+INSERT INTO schema_migrations (version) VALUES ('20160525033919');
 

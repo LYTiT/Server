@@ -532,6 +532,27 @@ class Venue < ActiveRecord::Base
     end
   end
 
+  def Venue.return_venues_in_feed_category(category_id, view_box)
+    category_feed_ids = "SELECT feed_id FROM list_category_entries WHERE list_category_id = #{category_id}"
+    Venue.where("(latitude > ? AND latitude < ? AND longitude > ? AND longitude < ?) AND feed_ids && (category_feed_ids)", view_box[:sw_lat], view_box[:ne_lat], view_box[:sw_long], view_box[:ne_long]).limit(20)
+  end
+
+  def Venue.populate_feed_ids
+    for feed_venue in FeedVenue.all
+      venue = feed_venue.venue
+      if venue != nil
+        linked_list_ids = venue.linked_list_ids
+        linked_lists = venue.linked_lists
+        linked_list_ids << feed_venue.feed_id
+        linked_lists.merge({feed_venue.feed_id => {:list => feed_venue.feed.partial, :list_creator => feed_venue.feed.user.partial}})
+        venue.update_columns(linked_list_ids: linked_list_ids)
+        venue.update_columns(linked_lists: linked_lists)
+      else
+        feed_venue.delete
+      end
+    end
+  end
+
 #===============================================================================================
 # Content ======================================================================================
 #===============================================================================================

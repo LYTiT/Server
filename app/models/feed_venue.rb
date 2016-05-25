@@ -15,6 +15,14 @@ class FeedVenue < ActiveRecord::Base
 
 	def new_venue_notification_and_activity
 		if feed != nil
+			venue = self.venue
+			linked_list_ids = venue.linked_list_ids
+        	linked_lists = venue.linked_lists
+        	linked_list_ids << self.feed_id
+        	linked_lists.merge({self.feed_id => {:list => self.feed.partial, :list_creator => self.feed.user.partial}})
+        	venue.update_columns(linked_list_ids: linked_list_ids)
+        	venue.update_columns(linked_lists: linked_lists)
+
 			a = Activity.create!(:activity_type => "added_venue", :feed_id => self.feed.id, :feed_details => feed.partial, :user_id => self.user_id, :user_details => user.partial,
 				:venue_id => venue.id, :venue_details => venue.partial, :feed_venue_details => {:id => self.id, :added_note => self.description}, 
 				:adjusted_sort_position => (self.created_at).to_i, :feed_venue_id => self.id)
