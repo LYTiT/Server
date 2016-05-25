@@ -544,9 +544,15 @@ class Venue < ActiveRecord::Base
         linked_list_ids = venue.linked_list_ids
         linked_lists = venue.linked_lists
         linked_list_ids << feed_venue.feed_id
-        linked_lists.merge({feed_venue.feed_id => {:list => feed_venue.feed.partial, :list_creator => feed_venue.feed.user.partial}})
-        venue.update_columns(linked_list_ids: linked_list_ids)
-        venue.update_columns(linked_lists: linked_lists)
+        list_creator = feed_venue.feed.user.try(:partial)
+        list = feed_venue.feed
+        if list != nil
+          linked_lists.merge({feed_venue.feed_id => {:list => list.try(:partial), :list_creator => list_creator}})
+          venue.update_columns(linked_list_ids: linked_list_ids)
+          venue.update_columns(linked_lists: linked_lists)
+        else
+          feed_venue.delete
+        end
       else
         feed_venue.delete
       end
