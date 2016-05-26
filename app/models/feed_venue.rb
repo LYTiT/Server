@@ -2,7 +2,7 @@ class FeedVenue < ActiveRecord::Base
 
 	scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
 		where(%{
-			feed_venues.central_mass_lonlat_geography && ST_MakeEnvelope(%f, %f, %f, %f, 4326)
+			feed_venues.lonlat_geometry && ST_MakeEnvelope(%f, %f, %f, %f, 4326)
 			} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
 	}	
 
