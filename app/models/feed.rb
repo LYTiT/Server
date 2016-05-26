@@ -73,7 +73,8 @@ class Feed < ActiveRecord::Base
 		query.gsub!(/\d\s?/, "")
 		search_results = Feed.robust_search(query).with_pg_search_rank.where("pg_search.rank >= 0.0").limit(10)
 		#top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
-		Feed.where("id in (#{direct_match_ids})").limit(5)+search_results		
+		#Feed.where("id in (#{direct_match_ids})").limit(5)+
+		search_results		
 	end
 
 	def put_in_spotlyt(set=true)
