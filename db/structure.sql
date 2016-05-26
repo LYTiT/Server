@@ -152,20 +152,18 @@ CREATE FUNCTION fill_search_vector_for_feed() RETURNS trigger
 CREATE FUNCTION fill_ts_categories_vector_for_feed() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
-      declare
-      	assgined_category record;
-        
-      begin
+	      declare
+	      feed_category_entries record;	      
 
-      	select string_agg(category, ' ') as category into assgined_category from feed_recommendations where feed_id = new.id and category is not null;
+	      begin 
+	      	SELECT string_agg(name, ' ') AS names INTO feed_category_entries FROM list_categories WHERE id IN (SELECT list_category_id FROM list_category_entries WHERE feed_id = new.id);
 
-        new.ts_categories_vector :=
-          to_tsvector('pg_catalog.english', coalesce(assgined_category.category, ''));
+	        new.ts_venue_descriptives_vector :=
+	        	to_tsvector('pg_catalog.english', coalesce(feed_category_entries.names, ''));
 
-
-        return new;
-      end
-      $$;
+	        return new;
+	      end
+	      $$;
 
 
 --
@@ -305,6 +303,27 @@ CREATE FUNCTION fill_ts_name_vector_for_venue() RETURNS trigger
         return new;
       end
       $$;
+
+
+--
+-- Name: fill_ts_venue_descriptives_vector_for_feed(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION fill_ts_venue_descriptives_vector_for_feed() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+	      declare
+	      feed_venue_descriptives record;	      
+
+	      begin 
+	      	SELECT string_agg(description, ' ') AS descriptives INTO feed_venue_descriptives FROM feed_venues WHERE feed_id = new.id;
+
+	        new.ts_venue_descriptives_vector :=
+	        	to_tsvector('pg_catalog.english', coalesce(feed_venue_descriptives.descriptives, ''));
+
+	        return new;
+	      end
+	      $$;
 
 
 --
@@ -1051,7 +1070,8 @@ CREATE TABLE feeds (
     central_mass_lonlat_geometry geometry(Point),
     central_mass_lonlat_geography geography(Point,4326),
     venue_ids json DEFAULT '[]'::json NOT NULL,
-    in_spotlyt boolean DEFAULT false
+    in_spotlyt boolean DEFAULT false,
+    ts_venue_descriptives_vector tsvector
 );
 
 
@@ -3396,6 +3416,13 @@ CREATE INDEX index_feeds_on_ts_name_vector ON feeds USING gin (ts_name_vector);
 
 
 --
+-- Name: index_feeds_on_ts_venue_descriptives_vector; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feeds_on_ts_venue_descriptives_vector ON feeds USING gin (ts_venue_descriptives_vector);
+
+
+--
 -- Name: index_instagram_auth_tokens_on_user_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3911,6 +3938,13 @@ CREATE TRIGGER feeds_ts_meta_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR
 --
 
 CREATE TRIGGER feeds_ts_name_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_name_vector_for_feed();
+
+
+--
+-- Name: feeds_ts_venue_descriptives_vector_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER feeds_ts_venue_descriptives_vector_trigger BEFORE INSERT OR UPDATE ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_venue_descriptives_vector_for_feed();
 
 
 --
@@ -4799,4 +4833,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160525173659');
 INSERT INTO schema_migrations (version) VALUES ('20160525200206');
 
 INSERT INTO schema_migrations (version) VALUES ('20160526033814');
+
+INSERT INTO schema_migrations (version) VALUES ('20160526180659');
 
