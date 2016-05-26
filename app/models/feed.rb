@@ -24,7 +24,7 @@ class Feed < ActiveRecord::Base
 	                :tsearch => { 
 	                	dictionary: 'english',
 	                	any_word: true,
-	                	prefix: false
+	                	prefix: true
 	                }#,
 	                #:trigram => {
 	                #	any_word: true,
