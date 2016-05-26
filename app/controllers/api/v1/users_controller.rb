@@ -43,17 +43,17 @@ class Api::V1::UsersController < ApiBaseController
 		@user.email = Time.now.to_i.to_s+"@lytit.com"
 
 		if @user.save
-			if params[:used_lytit_before] == params[:name]#@user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
-				name = @user.name
-				id = @user.id
-				@user.update_columns(vendor_id: name)
-				@user.update_columns(name: "lyt_"+(id*2+3).to_s(16))
+			#if params[:used_lytit_before] == params[:name]#@user.name.first(10).downcase == @user.email.first(10).downcase && (@user.email.last(8) == "temp.com" || @user.email.last(3) == ".og")
+			name = @user.name
+			id = @user.id
+			@user.update_columns(vendor_id: name)
+			@user.update_columns(name: "lyt_"+(id*2+3).to_s(16))
 
 				#@user.vendor_id = @user.name
 				#@user.name = "lyt_"+(@user.id*2+3).to_s(16)
 				#temp_user = true
 				#@user.save
-			end
+			#end
 
 			#SupportIssue.delay.create!(user_id: @user.id)
 			VendorIdTracker.delay.implicit_creation(@user.id)
