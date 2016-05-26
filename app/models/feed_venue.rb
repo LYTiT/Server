@@ -2,7 +2,7 @@ class FeedVenue < ActiveRecord::Base
 
 	scope :inside_box, -> (sw_longitude, sw_latitude, ne_longitude, ne_latitude) {
 		where(%{
-			feed_venues.central_mass_lonlat_geometry && ST_MakeEnvelope(%f, %f, %f, %f, 4326)
+			feed_venues.central_mass_lonlat_geography && ST_MakeEnvelope(%f, %f, %f, %f, 4326)
 			} % [sw_longitude, sw_latitude, ne_longitude, ne_latitude])
 	}	
 
@@ -140,8 +140,9 @@ class FeedVenue < ActiveRecord::Base
 		for feed_venue in FeedVenue.all
 			feed = feed_venue.feed
 			venue = feed_venue.venue
+			
 			if feed != nil && venue != nil
-				feed_venue.update_columns(num_venues: feed.num_venues, num_users: feed.num_users, central_mass_lonlat_geometry: feed.central_mass_lonlat_geometry , central_mass_lonlat_geography: feed.central_mass_lonlat_geography)
+				feed_venue.update_columns(num_venues: feed.num_venues, num_users: feed.num_users, central_mass_lonlat_geometry: self.venue.lonlat_geometry , central_mass_lonlat_geography: self.venue.lonlat_geography)
 			else
 				feed_venue.delete
 			end
