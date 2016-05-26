@@ -38,6 +38,7 @@ class Api::V1::UsersController < ApiBaseController
 		end
 =end		
 
+
 		@user = User.new(user_params)
 		@user.email = Time.now.to_i.to_s+"@lytit.com"
 
