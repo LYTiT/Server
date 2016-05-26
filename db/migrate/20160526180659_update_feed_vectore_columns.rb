@@ -4,7 +4,7 @@ class UpdateFeedVectoreColumns < ActiveRecord::Migration
 			DROP TRIGGER feeds_ts_categories_vector_trigger ON feeds;
  			DROP FUNCTION fill_ts_categories_vector_for_feed();      
 		EOS
-				
+
 		add_column :feeds, :ts_venue_descriptives_vector, :tsvector
 		add_index :feeds, :ts_venue_descriptives_vector, using: "gin"
 
@@ -51,6 +51,8 @@ class UpdateFeedVectoreColumns < ActiveRecord::Migration
 	      CREATE TRIGGER feeds_ts_categories_vector_trigger BEFORE INSERT OR UPDATE
 	        ON feeds FOR EACH ROW EXECUTE PROCEDURE fill_ts_categories_vector_for_feed();
 	    EOS
+
+	    Feed.find_each(&:touch)
 
 	end
 

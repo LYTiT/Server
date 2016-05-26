@@ -18,19 +18,19 @@ class Feed < ActiveRecord::Base
 	              	:ts_name_vector => 'A', 
 	              	:ts_description_vector => 'B',
 	              	:ts_categories_vector => 'B',
-	              	:ts_meta_vector => 'C'
+	              	:ts_venue_descriptives_vector => 'C'	              	
 	              	},
 	              :using => {
 	                :tsearch => { 
 	                	dictionary: 'english',
 	                	any_word: true,
-	                	prefix: true, 
-	                },
-	                :trigram => {
-	                	any_word: true,
-	                	prefix: true, 
-	                	:only => [:ts_name_vector]
-	                }
+	                	prefix: true
+	                }#,
+	                #:trigram => {
+	                #	any_word: true,
+	                #	prefix: true, 
+	                #	:only => [:ts_name_vector]
+	                #}
 	              }      
 
 
@@ -71,7 +71,7 @@ class Feed < ActiveRecord::Base
 		like_query = query.downcase+'%'
 		direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) LIKE ('#{like_query}')"
 		query.gsub!(/\d\s?/, "")
-		search_results = Feed.robust_search(query).where("id NOT IN (#{direct_match_ids})").with_pg_search_rank.where("pg_search.rank > 0.0").limit(10)
+		search_results = Feed.robust_search(query).with_pg_search_rank.where("pg_search.rank > 0.0").limit(10)
 		#top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
 		Feed.where("id in (#{direct_match_ids})").limit(5)+search_results		
 	end
