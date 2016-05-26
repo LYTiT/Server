@@ -142,7 +142,7 @@ class FeedVenue < ActiveRecord::Base
 			venue = feed_venue.venue
 			
 			if feed != nil && venue != nil
-				feed_venue.update_columns(num_venues: feed.num_venues, num_users: feed.num_users, central_mass_lonlat_geometry: self.venue.lonlat_geometry , central_mass_lonlat_geography: self.venue.lonlat_geography)
+				feed_venue.update_columns(num_venues: feed.num_venues, num_users: feed.num_users, central_mass_lonlat_geometry: feed_venue.venue.lonlat_geometry , central_mass_lonlat_geography: feed_venue.venue.lonlat_geography)
 			else
 				feed_venue.delete
 			end
