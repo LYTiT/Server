@@ -991,8 +991,8 @@ CREATE TABLE feed_venues (
     num_venues integer,
     num_users integer,
     score_primer integer DEFAULT 0,
-    central_mass_lonlat_geometry geometry(Point),
-    central_mass_lonlat_geography geography(Point,4326),
+    lonlat_geometry geometry(Point),
+    lonlat_geography geography(Point,4326),
     feed_details json DEFAULT '{}'::json
 );
 
@@ -3298,20 +3298,6 @@ CREATE INDEX index_feed_users_on_user_id ON feed_users USING btree (user_id);
 
 
 --
--- Name: index_feed_venues_on_central_mass_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_venues_on_central_mass_lonlat_geography ON feed_venues USING gist (central_mass_lonlat_geography);
-
-
---
--- Name: index_feed_venues_on_central_mass_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
---
-
-CREATE INDEX index_feed_venues_on_central_mass_lonlat_geometry ON feed_venues USING gist (central_mass_lonlat_geometry);
-
-
---
 -- Name: index_feed_venues_on_feed_id; Type: INDEX; Schema: public; Owner: -; Tablespace: 
 --
 
@@ -3323,6 +3309,20 @@ CREATE INDEX index_feed_venues_on_feed_id ON feed_venues USING btree (feed_id);
 --
 
 CREATE UNIQUE INDEX index_feed_venues_on_feed_id_and_venue_id ON feed_venues USING btree (feed_id, venue_id);
+
+
+--
+-- Name: index_feed_venues_on_lonlat_geography; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feed_venues_on_lonlat_geography ON feed_venues USING gist (lonlat_geography);
+
+
+--
+-- Name: index_feed_venues_on_lonlat_geometry; Type: INDEX; Schema: public; Owner: -; Tablespace: 
+--
+
+CREATE INDEX index_feed_venues_on_lonlat_geometry ON feed_venues USING gist (lonlat_geometry);
 
 
 --
@@ -4797,4 +4797,6 @@ INSERT INTO schema_migrations (version) VALUES ('20160525033919');
 INSERT INTO schema_migrations (version) VALUES ('20160525173659');
 
 INSERT INTO schema_migrations (version) VALUES ('20160525200206');
+
+INSERT INTO schema_migrations (version) VALUES ('20160526033814');
 

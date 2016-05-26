@@ -175,7 +175,7 @@ class Api::V1::FeedsController < ApiBaseController
 			venue = Venue.find_by_id(params[:venue_id])
 			@user = User.find_by_authentication_token(params[:auth_token])
 			new_feed_venue = FeedVenue.new(:feed_id => params[:id], :venue_id => params[:venue_id], :user_id => params[:user_id], :description => params[:added_note], 
-				:venue_details => venue.partial, :user_details => @user.partial)
+				:venue_details => venue.partial, :user_details => @user.partial, )
 			if new_feed_venue.save
 				Feed.delay(:priority => -2).added_venue_calibration(params[:id], params[:venue_id])
 				render json: { success: true }
