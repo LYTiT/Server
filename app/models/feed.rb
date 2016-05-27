@@ -13,25 +13,25 @@ class Feed < ActiveRecord::Base
 	}  
 
 
-	pg_search_scope :robust_search,
-	              :against => {
-	              	:ts_name_vector => 'A', 
-	              	:ts_description_vector => 'B',
-	              	:ts_categories_vector => 'B',
-	              	:ts_venue_descriptives_vector => 'C'	              	
-	              	},
-	              :using => {
-	                :tsearch => { 
-	                	dictionary: 'english',
-	                	any_word: true,
-	                	prefix: true
-	                }#,
-	                #:trigram => {
-	                #	any_word: true,
-	                #	prefix: true, 
-	                #	:only => [:ts_name_vector]
-	                #}
-	              }      
+	pg_search_scope :robust_search, lambda{|query, latitude, longitude|{
+			:against => {
+				:ts_name_vector => 'A', 
+				:ts_description_vector => 'B',
+				:ts_categories_vector => 'B',
+				:ts_venue_descriptives_vector => 'C'	              	
+			},
+			:using => {
+				:tsearch => { 
+					dictionary: 'english',
+					any_word: true,
+					prefix: true
+				}
+			},
+			:query => query,
+			:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"
+			#:ranked_by => ":tsearch*1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0) "
+		}
+	}
 
 
 	acts_as_mappable :default_units => :kms,
@@ -77,7 +77,7 @@ class Feed < ActiveRecord::Base
 		v_weight = 0.5
 		m_weight = 0.1    
 
-		search_results = Feed.robust_search(query).with_pg_search_rank.where("pg_search.rank > 0.1").limit(10).order("central_mass_lonlat_geometry <-> st_point(#{user_long},#{user_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}")
+		search_results = Feed.robust_search(query, user_lat, user_long).with_pg_search_rank.where("pg_search.rank > 0.1").limit(10).order("num_venues*#{v_weight}+num_users*#{m_weight}")
 		#top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
 		#Feed.where("id in (#{direct_match_ids})").limit(5)+
 		search_results		
