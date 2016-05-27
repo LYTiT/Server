@@ -16,9 +16,9 @@ class Feed < ActiveRecord::Base
 	pg_search_scope :robust_search, lambda{|query, latitude, longitude|{
 			:against => {
 				:ts_name_vector => 'A', 
-				:ts_description_vector => 'B',
-				:ts_categories_vector => 'B',
-				:ts_venue_descriptives_vector => 'C'	              	
+				:ts_description_vector => 'C',
+				:ts_categories_vector => 'C',
+				:ts_venue_descriptives_vector => 'D'	              	
 			},
 			:using => {
 				:tsearch => { 
@@ -399,6 +399,7 @@ class Feed < ActiveRecord::Base
 			nil
 		end
 	end
+	Feed.where("central_mass_lonlat_geometry is null AND (central_mass_latitude is not null and central_mass_longitude is not null)").each{|x| x.update_columns(central_mass_lonlat_geometry: "POINT(#{x.central_mass_longitude} #{x.central_mass_latitude})", central_mass_lonlat_geography: "POINT(#{x.central_mass_longitude} #{x.central_mass_latitude})")}
 
 	def self.initial_recommendations(selected_categories)
 		if selected_categories != nil
