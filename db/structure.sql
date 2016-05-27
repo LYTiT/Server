@@ -158,7 +158,7 @@ CREATE FUNCTION fill_ts_categories_vector_for_feed() RETURNS trigger
 	      begin 
 	      	SELECT string_agg(name, ' ') AS names INTO feed_category_entries FROM list_categories WHERE id IN (SELECT list_category_id FROM list_category_entries WHERE feed_id = new.id);
 
-	        new.ts_venue_descriptives_vector :=
+	        new.ts_categories_vector :=
 	        	to_tsvector('pg_catalog.english', coalesce(feed_category_entries.names, ''));
 
 	        return new;
