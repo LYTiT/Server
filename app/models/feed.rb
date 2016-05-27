@@ -28,7 +28,7 @@ class Feed < ActiveRecord::Base
 				}
 			},
 			:query => query,
-			:ranked_by => ":tsearch * (floor(0.5-:tsearch)+1) * 1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0)",
+			:ranked_by => "(:tsearch * (1 + (floor(0.5-:tsearch)+1) * 1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0)))",
 			:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"			
 		}
 	}
@@ -77,7 +77,7 @@ class Feed < ActiveRecord::Base
 		v_weight = 0.5
 		m_weight = 0.1    
 
-		search_results = Feed.robust_search(query, user_lat, user_long).with_pg_search_rank.where("pg_search.rank > 0.1").limit(10).order("num_venues*#{v_weight}+num_users*#{m_weight}")
+		search_results = Feed.robust_search(query, user_lat, user_long).with_pg_search_rank.limit(10)#.where("pg_search.rank > 0.1").limit(10).order("num_venues*#{v_weight}+num_users*#{m_weight}")
 		#top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
 		#Feed.where("id in (#{direct_match_ids})").limit(5)+
 		search_results		
