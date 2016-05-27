@@ -68,13 +68,16 @@ class Feed < ActiveRecord::Base
 	end
 
 	def Feed.search(query, user_lat=40.741140 , user_long=-73.981917)
-		like_query = query.downcase+'%'
-		direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) LIKE ('#{like_query}')"
+		#like_query = query.downcase+'%'
+		#direct_match_ids = "SELECT id FROM feeds WHERE LOWER(name) LIKE ('#{like_query}')"
 		query.gsub!(/\d\s?/, "")
+		if query.last(2).count(query.last) > 1
+			query = query.chomp(query.last)
+		end
 		v_weight = 0.5
 		m_weight = 0.1    
 
-		search_results = Feed.robust_search(query).with_pg_search_rank.where("pg_search.rank > 0.0").limit(10).order("central_mass_lonlat_geometry <-> st_point(#{user_long},#{user_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}")
+		search_results = Feed.robust_search(query).with_pg_search_rank.where("pg_search.rank > 0.1").limit(10).order("central_mass_lonlat_geometry <-> st_point(#{user_long},#{user_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}")
 		#top_search_results = search_results.select { |venue| venue.pg_search_rank >= 0.2 }
 		#Feed.where("id in (#{direct_match_ids})").limit(5)+
 		search_results		
