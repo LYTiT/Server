@@ -136,7 +136,7 @@ class Api::V1::FeedsController < ApiBaseController
 
 	def get_list_venues_in_view
 		view_box = {:sw_lat => params[:sw_latitude], :sw_long => params[:sw_longitude], :ne_lat => params[:ne_latitude], :ne_long => params[:ne_longitude]}
-		@feed_venues = FeedVenue.in_view(params[:category_id], view_box)
+		@feed_venues = FeedVenue.in_view(params[:category_id], view_box, [params[:latitude], params[:longitude]])
 	end
 
 	def get_members

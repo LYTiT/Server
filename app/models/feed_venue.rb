@@ -15,14 +15,15 @@ class FeedVenue < ActiveRecord::Base
 
 	after_create :delayed_new_venue_notification_and_activity
 
-	def FeedVenue.in_view(category_id, view_box)
-		center_screen_lat = (view_box[:ne_lat].to_f-view_box[:sw_lat].to_f)/2.0+view_box[:sw_lat].to_f
-		center_screen_long = (view_box[:ne_long].to_f-view_box[:sw_long].to_f)/2.0+view_box[:ne_long].to_f
+	def FeedVenue.in_view(category_id, view_box, view_center=[])
+		center_screen_lat = view_center.first#(view_box[:ne_lat].to_f-view_box[:sw_lat].to_f)/2.0+view_box[:sw_lat].to_f
+		center_screen_long = view_center.last#(view_box[:ne_long].to_f-view_box[:sw_long].to_f)/2.0+view_box[:ne_long].to_f
 		v_weight = 0.5
 		m_weight = 0.1    
 
 		category_feed_ids = "SELECT feed_id FROM list_category_entries WHERE list_category_id = #{category_id}"
-		FeedVenue.inside_box(view_box[:sw_long], view_box[:sw_lat], view_box[:ne_long], view_box[:ne_lat]).where("feed_id IN (#{category_feed_ids})").includes(:venue).order("lonlat_geometry <-> st_point(#{center_screen_long},#{center_screen_lat})").order("num_venues*#{v_weight}+num_users*#{m_weight}+score_primer").limit(20)
+		FeedVenue.inside_box(view_box[:sw_long], view_box[:sw_lat], view_box[:ne_long], view_box[:ne_lat])
+		.where("feed_id IN (#{category_feed_ids})").includes(:venue).order("num_venues*#{v_weight}+num_users*#{m_weight}+score_primer").limit(20)
 	end
 
 	def delayed_new_venue_notification_and_activity
