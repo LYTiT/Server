@@ -28,8 +28,8 @@ class Feed < ActiveRecord::Base
 				}
 			},
 			:query => query,
-			:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"
-			#:ranked_by => ":tsearch*1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0) "
+			:ranked_by => "ln(1-:tsearch)*-10000 * 1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0)",
+			:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"			
 		}
 	}
 
