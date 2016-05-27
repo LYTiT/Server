@@ -28,9 +28,9 @@ class Feed < ActiveRecord::Base
 				}
 			},
 			:query => query,
-			:ranked_by => "CASE :tsearch < 0.5 WHEN TRUE THEN :tsearch * 1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0) ELSE :tsearch END",
+			:ranked_by => "CASE :tsearch < 0.5 WHEN TRUE THEN :tsearch/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{longitude} #{latitude})'))/1000) ELSE :tsearch END",
 			#"(:tsearch * ((floor(0.5-:tsearch)+1) + (floor(0.5-:tsearch)+1) * 1/(ST_Distance(central_mass_lonlat_geography, ST_GeographyFromText('SRID=4326;POINT(#{latitude} #{longitude})'))/1000.0)))",
-			:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"			
+			#:order_within_rank => "central_mass_lonlat_geometry <-> st_point(#{longitude},#{latitude})"			
 		}
 	}
 
