@@ -752,9 +752,52 @@ class VenueComment < ActiveRecord::Base
 		end 
 		self.update_columns(evaluater_user_ids: evaluater_user_ids)
 	end
-=begin
-	def view_generator(total_sim_user_base=50000)
+
+	def VenueComment.assign_views_to_posts(only_on_admin=true)
+		if only_on_admin == true
+			lytit_posts = VenueComment.where("content_origin = ?", "lytit_post").joins(:venue).where("rating IS NOT NULL").joins(:user).where("role_id = 1")
+		else			
+			lytit_posts = VenueComment.where("content_origin = ?", "lytit_post").joins(:venue).where("rating IS NOT NULL")
+		end
+		lytit_posts.each{|lytit_post| lytit_post.view_generator}
+	end
+
+	def view_generator(total_sim_user_base=10000)
 		#NEEDS TO TAKE INTO CONSIDERATION LOCAL TIME OF DAY
+		num_views = self.num_enlytened
+		num_surrounding_users = User.where("latitude IS NOT NULL").close_to(venue.latitude, venue.longitude, 20000).count		
+		total_users = User.where("latitude IS NOT NULL").count
+
+		num_simulated_nearby_users = (total_sim_user_base * (num_surrounding_users.to_f/(total_users.to_f+1.0))) || 0
+		num_preceeding_posts = venue.venue_comments.where("adjusted_sort_position > ?", self.adjusted_sort_position).count
+
+		venue_rating = venue.rating || 0
+
+		#probability of receiving a view *
+		average_num_views_per_interval_local = (venue.rating - num_preceeding_posts*) * num_simulated_nearby_users
+		
+		poisson = Croupier::Distributions.poisson(:lambda => average_num_views_per_interval)
+		num_new_views = poisson.generate_sample(1)
+		p num_new_views
+		for i in 1..num_new_views
+			self.user.increment!(:num_bolts, 1)
+
+			nearby_venue = Venue.close_to(venue.latitude, venue.longitude, 20000).first
+			faraway_venue = Venue.far_from(venue.latitude, venue.longitude, 20000).offset(rand(1000)).first rescue Venue.far_from(venue.latitude, venue.longitude, 20000).first
+			selected_venue = (rand(99) < 96 ? nearby_venue : faraway_venue) 
+			country = selected_venue.country
+			city = selected_venue.city
+			lytit_post.increment_geo_views(country, city)
+		end
+	end
+
+
+
+
+=begin
+
+
+
 		venue = self.venue
 		venue_rating = venue.rating || (rand(5) >=3 ? 0 : 0.0005)
 
@@ -769,8 +812,7 @@ class VenueComment < ActiveRecord::Base
 
 		#num_simulted_views = (num_simulated_users * (1 - num_preceeding_posts*0.01)).floor
 
-		mean = 
-		sd = 
+
 		normal_dist = Rubystats::NormalDistribution.new(mean, sd)
 		normal = Croupier::Distributions.normal(:mu=>0.66, :sigma=>0.1)
 		success = normal.generate_sample(1)
@@ -803,8 +845,7 @@ class VenueComment < ActiveRecord::Base
 
 	  		view = CommentView.delay(run_at: rand(900).seconds.from_now).create!(:venue_comment_id => lytit_post.id, :user_id => 1)
 		end
-	end	
-=end	
+=end
 			
 end
 

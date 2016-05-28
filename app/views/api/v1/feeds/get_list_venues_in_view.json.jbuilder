@@ -13,7 +13,7 @@ json.array! @feed_venues do |feed_venue|
 
   json.added_by_user feed_venue.user_details["name"]
   json.added_by feed_venue.user_details["id"]
-  json.name feed_venue.user_details["name"]
+  json.creator_name feed_venue.user_details["name"]
   json.profile_image_url feed_venue.user_details["profile_image_url"]
   json.is_verified feed_venue.user_details["is_verified"]
   json.feed_venue_id feed_venue.id
