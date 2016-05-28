@@ -772,7 +772,17 @@ class VenueComment < ActiveRecord::Base
 		mean = 
 		sd = 
 		normal_dist = Rubystats::NormalDistribution.new(mean, sd)
+		normal = Croupier::Distributions.normal(:mu=>0.66, :sigma=>0.1)
+		success = normal.generate_sample(1)
+		#assume probability of a view is normally distributed. Select a sample and plug into geometric. success = probability of no 
+		geometric = Croupier::Distributions.geometric(:success=>success)
 		x = normal_dist.rng.floor
+
+		#distribution of views in 10 minute interval given average number of views in set interval = lambda. Labmda is a function of venue
+		#rating, post position, venue location, num outstanding views receieved, {and venue popularity maybe}
+		poisson = Croupier::Distributions.poisson(:lambda=>1)
+
+		num_new_views = possion.generate_sample(1)
 
 		if x > 0
 			num_new_views = x
