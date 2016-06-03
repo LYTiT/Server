@@ -566,7 +566,7 @@ class Venue < ActiveRecord::Base
     end
     
     if vc.lytit_post["comment"] != nil
-      self.update_descriptives(vc.lytit_post["comment"])
+      #self.update_descriptives(vc.lytit_post["comment"])
     end
     latest_comment_type_times = self.latest_comment_type_times
     latest_comment_type_times["lytit_post"] = Time.now

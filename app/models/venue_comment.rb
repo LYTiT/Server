@@ -774,8 +774,10 @@ class VenueComment < ActiveRecord::Base
 		venue_rating = venue.rating || 0
 
 		#probability of receiving a view *
-		average_num_views_per_interval_local = (venue.rating - num_preceeding_posts) * num_simulated_nearby_users
+		#a weighting of rating, surrounding lyts, preceeding posts, num surrounded users - surrounding user views
+		average_num_views_per_interval_local = (((1.0/num_surrounding_lyts)*rating.round(1)*(1.0-0.25*num_preceeding_posts/3)) * num_simulated_nearby_users)*#time of day scale
 		
+		#United States =>{[New York, Los Angeles, San Francisco, 111]}
 		poisson = Croupier::Distributions.poisson(:lambda => average_num_views_per_interval)
 		num_new_views = poisson.generate_sample(1)
 		p num_new_views
