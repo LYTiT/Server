@@ -18,7 +18,7 @@ namespace :lytit do
       start_time = Time.now
 
       puts "Pulling from Instagram"
-      InstagramVortex.global_pull
+      #InstagramVortex.global_pull
 
       puts("Recalculating color ratings")
       #spheres = LytSphere.uniq.pluck(:sphere)
