@@ -1,3 +1,8 @@
+class RailsAdmin::Config::Fields::Types::Geography < RailsAdmin::Config::Fields::Base
+  RailsAdmin::Config::Fields::Types::register(self)
+end
+
+
 RailsAdmin.config do |config|
   config.authenticate_with do
     if current_user.present? and not current_user.is_admin?
