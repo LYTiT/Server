@@ -11,11 +11,13 @@ json.array! @feed_venues do |feed_venue|
   json.latitude feed_venue.venue_details["latitude"]
   json.longitude feed_venue.venue_details["longitude"]
 
-  json.added_by_user feed_venue.user_details["name"]
+  json.feed_creator feed_venue.user_details["name"]
+  json.list_creator_is_verified feed_venue.user_details["is_verified"]
+  
   json.added_by feed_venue.user_details["id"]
   json.creator_name feed_venue.user_details["name"]
+  
   json.profile_image_url feed_venue.user_details["profile_image_url"]
-  json.is_verified feed_venue.user_details["is_verified"]
   json.feed_venue_id feed_venue.id
   json.added_note feed_venue.description
 
