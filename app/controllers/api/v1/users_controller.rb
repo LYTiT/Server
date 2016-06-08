@@ -55,7 +55,7 @@ class Api::V1::UsersController < ApiBaseController
 				#@user.save
 			#end
 
-			#SupportIssue.delay.create!(user_id: @user.id)
+			SupportIssue.delay.create!(user_id: @user.id)
 			VendorIdTracker.delay.implicit_creation(@user.id)
 
 			sign_in @user
