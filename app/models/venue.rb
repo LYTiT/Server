@@ -2049,6 +2049,7 @@ end
 # Instagram #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   def set_instagram_location_id(search_radius)
+=begin    
     #Set-up of tools to be used
     if search_radius == nil
       search_radius = 100
@@ -2141,9 +2142,12 @@ end
     end
 
     return venue_instagrams
+=end 
+    []   
   end
 
   def instagram_ping(day_pull = true, hourly_pull = false)
+=begin    
     #Returns a hash unless an hourly pull (open first open on version 1.1.0) then returns native Instgram object.
 
     #if no valid instagram location id we must set it.
@@ -2193,6 +2197,8 @@ end
       puts "No Instagrams"
       return []
     end
+=end
+    []
   end
 
   def rescue_instagram_api_call(invalid_instagram_access_token, day_pull, hourly_pull)
