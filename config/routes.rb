@@ -352,6 +352,7 @@ LytitServer::Application.routes.draw do
   get 'tnc' => 'pages#tnc'
   get 'privacy' => 'pages#privacy'
   get 'features' => 'pages#features'
+  get 'new_home' => 'pages#new_home'
 
   get "/download" => redirect("http://appsto.re/us/dbnb7.i"), :as => :app_store
 

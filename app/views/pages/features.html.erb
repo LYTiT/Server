@@ -14,33 +14,69 @@
     </a>
   </header>
   <!-- .cd-header -->
-  <div class="cd-main-content">
+  <div class="cd-main-content">        
     <div class="cd-product-intro">
-      <h1>Live Place Connection</h1>
-      <p style="max-width: 480px">Less wondering and more knowing! Always be aware of <t style="color: #1d6ec6;">what</t> and <t style="color: #1d6ec6;">where</t> things are happening with Lytit.</p>
-      <div class="cd-triggers">
-        <a href="http://appsto.re/us/dbnb7.i" class="btn">Get It</a>
-        <a href="#cd-product-tour" class="btn salmon" data-type="cd-tour">Show Me</a>
-      </div>
+      <div class="explore-features"><%= link_to image_tag("/assets/explore.svg", :width => 75), features_path %></div>
+      <h1>Enlyten Yourself</h1>
+      <p style="max-width: 480px">Discover the best places through live media content inside curated location guides.</p>
     </div>
     <!-- cd-product-intro -->
     <div id="cd-product-tour">
       <ul>
-        <li class="cd-single-item cd-active right-floater">
-          <div class="cd-caption">
-            <h2>Happening Now</h2>
-            <p>Lyts are assigned to active places for a quick overview of what's happening in an area at anytime.</p>
-          </div>
-          <div class="cd-image-container">
-            <div>
-              <div class="cd-phone-frame"></div>
-              <div class="cd-image-wrapper">
-                <img src="/assets/lyt_map@2x.png" data-video="/assets/open_list" alt="Lyt Map">
+        <li class="cd-single-item cd-active right-floater guides-overview">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="guide-intro">
+                  <h2>Discover</h2>
+                  <p>Lyts are assigned to active places for a quick overview of what's happening in an area at anytime.</p>
               </div>
             </div>
+            <div class="col-md-6">
+                <div id="slideshow">
+                   <div>
+                     <img src="/assets/sample_guide_cover.jpg" style="border-radius: 3px 3px 3px 3px">
+                   </div>
+                   <div>
+                     <img src="/assets/sample_guide_cover_2.jpg" style="border-radius: 3px 3px 3px 3px">
+                   </div>
+                </div>
+            </div>
+
+
           </div>
         </li>
-        <li class="cd-single-item cd-not-visible cd-move-right left-floater">
+
+       <li class="cd-guide-features">
+          <div class="cd-caption">
+            <h2>More Than Just a List</h2>
+            <p>Enlyten people about your surroundings by posting Moments.</p>
+          </div>
+          <div class="row">            
+            <div class="col-md-4">
+              <div class="guide-feature-item">
+                <img class="center-block" src="/assets/lytit_icon.png">  
+                <h2 class="heading text-center">Add</h2>
+                <p class="text-center">Upvote what’s good and downvote what’s not. The community decides what’s hot.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="guide-feature-item">
+                <img class="center-block" src="/assets/lytit_icon.png">
+                <h2 class="heading text-center">Add</h2>
+                <p class="text-center">Upvote what’s good and downvote what’s not. The community decides what’s hot.</p>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="guide-feature-item">
+                <img class="center-block" src="/assets/lytit_icon.png">
+                <h2 class="heading text-center">Add</h2>
+                <p class="text-center">Upvote what’s good and downvote what’s not. The community decides what’s hot.</p>
+              </div>
+            </div>            
+          </div>
+        </li>
+
+        <li class="cd-single-item cd-not-visible cd-move-right left-floater lyt-map">
           <div class="cd-caption">
             <h2>Experience Places</h2>
             <p>Tap on lyts or search for places to receive a real-time feed of content and information from on location.</p>
@@ -108,6 +144,7 @@
     <!-- top loading bar -->
   </div>
 </div>
+
 <nav class="cd-3d-nav-container">
   <ul class="cd-3d-nav">
     <li><%= link_to "Home", root_path %></li>

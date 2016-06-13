@@ -2,6 +2,17 @@ jQuery(document).ready(function($){
 	//update this value if you change this breakpoint in the style.css file (or _layout.scss if you use SASS)
 	var MqL = 1070;
 
+		$("#slideshow > div:gt(0)").hide();
+
+		setInterval(function() { 
+		  $('#slideshow > div:first')
+		    .fadeOut(1000)
+		    .next()
+		    .fadeIn(1000)
+		    .end()
+		    .appendTo('#slideshow');
+		},  3000);
+
 	//on desktop, switch from product intro div to product tour div
 	$('a[href="#cd-product-tour"]').on('click', function(event){
 		event.preventDefault();
