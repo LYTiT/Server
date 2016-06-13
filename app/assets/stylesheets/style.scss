@@ -42,12 +42,12 @@
 			margin-left: 20%;
 			margin-right: 20%;
 
-			font-family: 'Lato', sans-serif;
+			font-family: Times;
 			font-weight: 300;
 			color: white;
 			font-size: 5.5rem;
 			font-smooth: always;
-			text-transform: uppercase;
+			//text-transform: uppercase;
     		//text-shadow: 2px 0px 2px #3d3d3d;
 		}
 		p {
@@ -81,9 +81,9 @@
 		margin-left: 20%;
 		margin-right: 20%;
 
-		font-family: 'Lato', sans-serif;
-		font-weight: 300;
-		color: #001c38;
+		font-family: 'Questrial', sans-serif;
+		font-weight: 400;
+		color: #3d444a;
 		font-size: 4.1rem;
 		font-smooth: always;
 		text-transform: uppercase;
@@ -188,18 +188,18 @@
 }
 
 .guide-details {
-	margin-left: 10%;
-	margin-right: 10%;	
+	margin-left: 15%;
+	margin-right: 15%;	
 }
 
 .guide-detail {
 	margin-top: 20px;
 	margin-bottom: 20px;
-	margin-left: 5%;
-	margin-right: 5%;
+	margin-left: 15%;
+	margin-right: 15%;
 	text-align: center;	
-	background: rgba(255, 255, 255, 0.6);
-	border: 1px solid #b2b8b6;
+	background: rgba(255, 255, 255, 1);
+	//border: 1px solid #b2b8b6;
 	border-radius: 4px;
 	margin-right-top: 10px;
 	.icon {
@@ -208,7 +208,7 @@
 
 	h3{
 		margin-top: 20px;
-		font-family: 'Lato', sans-serif;
+		font-family: Times;
 		font-weight: 500;
 		color: #1d6ec6;
 		font-size: 2.3rem;
@@ -220,8 +220,8 @@
 		color: #6a757f;
 		font-size: 1.6rem;
 		padding-top: 20px;
-		padding-right: 30px;
-		padding-left: 30px;
+		padding-right: 25px;
+		padding-left: 25px;		
 		font-weight: 400;
 		line-height: 2.5rem;
 		letter-spacing: 2px;
@@ -232,7 +232,7 @@
 
 #space {
 	background: #f8f8f8;
-	height: 10%;
+	height: 5%;
 }
 
 .features-maps {
